@@ -12,7 +12,7 @@ before_install:
   - cd cmake-3.2.1
   - cmake . > /dev/null
   - make > /dev/null
-  - sudo make install
+  - sudo make install DESTDIR=/usr
   - cd ..
   - rm -rf cmake-3.2.1 cmake-3.2.1.tar.gz
 
