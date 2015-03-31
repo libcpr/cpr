@@ -1,6 +1,7 @@
 #ifndef _CPR_TYPES_H_
 #define _CPR_TYPES_H_
 
+#include <algorithm>
 #include <map>
 #include <string>
 
