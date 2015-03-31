@@ -4,8 +4,8 @@
 
 
 int main() {
-    auto response = cpr::Post(Url{"https://posttestserver.com/post.php"},
-                              Payload{{"foo", "bar"}, {"foz", "baz"}});
+    auto response = cpr::Get(Url{"https://api.github.com/repos/whoshuu/cpr/contributors"},
+                             Parameters{{"anon", "true"}, {"key", "value"}});
     std::cout << "Status code: " << response.status_code << std::endl;
     std::cout << "Url: " << response.url << std::endl;
     std::cout << "Elapsed: " << response.elapsed << " seconds" << std::endl;
