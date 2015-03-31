@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8.7)
 project(cpr)
 
-if(NOT $CMAKE_VERSION LESS 3.2)
+if(NOT ${CMAKE_VERSION} LESS 3.2)
     set(CMAKE_CXX_STANDARD 11)
     set(CMAKE_CXX_STANDARD_REQUIRED ON)
 else()
