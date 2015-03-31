@@ -1,0 +1,3 @@
+[submodule "curl"]
+	path = curl
+	url = git://github.com/whoshuu/curl.git
