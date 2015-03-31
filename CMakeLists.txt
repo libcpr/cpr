@@ -28,9 +28,15 @@ endif()
 
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
 
-find_package(CURL)
-if(NOT CURL_FOUND)
-    message(STATUS "Could not find system Curl, using built-in curl project instead.")
+option(USE_SYSTEM_CURL "If ON, this project will look in the system paths for an installed curl library" ON)
+if(DEFINED ENV{USE_SYSTEM_CURL})
+    set(USE_SYSTEM_CURL $ENV{USE_SYSTEM_CURL})
+endif()
+if(USE_SYSTEM_CURL)
+    find_package(CURL)
+endif()
+if(NOT USE_SYSTEM_CURL OR NOT CURL_FOUND)
+    message(STATUS "Not using system Curl, using built-in curl project instead.")
     add_subdirectory(curl)
     set(CURL_LIBRARIES libcurl CACHE INTERNAL "")
     set(CURL_INCLUDE_DIRS
