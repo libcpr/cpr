@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
 
-find_package(curl)
+find_package(CURL)
 if(NOT CURL_FOUND)
     message(STATUS "Could not find system Curl, using built-in curl project instead.")
     add_subdirectory(curl)
