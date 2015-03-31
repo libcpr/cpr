@@ -36,8 +36,9 @@ void Session::SetUrl(Url url, Parameters parameters) {
     if (curl) {
         Url new_url{url + "?"};
         for(auto parameter = parameters.cbegin(); parameter != parameters.cend(); ++parameter) {
-            new_url += parameter->first + "=" + parameter->second;
+            new_url += parameter->first + "=" + parameter->second + "&";
         }
+        new_url = new_url.substr(0, new_url.size() - 1);
         curl_easy_setopt(curl, CURLOPT_URL, new_url.data());
     }
 }
