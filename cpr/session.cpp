@@ -14,7 +14,6 @@ Session::Session() {
         curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
         curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 1L);
         curl_easy_setopt(curl, CURLOPT_MAXREDIRS, 50L);
-        curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
 #if LIBCURL_VERSION_MAJOR >= 7
 #if LIBCURL_VERSION_MINOR >= 25
 #if LIBCURL_VERSION_PATCH >= 0
