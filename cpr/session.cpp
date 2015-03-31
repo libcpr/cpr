@@ -2,7 +2,6 @@
 
 #include "util.h"
 
-#include <iostream>
 
 Session::Session() {
     curl_ = {cpr::util::newHolder(), &cpr::util::freeHolder};
