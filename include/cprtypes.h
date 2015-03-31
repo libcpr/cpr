@@ -8,13 +8,9 @@
 #include <curl/curl.h>
 
 
-struct case_insensitive_compare
-{
-    case_insensitive_compare() {}
-
-    bool operator()(const std::string& a, const std::string& b) const {
-        return to_lower(a) < to_lower(b);
-    }
+typedef struct {
+    bool operator()(const std::string& a, const std::string& b) const
+        { return to_lower(a) < to_lower(b); }
 
     static void char_to_lower(char& c) {
         if (c >= 'A' && c <= 'Z')
@@ -26,7 +22,7 @@ struct case_insensitive_compare
         std::for_each(s.begin(), s.end(), char_to_lower);
         return s;
     }
-};
+} case_insensitive_compare;
 
 typedef std::map<std::string, std::string> Parameters;
 typedef std::map<std::string, std::string, case_insensitive_compare> Header;
