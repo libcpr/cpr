@@ -5,7 +5,7 @@ compiler:
   - clang
 
 before_install:
-  - if [ $TRAVIS_OS_NAME == osx ]; then brew update && brew install cmake; fi
+  - apt-get update && apt-get install -y cmake
 
 before_script:
   - mkdir build
