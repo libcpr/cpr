@@ -1,4 +1,4 @@
-# C++ Requests: Curl for People
+# C++ Requests: Curl for People [![Build Status](https://travis-ci.org/whoshuu/cpr.svg?branch=master)](https://travis-ci.org/whoshuu/cpr)
 
 C++ Requests is a simple wrapper around libcurl inspired by the excellent [Python Requests](https://github.com/kennethreitz/requests) project.
 
