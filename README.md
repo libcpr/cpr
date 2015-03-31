@@ -15,7 +15,7 @@ int main(int argc,  char** argv) {
                       Authentication{"user", "pass"},
                       Parameters{{"anon", "true"}, {"key", "value"}});
     r.status_code;                  // 200
-    r.headers['content-type'];      // application/json; charset=utf-8
+    r.headers["content-type"];      // application/json; charset=utf-8
     r.text;                         // JSON text string
 }
 ```
