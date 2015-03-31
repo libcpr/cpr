@@ -23,7 +23,11 @@ Header cpr::util::parseHeader(std::string headers) {
         if (line.length() > 0) {
             auto found = line.find(":");
             if (found != std::string::npos) {
-                header[line.substr(0, found)] = line.substr(found + 2, line.length());
+                auto value = line.substr(found + 2, line.length() - 1);
+                if (value.back() == '\r') {
+                    value = value.substr(0, value.length() - 1);
+                }
+                header[line.substr(0, found)] = value;
             }
         }
     }
