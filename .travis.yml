@@ -9,9 +9,12 @@ sudo: required
 before_install:
   - wget http://www.cmake.org/files/v3.2/cmake-3.2.1.tar.gz
   - tar -xvzf cmake-3.2.1.tar.gz
+  - cd cmake-3.2.1
   - cmake .
   - make
   - make install
+  - cd ..
+  - rm -rf cmake-3.2.1 cmake-3.2.1.tar.gz
 
 before_script:
   - cmake --version
