@@ -4,10 +4,15 @@ compiler:
   - gcc
   - clang
 
+env:
+  - USE_SYSTEM_CURL="TRUE"
+  - USE_SYSTEM_CURL=""
+
 sudo: required
 
 before_install:
   - sudo apt-get remove cmake
+  - if [ -z "$USE_SYSTEM_CURL" ]; then sudo apt-get remove curl libcurl3; fi
   - wget http://www.cmake.org/files/v3.2/cmake-3.2.1.tar.gz
   - tar -xzf cmake-3.2.1.tar.gz
   - cd cmake-3.2.1
