@@ -31,6 +31,16 @@ Header cpr::util::parseHeader(std::string headers) {
     return header;
 }
 
+std::string cpr::util::parseResponse(std::string response) {
+    if (!response.empty()) {
+        if (response.back() == '\n') {
+            return response.substr(0, response.length() - 1);
+        }
+    }
+
+    return response;
+}
+
 size_t cpr::util::writeFunction(void *ptr, size_t size, size_t nmemb, std::string* data) {
     data->append((char*) ptr, size * nmemb);
     return size * nmemb;

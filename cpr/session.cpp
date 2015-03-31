@@ -125,6 +125,7 @@ Response Session::Get() {
         curl_easy_getinfo(curl, CURLINFO_TOTAL_TIME, &elapsed);
         curl_easy_getinfo(curl, CURLINFO_EFFECTIVE_URL, &raw_url);
         auto header = cpr::util::parseHeader(header_string);
+        response_string = cpr::util::parseResponse(response_string);
         Response response{response_code, response_string, header, raw_url, elapsed};
         return response;
     }
@@ -159,6 +160,7 @@ Response Session::Post() {
         curl_easy_getinfo(curl, CURLINFO_TOTAL_TIME, &elapsed);
         curl_easy_getinfo(curl, CURLINFO_EFFECTIVE_URL, &raw_url);
         auto header = cpr::util::parseHeader(header_string);
+        response_string = cpr::util::parseResponse(response_string);
         Response response{response_code, response_string, header, raw_url, elapsed};
         return response;
     }
