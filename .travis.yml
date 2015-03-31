@@ -14,15 +14,7 @@ sudo: required
 
 before_install:
   - if [ -z "$USE_SYSTEM_CURL" ]; then sudo apt-get remove curl libcurl3; fi
-  - if [ -z "$USE_SYSTEM_CMAKE" ]; then sudo apt-get remove cmake; fi
-  - if [ -z "$USE_SYSTEM_CMAKE" ]; then wget http://www.cmake.org/files/v3.2/cmake-3.2.1.tar.gz; fi
-  - if [ -z "$USE_SYSTEM_CMAKE" ]; then tar -xzf cmake-3.2.1.tar.gz; fi
-  - if [ -z "$USE_SYSTEM_CMAKE" ]; then cd cmake-3.2.1; fi
-  - if [ -z "$USE_SYSTEM_CMAKE" ]; then ./bootstrap > /dev/null; fi
-  - if [ -z "$USE_SYSTEM_CMAKE" ]; then make -j8 > /dev/null; fi
-  - if [ -z "$USE_SYSTEM_CMAKE" ]; then sudo make install; fi
-  - if [ -z "$USE_SYSTEM_CMAKE" ]; then cd ..
-  - if [ -z "$USE_SYSTEM_CMAKE" ]; then rm -rf cmake-3.2.1 cmake-3.2.1.tar.gz
+  - if [ -z "$USE_SYSTEM_CMAKE" ]; then sudo apt-get remove cmake && wget http://www.cmake.org/files/v3.2/cmake-3.2.1.tar.gz && tar -xzf cmake-3.2.1.tar.gz && cd cmake-3.2.1 && ./bootstrap > /dev/null && make -j8 > /dev/null && sudo make install && cd .. && rm -rf cmake-3.2.1 cmake-3.2.1.tar.gz; fi
 
 before_script:
   - cmake --version
