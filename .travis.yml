@@ -7,9 +7,14 @@ compiler:
 sudo: required
 
 before_install:
-  - sudo apt-get update && sudo apt-get install -y cmake
+  - wget http://www.cmake.org/files/v3.2/cmake-3.2.1.tar.gz
+  - tar -xvzf cmake-3.2.1.tar.gz
+  - cmake .
+  - make
+  - make install
 
 before_script:
+  - cmake --version
   - mkdir build
   - cd build
   - cmake ..
