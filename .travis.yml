@@ -12,7 +12,7 @@ before_install:
   - tar -xzf cmake-3.2.1.tar.gz
   - cd cmake-3.2.1
   - ./bootstrap > /dev/null
-  - make > /dev/null
+  - make -j8 > /dev/null
   - sudo make install
   - cd ..
   - rm -rf cmake-3.2.1 cmake-3.2.1.tar.gz
