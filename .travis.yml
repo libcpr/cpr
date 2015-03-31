@@ -4,8 +4,10 @@ compiler:
   - gcc
   - clang
 
+sudo: required
+
 before_install:
-  - apt-get update && apt-get install -y cmake
+  - sudo apt-get update && sudo apt-get install -y cmake
 
 before_script:
   - mkdir build
