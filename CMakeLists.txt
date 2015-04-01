@@ -31,23 +31,22 @@ endif()
 
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
 
-option(USE_SYSTEM_CURL "If ON, this project will look in the system paths for an installed curl library" ON)
-if(DEFINED ENV{USE_SYSTEM_CURL})
-    set(USE_SYSTEM_CURL $ENV{USE_SYSTEM_CURL})
-endif()
-if(USE_SYSTEM_CURL)
-    find_package(CURL)
-endif()
-if(NOT USE_SYSTEM_CURL OR NOT CURL_FOUND)
-    message(STATUS "Not using system Curl, using built-in curl project instead.")
-    add_subdirectory(curl)
-    set(CURL_LIBRARIES libcurl CACHE INTERNAL "")
-    set(CURL_INCLUDE_DIRS
-        ${CURL_BINARY_DIR}/include/curl
-        ${CURL_SOURCE_DIR}/include CACHE INTERNAL "")
-endif()
-
-set(CPR_LIBRARIES libcpr CACHE INTERNAL "")
+set(CPR_LIBRARIES cpr CACHE INTERNAL "")
 set(CPR_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/include CACHE INTERNAL "")
 
+macro(cpr_option OPTION_NAME OPTION_TEXT OPTION_DEFAULT)
+    option(${OPTION_NAME} ${OPTION_TEXT} ${OPTION_DEFAULT})
+    if(DEFINED ENV{OPTION_NAME})
+        # Allow setting the option through an environment variable
+        set(OPTION_NAME $ENV{OPTION_NAME})
+    endif()
+endmacro()
+
+cpr_option(USE_SYSTEM_CURL
+    "If ON, this project will look in the system paths for an installed curl library" OFF)
+cpr_option(BUILD_CPR_TESTS "Set to ON to build cpr tests." ON)
+cpr_option(USE_SYSTEM_GTEST
+    "If ON, this project will look in the system paths for an installed gtest library" OFF)
+
+add_subdirectory(opt)
 add_subdirectory(cpr)
