@@ -53,5 +53,9 @@ cpr_option(USE_SYSTEM_GTEST
     "If ON, this project will look in the system paths for an installed gtest library" OFF)
 message(STATUS "=======================================================")
 
+if(BUILD_CPR_TESTS)
+    enable_testing()
+endif()
+
 add_subdirectory(opt)
 add_subdirectory(cpr)

@@ -35,3 +35,4 @@ before_script:
 
 script:
   - make
+  - ctest -V
