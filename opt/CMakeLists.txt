@@ -45,3 +45,18 @@ if(BUILD_CPR_TESTS)
     set_cache_variable(GTEST_BOTH_LIBRARIES "Location of both gtest libraries")
     set_cache_variable(GTEST_INCLUDE_DIRS "Location of gtest include files")
 endif()
+
+
+# Mongoose configuration
+
+if(BUILD_CPR_TESTS)
+    message(STATUS "Building mongoose project for test support.")
+    add_subdirectory(mongoose)
+    set(MONGOOSE_FOUND TRUE)
+    set(MONGOOSE_LIBRARIES mongoose)
+    set(MONGOOSE_INCLUDE_DIRS ${mongoose_SOURCE_DIR})
+
+    set_cache_variable(MONGOOSE_FOUND "Set if libmongoose was found or built")
+    set_cache_variable(MONGOOSE_LIBRARIES "Location of libmongoose")
+    set_cache_variable(MONGOOSE_INCLUDE_DIRS "Location of mongoose include files")
+endif()
