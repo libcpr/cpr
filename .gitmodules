@@ -4,3 +4,6 @@
 [submodule "opt/googletest"]
 	path = opt/googletest
 	url = git://github.com/whoshuu/googletest.git
+[submodule "opt/mongoose"]
+	path = opt/mongoose
+	url = git://github.com/whoshuu/mongoose.git
