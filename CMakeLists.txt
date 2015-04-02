@@ -40,14 +40,18 @@ macro(cpr_option OPTION_NAME OPTION_TEXT OPTION_DEFAULT)
         # Allow setting the option through an environment variable
         set(${OPTION_NAME} $ENV{${OPTION_NAME}})
     endif()
+    message(STATUS "  ${OPTION_NAME}: ${${OPTION_NAME}}")
 endmacro()
 
+message(STATUS "C++ Requests CMake Options")
+message(STATUS "=======================================================")
 cpr_option(USE_SYSTEM_CURL
     "If ON, this project will look in the system paths for an installed curl library" OFF)
 cpr_option(BUILD_CPR_TESTS "Set to ON to build cpr tests." ON)
 cpr_option(GENERATE_COVERAGE "Set to ON to generate coverage reports." OFF)
 cpr_option(USE_SYSTEM_GTEST
     "If ON, this project will look in the system paths for an installed gtest library" OFF)
+message(STATUS "=======================================================")
 
 add_subdirectory(opt)
 add_subdirectory(cpr)
