@@ -9,7 +9,7 @@ if(NOT USE_SYSTEM_CURL OR NOT CURL_FOUND)
     set(CURL_FOUND TRUE)
     set(CURL_LIBRARIES libcurl)
     set(CURL_INCLUDE_DIRS
-        ${CURL_BINARY_DIR}/include
+        ${CURL_SOURCE_DIR}/include
         ${CURL_SOURCE_DIR}/include/curl)
 endif()
 
