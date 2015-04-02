@@ -11,7 +11,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake-modules)
 
 # Code coverage
 
-if(BUILD_CPR_TESTS)
+if(BUILD_CPR_TESTS AND GENERATE_COVERAGE)
     include(CodeCoverage)
 endif()
 

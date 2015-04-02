@@ -12,6 +12,11 @@ env:
     - USE_SYSTEM_CURL=OFF USE_SYSTEM_CMAKE=ON
     - USE_SYSTEM_CURL=OFF USE_SYSTEM_CMAKE=OFF
     - USE_SYSTEM_CURL=ON USE_SYSTEM_CMAKE=OFF
+    - USE_SYSTEM_CURL=OFF USE_SYSTEM_CMAKE=OFF GENERATE_COVERAGE=ON
+    exclude:
+      - compiler: clang
+      - env: USE_SYSTEM_CURL=OFF USE_SYSTEM_CMAKE=OFF GENERATE_COVERAGE=ON
+
 
 sudo: required
 
@@ -26,7 +31,7 @@ before_script:
   - cmake --version
   - mkdir build
   - cd build
-  - cmake -LAH ..
+  - if [ "$GENERATE_COVERAGE" == "ON" ]; then cmake -DCMAKE_BUILD_TYPE=COVERAGE -LAH ..; else cmake -LAH ..; fi
 
 script:
   - make
