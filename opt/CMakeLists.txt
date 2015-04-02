@@ -10,7 +10,7 @@ if(NOT USE_SYSTEM_CURL OR NOT CURL_FOUND)
     set(CURL_LIBRARIES libcurl)
     set(CURL_INCLUDE_DIRS
         ${CURL_SOURCE_DIR}/include
-        ${CURL_SOURCE_DIR}/include/curl)
+        ${CURL_BINARY_DIR}/include/curl)
 endif()
 
 set(CURL_FOUND ${CURL_FOUND} CACHE INTERNAL "Set if libcurl is found or built")
