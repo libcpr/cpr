@@ -1,3 +1,8 @@
+macro(set_cache_variable VAR_NAME VAR_DESCRIPTION)
+    set(${VAR_NAME} ${${VAR_NAME}} CACHE INTERNAL ${VAR_DESCRIPTION})
+    message(STATUS "Set ${VAR_NAME} to ${${VAR_NAME}}.")
+endmacro()
+
 # Curl configuration
 
 if(USE_SYSTEM_CURL)
@@ -13,12 +18,9 @@ if(NOT USE_SYSTEM_CURL OR NOT CURL_FOUND)
         ${CURL_BINARY_DIR}/include/curl)
 endif()
 
-set(CURL_FOUND ${CURL_FOUND} CACHE INTERNAL "Set if libcurl is found or built")
-set(CURL_LIBRARIES ${CURL_LIBRARIES} CACHE INTERNAL "Location of libcurl")
-set(CURL_INCLUDE_DIRS ${CURL_INCLUDE_DIRS} CACHE INTERNAL "Location of curl include files")
-message(STATUS "Set CURL_FOUND to ${CURL_FOUND}.")
-message(STATUS "Set CURL_LIBRARIES to ${CURL_LIBRARIES}.")
-message(STATUS "Set CURL_INCLUDE_DIRS to ${CURL_INCLUDE_DIRS}.")
+set_cache_variable(CURL_FOUND "Set if libcurl is found or built")
+set_cache_variable(CURL_LIBRARIES "Location of libcurl")
+set_cache_variable(CURL_INCLUDE_DIRS "Location of curl include files")
 
 
 # GTest configuration
@@ -37,14 +39,9 @@ if(BUILD_CPR_TESTS)
         set(GTEST_INCLUDE_DIRS ${gtest_SOURCE_DIR}/include)
     endif()
 
-    set(GTEST_FOUND ${GTEST_FOUND} CACHE INTERNAL "Set if libgtest was found or built")
-    set(GTEST_LIBRARIES ${GTEST_LIBRARIES} CACHE INTERNAL "Location of libgtest")
-    set(GTEST_MAIN_LIBRARIES ${GTEST_MAIN_LIBRARIES} CACHE INTERNAL "Location of libgtest-main")
-    set(GTEST_BOTH_LIBRARIES ${GTEST_BOTH_LIBRARIES} CACHE INTERNAL "Location of both gtest libraries")
-    set(GTEST_INCLUDE_DIRS ${GTEST_INCLUDE_DIRS} CACHE INTERNAL "Location of gtest include files")
-    message(STATUS "Set GTEST_FOUND to ${GTEST_FOUND}.")
-    message(STATUS "Set GTEST_LIBRARIES to ${GTEST_LIBRARIES}.")
-    message(STATUS "Set GTEST_MAIN_LIBRARIES to ${GTEST_MAIN_LIBRARIES}.")
-    message(STATUS "Set GTEST_BOTH_LIBRARIES to ${GTEST_BOTH_LIBRARIES}.")
-    message(STATUS "Set GTEST_INCLUDE_DIRS to ${GTEST_INCLUDE_DIRS}.")
+    set_cache_variable(GTEST_FOUND "Set if libgtest was found or built")
+    set_cache_variable(GTEST_LIBRARIES "Location of libgtest")
+    set_cache_variable(GTEST_MAIN_LIBRARIES "Location of libgtest-main")
+    set_cache_variable(GTEST_BOTH_LIBRARIES "Location of both gtest libraries")
+    set_cache_variable(GTEST_INCLUDE_DIRS "Location of gtest include files")
 endif()
