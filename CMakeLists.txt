@@ -36,9 +36,9 @@ set(CPR_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/include CACHE INTERNAL "")
 
 macro(cpr_option OPTION_NAME OPTION_TEXT OPTION_DEFAULT)
     option(${OPTION_NAME} ${OPTION_TEXT} ${OPTION_DEFAULT})
-    if(DEFINED ENV{OPTION_NAME})
+    if(DEFINED ENV{${OPTION_NAME}})
         # Allow setting the option through an environment variable
-        set(OPTION_NAME $ENV{OPTION_NAME})
+        set(${OPTION_NAME} $ENV{${OPTION_NAME}})
     endif()
 endmacro()
 
