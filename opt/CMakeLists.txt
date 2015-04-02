@@ -3,6 +3,19 @@ macro(set_cache_variable VAR_NAME VAR_DESCRIPTION)
     message(STATUS "Set ${VAR_NAME} to ${${VAR_NAME}}.")
 endmacro()
 
+
+# CMake modules
+
+set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake-modules)
+
+
+# Code coverage
+
+if(BUILD_CPR_TESTS)
+    include(CodeCoverage)
+endif()
+
+
 # Curl configuration
 
 if(USE_SYSTEM_CURL)
