@@ -49,14 +49,3 @@ size_t cpr::util::writeFunction(void *ptr, size_t size, size_t nmemb, std::strin
     data->append((char*) ptr, size * nmemb);
     return size * nmemb;
 }
-
-void cpr::util::freeHolder(CurlHolder* holder) {
-    curl_easy_cleanup(holder->handle);
-    curl_slist_free_all(holder->chunk);
-}
-
-CurlHolder* cpr::util::newHolder() {
-    CurlHolder* holder = new CurlHolder();
-    holder->handle = curl_easy_init();
-    return holder;
-}
