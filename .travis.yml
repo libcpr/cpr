@@ -26,7 +26,7 @@ before_install:
 install:
   - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
   - sudo apt-get update
-  - sudo apt-get install g++-4.8
+  - sudo apt-get install g++-4.8 -y --force-yes
   - if [ "CXX" == "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
   - if [ "$USE_SYSTEM_CURL" == "OFF" ]; then sudo apt-get remove curl libcurl3; fi
   - if [ "$USE_SYSTEM_CMAKE" == "OFF" ]; then sudo apt-get remove cmake && wget http://www.cmake.org/files/v3.2/cmake-3.2.1.tar.gz && tar -xzf cmake-3.2.1.tar.gz && cd cmake-3.2.1 && ./bootstrap > /dev/null && make -j8 > /dev/null && sudo make install && cd .. && rm -rf cmake-3.2.1 cmake-3.2.1.tar.gz; else sudo apt-get install -y cmake; fi
