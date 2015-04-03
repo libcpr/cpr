@@ -13,10 +13,11 @@ env:
     - USE_SYSTEM_CURL=OFF USE_SYSTEM_CMAKE=OFF
     - USE_SYSTEM_CURL=ON USE_SYSTEM_CMAKE=OFF
     - USE_SYSTEM_CURL=OFF USE_SYSTEM_CMAKE=OFF GENERATE_COVERAGE=ON
-    exclude:
-      - compiler: clang
-      - env: USE_SYSTEM_CURL=OFF USE_SYSTEM_CMAKE=OFF GENERATE_COVERAGE=ON
 
+matrix:
+  exclude:
+    - compiler: clang
+      env: GENERATE_COVERAGE=ON
 
 sudo: required
 
