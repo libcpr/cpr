@@ -39,4 +39,4 @@ before_script:
 
 script:
   - make
-  - if [ "$GENERATE_COVERAGE" == "ON" ]; then make cpr_coverage && coveralls -i $TRAVIS_BUILD_DIR -e $TRAVIS_BUILD_DIR/CMakeFiles -e $TRAVIS_BUILD_DIR/opt; else ctest -V; fi
+  - if [ "$GENERATE_COVERAGE" == "ON" ]; then make cpr_coverage && coveralls -i $TRAVIS_BUILD_DIR -e $TRAVIS_BUILD_DIR/CMakeFiles -e $TRAVIS_BUILD_DIR/opt -e $TRAVIS_BUILD_DIR/opt/googletest; else ctest -V; fi
