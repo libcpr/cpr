@@ -1,7 +1,7 @@
 #include "server.h"
 
+#include <mutex>
 #include <thread>
-#include <iostream>
 
 #include "mongoose.h"
 
