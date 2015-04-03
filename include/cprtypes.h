@@ -5,8 +5,6 @@
 #include <map>
 #include <string>
 
-#include <curl/curl.h>
-
 
 typedef struct {
     bool operator()(const std::string& a, const std::string& b) const
@@ -29,10 +27,5 @@ typedef std::map<std::string, std::string, case_insensitive_compare> Header;
 typedef std::string Url;
 typedef std::map<std::string, std::string> Payload;
 typedef long Timeout;
-
-typedef struct {
-    CURL* handle;
-    struct curl_slist* chunk;
-} CurlHolder;
 
 #endif
