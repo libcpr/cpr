@@ -22,6 +22,7 @@ sudo: required
 
 before_install:
   - sudo apt-get update
+  - if [ "$GENERATE_COVERAGE" == "ON" ]; then sudo pip install cpp-coveralls; fi
 
 install:
   - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
@@ -34,10 +35,8 @@ install:
 
 before_script:
   - cmake --version
-  - mkdir build
-  - cd build
-  - if [ "$GENERATE_COVERAGE" == "ON" ]; then cmake -DCMAKE_BUILD_TYPE=COVERAGE -LAH ..; else cmake -LAH ..; fi
+  - if [ "$GENERATE_COVERAGE" == "ON" ]; then cmake -DCMAKE_BUILD_TYPE=COVERAGE -LAH .; else cmake -LAH .; fi
 
 script:
   - make
-  - if [ "$GENERATE_COVERAGE" == "ON" ]; then make cpr_coverage; else ctest -V; fi
+  - if [ "$GENERATE_COVERAGE" == "ON" ]; then make cpr_coverage && coveralls -i $TRAVIS_BUILD_DIR -e $TRAVIS_BUILD_DIR/opt --no-gcov; else ctest -V; fi
