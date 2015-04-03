@@ -4,21 +4,21 @@
 
 
 Response cpr::Get(Url url, Timeout timeout) {
-    auto session = Session();
+    Session session;
     session.SetUrl(url);
     session.SetTimeout(timeout);
     return session.Get();
 }
 
 Response cpr::Get(Url url, Parameters parameters, Timeout timeout) {
-    auto session = Session();
+    Session session;
     session.SetUrl(url, parameters);
     session.SetTimeout(timeout);
     return session.Get();
 }
 
 Response cpr::Get(Url url, Authentication auth, Timeout timeout) {
-    auto session = Session();
+    Session session;
     session.SetUrl(url);
     session.SetTimeout(timeout);
     session.SetAuth(auth);
@@ -26,7 +26,7 @@ Response cpr::Get(Url url, Authentication auth, Timeout timeout) {
 }
 
 Response cpr::Get(Url url, Header header, Timeout timeout) {
-    auto session = Session();
+    Session session;
     session.SetUrl(url);
     session.SetHeader(header);
     session.SetTimeout(timeout);
@@ -34,7 +34,7 @@ Response cpr::Get(Url url, Header header, Timeout timeout) {
 }
 
 Response cpr::Get(Url url, Parameters parameters, Authentication auth, Timeout timeout) {
-    auto session = Session();
+    Session session;
     session.SetUrl(url, parameters);
     session.SetTimeout(timeout);
     session.SetAuth(auth);
@@ -42,7 +42,7 @@ Response cpr::Get(Url url, Parameters parameters, Authentication auth, Timeout t
 }
 
 Response cpr::Get(Url url, Parameters parameters, Header header, Timeout timeout) {
-    auto session = Session();
+    Session session;
     session.SetUrl(url, parameters);
     session.SetHeader(header);
     session.SetTimeout(timeout);
@@ -54,7 +54,7 @@ Response cpr::Get(Url url, Authentication auth, Parameters parameters, Timeout t
 }
 
 Response cpr::Get(Url url, Authentication auth, Header header, Timeout timeout) {
-    auto session = Session();
+    Session session;
     session.SetUrl(url);
     session.SetHeader(header);
     session.SetTimeout(timeout);
@@ -72,7 +72,7 @@ Response cpr::Get(Url url, Header header, Authentication auth, Timeout timeout) 
 
 Response cpr::Get(Url url, Parameters parameters, Authentication auth, Header header,
                   Timeout timeout) {
-    auto session = Session();
+    Session session;
     session.SetUrl(url, parameters);
     session.SetHeader(header);
     session.SetTimeout(timeout);
@@ -106,7 +106,7 @@ Response cpr::Get(Url url, Header header, Authentication auth, Parameters parame
 }
 
 Response cpr::Post(Url url, Payload payload, Timeout timeout) {
-    auto session = Session();
+    Session session;
     session.SetUrl(url);
     session.SetPayload(payload);
     session.SetTimeout(timeout);

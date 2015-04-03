@@ -1,10 +1,39 @@
 #include "session.h"
 
+#include <functional>
+
+#include <curl/curl.h>
+
+#include "curlholder.h"
 #include "util.h"
 
 
-Session::Session() {
-    curl_ = {cpr::util::newHolder(), &cpr::util::freeHolder};
+class Session::Impl {
+  public:
+    Impl();
+
+    void SetUrl(Url url);
+    void SetUrl(Url url, Parameters parameters);
+    void SetHeader(Header header);
+    void SetTimeout(Timeout timeout);
+    void SetAuth(Authentication auth);
+    void SetPayload(Payload payload);
+    void SetRedirect(bool redirect);
+    // void SetCookie(); Unimplemented
+    // void SetCookies(); Unimplemented
+
+    Response Get();
+    Response Post();
+
+  private:
+    std::unique_ptr<CurlHolder, std::function<void(CurlHolder*)>> curl_;
+
+    static void freeHolder(CurlHolder* holder);
+    static CurlHolder* newHolder();
+};
+
+Session::Impl::Impl() {
+    curl_ = std::unique_ptr<CurlHolder, std::function<void(CurlHolder*)>>(newHolder(), &Impl::freeHolder);
     auto curl = curl_->handle;
     if (curl) {
         // Set up some sensible defaults
@@ -24,14 +53,25 @@ Session::Session() {
     }
 }
 
-void Session::SetUrl(Url url) {
+void Session::Impl::freeHolder(CurlHolder* holder) {
+    curl_easy_cleanup(holder->handle);
+    curl_slist_free_all(holder->chunk);
+}
+
+CurlHolder* Session::Impl::newHolder() {
+    CurlHolder* holder = new CurlHolder();
+    holder->handle = curl_easy_init();
+    return holder;
+}
+
+void Session::Impl::SetUrl(Url url) {
     auto curl = curl_->handle;
     if (curl) {
         curl_easy_setopt(curl, CURLOPT_URL, url.data());
     }
 }
 
-void Session::SetUrl(Url url, Parameters parameters) {
+void Session::Impl::SetUrl(Url url, Parameters parameters) {
     auto curl = curl_->handle;
     if (curl) {
         Url new_url{url + "?"};
@@ -43,7 +83,7 @@ void Session::SetUrl(Url url, Parameters parameters) {
     }
 }
 
-void Session::SetHeader(Header header) {
+void Session::Impl::SetHeader(Header header) {
     auto curl = curl_->handle;
     if (curl) {
         struct curl_slist* chunk = NULL;
@@ -61,21 +101,21 @@ void Session::SetHeader(Header header) {
     }
 }
 
-void Session::SetTimeout(long timeout) {
+void Session::Impl::SetTimeout(long timeout) {
     auto curl = curl_->handle;
     if (curl) {
         curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT_MS, timeout);
     }
 }
 
-void Session::SetAuth(Authentication auth) {
+void Session::Impl::SetAuth(Authentication auth) {
     auto curl = curl_->handle;
     if (curl) {
         curl_easy_setopt(curl, CURLOPT_USERPWD, auth.GetAuthString());
     }
 }
 
-void Session::SetPayload(Payload payload) {
+void Session::Impl::SetPayload(Payload payload) {
     auto curl = curl_->handle;
     if (curl) {
         struct curl_slist* chunk = NULL;
@@ -91,14 +131,14 @@ void Session::SetPayload(Payload payload) {
     }
 }
 
-void Session::SetRedirect(bool redirect) {
+void Session::Impl::SetRedirect(bool redirect) {
     auto curl = curl_->handle;
     if (curl) {
         curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, long(redirect));
     }
 }
 
-Response Session::Get() {
+Response Session::Impl::Get() {
     auto curl = curl_->handle;
     CURLcode res;
 
@@ -133,7 +173,7 @@ Response Session::Get() {
     return Response{0, "Curl could not start", Header{}, Url{}, 0.0};
 }
 
-Response Session::Post() {
+Response Session::Impl::Post() {
     auto curl = curl_->handle;
     CURLcode res;
 
@@ -167,3 +207,17 @@ Response Session::Post() {
 
     return Response{0, "Curl could not start", Header{}, Url{}, 0.0};
 }
+
+Session::Session() : pimpl_{ new Impl{} } {}
+Session::~Session() {}
+void Session::SetUrl(Url url) { pimpl_->SetUrl(url); }
+void Session::SetUrl(Url url, Parameters parameters) { pimpl_->SetUrl(url, parameters); }
+void Session::SetHeader(Header header) { pimpl_->SetHeader(header); }
+void Session::SetTimeout(Timeout timeout) { pimpl_->SetTimeout(timeout); }
+void Session::SetAuth(Authentication auth) { pimpl_->SetAuth(auth); }
+void Session::SetPayload(Payload payload) { pimpl_->SetPayload(payload); }
+void Session::SetRedirect(bool redirect) { pimpl_->SetRedirect(redirect); }
+// void SetCookie(); Unimplemented
+// void SetCookies(); Unimplemented
+Response Session::Get() { return pimpl_->Get(); }
+Response Session::Post() { return pimpl_->Post(); }

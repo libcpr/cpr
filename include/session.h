@@ -1,10 +1,7 @@
 #ifndef CPR_SESSION_H
 #define CPR_SESSION_H
 
-#include <functional>
 #include <memory>
-
-#include <curl/curl.h>
 
 #include "auth.h"
 #include "cprtypes.h"
@@ -14,6 +11,7 @@
 class Session {
   public:
     Session();
+    ~Session();
 
     void SetUrl(Url url);
     void SetUrl(Url url, Parameters parameters);
@@ -29,7 +27,8 @@ class Session {
     Response Post();
 
   private:
-    std::unique_ptr<CurlHolder, std::function<void(CurlHolder*)>> curl_;
+    class Impl;
+    std::unique_ptr<Impl> pimpl_;
 };
 
 #endif

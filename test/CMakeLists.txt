@@ -1,7 +1,6 @@
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CPR_INCLUDE_DIRS}
-    ${CURL_INCLUDE_DIRS}
     ${GTEST_INCLUDE_DIRS}
     ${MONGOOSE_INCLUDE_DIRS})
 
