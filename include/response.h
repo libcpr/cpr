@@ -1,5 +1,5 @@
-#ifndef _CPR_RESPONSE_H_
-#define _CPR_RESPONSE_H_
+#ifndef CPR_RESPONSE_H
+#define CPR_RESPONSE_H
 
 #include <string>
 

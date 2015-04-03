@@ -1,5 +1,5 @@
-#ifndef _CPR_TYPES_H_
-#define _CPR_TYPES_H_
+#ifndef CPR_TYPES_H
+#define CPR_TYPES_H
 
 #include <algorithm>
 #include <map>

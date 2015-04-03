@@ -1,5 +1,5 @@
-#ifndef _CPR_AUTH_H_
-#define _CPR_AUTH_H_
+#ifndef CPR_AUTH_H
+#define CPR_AUTH_H
 
 #include <string>
 

@@ -1,5 +1,5 @@
-#ifndef _CPR_API_H_
-#define _CPR_API_H_
+#ifndef CPR_API_H
+#define CPR_API_H
 
 #include <string>
 

@@ -1,5 +1,5 @@
-#ifndef _CPR_UTIL_H_
-#define _CPR_UTIL_H_
+#ifndef CPR_UTIL_H
+#define CPR_UTIL_H
 
 #include <curl/curl.h>
 

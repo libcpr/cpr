@@ -1,5 +1,5 @@
-#ifndef _CPR_H_
-#define _CPR_H_
+#ifndef CPR_H
+#define CPR_H
 
 #include "api.h"
 #include "auth.h"

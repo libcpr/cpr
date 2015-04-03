@@ -1,5 +1,5 @@
-#ifndef _CPR_TEST_SERVER_H_
-#define _CPR_TEST_SERVER_H_
+#ifndef CPR_TEST_SERVER_H
+#define CPR_TEST_SERVER_H
 
 #include <string>
 

@@ -1,5 +1,5 @@
-#ifndef _CPR_SESSION_H_
-#define _CPR_SESSION_H_
+#ifndef CPR_SESSION_H
+#define CPR_SESSION_H
 
 #include <functional>
 #include <memory>
