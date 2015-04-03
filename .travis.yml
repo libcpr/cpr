@@ -35,4 +35,4 @@ before_script:
 
 script:
   - make
-  - ctest -V
+  - if [ "$GENERATE_COVERAGE" == "ON" ]; then make cpr_coverage; else ctest -V; fi

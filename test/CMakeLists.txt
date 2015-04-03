@@ -14,5 +14,7 @@ target_link_libraries(get_tests
 
 add_test(NAME cpr_tests COMMAND get_tests)
 
-setup_target_for_coverage(${PROJECT_NAME}_coverage get_tests coverage ""
-    "'gtest/*';'googletest/*';'mongoose/*'")
+if(GENERATE_COVERAGE)
+    setup_target_for_coverage(${PROJECT_NAME}_coverage get_tests coverage ""
+        "'gtest/*';'googletest/*';'mongoose/*'")
+endif()
