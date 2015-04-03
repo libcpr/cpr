@@ -2,5 +2,5 @@
 
 
 const char* Authentication::GetAuthString() const {
-    return std::string{username_ + ":" + password_}.data();
+    return auth_string_.data();
 }

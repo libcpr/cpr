@@ -111,6 +111,7 @@ void Session::Impl::SetTimeout(long timeout) {
 void Session::Impl::SetAuth(Authentication auth) {
     auto curl = curl_->handle;
     if (curl) {
+        curl_easy_setopt(curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
         curl_easy_setopt(curl, CURLOPT_USERPWD, auth.GetAuthString());
     }
 }
