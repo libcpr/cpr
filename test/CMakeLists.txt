@@ -17,5 +17,5 @@ add_test(NAME cpr_tests COMMAND get_tests)
 
 if(GENERATE_COVERAGE)
     setup_target_for_coverage(${PROJECT_NAME}_coverage get_tests coverage ""
-        "'gtest/*';'googletest/*';'mongoose/*'")
+        "'gtest/*';'googletest/*';'mongoose/*';'curl/*'")
 endif()
