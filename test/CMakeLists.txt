@@ -20,10 +20,14 @@ target_link_libraries(post_tests
     ${CPR_LIBRARIES}
     ${MONGOOSE_LIBRARIES})
 
-add_test(NAME get_api_tests COMMAND get_tests)
-add_test(NAME post_api_tests COMMAND post_tests)
+add_executable(session_tests
+    session_tests.cpp server.cpp)
 
-if(GENERATE_COVERAGE)
-    #    setup_target_for_coverage(${PROJECT_NAME}_coverage ctest coverage -V 
-    #    "'gtest/*';'googletest/*';'mongoose/*';'curl/*';'test/*'")
-endif()
+target_link_libraries(session_tests
+    ${GTEST_LIBRARIES}
+    ${CPR_LIBRARIES}
+    ${MONGOOSE_LIBRARIES})
+
+add_test(NAME cpr_get_tests COMMAND get_tests)
+add_test(NAME cpr_post_tests COMMAND post_tests)
+add_test(NAME cpr_session_tests COMMAND session_tests)

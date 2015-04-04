@@ -93,6 +93,22 @@ static int headerReflect(struct mg_connection* conn) {
     return MG_TRUE;
 }
 
+static int temporaryRedirect(struct mg_connection* conn) {
+    auto response = std::string{"Found"};
+    mg_send_status(conn, 302);
+    mg_send_header(conn, "Location", "hello.html");
+    mg_send_data(conn, response.data(), response.length()); 
+    return MG_TRUE;
+}
+
+static int permanentRedirect(struct mg_connection* conn) {
+    auto response = std::string{"Moved Permanently"};
+    mg_send_status(conn, 301);
+    mg_send_header(conn, "Location", "hello.html");
+    mg_send_data(conn, response.data(), response.length()); 
+    return MG_TRUE;
+}
+
 static int evHandler(struct mg_connection* conn, enum mg_event ev) {
     switch (ev) {
         case MG_AUTH:
@@ -109,6 +125,10 @@ static int evHandler(struct mg_connection* conn, enum mg_event ev) {
                 return basicJson(conn);
             } else if (Url{conn->uri} == "/header_reflect.html") {
                 return headerReflect(conn);
+            } else if (Url{conn->uri} == "/temporary_redirect.html") {
+                return temporaryRedirect(conn);
+            } else if (Url{conn->uri} == "/permanent_redirect.html") {
+                return permanentRedirect(conn);
             }
             return MG_FALSE;
         default:
