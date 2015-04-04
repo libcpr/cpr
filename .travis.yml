@@ -38,7 +38,7 @@ before_script:
   - if [ "$GENERATE_COVERAGE" == "ON" ]; then cmake -DCMAKE_BUILD_TYPE=COVERAGE -LAH .; else cmake -LAH .; fi
 
 script:
-  - make
+  - make VERBOSE=1
   - ctest -V
     
 after_success:
