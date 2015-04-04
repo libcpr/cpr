@@ -142,6 +142,7 @@ void Session::Impl::SetRedirect(bool redirect) {
 Response Session::Impl::Get() {
     auto curl = curl_->handle;
     CURLcode res;
+    Response response{0, "Curl could not start", Header{}, Url{}, 0.0};
 
     if (curl) {
         curl_easy_setopt(curl, CURLOPT_HTTPGET, 1L);
@@ -167,16 +168,16 @@ Response Session::Impl::Get() {
         curl_easy_getinfo(curl, CURLINFO_EFFECTIVE_URL, &raw_url);
         auto header = cpr::util::parseHeader(header_string);
         response_string = cpr::util::parseResponse(response_string);
-        Response response{response_code, response_string, header, raw_url, elapsed};
-        return response;
+        response = {response_code, response_string, header, raw_url, elapsed};
     }
 
-    return Response{0, "Curl could not start", Header{}, Url{}, 0.0};
+    return response;
 }
 
 Response Session::Impl::Post() {
     auto curl = curl_->handle;
     CURLcode res;
+    Response response{0, "Curl could not start", Header{}, Url{}, 0.0};
 
     if (curl) {
         curl_easy_setopt(curl, CURLOPT_HTTPGET, 0L);
@@ -202,11 +203,10 @@ Response Session::Impl::Post() {
         curl_easy_getinfo(curl, CURLINFO_EFFECTIVE_URL, &raw_url);
         auto header = cpr::util::parseHeader(header_string);
         response_string = cpr::util::parseResponse(response_string);
-        Response response{response_code, response_string, header, raw_url, elapsed};
-        return response;
+        response = {response_code, response_string, header, raw_url, elapsed};
     }
 
-    return Response{0, "Curl could not start", Header{}, Url{}, 0.0};
+    return response;
 }
 
 Session::Session() : pimpl_{ new Impl{} } {}
