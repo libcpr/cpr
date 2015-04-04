@@ -15,19 +15,19 @@ Header cpr::util::parseHeader(std::string headers) {
         }
     }
 
-    for (auto line = lines.begin(); line != lines.end(); ++line) {
-        if (line->substr(0, 5) == "HTTP/") {
+    for (auto& line : lines) {
+        if (line.substr(0, 5) == "HTTP/") {
             header.clear();
         }
         
-        if (line->length() > 0) {
-            auto found = line->find(":");
+        if (line.length() > 0) {
+            auto found = line.find(":");
             if (found != std::string::npos) {
-                auto value = line->substr(found + 2, line->length() - 1);
+                auto value = line.substr(found + 2, line.length() - 1);
                 if (value.back() == '\r') {
                     value = value.substr(0, value.length() - 1);
                 }
-                header[line->substr(0, found)] = value;
+                header[line.substr(0, found)] = value;
             }
         }
     }
