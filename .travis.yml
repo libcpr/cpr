@@ -35,11 +35,13 @@ install:
 
 before_script:
   - cmake --version
-  - if [ "$GENERATE_COVERAGE" == "ON" ]; then cmake -DCMAKE_BUILD_TYPE=COVERAGE -LAH .; else cmake -LAH .; fi
+  - mkdir build
+  - cd build
+  - if [ "$GENERATE_COVERAGE" == "ON" ]; then cmake -LAH ..; fi
 
 script:
   - make VERBOSE=1
   - ctest -V
     
 after_success:
-    - if [ "$GENERATE_COVERAGE" == "ON" ]; then coveralls --gcov /usr/bin/gcov-4.8 -i $TRAVIS_BUILD_DIR -e $TRAVIS_BUILD_DIR/CMakeFiles -e $TRAVIS_BUILD_DIR/opt -e $TRAVIS_BUILD_DIR/test -E .*googletest.*\.h; fi
+  - if [ "$GENERATE_COVERAGE" == "ON" ]; then coveralls --gcov /usr/bin/gcov-4.8 -i '$TRAVIS_BUILD_DIR/cpr' -i '$TRAVIS_BUILD_DIR/include' -r ../ --verbose; fi
