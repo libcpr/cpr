@@ -44,4 +44,4 @@ script:
   - ctest -V
     
 after_success:
-  - if [ "$GENERATE_COVERAGE" == "ON" ]; then coveralls --gcov /usr/bin/gcov-4.8 -i '$TRAVIS_BUILD_DIR/cpr' -i '$TRAVIS_BUILD_DIR/include' -r ../ --verbose; fi
+  - if [ "$GENERATE_COVERAGE" == "ON" ]; then coveralls --gcov /usr/bin/gcov-4.8 -i '/home/travis/build/whoshuu/cpr/cpr' -i '/home/travis/build/whoshuu/cpr/include' -r ../ --verbose; fi
