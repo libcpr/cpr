@@ -12,9 +12,3 @@ add_library(${CPR_LIBRARIES}
 message(STATUS "Using CURL_LIBRARIES: ${CURL_LIBRARIES}.")
 target_link_libraries(${CPR_LIBRARIES}
     ${CURL_LIBRARIES})
-
-add_executable(cprmain
-    main.cpp)
-
-target_link_libraries(cprmain
-    ${CPR_LIBRARIES})
