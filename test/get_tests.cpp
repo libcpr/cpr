@@ -22,16 +22,6 @@ TEST(GetTests, HelloWorldTest) {
     EXPECT_EQ(200, response.status_code);
 }
 
-TEST(GetTests, HelloWorldTimeoutTest) {
-    auto url = Url{base + "/hello.html"};
-    auto response = cpr::Get(url, 1L);
-    auto expected_text = std::string{"Hello world!"};
-    EXPECT_EQ(expected_text, response.text);
-    EXPECT_EQ(url, response.url);
-    EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
-    EXPECT_EQ(200, response.status_code);
-}
-
 TEST(GetTests, SingleParameterTest) {
     auto url = Url{base + "/hello.html"};
     auto response = cpr::Get(url, Parameters{{"key", "value"}});
