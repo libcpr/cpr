@@ -42,4 +42,4 @@ script:
   - ctest -V
     
 after_success:
-  - if [ "$GENERATE_COVERAGE" == "ON" ]; then coveralls -i $TRAVIS_BUILD_DIR -e $TRAVIS_BUILD_DIR/CMakeFiles -e $TRAVIS_BUILD_DIR/opt -E .*googletest.*\.h; fi
+    - if [ "$GENERATE_COVERAGE" == "ON" ]; then coveralls -i $TRAVIS_BUILD_DIR -e $TRAVIS_BUILD_DIR/CMakeFiles -e $TRAVIS_BUILD_DIR/opt -e $TRAVIS_BUILD_DIR/test -E .*googletest.*\.h; fi
