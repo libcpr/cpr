@@ -6,6 +6,7 @@ include_directories(
 add_library(${CPR_LIBRARIES}
     api.cpp
     auth.cpp
+    cprtypes.cpp
     session.cpp
     util.cpp)
 

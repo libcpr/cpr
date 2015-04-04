@@ -1,29 +1,21 @@
 #ifndef CPR_TYPES_H
 #define CPR_TYPES_H
 
-#include <algorithm>
 #include <map>
 #include <string>
 
 
-typedef struct {
-    bool operator()(const std::string& a, const std::string& b) const
-        { return to_lower(a) < to_lower(b); }
+class CaseInsenstiveCompare {
+  public:
+    bool operator()(const std::string& a, const std::string& b) const;
 
-    static void char_to_lower(char& c) {
-        if (c >= 'A' && c <= 'Z')
-        c += ('a' - 'A');
-    }
-
-    static std::string to_lower(const std::string& a) {
-        std::string s(a);
-        std::for_each(s.begin(), s.end(), char_to_lower);
-        return s;
-    }
-} case_insensitive_compare;
+  private:
+    static void char_to_lower(char& c);
+    static std::string to_lower(const std::string& a);
+};
 
 typedef std::map<std::string, std::string> Parameters;
-typedef std::map<std::string, std::string, case_insensitive_compare> Header;
+typedef std::map<std::string, std::string, CaseInsenstiveCompare> Header;
 typedef std::string Url;
 typedef std::map<std::string, std::string> Payload;
 typedef long Timeout;
