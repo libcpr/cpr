@@ -37,7 +37,7 @@ before_script:
   - cmake --version
   - mkdir build
   - cd build
-  - if [ "$GENERATE_COVERAGE" == "ON" ]; then cmake -LAH ..; fi
+  - cmake -LAH ..
 
 script:
   - make VERBOSE=1
