@@ -7,6 +7,3 @@
 [submodule "opt/mongoose"]
 	path = opt/mongoose
 	url = git://github.com/whoshuu/mongoose.git
-[submodule "opt/cmake-modules"]
-	path = opt/cmake-modules
-	url = git://github.com/whoshuu/cmake-modules.git
