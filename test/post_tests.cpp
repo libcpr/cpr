@@ -10,7 +10,7 @@
 static Server* server = new Server();
 auto base = server->GetBaseUrl();
 
-TEST(PostTests, PostSingleTest) {
+TEST(BasicTests, PostSingleTest) {
     auto url = Url{base + "/hello.html"};
     auto response = cpr::Post(url, Payload{{"hello", "world"}});
     auto expected_text = std::string{"Hello world!"};
@@ -20,7 +20,7 @@ TEST(PostTests, PostSingleTest) {
     EXPECT_EQ(200, response.status_code);
 }
 
-TEST(PostTests, PostManyTest) {
+TEST(BasicTests, PostManyTest) {
     auto url = Url{base + "/hello.html"};
     auto response = cpr::Post(url, Payload{{"hello", "world"}, {"more", "values"}});
     auto expected_text = std::string{"Hello world!"};
@@ -30,7 +30,7 @@ TEST(PostTests, PostManyTest) {
     EXPECT_EQ(200, response.status_code);
 }
 
-TEST(PostTests, PostBadHostTest) {
+TEST(BasicTests, PostBadHostTest) {
     auto url = Url{"http://bad_host/"};
     auto response = cpr::Post(url, Payload{{"hello", "world"}});
     EXPECT_EQ(std::string{}, response.text);

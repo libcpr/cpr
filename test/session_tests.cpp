@@ -10,7 +10,7 @@
 static Server* server = new Server();
 auto base = server->GetBaseUrl();
 
-TEST(SessionTests, TemporaryDefaultRedirectTest) {
+TEST(RedirectTests, TemporaryDefaultRedirectTest) {
     auto url = Url{base + "/temporary_redirect.html"};
     Session session;
     session.SetUrl(url);
@@ -22,7 +22,7 @@ TEST(SessionTests, TemporaryDefaultRedirectTest) {
     EXPECT_EQ(200, response.status_code);
 }
 
-TEST(SessionTests, NoTemporaryRedirectTest) {
+TEST(RedirectTests, NoTemporaryRedirectTest) {
     auto url = Url{base + "/temporary_redirect.html"};
     Session session;
     session.SetUrl(url);
@@ -35,7 +35,7 @@ TEST(SessionTests, NoTemporaryRedirectTest) {
     EXPECT_EQ(302, response.status_code);
 }
 
-TEST(SessionTests, PermanentDefaultRedirectTest) {
+TEST(RedirectTests, PermanentDefaultRedirectTest) {
     auto url = Url{base + "/permanent_redirect.html"};
     Session session;
     session.SetUrl(url);
@@ -47,7 +47,7 @@ TEST(SessionTests, PermanentDefaultRedirectTest) {
     EXPECT_EQ(200, response.status_code);
 }
 
-TEST(SessionTests, NoPermanentRedirectTest) {
+TEST(RedirectTests, NoPermanentRedirectTest) {
     auto url = Url{base + "/permanent_redirect.html"};
     Session session;
     session.SetUrl(url);
