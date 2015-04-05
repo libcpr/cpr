@@ -7,8 +7,8 @@
 #include "server.h"
 
 
-static Server* server;
-auto base = Url{"http://127.0.0.1:8080"};
+static Server* server = new Server();
+auto base = server->GetBaseUrl();
 
 TEST(PostTests, PostSingleTest) {
     auto url = Url{base + "/hello.html"};
@@ -40,7 +40,6 @@ TEST(PostTests, PostBadHostTest) {
 }
 
 int main(int argc, char** argv) {
-    server = new Server();
     ::testing::InitGoogleTest(&argc, argv);
     ::testing::AddGlobalTestEnvironment(server);
     return RUN_ALL_TESTS();

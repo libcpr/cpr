@@ -7,8 +7,8 @@
 #include "server.h"
 
 
-static Server* server;
-auto base = Url{"http://127.0.0.1:8080"};
+static Server* server = new Server();
+auto base = server->GetBaseUrl();
 
 TEST(SessionTests, TemporaryDefaultRedirectTest) {
     auto url = Url{base + "/temporary_redirect.html"};
@@ -61,7 +61,6 @@ TEST(SessionTests, NoPermanentRedirectTest) {
 }
 
 int main(int argc, char** argv) {
-    server = new Server();
     ::testing::InitGoogleTest(&argc, argv);
     ::testing::AddGlobalTestEnvironment(server);
     return RUN_ALL_TESTS();
