@@ -5,11 +5,15 @@
 
 #include <gtest/gtest.h>
 
+#include <cpr.h>
+
 
 class Server: public ::testing::Environment {
   public:
     virtual void SetUp();
     virtual void TearDown();
+
+    Url GetBaseUrl();
 };
 
 #endif

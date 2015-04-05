@@ -5,7 +5,7 @@
 
 #include "mongoose.h"
 
-#include "cprtypes.h"
+#define SERVER_PORT "8080"
 
 
 std::mutex shutdown_mutex;
@@ -138,7 +138,7 @@ static int evHandler(struct mg_connection* conn, enum mg_event ev) {
 
 void runServer(struct mg_server* server) {
     server_mutex.lock();
-    mg_set_option(server, "listening_port", "8080");
+    mg_set_option(server, "listening_port", SERVER_PORT);
     while (true) {
         if (!shutdown_mutex.try_lock()) {
             mg_poll_server(server, 1000);
@@ -161,6 +161,10 @@ void Server::TearDown() {
     shutdown_mutex.unlock();
     server_mutex.lock();
     server_mutex.unlock();
+}
+
+Url Server::GetBaseUrl() {
+    return Url{"http://127.0.0.1:"}.append(SERVER_PORT);
 }
 
 static inline bool is_base64(unsigned char c) {
