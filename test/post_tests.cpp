@@ -1,7 +1,5 @@
 #include <gtest/gtest.h>
 
-#include <cstdlib>
-#include <iostream>
 #include <string>
 
 #include <cpr.h>
