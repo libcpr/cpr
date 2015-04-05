@@ -79,13 +79,11 @@ static int headerReflect(struct mg_connection* conn) {
     mg_send_header(conn, "content-type", "text/html");
     auto num_headers = conn->num_headers;
     auto headers = conn->http_headers;
-    std::cout << "There are " << num_headers << " headers" << std::endl;
     for (int i = 0; i < num_headers; ++i) {
         auto name = headers[i].name;
         if (std::string{"User-Agent"} != name &&
                 std::string{"Host"} != name &&
                 std::string{"Accept"} != name) {
-            std::cout << name << ": " << headers[i].value << std::endl;
             mg_send_header(conn, name, headers[i].value);
         }
     }
