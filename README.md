@@ -44,7 +44,7 @@ cmake -DUSE_SYSTEM_CURL=ON ..
 make
 ```
 
-A successful build should produce a single library archive that you can link against your project. You should also make the include directory visible to your build as well so that you can include `cpr.h`.
+A successful build should produce a single library archive that you can link against your project. You should also make the include directory visible to your build as well so that you can include [cpr.h](https://github.com/whoshuu/cpr/blob/master/include/cpr.h).
 
 ### Features
 
@@ -60,12 +60,12 @@ C++ Requests currently supports:
 
 Support for the following will be forthcoming (in rough order of implementation priority):
 
-* Multipart form POST upload
-* File POST upload
-* :cookie: support!
-* Digest authentication
-* Asynchronous requests
-* Proxy support
+* [Multipart form POST upload](https://github.com/whoshuu/cpr/issues/1)
+* [File POST upload](https://github.com/whoshuu/cpr/issues/17)
+* [:cookie: support!](https://github.com/whoshuu/cpr/issues/2)
+* [Digest authentication](https://github.com/whoshuu/cpr/issues/3)
+* [Asynchronous requests](https://github.com/whoshuu/cpr/issues/6)
+* [Proxy support](https://github.com/whoshuu/cpr/issues/5)
 
 and much more!
 
