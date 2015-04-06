@@ -20,6 +20,7 @@ class Session {
     void SetAuth(Authentication auth);
     void SetPayload(Payload payload);
     void SetRedirect(bool redirect);
+    void SetMaxRedirects(long max_redirects);
     // void SetCookie(); Unimplemented
     // void SetCookies(); Unimplemented
 

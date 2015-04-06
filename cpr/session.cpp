@@ -19,6 +19,7 @@ class Session::Impl {
     void SetAuth(Authentication auth);
     void SetPayload(Payload payload);
     void SetRedirect(bool redirect);
+    void SetMaxRedirects(long max_redirects);
     // void SetCookie(); Unimplemented
     // void SetCookies(); Unimplemented
 
@@ -140,6 +141,13 @@ void Session::Impl::SetRedirect(bool redirect) {
     }
 }
 
+void Session::Impl::SetMaxRedirects(long max_redirects) {
+    auto curl = curl_->handle;
+    if (curl) {
+        curl_easy_setopt(curl, CURLOPT_MAXREDIRS, max_redirects);
+    }
+}
+
 Response Session::Impl::Get() {
     auto curl = curl_->handle;
     CURLcode res;
@@ -209,6 +217,7 @@ void Session::SetTimeout(Timeout timeout) { pimpl_->SetTimeout(timeout); }
 void Session::SetAuth(Authentication auth) { pimpl_->SetAuth(auth); }
 void Session::SetPayload(Payload payload) { pimpl_->SetPayload(payload); }
 void Session::SetRedirect(bool redirect) { pimpl_->SetRedirect(redirect); }
+void Session::SetMaxRedirects(long max_redirects) { pimpl_->SetMaxRedirects(max_redirects); }
 // void SetCookie(); Unimplemented
 // void SetCookies(); Unimplemented
 Response Session::Get() { return pimpl_->Get(); }
