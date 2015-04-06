@@ -81,7 +81,6 @@ TEST(BasicAuthenticationTests, BasicAuthenticationSuccessTest) {
     auto response = cpr::Get(url, Authentication{"user", "password"});
     auto expected_text = std::string{"Header reflect"};
     EXPECT_EQ(expected_text, response.text);
-    // The query parameters get sorted by alphabetical order by key
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
@@ -93,7 +92,6 @@ TEST(BasicAthenticationParameterTests, BasicAuthenticationSuccessSingleParameter
                              Parameters{{"hello", "world"}});
     auto expected_text = std::string{"Header reflect"};
     EXPECT_EQ(expected_text, response.text);
-    // The query parameters get sorted by alphabetical order by key
     EXPECT_EQ(Url{url + "?hello=world"}, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
@@ -105,7 +103,6 @@ TEST(BasicAuthenticationParameterTests, BasicAuthenticationSuccessMultipleParame
                              Parameters{{"key", "value"}, {"hello", "world"}, {"test", "case"}});
     auto expected_text = std::string{"Header reflect"};
     EXPECT_EQ(expected_text, response.text);
-    // The query parameters get sorted by alphabetical order by key
     EXPECT_EQ(Url{url + "?hello=world&key=value&test=case"}, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
@@ -117,7 +114,6 @@ TEST(BasicAuthenticationParameterTests, BasicAuthenticationSuccessSingleParamete
                              Authentication{"user", "password"});
     auto expected_text = std::string{"Header reflect"};
     EXPECT_EQ(expected_text, response.text);
-    // The query parameters get sorted by alphabetical order by key
     EXPECT_EQ(Url{url + "?hello=world"}, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
@@ -132,7 +128,6 @@ TEST(BasicAuthenticationParameterTests, BasicAuthenticationSuccessMultipleParame
 
     auto expected_text = std::string{"Header reflect"};
     EXPECT_EQ(expected_text, response.text);
-    // The query parameters get sorted by alphabetical order by key
     EXPECT_EQ(Url{url + "?hello=world&key=value&test=case"}, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
@@ -144,7 +139,6 @@ TEST(BasicAuthenticationHeaderTests, BasicAuthenticationSuccessSingleHeaderTest)
                              Header{{"hello", "world"}});
     auto expected_text = std::string{"Header reflect"};
     EXPECT_EQ(expected_text, response.text);
-    // The query parameters get sorted by alphabetical order by key
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(std::string{"world"}, response.header["hello"]);
@@ -157,7 +151,6 @@ TEST(BasicAuthenticationHeaderTests, BasicAuthenticationSuccessMultipleHeadersTe
                              Header{{"key", "value"}, {"hello", "world"}, {"test", "case"}});
     auto expected_text = std::string{"Header reflect"};
     EXPECT_EQ(expected_text, response.text);
-    // The query parameters get sorted by alphabetical order by key
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(std::string{"world"}, response.header["hello"]);
@@ -172,7 +165,6 @@ TEST(BasicAuthenticationHeaderTests, BasicAuthenticationSuccessSingleHeaderRever
                              Authentication{"user", "password"});
     auto expected_text = std::string{"Header reflect"};
     EXPECT_EQ(expected_text, response.text);
-    // The query parameters get sorted by alphabetical order by key
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(std::string{"world"}, response.header["hello"]);
@@ -185,7 +177,6 @@ TEST(BasicAuthenticationHeaderTests, BasicAuthenticationSuccessMultipleHeadersRe
                              Authentication{"user", "password"});
     auto expected_text = std::string{"Header reflect"};
     EXPECT_EQ(expected_text, response.text);
-    // The query parameters get sorted by alphabetical order by key
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(std::string{"world"}, response.header["hello"]);
@@ -198,7 +189,6 @@ TEST(BasicAuthenticationTests, BasicAuthenticationNullFailureTest) {
     auto url = Url{base + "/basic_auth.html"};
     auto response = cpr::Get(url);
     EXPECT_EQ(std::string{}, response.text);
-    // The query parameters get sorted by alphabetical order by key
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{}, response.header["content-type"]);
     EXPECT_EQ(401, response.status_code);
@@ -208,7 +198,6 @@ TEST(BasicAuthenticationTests, BasicAuthenticationFailureTest) {
     auto url = Url{base + "/basic_auth.html"};
     auto response = cpr::Get(url, Authentication{"user", "bad_password"});
     EXPECT_EQ(std::string{}, response.text);
-    // The query parameters get sorted by alphabetical order by key
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{}, response.header["content-type"]);
     EXPECT_EQ(401, response.status_code);
@@ -219,7 +208,6 @@ TEST(BasicAuthenticationParameterTests, BasicAuthenticationFailureSingleParamete
     auto response = cpr::Get(url, Authentication{"user", "bad_password"},
                              Parameters{{"hello", "world"}});
     EXPECT_EQ(std::string{}, response.text);
-    // The query parameters get sorted by alphabetical order by key
     EXPECT_EQ(Url{url + "?hello=world"}, response.url);
     EXPECT_EQ(std::string{}, response.header["content-type"]);
     EXPECT_EQ(401, response.status_code);
@@ -230,7 +218,6 @@ TEST(BasicAuthenticationParameterTests, BasicAuthenticationFailureMultipleParame
     auto response = cpr::Get(url, Authentication{"user", "bad_password"},
                              Parameters{{"key", "value"}, {"hello", "world"}, {"test", "case"}});
     EXPECT_EQ(std::string{}, response.text);
-    // The query parameters get sorted by alphabetical order by key
     EXPECT_EQ(Url{url + "?hello=world&key=value&test=case"}, response.url);
     EXPECT_EQ(std::string{}, response.header["content-type"]);
     EXPECT_EQ(401, response.status_code);
