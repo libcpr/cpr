@@ -43,6 +43,7 @@ Session::Impl::Impl() {
         curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
         curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 1L);
         curl_easy_setopt(curl, CURLOPT_MAXREDIRS, 50L);
+        curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, curl_->error);
 #if LIBCURL_VERSION_MAJOR >= 7
 #if LIBCURL_VERSION_MINOR >= 25
 #if LIBCURL_VERSION_PATCH >= 0
@@ -155,11 +156,6 @@ Response Session::Impl::Get() {
 
         res = curl_easy_perform(curl);
         
-        if (res != CURLE_OK) {
-            fprintf(stderr, "curl_easy_perform() failed: %s\n",
-                    curl_easy_strerror(res));
-        }
-        
         char* raw_url;
         long response_code;
         double elapsed;
@@ -189,11 +185,6 @@ Response Session::Impl::Post() {
         curl_easy_setopt(curl, CURLOPT_HEADERDATA, &header_string);
 
         res = curl_easy_perform(curl);
-        
-        if (res != CURLE_OK) {
-            fprintf(stderr, "curl_easy_perform() failed: %s\n",
-                    curl_easy_strerror(res));
-        }
         
         char* raw_url;
         long response_code;

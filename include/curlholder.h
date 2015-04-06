@@ -9,6 +9,7 @@
 typedef struct {
     CURL* handle;
     struct curl_slist* chunk;
+    char error[CURL_ERROR_SIZE];
 } CurlHolder;
 
 #endif
