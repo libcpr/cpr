@@ -103,7 +103,15 @@ static int permanentRedirect(struct mg_connection* conn) {
     auto response = std::string{"Moved Permanently"};
     mg_send_status(conn, 301);
     mg_send_header(conn, "Location", "hello.html");
-    mg_send_data(conn, response.data(), response.length()); 
+    mg_send_data(conn, response.data(), response.length());
+    return MG_TRUE;
+}
+
+static int twoRedirects(struct mg_connection* conn) {
+    auto response = std::string{"Moved Permanently"};
+    mg_send_status(conn, 301);
+    mg_send_header(conn, "Location", "permanent_redirect.html");
+    mg_send_data(conn, response.data(), response.length());
     return MG_TRUE;
 }
 
@@ -127,6 +135,8 @@ static int evHandler(struct mg_connection* conn, enum mg_event ev) {
                 return temporaryRedirect(conn);
             } else if (Url{conn->uri} == "/permanent_redirect.html") {
                 return permanentRedirect(conn);
+            } else if (Url{conn->uri} == "/two_redirects.html") {
+                return twoRedirects(conn);
             }
             return MG_FALSE;
         default:
