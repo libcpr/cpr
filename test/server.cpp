@@ -149,7 +149,7 @@ static int evHandler(struct mg_connection* conn, enum mg_event ev) {
 }
 
 void runServer(struct mg_server* server) {
-    server_mutex.lock();
+    std::unique_lock<std::mutex> server_lock(server_mutex);
     {
         std::unique_lock<std::mutex> start_lock(start_mutex);
         mg_set_option(server, "listening_port", SERVER_PORT);
@@ -159,7 +159,6 @@ void runServer(struct mg_server* server) {
         mg_poll_server(server, 1000);
     } while (!shutdown_mutex.try_lock());
     mg_destroy_server(&server);
-    server_mutex.unlock();
 }
 
 void Server::SetUp() {
@@ -173,8 +172,7 @@ void Server::SetUp() {
 
 void Server::TearDown() {
     shutdown_mutex.unlock();
-    server_mutex.lock();
-    server_mutex.unlock();
+    std::unique_lock<std::mutex> server_lock(server_mutex);
 }
 
 Url Server::GetBaseUrl() {
