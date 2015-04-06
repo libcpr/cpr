@@ -1,6 +1,7 @@
 #include "server.h"
 
 #include <chrono>
+#include <condition_variable>
 #include <mutex>
 #include <thread>
 
@@ -12,6 +13,7 @@
 std::mutex shutdown_mutex;
 std::mutex start_mutex;
 std::mutex server_mutex;
+std::condition_variable start_cv;
 
 static const std::string base64_chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                                         "abcdefghijklmnopqrstuvwxyz"
@@ -147,10 +149,12 @@ static int evHandler(struct mg_connection* conn, enum mg_event ev) {
 }
 
 void runServer(struct mg_server* server) {
-    start_mutex.lock();
     server_mutex.lock();
-    mg_set_option(server, "listening_port", SERVER_PORT);
-    start_mutex.unlock();
+    {
+        std::unique_lock<std::mutex> start_lock(start_mutex);
+        mg_set_option(server, "listening_port", SERVER_PORT);
+        start_cv.notify_one();
+    }
     do {
         mg_poll_server(server, 1000);
     } while (!shutdown_mutex.try_lock());
@@ -162,11 +166,9 @@ void Server::SetUp() {
     shutdown_mutex.lock();
     struct mg_server* server;
     server = mg_create_server(NULL, evHandler);
+    std::unique_lock<std::mutex> start_lock(start_mutex);
     std::thread(runServer, server).detach();
-    do {
-        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-    } while (!start_mutex.try_lock());
-    start_mutex.unlock();
+    start_cv.wait(start_lock);
 }
 
 void Server::TearDown() {
