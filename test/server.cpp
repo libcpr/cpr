@@ -11,9 +11,8 @@
 
 
 std::mutex shutdown_mutex;
-std::mutex start_mutex;
 std::mutex server_mutex;
-std::condition_variable start_cv;
+std::condition_variable server_cv;
 
 static const std::string base64_chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                                         "abcdefghijklmnopqrstuvwxyz"
@@ -149,30 +148,34 @@ static int evHandler(struct mg_connection* conn, enum mg_event ev) {
 }
 
 void runServer(struct mg_server* server) {
-    std::unique_lock<std::mutex> server_lock(server_mutex);
     {
-        std::unique_lock<std::mutex> start_lock(start_mutex);
+        std::lock_guard<std::mutex> server_lock(server_mutex);
         mg_set_option(server, "listening_port", SERVER_PORT);
-        start_cv.notify_one();
+        server_cv.notify_one();
     }
+
     do {
         mg_poll_server(server, 1000);
     } while (!shutdown_mutex.try_lock());
+
+    std::lock_guard<std::mutex> server_lock(server_mutex);
     mg_destroy_server(&server);
+    server_cv.notify_one();
 }
 
 void Server::SetUp() {
     shutdown_mutex.lock();
     struct mg_server* server;
     server = mg_create_server(NULL, evHandler);
-    std::unique_lock<std::mutex> start_lock(start_mutex);
+    std::unique_lock<std::mutex> server_lock(server_mutex);
     std::thread(runServer, server).detach();
-    start_cv.wait(start_lock);
+    server_cv.wait(server_lock);
 }
 
 void Server::TearDown() {
-    shutdown_mutex.unlock();
     std::unique_lock<std::mutex> server_lock(server_mutex);
+    shutdown_mutex.unlock();
+    server_cv.wait(server_lock);
 }
 
 Url Server::GetBaseUrl() {
