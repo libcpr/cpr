@@ -147,15 +147,11 @@ static int evHandler(struct mg_connection* conn, enum mg_event ev) {
 void runServer(struct mg_server* server) {
     server_mutex.lock();
     mg_set_option(server, "listening_port", SERVER_PORT);
-    while (true) {
-        if (!shutdown_mutex.try_lock()) {
-            mg_poll_server(server, 1000);
-        } else {
-            mg_destroy_server(&server);
-            server_mutex.unlock();
-            break;
-        }
-    }
+    do {
+        mg_poll_server(server, 1000);
+    } while (!shutdown_mutex.try_lock());
+    mg_destroy_server(&server);
+    server_mutex.unlock();
 }
 
 void Server::SetUp() {
