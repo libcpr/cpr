@@ -22,6 +22,10 @@ int main(int argc,  char** argv) {
 
 And here's [less functional, more complicated code, without cpr](https://gist.github.com/whoshuu/2dc858b8730079602044).
 
+### Requirements
+
+The only explicit requirement is a C++11 compatible compiler such as clang or gcc. The minimum required version of gcc is unknown, so if anyone has trouble building this library with a specific version of gcc, do let me know.
+
 ### Install
 
 The easiest way to install is to use cmake:
@@ -33,10 +37,10 @@ cmake ..
 make
 ```
 
-By default, your system libcurl is used to build this library. If you want to use the embedded libcurl, then run:
+By default, the embedded libcurl is used by this library. If you want to use your system libcurl, then run:
 
 ```shell
-cmake -DUSE_SYSTEM_CURL=OFF ..
+cmake -DUSE_SYSTEM_CURL=ON ..
 make
 ```
 
