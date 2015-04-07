@@ -10,27 +10,33 @@
 static Server* server = new Server();
 auto base = server->GetBaseUrl();
 
-TEST(BasicTests, PostSingleTest) {
-    auto url = Url{base + "/hello.html"};
-    auto response = cpr::Post(url, Payload{{"hello", "world"}});
-    auto expected_text = std::string{"Hello world!"};
+TEST(UrlEncodedPostTests, UrlPostSingleTest) {
+    auto url = Url{base + "/url_post.html"};
+    auto response = cpr::Post(url, Payload{{"x", "5"}});
+    auto expected_text = std::string{"{\n"
+                                     "  \"x\": 5\n"
+                                     "}"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
-    EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
-    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
+    EXPECT_EQ(201, response.status_code);
 }
 
-TEST(BasicTests, PostManyTest) {
-    auto url = Url{base + "/hello.html"};
-    auto response = cpr::Post(url, Payload{{"hello", "world"}, {"more", "values"}});
-    auto expected_text = std::string{"Hello world!"};
+TEST(UrlEncodedPostTests, UrlPostManyTest) {
+    auto url = Url{base + "/url_post.html"};
+    auto response = cpr::Post(url, Payload{{"x", "5"}, {"y", "13"}});
+    auto expected_text = std::string{"{\n"
+                                     "  \"x\": 5,\n"
+                                     "  \"y\": 13,\n"
+                                     "  \"sum\": 18\n"
+                                     "}"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
-    EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
-    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
+    EXPECT_EQ(201, response.status_code);
 }
 
-TEST(BasicTests, PostBadHostTest) {
+TEST(UrlEncodedPostTests, UrlPostBadHostTest) {
     auto url = Url{"http://bad_host/"};
     auto response = cpr::Post(url, Payload{{"hello", "world"}});
     EXPECT_EQ(std::string{}, response.text);
