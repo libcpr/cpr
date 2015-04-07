@@ -7,6 +7,7 @@ compiler:
 env:
   global:
     - BUILD_CPR_TESTS=ON
+    - GTEST_SHUFFLE=1
   matrix:
     - USE_SYSTEM_CURL=ON USE_SYSTEM_CMAKE=ON
     - USE_SYSTEM_CURL=OFF USE_SYSTEM_CMAKE=ON
