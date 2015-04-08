@@ -129,8 +129,8 @@ void Session::Impl::SetPayload(Payload payload) {
             }
             payload_string += item->first + "=" + item->second;
         }
-        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, payload_string.data());
         curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, payload_string.length());
+        curl_easy_setopt(curl, CURLOPT_COPYPOSTFIELDS, payload_string.data());
     }
 }
 
