@@ -29,6 +29,7 @@ class Session::Impl {
   private:
     std::unique_ptr<CurlHolder, std::function<void(CurlHolder*)>> curl_;
 
+    Response makeRequest(CURL* curl);
     static void freeHolder(CurlHolder* holder);
     static CurlHolder* newHolder();
 };
@@ -150,62 +151,42 @@ void Session::Impl::SetMaxRedirects(long max_redirects) {
 
 Response Session::Impl::Get() {
     auto curl = curl_->handle;
-    CURLcode res;
-    Response response{0, "Curl could not start", Header{}, Url{}, 0.0};
-
     if (curl) {
         curl_easy_setopt(curl, CURLOPT_HTTPGET, 1L);
         curl_easy_setopt(curl, CURLOPT_POST, 0L);
-        std::string response_string;
-        std::string header_string;
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, cpr::util::writeFunction);
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response_string);
-        curl_easy_setopt(curl, CURLOPT_HEADERDATA, &header_string);
-
-        res = curl_easy_perform(curl);
-        
-        char* raw_url;
-        long response_code;
-        double elapsed;
-        curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response_code);
-        curl_easy_getinfo(curl, CURLINFO_TOTAL_TIME, &elapsed);
-        curl_easy_getinfo(curl, CURLINFO_EFFECTIVE_URL, &raw_url);
-        auto header = cpr::util::parseHeader(header_string);
-        response_string = cpr::util::parseResponse(response_string);
-        response = {response_code, response_string, header, raw_url, elapsed};
     }
 
-    return response;
+    return makeRequest(curl);
 }
 
 Response Session::Impl::Post() {
     auto curl = curl_->handle;
-    CURLcode res;
-    Response response{0, "Curl could not start", Header{}, Url{}, 0.0};
-
     if (curl) {
         curl_easy_setopt(curl, CURLOPT_HTTPGET, 0L);
         curl_easy_setopt(curl, CURLOPT_POST, 1L);
-        std::string response_string;
-        std::string header_string;
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, cpr::util::writeFunction);
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response_string);
-        curl_easy_setopt(curl, CURLOPT_HEADERDATA, &header_string);
-
-        res = curl_easy_perform(curl);
-        
-        char* raw_url;
-        long response_code;
-        double elapsed;
-        curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response_code);
-        curl_easy_getinfo(curl, CURLINFO_TOTAL_TIME, &elapsed);
-        curl_easy_getinfo(curl, CURLINFO_EFFECTIVE_URL, &raw_url);
-        auto header = cpr::util::parseHeader(header_string);
-        response_string = cpr::util::parseResponse(response_string);
-        response = {response_code, response_string, header, raw_url, elapsed};
     }
 
-    return response;
+    return makeRequest(curl);
+}
+
+Response Session::Impl::makeRequest(CURL* curl) {
+    std::string response_string;
+    std::string header_string;
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, cpr::util::writeFunction);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response_string);
+    curl_easy_setopt(curl, CURLOPT_HEADERDATA, &header_string);
+
+    curl_easy_perform(curl);
+    
+    char* raw_url;
+    long response_code;
+    double elapsed;
+    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response_code);
+    curl_easy_getinfo(curl, CURLINFO_TOTAL_TIME, &elapsed);
+    curl_easy_getinfo(curl, CURLINFO_EFFECTIVE_URL, &raw_url);
+    auto header = cpr::util::parseHeader(header_string);
+    response_string = cpr::util::parseResponse(response_string);
+    return Response{response_code, response_string, header, raw_url, elapsed};
 }
 
 Session::Session() : pimpl_{ new Impl{} } {}
