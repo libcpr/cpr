@@ -24,7 +24,7 @@ TEST(UrlEncodedPostTests, UrlPostSingleTest) {
 
 TEST(UrlEncodedPostTests, UrlPostManyTest) {
     auto url = Url{base + "/url_post.html"};
-    auto response = cpr::Post(url, Payload{{"x", "5"}, {"y", "13"}});
+    auto response = cpr::Post(url, Payload{{"x", 5}, {"y", 13}});
     auto expected_text = std::string{"{\n"
                                      "  \"x\": 5,\n"
                                      "  \"y\": 13,\n"
