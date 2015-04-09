@@ -5,6 +5,7 @@
 
 #include "auth.h"
 #include "cprtypes.h"
+#include "payload.h"
 #include "response.h"
 
 

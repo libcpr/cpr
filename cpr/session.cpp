@@ -5,6 +5,7 @@
 #include <curl/curl.h>
 
 #include "curlholder.h"
+#include "payload.h"
 #include "util.h"
 
 
@@ -122,16 +123,8 @@ void Session::Impl::SetAuth(Authentication auth) {
 void Session::Impl::SetPayload(Payload payload) {
     auto curl = curl_->handle;
     if (curl) {
-        struct curl_slist* chunk = NULL;
-        auto payload_string = std::string{};
-        for (auto item = payload.cbegin(); item != payload.cend(); ++item) {
-            if (!payload_string.empty()) {
-                payload_string += "&";
-            }
-            payload_string += item->first + "=" + item->second;
-        }
-        curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, payload_string.length());
-        curl_easy_setopt(curl, CURLOPT_COPYPOSTFIELDS, payload_string.data());
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, payload.content.length());
+        curl_easy_setopt(curl, CURLOPT_COPYPOSTFIELDS, payload.content.data());
     }
 }
 
@@ -160,13 +153,7 @@ Response Session::Impl::Get() {
 }
 
 Response Session::Impl::Post() {
-    auto curl = curl_->handle;
-    if (curl) {
-        curl_easy_setopt(curl, CURLOPT_HTTPGET, 0L);
-        curl_easy_setopt(curl, CURLOPT_POST, 1L);
-    }
-
-    return makeRequest(curl);
+    return makeRequest(curl_->handle);
 }
 
 Response Session::Impl::makeRequest(CURL* curl) {
