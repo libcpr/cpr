@@ -4,7 +4,7 @@
 #include <vector>
 
 
-Header cpr::util::parseHeader(std::string headers) {
+Header cpr::util::parseHeader(const std::string& headers) {
     Header header;
     std::vector<std::string> lines;
     std::istringstream stream(headers);
@@ -35,7 +35,7 @@ Header cpr::util::parseHeader(std::string headers) {
     return header;
 }
 
-std::string cpr::util::parseResponse(std::string response) {
+std::string cpr::util::parseResponse(const std::string& response) {
     if (!response.empty()) {
         if (response.back() == '\n') {
             return response.substr(0, response.length() - 1);

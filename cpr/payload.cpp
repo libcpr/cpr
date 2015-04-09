@@ -27,7 +27,7 @@ std::string url_encode(const std::string& value) {
     return escaped.str();
 }
 
-Payload::Payload(std::initializer_list<Pair> pairs) {
+Payload::Payload(const std::initializer_list<Pair>& pairs) {
     for (auto pair = pairs.begin(); pair != pairs.end(); ++pair) {
         if (!content.empty()) {
             content += "&";

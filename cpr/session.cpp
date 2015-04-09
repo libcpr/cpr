@@ -13,14 +13,14 @@ class Session::Impl {
   public:
     Impl();
 
-    void SetUrl(Url url);
-    void SetUrl(Url url, Parameters parameters);
-    void SetHeader(Header header);
-    void SetTimeout(Timeout timeout);
-    void SetAuth(Authentication auth);
-    void SetPayload(Payload payload);
-    void SetRedirect(bool redirect);
-    void SetMaxRedirects(long max_redirects);
+    void SetUrl(const Url& url);
+    void SetUrl(const Url& url, const Parameters& parameters);
+    void SetHeader(const Header& header);
+    void SetTimeout(const Timeout& timeout);
+    void SetAuth(const Authentication& auth);
+    void SetPayload(const Payload& payload);
+    void SetRedirect(const bool& redirect);
+    void SetMaxRedirects(const long& max_redirects);
     // void SetCookie(); Unimplemented
     // void SetCookies(); Unimplemented
 
@@ -68,14 +68,14 @@ CurlHolder* Session::Impl::newHolder() {
     return holder;
 }
 
-void Session::Impl::SetUrl(Url url) {
+void Session::Impl::SetUrl(const Url& url) {
     auto curl = curl_->handle;
     if (curl) {
         curl_easy_setopt(curl, CURLOPT_URL, url.data());
     }
 }
 
-void Session::Impl::SetUrl(Url url, Parameters parameters) {
+void Session::Impl::SetUrl(const Url& url, const Parameters& parameters) {
     auto curl = curl_->handle;
     if (curl) {
         Url new_url{url + "?"};
@@ -87,7 +87,7 @@ void Session::Impl::SetUrl(Url url, Parameters parameters) {
     }
 }
 
-void Session::Impl::SetHeader(Header header) {
+void Session::Impl::SetHeader(const Header& header) {
     auto curl = curl_->handle;
     if (curl) {
         struct curl_slist* chunk = NULL;
@@ -105,14 +105,14 @@ void Session::Impl::SetHeader(Header header) {
     }
 }
 
-void Session::Impl::SetTimeout(long timeout) {
+void Session::Impl::SetTimeout(const Timeout& timeout) {
     auto curl = curl_->handle;
     if (curl) {
         curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT_MS, timeout);
     }
 }
 
-void Session::Impl::SetAuth(Authentication auth) {
+void Session::Impl::SetAuth(const Authentication& auth) {
     auto curl = curl_->handle;
     if (curl) {
         curl_easy_setopt(curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
@@ -120,7 +120,7 @@ void Session::Impl::SetAuth(Authentication auth) {
     }
 }
 
-void Session::Impl::SetPayload(Payload payload) {
+void Session::Impl::SetPayload(const Payload& payload) {
     auto curl = curl_->handle;
     if (curl) {
         curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, payload.content.length());
@@ -128,14 +128,14 @@ void Session::Impl::SetPayload(Payload payload) {
     }
 }
 
-void Session::Impl::SetRedirect(bool redirect) {
+void Session::Impl::SetRedirect(const bool& redirect) {
     auto curl = curl_->handle;
     if (curl) {
         curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, long(redirect));
     }
 }
 
-void Session::Impl::SetMaxRedirects(long max_redirects) {
+void Session::Impl::SetMaxRedirects(const long& max_redirects) {
     auto curl = curl_->handle;
     if (curl) {
         curl_easy_setopt(curl, CURLOPT_MAXREDIRS, max_redirects);
@@ -178,14 +178,14 @@ Response Session::Impl::makeRequest(CURL* curl) {
 
 Session::Session() : pimpl_{ new Impl{} } {}
 Session::~Session() {}
-void Session::SetUrl(Url url) { pimpl_->SetUrl(url); }
-void Session::SetUrl(Url url, Parameters parameters) { pimpl_->SetUrl(url, parameters); }
-void Session::SetHeader(Header header) { pimpl_->SetHeader(header); }
-void Session::SetTimeout(Timeout timeout) { pimpl_->SetTimeout(timeout); }
-void Session::SetAuth(Authentication auth) { pimpl_->SetAuth(auth); }
-void Session::SetPayload(Payload payload) { pimpl_->SetPayload(payload); }
-void Session::SetRedirect(bool redirect) { pimpl_->SetRedirect(redirect); }
-void Session::SetMaxRedirects(long max_redirects) { pimpl_->SetMaxRedirects(max_redirects); }
+void Session::SetUrl(const Url& url) { pimpl_->SetUrl(url); }
+void Session::SetUrl(const Url& url, const Parameters& parameters) { pimpl_->SetUrl(url, parameters); }
+void Session::SetHeader(const Header& header) { pimpl_->SetHeader(header); }
+void Session::SetTimeout(const Timeout& timeout) { pimpl_->SetTimeout(timeout); }
+void Session::SetAuth(const Authentication& auth) { pimpl_->SetAuth(auth); }
+void Session::SetPayload(const Payload& payload) { pimpl_->SetPayload(payload); }
+void Session::SetRedirect(const bool& redirect) { pimpl_->SetRedirect(redirect); }
+void Session::SetMaxRedirects(const long& max_redirects) { pimpl_->SetMaxRedirects(max_redirects); }
 // void SetCookie(); Unimplemented
 // void SetCookies(); Unimplemented
 Response Session::Get() { return pimpl_->Get(); }

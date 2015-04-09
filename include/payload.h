@@ -7,8 +7,8 @@
 
 
 struct Pair {
-    Pair(std::string key, std::string value) : key{key}, value{value} {}
-    Pair(std::string key, int value) : key{key}, value{std::to_string(value)} {}
+    Pair(const std::string& key, const std::string& value) : key{key}, value{value} {}
+    Pair(const std::string& key, const int& value) : key{key}, value{std::to_string(value)} {}
 
     std::string key;
     std::string value;
@@ -16,8 +16,8 @@ struct Pair {
 
 class Payload {
   public:
-    Payload(std::initializer_list<Pair> pairs);
-    Payload(std::string content) : content{content} {}
+    Payload(const std::initializer_list<Pair>& pairs);
+    Payload(const std::string& content) : content{content} {}
 
     std::string content;
 };

@@ -6,8 +6,8 @@
 
 namespace cpr {
     namespace util {
-        Header parseHeader(std::string headers);
-        std::string parseResponse(std::string response);
+        Header parseHeader(const std::string& headers);
+        std::string parseResponse(const std::string& response);
         size_t writeFunction(void *ptr, size_t size, size_t nmemb, std::string* data);
     }
 };

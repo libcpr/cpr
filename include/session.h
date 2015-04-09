@@ -14,14 +14,14 @@ class Session {
     Session();
     ~Session();
 
-    void SetUrl(Url url);
-    void SetUrl(Url url, Parameters parameters);
-    void SetHeader(Header header);
-    void SetTimeout(Timeout timeout);
-    void SetAuth(Authentication auth);
-    void SetPayload(Payload payload);
-    void SetRedirect(bool redirect);
-    void SetMaxRedirects(long max_redirects);
+    void SetUrl(const Url& url);
+    void SetUrl(const Url& url, const Parameters& parameters);
+    void SetHeader(const Header& header);
+    void SetTimeout(const Timeout& timeout);
+    void SetAuth(const Authentication& auth);
+    void SetPayload(const Payload& payload);
+    void SetRedirect(const bool& redirect);
+    void SetMaxRedirects(const long& max_redirects);
     // void SetCookie(); Unimplemented
     // void SetCookies(); Unimplemented
 
