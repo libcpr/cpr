@@ -7,6 +7,7 @@ add_library(${CPR_LIBRARIES}
     api.cpp
     auth.cpp
     cprtypes.cpp
+    multipart.cpp
     payload.cpp
     session.cpp
     util.cpp)
