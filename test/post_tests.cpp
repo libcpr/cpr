@@ -4,6 +4,7 @@
 
 #include <cpr.h>
 
+#include "multipart.h"
 #include "server.h"
 
 
@@ -43,6 +44,32 @@ TEST(UrlEncodedPostTests, UrlPostBadHostTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{}, response.header["content-type"]);
     EXPECT_EQ(0, response.status_code);
+}
+
+TEST(UrlEncodedPostTests, FormPostSingleTest) {
+    auto url = Url{base + "/form_post.html"};
+    auto response = cpr::Post(url, Multipart{{"x", 5}});
+    auto expected_text = std::string{"{\n"
+                                     "  \"x\": 5\n"
+                                     "}"};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
+    EXPECT_EQ(201, response.status_code);
+}
+
+TEST(UrlEncodedPostTests, FormPostManyTest) {
+    auto url = Url{base + "/form_post.html"};
+    auto response = cpr::Post(url, Multipart{{"x", 5}, {"y", 13}});
+    auto expected_text = std::string{"{\n"
+                                     "  \"x\": 5,\n"
+                                     "  \"y\": 13,\n"
+                                     "  \"sum\": 18\n"
+                                     "}"};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
+    EXPECT_EQ(201, response.status_code);
 }
 
 int main(int argc, char** argv) {

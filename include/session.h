@@ -5,6 +5,7 @@
 
 #include "auth.h"
 #include "cprtypes.h"
+#include "multipart.h"
 #include "payload.h"
 #include "response.h"
 
@@ -20,6 +21,7 @@ class Session {
     void SetTimeout(const Timeout& timeout);
     void SetAuth(const Authentication& auth);
     void SetPayload(const Payload& payload);
+    void SetMultipart(const Multipart& multipart);
     void SetRedirect(const bool& redirect);
     void SetMaxRedirects(const long& max_redirects);
     // void SetCookie(); Unimplemented

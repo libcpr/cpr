@@ -5,6 +5,7 @@
 
 #include "auth.h"
 #include "cprtypes.h"
+#include "multipart.h"
 #include "payload.h"
 #include "response.h"
 
@@ -45,6 +46,7 @@ namespace cpr {
 
     // Post methods
     Response Post(const Url& url, const Payload& payload, const Timeout& timeout=0L);
+    Response Post(const Url& url, const Multipart& multipart, const Timeout& timeout=0L);
 };
 
 #endif

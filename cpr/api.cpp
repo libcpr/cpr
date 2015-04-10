@@ -119,3 +119,11 @@ Response cpr::Post(const Url& url, const Payload& payload, const Timeout& timeou
     session.SetTimeout(timeout);
     return session.Post();
 }
+
+Response cpr::Post(const Url& url, const Multipart& multipart, const Timeout& timeout) {
+    Session session;
+    session.SetUrl(url);
+    session.SetMultipart(multipart);
+    session.SetTimeout(timeout);
+    return session.Post();
+}

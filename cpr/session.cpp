@@ -19,6 +19,7 @@ class Session::Impl {
     void SetTimeout(const Timeout& timeout);
     void SetAuth(const Authentication& auth);
     void SetPayload(const Payload& payload);
+    void SetMultipart(const Multipart& multipart);
     void SetRedirect(const bool& redirect);
     void SetMaxRedirects(const long& max_redirects);
     // void SetCookie(); Unimplemented
@@ -128,6 +129,37 @@ void Session::Impl::SetPayload(const Payload& payload) {
     }
 }
 
+void Session::Impl::SetMultipart(const Multipart& multipart) {
+    auto curl = curl_->handle;
+    if (curl) {
+        struct curl_httppost* formpost = NULL;
+        struct curl_httppost* lastptr = NULL;
+
+        for (auto& part : multipart.parts) {
+            auto content_option = CURLFORM_COPYCONTENTS;
+            if (part.is_file) {
+                content_option = CURLFORM_FILE;
+            }
+            if (part.content_type.empty()) {
+                curl_formadd(&formpost,
+                             &lastptr,
+                             CURLFORM_COPYNAME, part.name.data(),
+                             content_option, part.value.data(),
+                             CURLFORM_END);
+            } else {
+                std::cout << " Adding content type " << part.content_type.data() << std::endl;
+                curl_formadd(&formpost,
+                             &lastptr,
+                             CURLFORM_COPYNAME, part.name.data(),
+                             content_option, part.value.data(),
+                             CURLFORM_CONTENTTYPE, part.content_type.data(),
+                             CURLFORM_END);
+            }
+        }
+        curl_easy_setopt(curl, CURLOPT_HTTPPOST, formpost);
+    }
+}
+
 void Session::Impl::SetRedirect(const bool& redirect) {
     auto curl = curl_->handle;
     if (curl) {
@@ -184,6 +216,7 @@ void Session::SetHeader(const Header& header) { pimpl_->SetHeader(header); }
 void Session::SetTimeout(const Timeout& timeout) { pimpl_->SetTimeout(timeout); }
 void Session::SetAuth(const Authentication& auth) { pimpl_->SetAuth(auth); }
 void Session::SetPayload(const Payload& payload) { pimpl_->SetPayload(payload); }
+void Session::SetMultipart(const Multipart& multipart) { pimpl_->SetMultipart(multipart); }
 void Session::SetRedirect(const bool& redirect) { pimpl_->SetRedirect(redirect); }
 void Session::SetMaxRedirects(const long& max_redirects) { pimpl_->SetMaxRedirects(max_redirects); }
 // void SetCookie(); Unimplemented
