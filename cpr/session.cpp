@@ -147,7 +147,6 @@ void Session::Impl::SetMultipart(const Multipart& multipart) {
                              content_option, part.value.data(),
                              CURLFORM_END);
             } else {
-                std::cout << " Adding content type " << part.content_type.data() << std::endl;
                 curl_formadd(&formpost,
                              &lastptr,
                              CURLFORM_COPYNAME, part.name.data(),
