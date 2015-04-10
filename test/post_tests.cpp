@@ -1,5 +1,7 @@
 #include <gtest/gtest.h>
 
+#include <cstdio>
+#include <fstream>
 #include <string>
 
 #include <cpr.h>
@@ -11,11 +13,24 @@
 static Server* server = new Server();
 auto base = server->GetBaseUrl();
 
+
 TEST(UrlEncodedPostTests, UrlPostSingleTest) {
     auto url = Url{base + "/url_post.html"};
     auto response = cpr::Post(url, Payload{{"x", "5"}});
     auto expected_text = std::string{"{\n"
                                      "  \"x\": 5\n"
+                                     "}"};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
+    EXPECT_EQ(201, response.status_code);
+}
+
+TEST(UrlEncodedPostTests, UrlPostEncodeTest) {
+    auto url = Url{base + "/url_post.html"};
+    auto response = cpr::Post(url, Payload{{"x", "hello world!!~"}});
+    auto expected_text = std::string{"{\n"
+                                     "  \"x\": hello world!!~\n"
                                      "}"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
@@ -58,6 +73,25 @@ TEST(UrlEncodedPostTests, FormPostSingleTest) {
     EXPECT_EQ(201, response.status_code);
 }
 
+TEST(UrlEncodedPostTests, FormPostFileTest) {
+    auto filename = std::string{"test_file"};
+    auto content = std::string{"hello world"};
+    std::ofstream test_file;
+    test_file.open(filename);
+    test_file << content;
+    test_file.close();
+    auto url = Url{base + "/form_post.html"};
+    auto response = cpr::Post(url, Multipart{{"x", File{filename}}});
+    auto expected_text = std::string{"{\n"
+                                     "  \"x\": " + content + "\n"
+                                     "}"};
+    std::remove(filename.data());
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
+    EXPECT_EQ(201, response.status_code);
+}
+
 TEST(UrlEncodedPostTests, FormPostManyTest) {
     auto url = Url{base + "/form_post.html"};
     auto response = cpr::Post(url, Multipart{{"x", 5}, {"y", 13}});
@@ -65,6 +99,18 @@ TEST(UrlEncodedPostTests, FormPostManyTest) {
                                      "  \"x\": 5,\n"
                                      "  \"y\": 13,\n"
                                      "  \"sum\": 18\n"
+                                     "}"};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
+    EXPECT_EQ(201, response.status_code);
+}
+
+TEST(UrlEncodedPostTests, FormPostContentTypeTest) {
+    auto url = Url{base + "/form_post.html"};
+    auto response = cpr::Post(url, Multipart{{"x", 5, "application/number"}});
+    auto expected_text = std::string{"{\n"
+                                     "  \"x\": 5\n"
                                      "}"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
