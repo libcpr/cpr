@@ -146,6 +146,49 @@ static int urlPost(struct mg_connection* conn) {
     return MG_TRUE;
 }
 
+static int formPost(struct mg_connection* conn) {
+    auto content = conn->content;
+    auto content_len = conn->content_len;
+
+    std::map<std::string, std::string> forms;
+
+    while (true) {
+        char* data = new char[10000];
+        int data_len;
+        char name[100];
+        char filename[100];
+        content += mg_parse_multipart(content, content_len,
+                                      name, sizeof(name),
+                                      filename, sizeof(filename),
+                                      (const char**) &data, &data_len);
+        if (strlen(data) == 0) {
+            delete[] data;
+            break;
+        }
+        
+        forms[name] = std::string{data, (unsigned long) data_len};
+    }
+
+    mg_send_status(conn, 201);
+    mg_send_header(conn, "content-type", "application/json");
+    if (forms.find("y") == forms.end()) {
+        auto response = std::string{"{\n"
+                                    "  \"x\": " + forms["x"] + "\n"
+                                    "}"};
+        mg_send_data(conn, response.data(), response.length());
+    } else {
+        std::ostringstream s;
+        s << (atoi(forms["x"].data()) + atoi(forms["y"].data()));
+        auto response = std::string{"{\n"
+                                    "  \"x\": " + forms["x"] + ",\n"
+                                    "  \"y\": " + forms["y"] + ",\n"
+                                    "  \"sum\": " + s.str() + "\n"
+                                    "}"};
+        mg_send_data(conn, response.data(), response.length());
+    }
+    return MG_TRUE;
+}
+
 static int evHandler(struct mg_connection* conn, enum mg_event ev) {
     switch (ev) {
         case MG_AUTH:
@@ -170,6 +213,8 @@ static int evHandler(struct mg_connection* conn, enum mg_event ev) {
                 return twoRedirects(conn);
             } else if (Url{conn->uri} == "/url_post.html") {
                 return urlPost(conn);
+            } else if (Url{conn->uri} == "/form_post.html") {
+                return formPost(conn);
             }
             return MG_FALSE;
         default:
