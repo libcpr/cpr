@@ -53,6 +53,8 @@ C++ Requests currently supports:
 * Custom headers
 * Url encoded parameters
 * Url encoded POST values
+* Multipart form POST upload
+* File POST upload
 * Basic authentication scheme
 * Timeout specification
 
@@ -60,8 +62,6 @@ C++ Requests currently supports:
 
 Support for the following will be forthcoming (in rough order of implementation priority):
 
-* [Multipart form POST upload](https://github.com/whoshuu/cpr/issues/1)
-* [File POST upload](https://github.com/whoshuu/cpr/issues/17)
 * [:cookie: support!](https://github.com/whoshuu/cpr/issues/2)
 * [Digest authentication](https://github.com/whoshuu/cpr/issues/3)
 * [Asynchronous requests](https://github.com/whoshuu/cpr/issues/6)
