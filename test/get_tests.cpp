@@ -86,6 +86,16 @@ TEST(BasicAuthenticationTests, BasicAuthenticationSuccessTest) {
     EXPECT_EQ(200, response.status_code);
 }
 
+TEST(BasicAuthenticationTests, BasicDigestSuccessTest) {
+    auto url = Url{base + "/digest_auth.html"};
+    auto response = cpr::Get(url, Digest{"user", "password"});
+    auto expected_text = std::string{"Header reflect"};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+    EXPECT_EQ(200, response.status_code);
+}
+
 TEST(BasicAthenticationParameterTests, BasicAuthenticationSuccessSingleParameterTest) {
     auto url = Url{base + "/basic_auth.html"};
     auto response = cpr::Get(url, Authentication{"user", "password"},
