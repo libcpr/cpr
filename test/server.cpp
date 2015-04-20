@@ -2,6 +2,7 @@
 
 #include <chrono>
 #include <condition_variable>
+#include <cstdio>
 #include <mutex>
 #include <sstream>
 #include <thread>
@@ -53,6 +54,27 @@ static int basicAuth(struct mg_connection* conn) {
     }
 
     return MG_FALSE;
+}
+
+static int digestAuth(struct mg_connection* conn) {
+    int result = MG_FALSE;
+    {
+        FILE *fp;
+        if ((fp = fopen("digest.txt", "w")) != NULL) {
+            fprintf(fp, "user:mydomain.com:0cf722ef3dd136b48da83758c5d855f8");
+            fclose(fp);
+        }
+    }
+
+    {
+        FILE *fp;
+        if ((fp = fopen("digest.txt", "r")) != NULL) {
+            result = mg_authorize_digest(conn, fp);
+            fclose(fp);
+        }
+    }
+
+    return result;
 }
 
 static int basicJson(struct mg_connection* conn) {
@@ -194,12 +216,16 @@ static int evHandler(struct mg_connection* conn, enum mg_event ev) {
         case MG_AUTH:
             if (Url{conn->uri} == "/basic_auth.html") {
                 return basicAuth(conn);
+            } else if (Url{conn->uri} == "/digest_auth.html") {
+                return digestAuth(conn);
             }
             return MG_TRUE;
         case MG_REQUEST:
             if (Url{conn->uri} == "/hello.html") {
                 return hello(conn);
             } else if (Url{conn->uri} == "/basic_auth.html") {
+                return headerReflect(conn);
+            } else if (Url{conn->uri} == "/digest_auth.html") {
                 return headerReflect(conn);
             } else if (Url{conn->uri} == "/basic.json") {
                 return basicJson(conn);
