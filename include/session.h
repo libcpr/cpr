@@ -20,7 +20,9 @@ class Session {
     void SetHeader(const Header& header);
     void SetTimeout(const Timeout& timeout);
     void SetAuth(const Authentication& auth);
+    void SetPayload(Payload&& payload);
     void SetPayload(const Payload& payload);
+    void SetMultipart(Multipart&& multipart);
     void SetMultipart(const Multipart& multipart);
     void SetRedirect(const bool& redirect);
     void SetMaxRedirects(const long& max_redirects);

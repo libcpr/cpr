@@ -45,7 +45,9 @@ namespace cpr {
                  const Parameters& parameters, const Timeout& timeout=0L);
 
     // Post methods
+    Response Post(const Url& url, Payload&& payload, const Timeout& timeout=0L);
     Response Post(const Url& url, const Payload& payload, const Timeout& timeout=0L);
+    Response Post(const Url& url, Multipart&& multipart, const Timeout& timeout=0L);
     Response Post(const Url& url, const Multipart& multipart, const Timeout& timeout=0L);
 };
 

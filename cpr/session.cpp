@@ -18,7 +18,9 @@ class Session::Impl {
     void SetHeader(const Header& header);
     void SetTimeout(const Timeout& timeout);
     void SetAuth(const Authentication& auth);
+    void SetPayload(Payload&& payload);
     void SetPayload(const Payload& payload);
+    void SetMultipart(Multipart&& multipart);
     void SetMultipart(const Multipart& multipart);
     void SetRedirect(const bool& redirect);
     void SetMaxRedirects(const long& max_redirects);
@@ -121,11 +123,49 @@ void Session::Impl::SetAuth(const Authentication& auth) {
     }
 }
 
-void Session::Impl::SetPayload(const Payload& payload) {
+void Session::Impl::SetPayload(Payload&& payload) {
     auto curl = curl_->handle;
     if (curl) {
         curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, payload.content.length());
         curl_easy_setopt(curl, CURLOPT_COPYPOSTFIELDS, payload.content.data());
+    }
+}
+
+void Session::Impl::SetPayload(const Payload& payload) {
+    auto curl = curl_->handle;
+    if (curl) {
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, payload.content.length());
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, payload.content.data());
+    }
+}
+
+void Session::Impl::SetMultipart(Multipart&& multipart) {
+    auto curl = curl_->handle;
+    if (curl) {
+        struct curl_httppost* formpost = NULL;
+        struct curl_httppost* lastptr = NULL;
+
+        for (auto& part : multipart.parts) {
+            auto content_option = CURLFORM_COPYCONTENTS;
+            if (part.is_file) {
+                content_option = CURLFORM_FILE;
+            }
+            if (part.content_type.empty()) {
+                curl_formadd(&formpost,
+                             &lastptr,
+                             CURLFORM_COPYNAME, part.name.data(),
+                             content_option, part.value.data(),
+                             CURLFORM_END);
+            } else {
+                curl_formadd(&formpost,
+                             &lastptr,
+                             CURLFORM_COPYNAME, part.name.data(),
+                             content_option, part.value.data(),
+                             CURLFORM_CONTENTTYPE, part.content_type.data(),
+                             CURLFORM_END);
+            }
+        }
+        curl_easy_setopt(curl, CURLOPT_HTTPPOST, formpost);
     }
 }
 
@@ -136,7 +176,7 @@ void Session::Impl::SetMultipart(const Multipart& multipart) {
         struct curl_httppost* lastptr = NULL;
 
         for (auto& part : multipart.parts) {
-            auto content_option = CURLFORM_COPYCONTENTS;
+            auto content_option = CURLFORM_PTRCONTENTS;
             if (part.is_file) {
                 content_option = CURLFORM_FILE;
             }
@@ -214,8 +254,10 @@ void Session::SetUrl(const Url& url, const Parameters& parameters) { pimpl_->Set
 void Session::SetHeader(const Header& header) { pimpl_->SetHeader(header); }
 void Session::SetTimeout(const Timeout& timeout) { pimpl_->SetTimeout(timeout); }
 void Session::SetAuth(const Authentication& auth) { pimpl_->SetAuth(auth); }
+void Session::SetPayload(Payload&& payload) { pimpl_->SetPayload(std::move(payload)); }
 void Session::SetPayload(const Payload& payload) { pimpl_->SetPayload(payload); }
 void Session::SetMultipart(const Multipart& multipart) { pimpl_->SetMultipart(multipart); }
+void Session::SetMultipart(Multipart&& multipart) { pimpl_->SetMultipart(std::move(multipart)); }
 void Session::SetRedirect(const bool& redirect) { pimpl_->SetRedirect(redirect); }
 void Session::SetMaxRedirects(const long& max_redirects) { pimpl_->SetMaxRedirects(max_redirects); }
 // void SetCookie(); Unimplemented

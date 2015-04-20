@@ -112,10 +112,26 @@ Response cpr::Get(const Url& url, const Header& header, const Authentication& au
     return cpr::Get(url, parameters, auth, header, timeout);
 }
 
+Response cpr::Post(const Url& url, Payload&& payload, const Timeout& timeout) {
+    Session session;
+    session.SetUrl(url);
+    session.SetPayload(std::move(payload));
+    session.SetTimeout(timeout);
+    return session.Post();
+}
+
 Response cpr::Post(const Url& url, const Payload& payload, const Timeout& timeout) {
     Session session;
     session.SetUrl(url);
-    session.SetPayload(payload);
+    session.SetPayload(std::move(payload));
+    session.SetTimeout(timeout);
+    return session.Post();
+}
+
+Response cpr::Post(const Url& url, Multipart&& multipart, const Timeout& timeout) {
+    Session session;
+    session.SetUrl(url);
+    session.SetMultipart(std::move(multipart));
     session.SetTimeout(timeout);
     return session.Post();
 }
