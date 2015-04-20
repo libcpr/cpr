@@ -18,6 +18,7 @@ class Session::Impl {
     void SetHeader(const Header& header);
     void SetTimeout(const Timeout& timeout);
     void SetAuth(const Authentication& auth);
+    void SetDigest(const Digest& auth);
     void SetPayload(Payload&& payload);
     void SetPayload(const Payload& payload);
     void SetMultipart(Multipart&& multipart);
@@ -119,6 +120,14 @@ void Session::Impl::SetAuth(const Authentication& auth) {
     auto curl = curl_->handle;
     if (curl) {
         curl_easy_setopt(curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+        curl_easy_setopt(curl, CURLOPT_USERPWD, auth.GetAuthString());
+    }
+}
+
+void Session::Impl::SetDigest(const Digest& auth) {
+    auto curl = curl_->handle;
+    if (curl) {
+        curl_easy_setopt(curl, CURLOPT_HTTPAUTH, CURLAUTH_DIGEST);
         curl_easy_setopt(curl, CURLOPT_USERPWD, auth.GetAuthString());
     }
 }
@@ -254,8 +263,9 @@ void Session::SetUrl(const Url& url, const Parameters& parameters) { pimpl_->Set
 void Session::SetHeader(const Header& header) { pimpl_->SetHeader(header); }
 void Session::SetTimeout(const Timeout& timeout) { pimpl_->SetTimeout(timeout); }
 void Session::SetAuth(const Authentication& auth) { pimpl_->SetAuth(auth); }
-void Session::SetPayload(Payload&& payload) { pimpl_->SetPayload(std::move(payload)); }
+void Session::SetDigest(const Digest& auth) { pimpl_->SetDigest(auth); }
 void Session::SetPayload(const Payload& payload) { pimpl_->SetPayload(payload); }
+void Session::SetPayload(Payload&& payload) { pimpl_->SetPayload(std::move(payload)); }
 void Session::SetMultipart(const Multipart& multipart) { pimpl_->SetMultipart(multipart); }
 void Session::SetMultipart(Multipart&& multipart) { pimpl_->SetMultipart(std::move(multipart)); }
 void Session::SetRedirect(const bool& redirect) { pimpl_->SetRedirect(redirect); }

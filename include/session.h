@@ -5,6 +5,7 @@
 
 #include "auth.h"
 #include "cprtypes.h"
+#include "digest.h"
 #include "multipart.h"
 #include "payload.h"
 #include "response.h"
@@ -20,6 +21,7 @@ class Session {
     void SetHeader(const Header& header);
     void SetTimeout(const Timeout& timeout);
     void SetAuth(const Authentication& auth);
+    void SetDigest(const Digest& auth);
     void SetPayload(Payload&& payload);
     void SetPayload(const Payload& payload);
     void SetMultipart(Multipart&& multipart);

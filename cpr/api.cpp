@@ -26,6 +26,14 @@ Response cpr::Get(const Url& url, const Authentication& auth, const Timeout& tim
     return session.Get();
 }
 
+Response cpr::Get(const Url& url, const Digest& auth, const Timeout& timeout) {
+    Session session;
+    session.SetUrl(url);
+    session.SetTimeout(timeout);
+    session.SetDigest(auth);
+    return session.Get();
+}
+
 Response cpr::Get(const Url& url, const Header& header, const Timeout& timeout) {
     Session session;
     session.SetUrl(url);

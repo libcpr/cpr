@@ -5,6 +5,7 @@
 
 #include "auth.h"
 #include "cprtypes.h"
+#include "digest.h"
 #include "multipart.h"
 #include "payload.h"
 #include "response.h"
@@ -16,6 +17,7 @@ namespace cpr {
 
     Response Get(const Url& url, const Parameters& parameters, const Timeout& timeout=0L);
     Response Get(const Url& url, const Authentication& auth, const Timeout& timeout=0L);
+    Response Get(const Url& url, const Digest& auth, const Timeout& timeout=0L);
     Response Get(const Url& url, const Header& header, const Timeout& timeout=0L);
 
     Response Get(const Url& url, const Parameters& parameters, const Authentication& auth,
