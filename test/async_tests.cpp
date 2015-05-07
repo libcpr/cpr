@@ -47,10 +47,9 @@ TEST(UrlEncodedPostTests, AsyncGetMultipleTest) {
 TEST(UrlEncodedPostTests, AsyncGetMultipleReflectTest) {
     auto url = Url{base + "/hello.html"};
     std::vector<AsyncResponse> responses;
-    for (int i = 0; i < 1000; ++i) {
+    for (int i = 0; i < 100; ++i) {
         auto p = Parameters{{"key", std::to_string(i)}};
         responses.emplace_back(cpr::GetAsync(url, p));
-        //auto& future = responses.back();
     }
     int i = 0;
     for (auto& future : responses) {
