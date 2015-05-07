@@ -80,6 +80,7 @@ Session::Impl::Impl() {
 void Session::Impl::freeHolder(CurlHolder* holder) {
     curl_easy_cleanup(holder->handle);
     curl_slist_free_all(holder->chunk);
+    delete holder;
 }
 
 CurlHolder* Session::Impl::newHolder() {
