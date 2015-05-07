@@ -40,10 +40,10 @@ namespace cpr {
 
     // Get async methods
     template <typename... Ts>
-    AsyncResponse GetAsync(Ts&&... ts) {
-        return std::async(std::launch::async, std::bind([] (Ts&... ts) {
-                                                  return Get(std::forward<Ts>(ts)...);
-                                              }, std::forward<Ts>(ts)...));
+    AsyncResponse GetAsync(Ts... ts) {
+        return std::async(std::launch::async, [] (Ts... ts) {
+                                                  return Get(std::move(ts)...);
+                                              }, std::move(ts)...);
     }
 
     // Post methods
@@ -56,10 +56,10 @@ namespace cpr {
 
     // Post async methods
     template <typename... Ts>
-    AsyncResponse PostAsync(Ts&&... ts) {
-        return std::async(std::launch::async, std::bind([] (Ts&... ts) {
-                                                  return Post(std::forward<Ts>(ts)...);
-                                              }, std::forward<Ts>(ts)...));
+    AsyncResponse PostAsync(Ts... ts) {
+        return std::async(std::launch::async, [] (Ts... ts) {
+                                                  return Post(std::move(ts)...);
+                                              }, std::move(ts)...);
     }
 };
 
