@@ -14,7 +14,6 @@ class CaseInsenstiveCompare {
     static std::string to_lower(const std::string& a);
 };
 
-typedef std::map<std::string, std::string> Parameters;
 typedef std::map<std::string, std::string, CaseInsenstiveCompare> Header;
 typedef std::string Url;
 typedef long Timeout;

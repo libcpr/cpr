@@ -9,6 +9,7 @@ add_library(${CPR_LIBRARIES}
     cprtypes.cpp
     digest.cpp
     multipart.cpp
+    parameters.cpp
     payload.cpp
     session.cpp
     util.cpp)

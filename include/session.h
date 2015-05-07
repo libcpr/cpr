@@ -7,6 +7,7 @@
 #include "cprtypes.h"
 #include "digest.h"
 #include "multipart.h"
+#include "parameters.h"
 #include "payload.h"
 #include "response.h"
 
