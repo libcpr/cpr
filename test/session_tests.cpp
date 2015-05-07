@@ -211,7 +211,8 @@ TEST(MultipleGetTests, HeaderChangeMultipleGetTest) {
 TEST(MultipleGetTests, ParameterMultipleGetTest) {
     auto url = Url{base + "/hello.html"};
     Session session;
-    session.SetUrl(url, Parameters{{"hello", "world"}});
+    session.SetUrl(url);
+    session.SetParameters({{"hello", "world"}});
     for (int i = 0; i < 100; ++i) {
         auto response = session.Get();
         auto expected_text = std::string{"Hello world!"};
@@ -225,7 +226,8 @@ TEST(MultipleGetTests, ParameterMultipleGetTest) {
 TEST(MultipleGetTests, ParameterChangeMultipleGetTest) {
     auto url = Url{base + "/hello.html"};
     Session session;
-    session.SetUrl(url, Parameters{{"hello", "world"}});
+    session.SetUrl(url);
+    session.SetParameters({{"hello", "world"}});
     {
         auto response = session.Get();
         auto expected_text = std::string{"Hello world!"};
@@ -234,7 +236,8 @@ TEST(MultipleGetTests, ParameterChangeMultipleGetTest) {
         EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
         EXPECT_EQ(200, response.status_code);
     }
-    session.SetUrl(url, Parameters{{"key", "value"}});
+    session.SetUrl(url);
+    session.SetParameters({{"key", "value"}});
     {
         auto response = session.Get();
         auto expected_text = std::string{"Hello world!"};

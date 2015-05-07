@@ -19,7 +19,7 @@ class Session {
     ~Session();
 
     void SetUrl(const Url& url);
-    void SetUrl(const Url& url, const Parameters& parameters);
+    void SetParameters(const Parameters& parameters);
     void SetHeader(const Header& header);
     void SetTimeout(const Timeout& timeout);
     void SetAuth(const Authentication& auth);
