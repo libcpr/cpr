@@ -70,8 +70,7 @@ TEST(ParameterTests, MultipleParametersTest) {
                                              {"test", "case"}});
     auto expected_text = std::string{"Hello world!"};
     EXPECT_EQ(expected_text, response.text);
-    // The query parameters get sorted by alphabetical order by key
-    EXPECT_EQ(Url{url + "?hello=world&key=value&test=case"}, response.url);
+    EXPECT_EQ(Url{url + "?key=value&hello=world&test=case"}, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
 }
@@ -113,7 +112,7 @@ TEST(BasicAuthenticationParameterTests, BasicAuthenticationSuccessMultipleParame
                              Parameters{{"key", "value"}, {"hello", "world"}, {"test", "case"}});
     auto expected_text = std::string{"Header reflect"};
     EXPECT_EQ(expected_text, response.text);
-    EXPECT_EQ(Url{url + "?hello=world&key=value&test=case"}, response.url);
+    EXPECT_EQ(Url{url + "?key=value&hello=world&test=case"}, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
 }
@@ -138,7 +137,7 @@ TEST(BasicAuthenticationParameterTests, BasicAuthenticationSuccessMultipleParame
 
     auto expected_text = std::string{"Header reflect"};
     EXPECT_EQ(expected_text, response.text);
-    EXPECT_EQ(Url{url + "?hello=world&key=value&test=case"}, response.url);
+    EXPECT_EQ(Url{url + "?key=value&hello=world&test=case"}, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
 }
@@ -228,7 +227,7 @@ TEST(BasicAuthenticationParameterTests, BasicAuthenticationFailureMultipleParame
     auto response = cpr::Get(url, Authentication{"user", "bad_password"},
                              Parameters{{"key", "value"}, {"hello", "world"}, {"test", "case"}});
     EXPECT_EQ(std::string{}, response.text);
-    EXPECT_EQ(Url{url + "?hello=world&key=value&test=case"}, response.url);
+    EXPECT_EQ(Url{url + "?key=value&hello=world&test=case"}, response.url);
     EXPECT_EQ(std::string{}, response.header["content-type"]);
     EXPECT_EQ(401, response.status_code);
 }
@@ -323,7 +322,7 @@ TEST(ParameterHeaderTests, HeaderReflectNoneParametersTest) {
     auto response = cpr::Get(url, Parameters{{"one", "two"}, {"three", "four"}, {"five", "six"}});
     auto expected_text = std::string{"Header reflect"};
     EXPECT_EQ(expected_text, response.text);
-    EXPECT_EQ(Url{url + "?five=six&one=two&three=four"}, response.url);
+    EXPECT_EQ(Url{url + "?one=two&three=four&five=six"}, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(std::string{}, response.header["hello"]);
     EXPECT_EQ(200, response.status_code);
@@ -335,7 +334,7 @@ TEST(ParameterHeaderTests, HeaderReflectEmptyParametersTest) {
                              Parameters{{"one", "two"}, {"three", "four"}, {"five", "six"}});
     auto expected_text = std::string{"Header reflect"};
     EXPECT_EQ(expected_text, response.text);
-    EXPECT_EQ(Url{url + "?five=six&one=two&three=four"}, response.url);
+    EXPECT_EQ(Url{url + "?one=two&three=four&five=six"}, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(std::string{}, response.header["hello"]);
     EXPECT_EQ(200, response.status_code);
@@ -347,7 +346,7 @@ TEST(ParameterHeaderTests, HeaderReflectSingleParametersTest) {
                              Parameters{{"one", "two"}, {"three", "four"}, {"five", "six"}});
     auto expected_text = std::string{"Header reflect"};
     EXPECT_EQ(expected_text, response.text);
-    EXPECT_EQ(Url{url + "?five=six&one=two&three=four"}, response.url);
+    EXPECT_EQ(Url{url + "?one=two&three=four&five=six"}, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(std::string{"world"}, response.header["hello"]);
     EXPECT_EQ(200, response.status_code);
@@ -359,7 +358,7 @@ TEST(ParameterHeaderTests, HeaderReflectMultipleParametersTest) {
                              Parameters{{"one", "two"}, {"three", "four"}, {"five", "six"}});
     auto expected_text = std::string{"Header reflect"};
     EXPECT_EQ(expected_text, response.text);
-    EXPECT_EQ(Url{url + "?five=six&one=two&three=four"}, response.url);
+    EXPECT_EQ(Url{url + "?one=two&three=four&five=six"}, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(std::string{"world"}, response.header["hello"]);
     EXPECT_EQ(std::string{"value"}, response.header["key"]);
@@ -373,7 +372,7 @@ TEST(ParameterHeaderTests, HeaderReflectCaseInsensitiveParametersTest) {
                              Parameters{{"one", "two"}, {"three", "four"}, {"five", "six"}});
     auto expected_text = std::string{"Header reflect"};
     EXPECT_EQ(expected_text, response.text);
-    EXPECT_EQ(Url{url + "?five=six&one=two&three=four"}, response.url);
+    EXPECT_EQ(Url{url + "?one=two&three=four&five=six"}, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(std::string{"wOrLd"}, response.header["hello"]);
     EXPECT_EQ(std::string{"wOrLd"}, response.header["HELLO"]);
@@ -387,7 +386,7 @@ TEST(ParameterHeaderTests, HeaderReflectEmptyParametersReverseTest) {
                              Header{});
     auto expected_text = std::string{"Header reflect"};
     EXPECT_EQ(expected_text, response.text);
-    EXPECT_EQ(Url{url + "?five=six&one=two&three=four"}, response.url);
+    EXPECT_EQ(Url{url + "?one=two&three=four&five=six"}, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(std::string{}, response.header["hello"]);
     EXPECT_EQ(200, response.status_code);
@@ -399,7 +398,7 @@ TEST(ParameterHeaderTests, HeaderReflectSingleParametersReverseTest) {
                              Header{{"hello", "world"}});
     auto expected_text = std::string{"Header reflect"};
     EXPECT_EQ(expected_text, response.text);
-    EXPECT_EQ(Url{url + "?five=six&one=two&three=four"}, response.url);
+    EXPECT_EQ(Url{url + "?one=two&three=four&five=six"}, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(std::string{"world"}, response.header["hello"]);
     EXPECT_EQ(200, response.status_code);
@@ -411,7 +410,7 @@ TEST(ParameterHeaderTests, HeaderReflectMultipleParametersReverseTest) {
                              Header{{"hello", "world"}, {"key", "value"}, {"test", "case"}});
     auto expected_text = std::string{"Header reflect"};
     EXPECT_EQ(expected_text, response.text);
-    EXPECT_EQ(Url{url + "?five=six&one=two&three=four"}, response.url);
+    EXPECT_EQ(Url{url + "?one=two&three=four&five=six"}, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(std::string{"world"}, response.header["hello"]);
     EXPECT_EQ(std::string{"value"}, response.header["key"]);
@@ -425,7 +424,7 @@ TEST(ParameterHeaderTests, HeaderReflectCaseInsensitiveParametersReverseTest) {
                              Header{{"HeLlO", "wOrLd"}});
     auto expected_text = std::string{"Header reflect"};
     EXPECT_EQ(expected_text, response.text);
-    EXPECT_EQ(Url{url + "?five=six&one=two&three=four"}, response.url);
+    EXPECT_EQ(Url{url + "?one=two&three=four&five=six"}, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(std::string{"wOrLd"}, response.header["hello"]);
     EXPECT_EQ(std::string{"wOrLd"}, response.header["HELLO"]);
