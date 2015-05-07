@@ -20,6 +20,7 @@ class Session {
 
     void SetUrl(const Url& url);
     void SetParameters(const Parameters& parameters);
+    void SetParameters(Parameters&& parameters);
     void SetHeader(const Header& header);
     void SetTimeout(const Timeout& timeout);
     void SetAuth(const Authentication& auth);
@@ -36,6 +37,7 @@ class Session {
     // Used in templated functions
     void SetOption(const Url& url);
     void SetOption(const Parameters& parameters);
+    void SetOption(Parameters&& parameters);
     void SetOption(const Header& header);
     void SetOption(const Timeout& timeout);
     void SetOption(const Authentication& auth);

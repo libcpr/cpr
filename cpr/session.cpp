@@ -15,6 +15,7 @@ class Session::Impl {
 
     void SetUrl(const Url& url);
     void SetParameters(const Parameters& parameters);
+    void SetParameters(Parameters&& parameters);
     void SetHeader(const Header& header);
     void SetTimeout(const Timeout& timeout);
     void SetAuth(const Authentication& auth);
@@ -31,6 +32,7 @@ class Session::Impl {
     // Used in templated functions
     void SetOption(const Url& url);
     void SetOption(const Parameters& parameters);
+    void SetOption(Parameters&& parameters);
     void SetOption(const Header& header);
     void SetOption(const Timeout& timeout);
     void SetOption(const Authentication& auth);
@@ -95,6 +97,10 @@ void Session::Impl::SetUrl(const Url& url) {
 
 void Session::Impl::SetParameters(const Parameters& parameters) {
     parameters_ = parameters;
+}
+
+void Session::Impl::SetParameters(Parameters&& parameters) {
+    parameters_ = std::move(parameters);
 }
 
 void Session::Impl::SetHeader(const Header& header) {
@@ -273,6 +279,7 @@ Session::Session() : pimpl_{ new Impl{} } {}
 Session::~Session() {}
 void Session::SetUrl(const Url& url) { pimpl_->SetUrl(url); }
 void Session::SetParameters(const Parameters& parameters) { pimpl_->SetParameters(parameters); }
+void Session::SetParameters(Parameters&& parameters) { pimpl_->SetParameters(std::move(parameters)); }
 void Session::SetHeader(const Header& header) { pimpl_->SetHeader(header); }
 void Session::SetTimeout(const Timeout& timeout) { pimpl_->SetTimeout(timeout); }
 void Session::SetAuth(const Authentication& auth) { pimpl_->SetAuth(auth); }
@@ -287,6 +294,7 @@ void Session::SetMaxRedirects(const long& max_redirects) { pimpl_->SetMaxRedirec
 // void SetCookies(); Unimplemented
 void Session::SetOption(const Url& url) { pimpl_->SetUrl(url); }
 void Session::SetOption(const Parameters& parameters) { pimpl_->SetParameters(parameters); }
+void Session::SetOption(Parameters&& parameters) { pimpl_->SetParameters(std::move(parameters)); }
 void Session::SetOption(const Header& header) { pimpl_->SetHeader(header); }
 void Session::SetOption(const Timeout& timeout) { pimpl_->SetTimeout(timeout); }
 void Session::SetOption(const Authentication& auth) { pimpl_->SetAuth(auth); }
