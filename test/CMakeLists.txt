@@ -28,6 +28,15 @@ target_link_libraries(session_tests
     ${CPR_LIBRARIES}
     ${MONGOOSE_LIBRARIES})
 
+add_executable(async_tests
+    async_tests.cpp server.cpp)
+
+target_link_libraries(async_tests
+    ${GTEST_LIBRARIES}
+    ${CPR_LIBRARIES}
+    ${MONGOOSE_LIBRARIES})
+
 add_test(NAME cpr_get_tests COMMAND get_tests)
 add_test(NAME cpr_post_tests COMMAND post_tests)
 add_test(NAME cpr_session_tests COMMAND session_tests)
+add_test(NAME cpr_async_tests COMMAND async_tests)
