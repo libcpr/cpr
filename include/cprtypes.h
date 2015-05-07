@@ -16,6 +16,5 @@ class CaseInsenstiveCompare {
 
 typedef std::map<std::string, std::string, CaseInsenstiveCompare> Header;
 typedef std::string Url;
-typedef long Timeout;
 
 #endif

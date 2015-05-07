@@ -10,6 +10,7 @@
 #include "parameters.h"
 #include "payload.h"
 #include "response.h"
+#include "timeout.h"
 
 
 class Session {
