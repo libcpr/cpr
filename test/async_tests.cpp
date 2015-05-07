@@ -65,16 +65,6 @@ TEST(UrlEncodedPostTests, AsyncGetMultipleReflectTest) {
     }
 }
 
-TEST(BasicAuthenticationParameterHeaderTests, StuffTest) {
-    auto url = Url{base + "/basic_auth.html"};
-    auto response = cpr::Get(url, Authentication{"user", "password"});
-    auto expected_text = std::string{"Header reflect"};
-    EXPECT_EQ(expected_text, response.text);
-    EXPECT_EQ(url, response.url);
-    EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
-    EXPECT_EQ(200, response.status_code);
-}
-
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
     ::testing::AddGlobalTestEnvironment(server);
