@@ -4,7 +4,6 @@ include_directories(
     ${CURL_INCLUDE_DIRS})
 
 add_library(${CPR_LIBRARIES}
-    api.cpp
     auth.cpp
     cprtypes.cpp
     digest.cpp

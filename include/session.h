@@ -33,6 +33,20 @@ class Session {
     // void SetCookie(); Unimplemented
     // void SetCookies(); Unimplemented
 
+    // Used in templated functions
+    void SetOption(const Url& url);
+    void SetOption(const Parameters& parameters);
+    void SetOption(const Header& header);
+    void SetOption(const Timeout& timeout);
+    void SetOption(const Authentication& auth);
+    void SetOption(const Digest& auth);
+    void SetOption(Payload&& payload);
+    void SetOption(const Payload& payload);
+    void SetOption(Multipart&& multipart);
+    void SetOption(const Multipart& multipart);
+    void SetOption(const bool& redirect);
+    void SetOption(const long& max_redirects);
+
     Response Get();
     Response Post();
 

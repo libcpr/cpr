@@ -28,6 +28,20 @@ class Session::Impl {
     // void SetCookie(); Unimplemented
     // void SetCookies(); Unimplemented
 
+    // Used in templated functions
+    void SetOption(const Url& url);
+    void SetOption(const Parameters& parameters);
+    void SetOption(const Header& header);
+    void SetOption(const Timeout& timeout);
+    void SetOption(const Authentication& auth);
+    void SetOption(const Digest& auth);
+    void SetOption(Payload&& payload);
+    void SetOption(const Payload& payload);
+    void SetOption(Multipart&& multipart);
+    void SetOption(const Multipart& multipart);
+    void SetOption(const bool& redirect);
+    void SetOption(const long& max_redirects);
+
     Response Get();
     Response Post();
 
@@ -270,5 +284,17 @@ void Session::SetRedirect(const bool& redirect) { pimpl_->SetRedirect(redirect);
 void Session::SetMaxRedirects(const long& max_redirects) { pimpl_->SetMaxRedirects(max_redirects); }
 // void SetCookie(); Unimplemented
 // void SetCookies(); Unimplemented
+void Session::SetOption(const Url& url) { pimpl_->SetUrl(url); }
+void Session::SetOption(const Parameters& parameters) { pimpl_->SetParameters(parameters); }
+void Session::SetOption(const Header& header) { pimpl_->SetHeader(header); }
+void Session::SetOption(const Timeout& timeout) { pimpl_->SetTimeout(timeout); }
+void Session::SetOption(const Authentication& auth) { pimpl_->SetAuth(auth); }
+void Session::SetOption(const Digest& auth) { pimpl_->SetDigest(auth); }
+void Session::SetOption(const Payload& payload) { pimpl_->SetPayload(payload); }
+void Session::SetOption(Payload&& payload) { pimpl_->SetPayload(std::move(payload)); }
+void Session::SetOption(const Multipart& multipart) { pimpl_->SetMultipart(multipart); }
+void Session::SetOption(Multipart&& multipart) { pimpl_->SetMultipart(std::move(multipart)); }
+void Session::SetOption(const bool& redirect) { pimpl_->SetRedirect(redirect); }
+void Session::SetOption(const long& max_redirects) { pimpl_->SetMaxRedirects(max_redirects); }
 Response Session::Get() { return pimpl_->Get(); }
 Response Session::Post() { return pimpl_->Post(); }
