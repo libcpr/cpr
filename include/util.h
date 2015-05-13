@@ -9,6 +9,7 @@ namespace cpr {
         Header parseHeader(const std::string& headers);
         std::string parseResponse(const std::string& response);
         size_t writeFunction(void *ptr, size_t size, size_t nmemb, std::string* data);
+        std::string urlEncode(const std::string& response);
     }
 };
 

@@ -1,6 +1,9 @@
 #include "util.h"
 
+#include <cctype>
+#include <iomanip>
 #include <sstream>
+#include <string>
 #include <vector>
 
 
@@ -48,4 +51,23 @@ std::string cpr::util::parseResponse(const std::string& response) {
 size_t cpr::util::writeFunction(void *ptr, size_t size, size_t nmemb, std::string* data) {
     data->append((char*) ptr, size * nmemb);
     return size * nmemb;
+}
+
+std::string cpr::util::urlEncode(const std::string& value) {
+    std::ostringstream escaped;
+    escaped.fill('0');
+    escaped << std::hex;
+
+    for (auto i = value.cbegin(), n = value.cend(); i != n; ++i) {
+        std::string::value_type c = (*i);
+        // Keep alphanumeric and other accepted characters intact
+        if (std::isalnum(c) || c == '-' || c == '_' || c == '.' || c == '~') {
+            escaped << c;
+            continue;
+        }
+        // Any other characters are percent-encoded
+        escaped << '%' << std::setw(2) << int((unsigned char) c);
+    }
+
+    return escaped.str();
 }
