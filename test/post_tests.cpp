@@ -167,6 +167,19 @@ TEST(UrlEncodedPostTests, FormPostContentTypeTest) {
     EXPECT_EQ(201, response.status_code);
 }
 
+TEST(UrlEncodedPostTests, FormPostContentTypeLValueTest) {
+    auto url = Url{base + "/form_post.html"};
+    auto multipart = Multipart{{"x", 5, "application/number"}};
+    auto response = cpr::Post(url, multipart);
+    auto expected_text = std::string{"{\n"
+                                     "  \"x\": 5\n"
+                                     "}"};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
+    EXPECT_EQ(201, response.status_code);
+}
+
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
     ::testing::AddGlobalTestEnvironment(server);

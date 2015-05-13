@@ -294,6 +294,135 @@ TEST(MultipleGetTests, BasicAuthenticationChangeMultipleGetTest) {
     }
 }
 
+TEST(ParameterTests, ParameterSingleTest) {
+    auto url = Url{base + "/hello.html"};
+    Session session;
+    session.SetUrl(url);
+    Parameters parameters{{"hello", "world"}};
+    session.SetParameters(parameters);
+    auto response = session.Get();
+    auto expected_text = std::string{"Hello world!"};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(Url{url + "?hello=world"}, response.url);
+    EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+    EXPECT_EQ(200, response.status_code);
+}
+
+TEST(ParameterTests, ParameterMultipleTest) {
+    auto url = Url{base + "/hello.html"};
+    Session session;
+    session.SetUrl(url);
+    Parameters parameters{{"hello", "world"}, {"key", "value"}};
+    session.SetParameters(parameters);
+    auto response = session.Get();
+    auto expected_text = std::string{"Hello world!"};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(Url{url + "?hello=world&key=value"}, response.url);
+    EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+    EXPECT_EQ(200, response.status_code);
+}
+
+TEST(TimeoutTests, SetTimeoutTest) {
+    auto url = Url{base + "/hello.html"};
+    Session session;
+    session.SetUrl(url);
+    session.SetTimeout(0L);
+    auto response = session.Get();
+    auto expected_text = std::string{"Hello world!"};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+    EXPECT_EQ(200, response.status_code);
+}
+
+TEST(TimeoutTests, SetTimeoutLongTest) {
+    auto url = Url{base + "/hello.html"};
+    Session session;
+    session.SetUrl(url);
+    session.SetTimeout(10000L);
+    auto response = session.Get();
+    auto expected_text = std::string{"Hello world!"};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+    EXPECT_EQ(200, response.status_code);
+}
+
+TEST(PayloadTests, SetPayloadTest) {
+    auto url = Url{base + "/url_post.html"};
+    Session session;
+    session.SetUrl(url);
+    session.SetPayload({{"x", "5"}});
+    auto response = session.Post();
+    auto expected_text = std::string{"{\n"
+                                     "  \"x\": 5\n"
+                                     "}"};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
+    EXPECT_EQ(201, response.status_code);
+}
+
+TEST(PayloadTests, SetPayloadLValueTest) {
+    auto url = Url{base + "/url_post.html"};
+    Session session;
+    session.SetUrl(url);
+    auto payload = Payload{{"x", "5"}};
+    session.SetPayload(payload);
+    auto response = session.Post();
+    auto expected_text = std::string{"{\n"
+                                     "  \"x\": 5\n"
+                                     "}"};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
+    EXPECT_EQ(201, response.status_code);
+}
+
+TEST(MultipartTests, SetMultipartTest) {
+    auto url = Url{base + "/form_post.html"};
+    Session session;
+    session.SetUrl(url);
+    session.SetMultipart({{"x", "5"}});
+    auto response = session.Post();
+    auto expected_text = std::string{"{\n"
+                                     "  \"x\": 5\n"
+                                     "}"};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
+    EXPECT_EQ(201, response.status_code);
+}
+
+TEST(MultipartTests, SetMultipartValueTest) {
+    auto url = Url{base + "/form_post.html"};
+    Session session;
+    session.SetUrl(url);
+    auto multipart = Multipart{{"x", "5"}};
+    session.SetMultipart(multipart);
+    auto response = session.Post();
+    auto expected_text = std::string{"{\n"
+                                     "  \"x\": 5\n"
+                                     "}"};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
+    EXPECT_EQ(201, response.status_code);
+}
+
+TEST(DigestTests, SetDigestTest) {
+    auto url = Url{base + "/digest_auth.html"};
+    Session session;
+    session.SetUrl(url);
+    session.SetDigest({"user", "password"});
+    auto response = session.Get();
+    auto expected_text = std::string{"Header reflect"};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+    EXPECT_EQ(200, response.status_code);
+}
+
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
     ::testing::AddGlobalTestEnvironment(server);

@@ -20,6 +20,16 @@ TEST(BasicTests, HelloWorldTest) {
     EXPECT_EQ(200, response.status_code);
 }
 
+TEST(BasicTests, TimeoutTest) {
+    auto url = Url{base + "/hello.html"};
+    auto response = cpr::Get(url, Timeout{0L});
+    auto expected_text = std::string{"Hello world!"};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+    EXPECT_EQ(200, response.status_code);
+}
+
 TEST(BasicTests, BasicJsonTest) {
     auto url = Url{base + "/basic.json"};
     auto response = cpr::Get(url);
@@ -55,7 +65,8 @@ TEST(BasicTests, BadHostTest) {
 
 TEST(ParameterTests, SingleParameterTest) {
     auto url = Url{base + "/hello.html"};
-    auto response = cpr::Get(url, Parameters{{"key", "value"}});
+    auto parameters = Parameters{{"key", "value"}};
+    auto response = cpr::Get(url, parameters);
     auto expected_text = std::string{"Hello world!"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(Url{url + "?key=value"}, response.url);
@@ -958,6 +969,26 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
     EXPECT_EQ(std::string{}, response.header["content-type"]);
     EXPECT_EQ(std::string{}, response.header["hello"]);
     EXPECT_EQ(401, response.status_code);
+}
+
+TEST(GetRedirectTests, RedirectTest) {
+    auto url = Url{base + "/temporary_redirect.html"};
+    auto response = cpr::Get(url, false); // This should be turned into an object
+    auto expected_text = std::string{"Found"};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{}, response.header["content-type"]);
+    EXPECT_EQ(302, response.status_code);
+}
+
+TEST(GetRedirectTests, ZeroMaxRedirectsTest) {
+    auto url = Url{base + "/hello.html"};
+    auto response = cpr::Get(url, 0L);
+    auto expected_text = std::string{"Hello world!"};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+    EXPECT_EQ(200, response.status_code);
 }
 
 int main(int argc, char** argv) {
