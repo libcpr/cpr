@@ -1,17 +1,11 @@
 #include <gtest/gtest.h>
 
-#include <cstdio>
-#include <fstream>
 #include <string>
 #include <vector>
 
 #include <cpr.h>
 
-#include "cookies.h"
-#include "multipart.h"
 #include "server.h"
-#include <iostream>
-#include <list>
 
 
 static Server* server = new Server();
