@@ -9,6 +9,8 @@
 
 #include "mongoose.h"
 
+#include <time.h>
+
 #define SERVER_PORT "8080"
 
 
@@ -29,6 +31,22 @@ static int hello(struct mg_connection* conn) {
     auto response = std::string{"Hello world!"};
     mg_send_status(conn, 200);
     mg_send_header(conn, "content-type", "text/html");
+    mg_send_data(conn, response.data(), response.length()); 
+    return MG_TRUE;
+}
+
+static int basicCookies(struct mg_connection* conn) {
+    auto response = std::string{"Hello world!"};
+    mg_send_status(conn, 200);
+    mg_send_header(conn, "content-type", "text/html");
+    time_t t = time(NULL) + 5;  // Valid for 1 hour
+    char expire[100], expire_epoch[100];
+    snprintf(expire_epoch, sizeof(expire_epoch), "%lu", (unsigned long) t);
+    strftime(expire, sizeof(expire), "%a, %d %b %Y %H:%M:%S GMT", gmtime(&t));
+    std::string cookie{"cookie=chocolate; expires=\"" + std::string{expire} + "\"; http-only;"};
+    std::string cookie2{"icecream=vanilla; expires=\"" + std::string{expire} + "\"; http-only;"};
+    mg_send_header(conn, "Set-Cookie", cookie.data());
+    mg_send_header(conn, "Set-Cookie", cookie2.data());
     mg_send_data(conn, response.data(), response.length()); 
     return MG_TRUE;
 }
@@ -223,6 +241,8 @@ static int evHandler(struct mg_connection* conn, enum mg_event ev) {
         case MG_REQUEST:
             if (Url{conn->uri} == "/hello.html") {
                 return hello(conn);
+            } else if (Url{conn->uri} == "/basic_cookies.html") {
+                return basicCookies(conn);
             } else if (Url{conn->uri} == "/basic_auth.html") {
                 return headerReflect(conn);
             } else if (Url{conn->uri} == "/digest_auth.html") {
