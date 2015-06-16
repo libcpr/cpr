@@ -4,6 +4,7 @@
 #include <memory>
 
 #include "auth.h"
+#include "cookies.h"
 #include "cprtypes.h"
 #include "digest.h"
 #include "multipart.h"
@@ -31,8 +32,7 @@ class Session {
     void SetMultipart(const Multipart& multipart);
     void SetRedirect(const bool& redirect);
     void SetMaxRedirects(const long& max_redirects);
-    // void SetCookie(); Unimplemented
-    // void SetCookies(); Unimplemented
+    void SetCookies(const Cookies& cookies);
 
     // Used in templated functions
     void SetOption(const Url& url);
@@ -48,6 +48,7 @@ class Session {
     void SetOption(const Multipart& multipart);
     void SetOption(const bool& redirect);
     void SetOption(const long& max_redirects);
+    void SetOption(const Cookies& cookies);
 
     Response Get();
     Response Post();

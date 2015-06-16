@@ -63,6 +63,21 @@ TEST(BasicTests, BadHostTest) {
     EXPECT_EQ(0, response.status_code);
 }
 
+TEST(CookiesTests, SingleCookieTest) {
+    auto url = Url{base + "/basic_cookies.html"};
+    auto cookies = Cookies{{"hello", "world"}, {"my", "another; fake=cookie;"}};
+    auto response = cpr::Get(url, cookies);
+    auto expected_text = std::string{"Hello world!"};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+    EXPECT_EQ(200, response.status_code);
+    cookies = response.cookies;
+    EXPECT_EQ(cookies["cookie"], response.cookies["cookie"]);
+    EXPECT_EQ(cookies["icecream"], response.cookies["icecream"]);
+    EXPECT_EQ(cookies["expires"], response.cookies["expires"]);
+}
+
 TEST(ParameterTests, SingleParameterTest) {
     auto url = Url{base + "/hello.html"};
     auto parameters = Parameters{{"key", "value"}};

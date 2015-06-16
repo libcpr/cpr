@@ -48,6 +48,18 @@ std::string cpr::util::parseResponse(const std::string& response) {
     return response;
 }
 
+std::vector<std::string> cpr::util::split(const std::string& to_split, char delimiter) {
+    std::vector<std::string> tokens;
+
+    std::stringstream stream(to_split);
+    std::string item;
+    while (std::getline(stream, item, delimiter)) {
+        tokens.push_back(item);
+    }
+
+    return tokens;
+}
+
 size_t cpr::util::writeFunction(void *ptr, size_t size, size_t nmemb, std::string* data) {
     data->append((char*) ptr, size * nmemb);
     return size * nmemb;

@@ -57,14 +57,14 @@ C++ Requests currently supports:
 * File POST upload
 * Basic authentication scheme
 * Timeout specification
+* Asynchronous requests
+* :cookie: support!
 
 ### Planned
 
 Support for the following will be forthcoming (in rough order of implementation priority):
 
-* [:cookie: support!](https://github.com/whoshuu/cpr/issues/2)
 * [Digest authentication](https://github.com/whoshuu/cpr/issues/3)
-* [Asynchronous requests](https://github.com/whoshuu/cpr/issues/6)
 * [Proxy support](https://github.com/whoshuu/cpr/issues/5)
 
 and much more!
