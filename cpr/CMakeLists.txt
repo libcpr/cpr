@@ -5,6 +5,7 @@ include_directories(
 
 add_library(${CPR_LIBRARIES}
     auth.cpp
+    cookies.cpp
     cprtypes.cpp
     digest.cpp
     multipart.cpp
