@@ -7,6 +7,7 @@
 
 #include <cpr.h>
 
+#include "cookies.h"
 #include "multipart.h"
 #include "server.h"
 #include <iostream>
@@ -61,6 +62,37 @@ TEST(UrlEncodedPostTests, AsyncGetMultipleReflectTest) {
         EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
         EXPECT_EQ(200, response.status_code);
         ++i;
+    }
+}
+
+TEST(CookiesTests, CookiesTest) {
+    auto url = Url{base + "/basic_cookies.html"};
+    Session session{};
+    session.SetUrl(url);
+    Cookies cookies;
+
+    {
+        auto response = session.Get();
+        auto expected_text = std::string{"Hello world!"};
+        EXPECT_EQ(expected_text, response.text);
+        EXPECT_EQ(url, response.url);
+        EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+        EXPECT_EQ(200, response.status_code);
+        cookies = response.cookies;
+    }
+    {
+        cookies["hello"] = "world";
+        cookies["my"] = "another; fake=cookie;"; // This is url encoded
+        session.SetCookies(cookies);
+        auto response = session.Get();
+        auto expected_text = std::string{"Hello world!"};
+        EXPECT_EQ(expected_text, response.text);
+        EXPECT_EQ(url, response.url);
+        EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+        EXPECT_EQ(200, response.status_code);
+        EXPECT_EQ(cookies["cookie"], response.cookies["cookie"]);
+        EXPECT_EQ(cookies["icecream"], response.cookies["icecream"]);
+        EXPECT_EQ(cookies["expires"], response.cookies["expires"]);
     }
 }
 
