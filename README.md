@@ -22,30 +22,6 @@ int main(int argc,  char** argv) {
 
 And here's [less functional, more complicated code, without cpr](https://gist.github.com/whoshuu/2dc858b8730079602044).
 
-### Requirements
-
-The only explicit requirement is a C++11 compatible compiler such as clang or gcc. The minimum required version of gcc is unknown, so if anyone has trouble building this library with a specific version of gcc, do let me know.
-
-### Install
-
-The easiest way to install is to use cmake:
-
-```shell
-mkdir build
-cd build
-cmake ..
-make
-```
-
-By default, the embedded libcurl is used by this library. If you want to use your system libcurl, then run:
-
-```shell
-cmake -DUSE_SYSTEM_CURL=ON ..
-make
-```
-
-A successful build should produce a single library archive that you can link against your project. You should also make the include directory visible to your build as well so that you can include [cpr.h](https://github.com/whoshuu/cpr/blob/master/include/cpr.h).
-
 ### Features
 
 C++ Requests currently supports:
@@ -68,6 +44,30 @@ Support for the following will be forthcoming (in rough order of implementation 
 * [Proxy support](https://github.com/whoshuu/cpr/issues/5)
 
 and much more!
+
+### Install
+
+The easiest way to install is to use cmake:
+
+```shell
+mkdir build
+cd build
+cmake ..
+make
+```
+
+By default, the embedded libcurl is used by this library. If you want to use your system libcurl, then run:
+
+### Requirements
+
+The only explicit requirement is a C++11 compatible compiler such as clang or gcc. The minimum required version of gcc is unknown, so if anyone has trouble building this library with a specific version of gcc, do let me know.
+
+```shell
+cmake -DUSE_SYSTEM_CURL=ON ..
+make
+```
+
+A successful build should produce a single library archive that you can link against your project. You should also make the include directory visible to your build as well so that you can include [cpr.h](https://github.com/whoshuu/cpr/blob/master/include/cpr.h).
 
 ### Disclaimer
 
