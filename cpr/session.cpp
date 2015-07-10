@@ -312,8 +312,6 @@ void Session::SetMultipart(Multipart&& multipart) { pimpl_->SetMultipart(std::mo
 void Session::SetRedirect(const bool& redirect) { pimpl_->SetRedirect(redirect); }
 void Session::SetMaxRedirects(const long& max_redirects) { pimpl_->SetMaxRedirects(max_redirects); }
 void Session::SetCookies(const Cookies& cookies) { pimpl_->SetCookies(cookies); }
-// void SetCookie(); Unimplemented
-// void SetCookies(); Unimplemented
 void Session::SetOption(const Url& url) { pimpl_->SetUrl(url); }
 void Session::SetOption(const Parameters& parameters) { pimpl_->SetParameters(parameters); }
 void Session::SetOption(Parameters&& parameters) { pimpl_->SetParameters(std::move(parameters)); }
