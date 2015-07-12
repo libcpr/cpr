@@ -1,6 +1,8 @@
 #include "session.h"
 
+#include <algorithm>
 #include <functional>
+#include <string>
 
 #include <curl/curl.h>
 
@@ -22,6 +24,7 @@ class Session::Impl {
     void SetDigest(const Digest& auth);
     void SetPayload(Payload&& payload);
     void SetPayload(const Payload& payload);
+    void SetProxies(const Proxies& proxies);
     void SetMultipart(Multipart&& multipart);
     void SetMultipart(const Multipart& multipart);
     void SetRedirect(const bool& redirect);
@@ -38,6 +41,7 @@ class Session::Impl {
     void SetOption(const Digest& auth);
     void SetOption(Payload&& payload);
     void SetOption(const Payload& payload);
+    void SetOption(const Proxies& proxies);
     void SetOption(Multipart&& multipart);
     void SetOption(const Multipart& multipart);
     void SetOption(const bool& redirect);
@@ -158,6 +162,24 @@ void Session::Impl::SetPayload(const Payload& payload) {
     if (curl) {
         curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, payload.content.length());
         curl_easy_setopt(curl, CURLOPT_POSTFIELDS, payload.content.data());
+    }
+}
+
+void Session::Impl::SetProxies(const Proxies& proxies) {
+    auto curl = curl_->handle;
+    if (curl) {
+        for (auto& proxy : proxies.hosts) {
+            if (proxy.protocol == std::string{"http"} || proxy.protocol == std::string{"https"}) {
+                curl_easy_setopt(curl, CURLOPT_PROXYTYPE, CURLPROXY_HTTP);
+            } else if (proxy.protocol == std::string{"socks4"}) {
+                curl_easy_setopt(curl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS4);
+            } else if (proxy.protocol == std::string{"socks4a"}) {
+                curl_easy_setopt(curl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS4A);
+            } else if (proxy.protocol == std::string{"socks5"}) {
+                curl_easy_setopt(curl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
+            }
+            curl_easy_setopt(curl, CURLOPT_PROXY, proxy.url.data());
+        }
     }
 }
 
@@ -307,6 +329,7 @@ void Session::SetAuth(const Authentication& auth) { pimpl_->SetAuth(auth); }
 void Session::SetDigest(const Digest& auth) { pimpl_->SetDigest(auth); }
 void Session::SetPayload(const Payload& payload) { pimpl_->SetPayload(payload); }
 void Session::SetPayload(Payload&& payload) { pimpl_->SetPayload(std::move(payload)); }
+void Session::SetProxies(const Proxies& proxies) { pimpl_->SetProxies(proxies); }
 void Session::SetMultipart(const Multipart& multipart) { pimpl_->SetMultipart(multipart); }
 void Session::SetMultipart(Multipart&& multipart) { pimpl_->SetMultipart(std::move(multipart)); }
 void Session::SetRedirect(const bool& redirect) { pimpl_->SetRedirect(redirect); }
@@ -321,6 +344,7 @@ void Session::SetOption(const Authentication& auth) { pimpl_->SetAuth(auth); }
 void Session::SetOption(const Digest& auth) { pimpl_->SetDigest(auth); }
 void Session::SetOption(const Payload& payload) { pimpl_->SetPayload(payload); }
 void Session::SetOption(Payload&& payload) { pimpl_->SetPayload(std::move(payload)); }
+void Session::SetOption(const Proxies& proxies) { pimpl_->SetProxies(proxies); }
 void Session::SetOption(const Multipart& multipart) { pimpl_->SetMultipart(multipart); }
 void Session::SetOption(Multipart&& multipart) { pimpl_->SetMultipart(std::move(multipart)); }
 void Session::SetOption(const bool& redirect) { pimpl_->SetRedirect(redirect); }

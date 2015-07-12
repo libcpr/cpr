@@ -10,6 +10,7 @@
 #include "multipart.h"
 #include "parameters.h"
 #include "payload.h"
+#include "proxies.h"
 #include "response.h"
 #include "timeout.h"
 
@@ -28,6 +29,7 @@ class Session {
     void SetDigest(const Digest& auth);
     void SetPayload(Payload&& payload);
     void SetPayload(const Payload& payload);
+    void SetProxies(const Proxies& proxies);
     void SetMultipart(Multipart&& multipart);
     void SetMultipart(const Multipart& multipart);
     void SetRedirect(const bool& redirect);
@@ -44,6 +46,7 @@ class Session {
     void SetOption(const Digest& auth);
     void SetOption(Payload&& payload);
     void SetOption(const Payload& payload);
+    void SetOption(const Proxies& proxies);
     void SetOption(Multipart&& multipart);
     void SetOption(const Multipart& multipart);
     void SetOption(const bool& redirect);
