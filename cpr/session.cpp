@@ -7,7 +7,6 @@
 #include <curl/curl.h>
 
 #include "curlholder.h"
-#include "payload.h"
 #include "util.h"
 
 
