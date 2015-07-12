@@ -11,6 +11,7 @@ add_library(${CPR_LIBRARIES}
     multipart.cpp
     parameters.cpp
     payload.cpp
+    proxies.cpp
     session.cpp
     util.cpp)
 
