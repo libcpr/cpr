@@ -36,12 +36,12 @@ C++ Requests currently supports:
 * Timeout specification
 * Asynchronous requests
 * :cookie: support!
+* Proxy support
 
 ### Planned
 
 Support for the following will be forthcoming (in rough order of implementation priority):
 
-* [Proxy support](https://github.com/whoshuu/cpr/issues/5)
 
 and much more!
 
