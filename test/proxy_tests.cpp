@@ -34,6 +34,15 @@ TEST(ProxyTests, MultipleProxyHttpsTest) {
     EXPECT_EQ(200, response.status_code);
 }
 
+TEST(ProxyTests, CopyProxyTest) {
+    auto url = Url{"http://www.httpbin.org/get"};
+    auto proxies = Proxies{{"http", "173.234.8.2:80"}};
+    auto response = cpr::Get(url, proxies);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
+    EXPECT_EQ(200, response.status_code);
+}
+
 TEST(ProxyTests, ProxySessionTest) {
     auto url = Url{"http://www.httpbin.org/get"};
     Session session;
