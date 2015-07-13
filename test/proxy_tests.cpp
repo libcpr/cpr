@@ -57,6 +57,18 @@ TEST(ProxyTests, ProxySessionTest) {
     EXPECT_EQ(200, response.status_code);
 }
 
+TEST(ProxyTests, ReferenceProxySessionTest) {
+    auto url = Url{"http://www.httpbin.org/get"};
+    auto proxies = Proxies{{"http", HTTP_PROXY}};
+    Session session;
+    session.SetUrl(url);
+    session.SetProxies(proxies);
+    auto response = session.Get();
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
+    EXPECT_EQ(200, response.status_code);
+}
+
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
