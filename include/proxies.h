@@ -2,23 +2,21 @@
 #define PROXIES_H
 
 #include <initializer_list>
+#include <map>
 #include <string>
-#include <vector>
+#include <utility>
 
-
-struct Proxy {
-    Proxy(const std::string& protocol, const std::string& url) : protocol{protocol}, url{url} {}
-
-    std::string protocol;
-    std::string url;
-};
 
 class Proxies {
   public:
     Proxies() {}
-    Proxies(const std::initializer_list<Proxy>& proxies);
+    Proxies(const std::initializer_list<std::pair<std::string, std::string>>& hosts);
 
-    std::vector<Proxy> hosts;
+    bool has(const std::string& protocol);
+    const std::string& operator[](const std::string& protocol);
+
+  private:
+    std::map<std::string, std::string> hosts_;
 };
 
 #endif
