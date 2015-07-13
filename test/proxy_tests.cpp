@@ -8,7 +8,7 @@
 // code implementation inside server.cpp
 
 #define HTTP_PROXY "104.131.214.38:3128"
-#define HTTPS_PROXY "67.195.42.72:80"
+#define HTTPS_PROXY "104.131.214.38:3128"
 
 
 TEST(ProxyTests, SingleProxyTest) {
