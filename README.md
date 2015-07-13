@@ -58,16 +58,16 @@ make
 
 By default, the embedded libcurl is used by this library. If you want to use your system libcurl, then run:
 
-### Requirements
-
-The only explicit requirement is a C++11 compatible compiler such as clang or gcc. The minimum required version of gcc is unknown, so if anyone has trouble building this library with a specific version of gcc, do let me know.
-
 ```shell
 cmake -DUSE_SYSTEM_CURL=ON ..
 make
 ```
 
 A successful build should produce a single library archive that you can link against your project. You should also make the include directory visible to your build as well so that you can include [cpr.h](https://github.com/whoshuu/cpr/blob/master/include/cpr.h).
+
+### Requirements
+
+The only explicit requirement is a C++11 compatible compiler such as clang or gcc. The minimum required version of gcc is unknown, so if anyone has trouble building this library with a specific version of gcc, do let me know.
 
 ### Disclaimer
 
