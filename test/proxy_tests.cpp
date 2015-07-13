@@ -16,8 +16,17 @@ TEST(ProxyTests, SingleProxyTest) {
     EXPECT_EQ(200, response.status_code);
 }
 
-TEST(ProxyTests, MultipleProxyTest) {
+TEST(ProxyTests, MultipleProxyHttpTest) {
     auto url = Url{"http://www.httpbin.org/get"};
+    auto response = cpr::Get(url, Proxies{{"http", "173.234.8.2:80"},
+                                          {"https", "67.195.42.72:80"}});
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
+    EXPECT_EQ(200, response.status_code);
+}
+
+TEST(ProxyTests, MultipleProxyHttpsTest) {
+    auto url = Url{"https://www.httpbin.org/get"};
     auto response = cpr::Get(url, Proxies{{"http", "173.234.8.2:80"},
                                           {"https", "67.195.42.72:80"}});
     EXPECT_EQ(url, response.url);
