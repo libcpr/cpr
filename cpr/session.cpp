@@ -54,6 +54,7 @@ class Session::Impl {
     std::unique_ptr<CurlHolder, std::function<void(CurlHolder*)>> curl_;
     Url url_;
     Parameters parameters_;
+    Proxies proxies_;
 
     Response makeRequest(CURL* curl);
     static void freeHolder(CurlHolder* holder);
@@ -165,21 +166,7 @@ void Session::Impl::SetPayload(const Payload& payload) {
 }
 
 void Session::Impl::SetProxies(const Proxies& proxies) {
-    auto curl = curl_->handle;
-    if (curl) {
-        for (auto& proxy : proxies.hosts) {
-            if (proxy.protocol == std::string{"http"} || proxy.protocol == std::string{"https"}) {
-                curl_easy_setopt(curl, CURLOPT_PROXYTYPE, CURLPROXY_HTTP);
-            } else if (proxy.protocol == std::string{"socks4"}) {
-                curl_easy_setopt(curl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS4);
-            } else if (proxy.protocol == std::string{"socks4a"}) {
-                curl_easy_setopt(curl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS4A);
-            } else if (proxy.protocol == std::string{"socks5"}) {
-                curl_easy_setopt(curl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
-            }
-            curl_easy_setopt(curl, CURLOPT_PROXY, proxy.url.data());
-        }
-    }
+    proxies_ = proxies;
 }
 
 void Session::Impl::SetMultipart(Multipart&& multipart) {
