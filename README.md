@@ -42,6 +42,9 @@ C++ Requests currently supports:
 
 Support for the following will be forthcoming (in rough order of implementation priority):
 
+* [Usage and documentation](https://github.com/whoshuu/cpr/issues/20)
+* [PUT methods](https://github.com/whoshuu/cpr/issues/21)
+* [DELETE methods](https://github.com/whoshuu/cpr/issues/22)
 
 and much more!
 
