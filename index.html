@@ -1,0 +1,134 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>cpr - C++ Requests by whoshuu</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/github-light.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>cpr - C++ Requests</h1>
+        <p>Curl for People</p>
+
+        <p class="view"><a href="https://github.com/whoshuu/cpr">View the Project on GitHub <small>whoshuu/cpr</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/whoshuu/cpr/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/whoshuu/cpr/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/whoshuu/cpr">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <p>C++ Requests is a simple wrapper around <a href="http://curl.haxx.se/libcurl">libcurl</a> inspired by the excellent <a href="https://github.com/kennethreitz/requests">Python Requests</a> project.</p>
+
+<p>Despite its name, libcurl's easy interface is anything but, and making mistakes misusing it is a common source of error and frustration. Using the more expressive language facilities of C++11, this library captures the essence of making network calls into a few concise idioms.</p>
+
+<p>Here's a quick GET request:</p>
+
+<div class="highlight highlight-c++"><pre>#<span class="pl-k">include</span> <span class="pl-s"><span class="pl-pds">&lt;</span>cpr.h<span class="pl-pds">&gt;</span></span>
+#<span class="pl-k">include</span> <span class="pl-s"><span class="pl-pds">&lt;</span>iostream<span class="pl-pds">&gt;</span></span>
+
+<span class="pl-k">int</span> <span class="pl-en">main</span>(<span class="pl-k">int</span> argc,  <span class="pl-k">char</span>** argv) {
+    <span class="pl-k">auto</span> r = <span class="pl-c1">cpr::Get</span>(Url{<span class="pl-s"><span class="pl-pds">"</span>https://api.github.com/repos/whoshuu/cpr/contributors<span class="pl-pds">"</span></span>},
+                      Authentication{<span class="pl-s"><span class="pl-pds">"</span>user<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>pass<span class="pl-pds">"</span></span>},
+                      Parameters{{<span class="pl-s"><span class="pl-pds">"</span>anon<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>true<span class="pl-pds">"</span></span>}, {<span class="pl-s"><span class="pl-pds">"</span>key<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>value<span class="pl-pds">"</span></span>}});
+    r.<span class="pl-smi">status_code</span>;                  <span class="pl-c">// 200</span>
+    r.<span class="pl-smi">headers</span>[<span class="pl-s"><span class="pl-pds">"</span>content-type<span class="pl-pds">"</span></span>];      <span class="pl-c">// application/json; charset=utf-8</span>
+    r.<span class="pl-smi">text</span>;                         <span class="pl-c">// JSON text string</span>
+}</pre></div>
+
+<p>And here's <a href="https://gist.github.com/whoshuu/2dc858b8730079602044">less functional, more complicated code, without cpr</a>.</p>
+
+<h3>
+<a id="features" class="anchor" href="#features" aria-hidden="true"><span class="octicon octicon-link"></span></a>Features</h3>
+
+<p>C++ Requests currently supports:</p>
+
+<ul>
+<li>Custom headers</li>
+<li>Url encoded parameters</li>
+<li>Url encoded POST values</li>
+<li>Multipart form POST upload</li>
+<li>File POST upload</li>
+<li>Basic authentication</li>
+<li>Digest authentication</li>
+<li>Timeout specification</li>
+<li>Asynchronous requests</li>
+<li>
+<img class="emoji" title=":cookie:" alt=":cookie:" src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f36a.png" height="20" width="20" align="absmiddle"> support!</li>
+<li>Proxy support</li>
+</ul>
+
+<h3>
+<a id="planned" class="anchor" href="#planned" aria-hidden="true"><span class="octicon octicon-link"></span></a>Planned</h3>
+
+<p>Support for the following will be forthcoming (in rough order of implementation priority):</p>
+
+<ul>
+<li><a href="https://github.com/whoshuu/cpr/issues/20">Usage and documentation</a></li>
+<li><a href="https://github.com/whoshuu/cpr/issues/21">PUT methods</a></li>
+<li><a href="https://github.com/whoshuu/cpr/issues/22">DELETE methods</a></li>
+</ul>
+
+<p>and much more!</p>
+
+<h3>
+<a id="install" class="anchor" href="#install" aria-hidden="true"><span class="octicon octicon-link"></span></a>Install</h3>
+
+<p>The easiest way to install is to use cmake:</p>
+
+<div class="highlight highlight-shell"><pre>mkdir build
+<span class="pl-c1">cd</span> build
+cmake ..
+make</pre></div>
+
+<p>By default, the embedded libcurl is used by this library. If you want to use your system libcurl, then run:</p>
+
+<div class="highlight highlight-shell"><pre>cmake -DUSE_SYSTEM_CURL=ON ..
+make</pre></div>
+
+<p>A successful build should produce a single library archive that you can link against your project. You should also make the include directory visible to your build as well so that you can include <a href="https://github.com/whoshuu/cpr/blob/master/include/cpr.h">cpr.h</a>.</p>
+
+<h3>
+<a id="requirements" class="anchor" href="#requirements" aria-hidden="true"><span class="octicon octicon-link"></span></a>Requirements</h3>
+
+<p>The only explicit requirement is a C++11 compatible compiler such as clang or gcc. The minimum required version of gcc is unknown, so if anyone has trouble building this library with a specific version of gcc, do let me know.</p>
+
+<h3>
+<a id="disclaimer" class="anchor" href="#disclaimer" aria-hidden="true"><span class="octicon octicon-link"></span></a>Disclaimer</h3>
+
+<p>This library is very much in a pre-alpha stage. Please don't attempt to use this in any serious or critical production environment. If you do use it and find bugs you'd like to report, see below!</p>
+
+<h3>
+<a id="contributing" class="anchor" href="#contributing" aria-hidden="true"><span class="octicon octicon-link"></span></a>Contributing</h3>
+
+<p>Please fork this repository and contribute back using <a href="https://github.com/whoshuu/cpr/pulls">pull requests</a>. Features can be requested using <a href="https://github.com/whoshuu/cpr/issues">issues</a>. All code, comments, and critiques are greatly appreciated.</p>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/whoshuu">whoshuu</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+              <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-50612882-3");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+  </body>
+</html>
