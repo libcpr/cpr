@@ -76,6 +76,10 @@ Session::Impl::Impl() {
         curl_easy_setopt(curl, CURLOPT_MAXREDIRS, 50L);
         curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, curl_->error);
         curl_easy_setopt(curl, CURLOPT_COOKIEFILE, "");
+#ifdef INSECURE_CURL
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
+#endif
 #if LIBCURL_VERSION_MAJOR >= 7
 #if LIBCURL_VERSION_MINOR >= 25
 #if LIBCURL_VERSION_PATCH >= 0
