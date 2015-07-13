@@ -279,6 +279,13 @@ Response Session::Impl::makeRequest(CURL* curl) {
         curl_easy_setopt(curl, CURLOPT_URL, url_.data());
     }
 
+    auto protocol = url_.substr(0, url_.find(':'));
+    if (proxies_.has(protocol)) {
+        curl_easy_setopt(curl, CURLOPT_PROXY, proxies_[protocol].data());
+    } else {
+        curl_easy_setopt(curl, CURLOPT_PROXY, "");
+    }
+
     std::string response_string;
     std::string header_string;
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, cpr::util::writeFunction);
