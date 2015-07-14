@@ -2,7 +2,7 @@
 
 body {
   padding:50px;
-  font:14px/1.5 Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font:18px/1.5 Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
   color:#777;
   font-weight:300;
 }
@@ -39,7 +39,7 @@ a {
 }
 
 a small {
-  font-size:11px;
+  font-size:15px;
   color:#777;
   margin-top:-0.6em;
   display:block;
@@ -166,7 +166,7 @@ section {
 }
 
 small {
-  font-size:11px;
+  font-size:15px;
 }
 
 hr {
