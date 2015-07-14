@@ -22,7 +22,7 @@ int main(int argc, char** argv) {
 
 And here's [less functional, more complicated code, without cpr](https://gist.github.com/whoshuu/2dc858b8730079602044).
 
-### Features
+## Features
 
 C++ Requests currently supports:
 
@@ -38,7 +38,7 @@ C++ Requests currently supports:
 * :cookie: support!
 * Proxy support
 
-### Planned
+## Planned
 
 Support for the following will be forthcoming (in rough order of implementation priority):
 
@@ -48,7 +48,7 @@ Support for the following will be forthcoming (in rough order of implementation 
 
 and much more!
 
-### Install
+## Install
 
 The easiest way to install is to use cmake:
 
@@ -68,14 +68,14 @@ make
 
 A successful build should produce a single library archive that you can link against your project. You should also make the include directory visible to your build as well so that you can include [cpr.h](https://github.com/whoshuu/cpr/blob/master/include/cpr.h).
 
-### Requirements
+## Requirements
 
 The only explicit requirement is a C++11 compatible compiler such as clang or gcc. The minimum required version of gcc is unknown, so if anyone has trouble building this library with a specific version of gcc, do let me know.
 
-### Disclaimer
+## Disclaimer
 
 This library is very much in a pre-alpha stage. Please don't attempt to use this in any serious or critical production environment. If you do use it and find bugs you'd like to report, see below!
 
-### Contributing
+## Contributing
 
 Please fork this repository and contribute back using [pull requests](https://github.com/whoshuu/cpr/pulls). Features can be requested using [issues](https://github.com/whoshuu/cpr/issues). All code, comments, and critiques are greatly appreciated.
