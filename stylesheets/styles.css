@@ -111,6 +111,7 @@ img {
 header {
   width:250px;
   float:left;
+  position:fixed;
 }
 
 strong {
