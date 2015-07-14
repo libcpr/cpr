@@ -10,7 +10,7 @@ Here's a quick GET request:
 #include <cpr.h>
 #include <iostream>
 
-int main(int argc,  char** argv) {
+int main(int argc, char** argv) {
     auto r = cpr::Get(Url{"https://api.github.com/repos/whoshuu/cpr/contributors"},
                       Authentication{"user", "pass"},
                       Parameters{{"anon", "true"}, {"key", "value"}});
