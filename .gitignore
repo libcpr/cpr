@@ -36,3 +36,7 @@ install_manifest.txt
 
 # Custom
 build/
+
+# Jekyll stuff
+_includes/
+_site/
