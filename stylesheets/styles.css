@@ -38,11 +38,24 @@ a {
   text-decoration:none;
 }
 
+a:hover {
+  text-decoration:underline;
+}
+
 a small {
   font-size:15px;
   color:#777;
   margin-top:-0.6em;
   display:block;
+}
+
+h1 a {
+  color:#222;
+  text-decoration:none;
+}
+
+h1 a:hover {
+  text-decoration:none;
 }
 
 .wrapper {
