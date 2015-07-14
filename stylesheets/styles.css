@@ -144,3 +144,17 @@ footer {
   float:left;
   bottom:50px;
 }
+
+*:hover > .anchorjs-link {
+    color: #222;
+    opacity: .75;
+    // To fade links as they appear, change transition-property from 'color' to 'all'
+    transition: color .16s linear;
+}
+
+
+*:hover > .anchorjs-link:hover,
+.anchorjs-link:focus {
+    text-decoration: none !important; // do not underline
+    opacity: 1;
+}
