@@ -118,6 +118,8 @@ strong {
   font-weight:700;
 }
 
+ul, ol {
+  padding: 0px 25px;
 }
 
 section {
