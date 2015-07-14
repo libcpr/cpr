@@ -22,6 +22,10 @@ int main(int argc, char** argv) {
 
 And here's [less functional, more complicated code, without cpr](https://gist.github.com/whoshuu/2dc858b8730079602044).
 
+## Documentation
+
+You can find the latest documentation [here](https://whoshuu.github.io/cpr). It's a work in progress, but it should give you a better idea of how to use the library than the [tests](https://github.com/whoshuu/cpr/tree/master/test) currently do.
+
 ## Features
 
 C++ Requests currently supports:
