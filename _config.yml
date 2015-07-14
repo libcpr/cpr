@@ -1,2 +1,7 @@
 markdown: redcarpet
-github: [Repository metadata]
+redcarpet:
+  extensions:
+    - with_toc_data
+    - html_toc
+repository: whoshuu/cpr
+gems: ['jekyll-github-metadata', 'jemoji']
