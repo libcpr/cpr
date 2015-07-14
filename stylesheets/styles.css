@@ -111,7 +111,6 @@ img {
 header {
   width:250px;
   float:left;
-  position:fixed;
 }
 
 strong {
@@ -139,8 +138,7 @@ hr {
 }
 
 footer {
-  width:270px;
+  width:100px;
   float:left;
-  position:fixed;
   bottom:50px;
 }
