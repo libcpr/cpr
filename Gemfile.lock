@@ -8,6 +8,7 @@ GEM
       minitest (~> 5.1)
       thread_safe (~> 0.3, >= 0.3.4)
       tzinfo (~> 1.1)
+    addressable (2.3.8)
     blankslate (2.1.2.4)
     celluloid (0.16.0)
       timers (~> 4.0.0)
@@ -19,6 +20,8 @@ GEM
     coffee-script-source (1.9.1.1)
     colorator (0.1)
     execjs (2.5.2)
+    faraday (0.9.1)
+      multipart-post (>= 1.2, < 3)
     fast-stemmer (1.0.2)
     ffi (1.9.10)
     gemoji (2.1.0)
@@ -68,6 +71,8 @@ GEM
       coffee-script (~> 2.2)
     jekyll-feed (0.3.0)
     jekyll-gist (1.2.1)
+    jekyll-github-metadata (1.0.0)
+      octokit (~> 4.0)
     jekyll-mentions (0.2.1)
       html-pipeline (~> 1.9.0)
       jekyll (~> 2.0)
@@ -94,9 +99,12 @@ GEM
     mercenary (0.3.5)
     mini_portile (0.6.2)
     minitest (5.7.0)
+    multipart-post (2.0.0)
     net-dns (0.8.0)
     nokogiri (1.6.6.2)
       mini_portile (~> 0.6.0)
+    octokit (4.0.1)
+      sawyer (~> 0.6.0, >= 0.5.3)
     parslet (1.5.0)
       blankslate (~> 2.0)
     posix-spawn (0.3.11)
@@ -111,6 +119,9 @@ GEM
     redcarpet (3.3.1)
     safe_yaml (1.0.4)
     sass (3.4.16)
+    sawyer (0.6.0)
+      addressable (~> 2.3.5)
+      faraday (~> 0.8, < 0.10)
     terminal-table (1.5.2)
     thread_safe (0.3.5)
     timers (4.0.1)
@@ -126,6 +137,8 @@ PLATFORMS
 
 DEPENDENCIES
   github-pages
+  jekyll-github-metadata
+  jemoji
 
 BUNDLED WITH
    1.10.5
