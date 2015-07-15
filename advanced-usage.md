@@ -50,4 +50,47 @@ std::cout << r.cookies["Cookies"] << std::endl; // Prints nothing
 As you can see, the `Response` object is completely transparent. All of its data fields are accessible at all times, and since its only useful to you insofar as it has information to communicate, you can let it fall out of scope safely when you're done with it.
 
 ## Session Objects
+
+Under the hood, all calls to the primary API modify an object called a `Session` before performing the request. This is the only truly stateful piece of the library, and for most applications it isn't necessary to act on a `Session` directly, preferring to let the library handle it for you.
+
+However, in cases where it is useful to hold on to state, you can use a `Session`:
+
+{% raw %}
+```c++
+auto url = Url{"http://www.httpbin.org/get"};
+auto parameters = Parameters{{"hello", "world"}};
+Session session;
+session.SetUrl(url);
+session.SetParameters(parameters);
+
+auto r = session.Get();             // Equivalent to cpr::Get(url, parameters);
+std::cout << r.url << std::endl     // Prints http://www.httpbin.org/get?hello=world
+
+auto new_parameters = Parameters{{"key", "value"}};
+session.SetParameters(new_parameters);
+
+auto new_r = session.Get();         // Equivalent to cpr::Get(url, new_parameters);
+std::cout << new_r.url << std::endl // Prints http://www.httpbin.org/get?key=value
+```
+{% endraw %}
+
+`Session` actually exposes two different interfaces for setting the same option. If you wanted you can do this instead of the above:
+
+{% raw %}
+```c++
+auto url = Url{"http://www.httpbin.org/get"};
+auto parameters = Parameters{{"hello", "world"}};
+Session session;
+session.SetOption(url);
+session.SetOption(parameters);
+auto r = session.Get();
+```
+{% endraw %}
+
+This is important so it bears emphasizing: *for each configuration option (like `Url`, `Parameters`), there's a corresponding method `Set<ObjectName>` and a `SetOption(<Object>)`*. The second interface is to facilitate the template metaprogramming magic that lets the API expose order-less methods.
+
+The key to all of this is actually the way [libcurl](http://curl.haxx.se/libcurl/) is designed. It uses a somewhat [policy-based design](https://en.wikipedia.org/wiki/Policy-based_design) that relies configuring a single library object (the `curl` handle). Each option configured into that object changes its behavior in mostly orthogonal ways.
+
+`Session` leverages that and exposes a more modern interface that's free of the macro-heavy hulkiness of libcurl. Understanding the policy-based design of libcurl is important for understanding the way the `Session` object behaves.
+
 ## Asynchronous Requests
