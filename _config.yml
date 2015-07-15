@@ -5,3 +5,4 @@ redcarpet:
     - html_toc
 repository: whoshuu/cpr
 gems: ['jekyll-github-metadata', 'jemoji']
+baseurl: '/cpr'
