@@ -1,5 +1,6 @@
 ---
 layout: default
+title: cpr - Advanced Usage
 ---
 
 ## Response Objects
