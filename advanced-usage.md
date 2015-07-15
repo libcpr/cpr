@@ -4,7 +4,7 @@ layout: default
 
 ## Response Objects
 
-`Response` objects are bags of data. Their sole purpose is to give the client information at the end of a request -- there's nothing in the API that uses a `Response` after it gets back to you. This reasoning drove the decision to make the member field of the response public and mutable.
+`Response` objects are bags of data. Their sole purpose is to give the client information at the end of a request -- there's nothing in the API that uses a `Response` after it gets back to you. This reasoning drove the decision to make the member fields of the response public and mutable.
 
 A `Response` has these fields:
 
@@ -45,6 +45,8 @@ auto r = cpr::Get(Url{"http://www.httpbin.org/cookies/set?cookies=yummy"});
 std::cout << r.cookies["cookies"] << std::endl; // Prints yummy
 std::cout << r.cookies["Cookies"] << std::endl; // Prints nothing
 ```
+
+As you can see, the `Response` object is completely transparent. All of its data fields are accessible at all times, and since its only useful to you insofar as it has information to communicate, you can let it fall out of scope safely when you're done with it.
 
 ## Session Objects
 ## Asynchronous Requests
