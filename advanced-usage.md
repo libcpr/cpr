@@ -97,6 +97,45 @@ The key to all of this is actually the way [libcurl](http://curl.haxx.se/libcurl
 
 ## Asynchronous Requests
 
+Making an asynchronous request uses a similar but separate interface:
+
+```c++
+auto fr = cpr::GetAsync(Url{"http://www.httpbin.org/get"});
+// Sometime later
+auto r = fr.get(); // This blocks until the request is complete
+std::cout << r.text << std::endl;
+```
+
+The call is otherwise identical except instead of `Get`, it's `GetAsync`. Similarly for POST requests, you would call `PostAsync`. The return value of an asynchronous call is actually a `std::future<Response>`:
+
+```c++
+auto fr = cpr::GetAsync(Url{"http://www.httpbin.org/get"});
+fr.wait() // This waits until the request is complete
+auto r = fr.get(); // Since the request is complete, this returns immediately
+std::cout << r.text << std::endl;
+```
+
+You can even put a bunch of requests into a `std` container and get them all later:
+
+{% raw %}
+```c++
+auto container = std::vector<std::future<Response>>{};
+auto url = Url{"http://www.httpbin.org/get"};
+for (int i = 0; i < 10; ++i) {
+    container.emplace_back(cpr::GetAsync(url, Parameters{{"i", std::to_string(i)}}));
+}
+// Sometime later
+for (auto& fr: container) {
+    auto r = fr.get();
+    std::cout << r.text << std::endl;
+}
+```
+{% endraw %}
+
+An important note to make here is that arguments passed to an asynchronous call are copied. Under the hood, an asychronous call through the library's API is done with `std::async`. By default, for memory safety, all arguments are copied (or moved if temporary) because there's no syntax level guarantee that the arguments will live beyond the scope of the request.
+
+It's possible to force `std::async` out of this default so that the arguments are passed by reference as opposed to value. Currently, however, `cpr::<method>Async` has no support for forced pass by reference, though this is planned for a future release.
+
 ## Setting a Timeout
 
 ## Using Proxies
