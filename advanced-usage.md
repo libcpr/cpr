@@ -49,6 +49,8 @@ std::cout << r.cookies["Cookies"] << std::endl; // Prints nothing
 
 As you can see, the `Response` object is completely transparent. All of its data fields are accessible at all times, and since its only useful to you insofar as it has information to communicate, you can let it fall out of scope safely when you're done with it.
 
+## Request Headers
+
 ## Session Objects
 
 Under the hood, all calls to the primary API modify an object called a `Session` before performing the request. This is the only truly stateful piece of the library, and for most applications it isn't necessary to act on a `Session` directly, preferring to let the library handle it for you.
