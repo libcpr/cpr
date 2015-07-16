@@ -10,7 +10,6 @@ Here's a quick GET request:
 
 ```c++
 #include <cpr.h>
-#include <iostream>
 
 int main(int argc, char** argv) {
     auto r = cpr::Get(Url{"https://api.github.com/repos/whoshuu/cpr/contributors"},
