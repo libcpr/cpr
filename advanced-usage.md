@@ -94,3 +94,9 @@ The key to all of this is actually the way [libcurl](http://curl.haxx.se/libcurl
 `Session` leverages that and exposes a more modern interface that's free of the macro-heavy hulkiness of libcurl. Understanding the policy-based design of libcurl is important for understanding the way the `Session` object behaves.
 
 ## Asynchronous Requests
+
+## Setting a Timeout
+
+## Using Proxies
+
+## Sending Cookies
