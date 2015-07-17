@@ -51,6 +51,37 @@ As you can see, the `Response` object is completely transparent. All of its data
 
 ## Request Headers
 
+Speaking of the `Headers`, you can set custom headers in the request call. The object is exactly the same:
+
+{% raw %}
+```c++
+auto r = cpr::Get(Url{"http://www.httpbin.org/headers"},
+                  Header{{"accept", "application/json"}});
+std::cout << r.text << std::endl;
+
+/*
+ * "headers": {
+ *   "Accept": "application/json",
+ *   "Host": "www.httpbin.org",
+ *   "User-Agent": "curl/7.42.0-DEV"
+ * }
+ */
+```
+{% endraw %}
+
+You've probably noticed a similarity between `Header`, `Parameters`, `Payload`, and `Multipart`. They all have constructors of the form:
+
+{% raw %}
+```c++
+auto header = Header{{"header-key", "header-value"}};
+auto parameters = Parameters{{"parameter-key", "parameter-value"}};
+auto payload = Payload{{"payload-key", "payload-value"}};
+auto multipart = Multipart{{"multipart-key", "multipart-value"}};
+```
+{% endraw %}
+
+This isn't an accident -- all of these are map-like objects and their syntax is identical because their semantics depends entirely on the object type. Additionally, it's practical to have `Parameters`, `Payload`, and `Multipart` be swappable because APIs sometimes don't strictly differentiate between them.
+
 ## Session Objects
 
 Under the hood, all calls to the primary API modify an object called a `Session` before performing the request. This is the only truly stateful piece of the library, and for most applications it isn't necessary to act on a `Session` directly, preferring to let the library handle it for you.
