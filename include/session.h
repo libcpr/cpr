@@ -56,6 +56,7 @@ class Session {
     void SetOption(const Cookies& cookies);
 
     Response Get();
+    Response Head();
     Response Post();
 
   private:

@@ -50,6 +50,7 @@ class Session::Impl {
     void SetOption(const Cookies& cookies);
 
     Response Get();
+    Response Head();
     Response Post();
 
   private:
@@ -271,6 +272,17 @@ Response Session::Impl::Get() {
     return makeRequest(curl);
 }
 
+Response Session::Impl::Head() {
+    auto curl = curl_->handle;
+    if (curl) {
+        curl_easy_setopt(curl, CURLOPT_HTTPGET, 0L);
+        curl_easy_setopt(curl, CURLOPT_POST, 0L);
+        curl_easy_setopt(curl, CURLOPT_NOBODY, 1L);
+    }
+
+    return makeRequest(curl);
+}
+
 Response Session::Impl::Post() {
     return makeRequest(curl_->handle);
 }
@@ -356,4 +368,5 @@ void Session::SetOption(const bool& redirect) { pimpl_->SetRedirect(redirect); }
 void Session::SetOption(const long& max_redirects) { pimpl_->SetMaxRedirects(max_redirects); }
 void Session::SetOption(const Cookies& cookies) { pimpl_->SetCookies(cookies); }
 Response Session::Get() { return pimpl_->Get(); }
+Response Session::Head() { return pimpl_->Head(); }
 Response Session::Post() { return pimpl_->Post(); }
