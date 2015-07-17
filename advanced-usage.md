@@ -183,4 +183,38 @@ Setting the `Timeout` option sets the maximum allowed time the transfer operatio
 
 ## Using Proxies
 
+`Proxies`, like `Parameters`, are map-like objects. It's easy to set one:
+
+{% raw %}
+```c++
+auto r = cpr::Get(Url{"http://www.httpbin.org/get"},
+                  Proxies{{"http", "http://www.fakeproxy.com"}});
+std::cout << r.url << std::endl; // Prints http://www.httpbin.org/get, not the proxy url
+```
+{% endraw %}
+
+It doesn't look immediately useful to have `Proxies` behave like a map, but when used with a `Session` it's more obvious:
+
+{% raw %}
+```c++
+Session session;
+session.SetProxies({{"http", "http://www.fakeproxy.com"},
+                    {"https", "http://www.anotherproxy.com"}})
+session.SetUrl("http://www.httpbin.org/get");
+{
+    auto r = session.Get();
+    std::cout << r.url << std::endl; // Prints http://www.httpbin.org/get after going
+                                     // through http://www.fakeproxy.com
+}
+session.SetUrl("https://www.httpbin.org/get");
+{
+    auto r = session.Get();
+    std::cout << r.url << std::endl; // Prints https://www.httpbin.org/get after going
+                                     // through http://www.anotherproxy.com
+}
+```
+{% endraw %}
+
+Setting `Proxies` on a `Session` lets you intelligently route requests using different protocols through different proxies without having to respecify anything but the request `Url`.
+
 ## Sending Cookies
