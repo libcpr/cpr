@@ -285,12 +285,6 @@ Response Session::Impl::Head() {
 }
 
 Response Session::Impl::Post() {
-    auto curl = curl_->handle;
-    if (curl) {
-        curl_easy_setopt(curl, CURLOPT_HTTPGET, 0L);
-        curl_easy_setopt(curl, CURLOPT_POST, 1L);
-        curl_easy_setopt(curl, CURLOPT_NOBODY, 0L);
-    }
     return makeRequest(curl_->handle);
 }
 
