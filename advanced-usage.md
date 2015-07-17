@@ -169,6 +169,18 @@ It's possible to force `std::async` out of this default so that the arguments ar
 
 ## Setting a Timeout
 
+It's possible to set a timeout for your request if you have strict timing requirements:
+
+```c++
+#include <assert.h>
+
+auto r = cpr::Get(Url{"http://www.httpbin.org/get"},
+                  Timeout{1000}); // Let's hope we aren't using Time Warner Cable
+assert(r.elapsed <= 1); // Less than one second should have elapsed
+```
+
+Setting the `Timeout` option sets the maximum allowed time the transfer operation can take. Since C++ Requests is built on top of libcurl, it's important to know what setting this `Timeout` does to the request. You can find more information about the specific libcurl option [here](http://curl.haxx.se/libcurl/c/CURLOPT_TIMEOUT_MS.html).
+
 ## Using Proxies
 
 ## Sending Cookies
