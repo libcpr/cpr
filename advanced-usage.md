@@ -218,3 +218,45 @@ session.SetUrl("https://www.httpbin.org/get");
 Setting `Proxies` on a `Session` lets you intelligently route requests using different protocols through different proxies without having to respecify anything but the request `Url`.
 
 ## Sending Cookies
+
+Earlier you saw how to grab a cookie from the request:
+
+```c++
+auto r = cpr::Get(Url{"http://www.httpbin.org/cookies/set?cookies=yummy"});
+std::cout << r.cookies["cookies"] << std::endl; // Prints yummy
+std::cout << r.cookies["Cookies"] << std::endl; // Prints nothing
+```
+
+You can send back cookies using the same object:
+
+```c++
+auto r = cpr::Get(Url{"http://www.httpbin.org/cookies/set?cookies=yummy"});
+auto another_r = cpr::Get(Url{"http://www.httpbin.org/cookies"}, r.cookies);
+std::cout << another_r.text << std::endl;
+
+/*
+ * {
+ *   "cookies": {
+ *     "cookie": "yummy"
+ *   }
+ * }
+ */
+ ```
+
+ This is especially useful because `Cookies` often go from server to client and back to the server. Setting new `Cookies` should not look surprising at all:
+
+```c++
+auto r = cpr::Get(Url{"http://www.httpbin.org/cookies"},
+                  Cookies{{"ice cream", "is delicious"}});
+std::cout << another_r.text << std::endl;
+
+/*
+ * {
+ *   "cookies": {
+ *     "ice%20cream": "is%20delicious"
+ *   }
+ * }
+ */
+ ```
+
+ Take note of how the cookies were encoded using a url-encoding pattern, as required by [RFC 2965](http://www.ietf.org/rfc/rfc2965.txt). Other than that quirk, using `Cookies` is fairly straightforward and just works.
