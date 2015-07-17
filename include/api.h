@@ -61,6 +61,22 @@ namespace cpr {
                                                   return Post(std::move(ts)...);
                                               }, std::move(ts)...);
     }
+
+    // Head methods
+    template <typename... Ts>
+    Response Head(Ts&&... ts) {
+        Session session;
+        priv::set_option(session, std::forward<Ts>(ts)...);
+        return session.Head();
+    }
+
+    // Head async methods
+    template <typename... Ts>
+    AsyncResponse HeadAsync(Ts... ts) {
+        return std::async(std::launch::async, [] (Ts... ts) {
+                                                  return Head(std::move(ts)...);
+                                              }, std::move(ts)...);
+    }
 };
 
 #endif
