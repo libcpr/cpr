@@ -50,6 +50,8 @@ Support for the following will be forthcoming (in rough order of implementation 
 
 * [PUT methods](https://github.com/whoshuu/cpr/issues/21)
 * [DELETE methods](https://github.com/whoshuu/cpr/issues/22)
+* [HEAD methods](https://github.com/whoshuu/cpr/issues/24)
+* [Streamed requests](https://github.com/whoshuu/cpr/issues/25)
 
 and much more!
 
