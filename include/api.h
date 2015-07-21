@@ -77,6 +77,22 @@ namespace cpr {
                                                   return Head(std::move(ts)...);
                                               }, std::move(ts)...);
     }
+
+    // Delete methods
+    template <typename... Ts>
+    Response Delete(Ts&&... ts) {
+        Session session;
+        priv::set_option(session, std::forward<Ts>(ts)...);
+        return session.Delete();
+    }
+
+    // Delete async methods
+    template <typename... Ts>
+    AsyncResponse DeleteAsync(Ts... ts) {
+        return std::async(std::launch::async, [] (Ts... ts) {
+                                                  return Delete(std::move(ts)...);
+                                              }, std::move(ts)...);
+    }
 };
 
 #endif
