@@ -229,6 +229,36 @@ static int formPost(struct mg_connection* conn) {
     return MG_TRUE;
 }
 
+static int deleteRequest(struct mg_connection* conn) {
+    if (std::string{conn->request_method} == std::string{"DELETE"}) {
+        auto response = std::string{"Delete success"};
+        mg_send_status(conn, 200);
+        mg_send_header(conn, "content-type", "text/html");
+        mg_send_data(conn, response.data(), response.length()); 
+    } else {
+        auto response = std::string{"Method unallowed"};
+        mg_send_status(conn, 405);
+        mg_send_header(conn, "content-type", "text/html");
+        mg_send_data(conn, response.data(), response.length()); 
+    }
+    return MG_TRUE;
+}
+
+static int deleteUnallowedRequest(struct mg_connection* conn) {
+    if (std::string{conn->request_method} == std::string{"DELETE"}) {
+        auto response = std::string{"Method unallowed"};
+        mg_send_status(conn, 405);
+        mg_send_header(conn, "content-type", "text/html");
+        mg_send_data(conn, response.data(), response.length()); 
+    } else {
+        auto response = std::string{"Delete success"};
+        mg_send_status(conn, 200);
+        mg_send_header(conn, "content-type", "text/html");
+        mg_send_data(conn, response.data(), response.length()); 
+    }
+    return MG_TRUE;
+}
+
 static int evHandler(struct mg_connection* conn, enum mg_event ev) {
     switch (ev) {
         case MG_AUTH:
@@ -261,6 +291,10 @@ static int evHandler(struct mg_connection* conn, enum mg_event ev) {
                 return urlPost(conn);
             } else if (Url{conn->uri} == "/form_post.html") {
                 return formPost(conn);
+            } else if (Url{conn->uri} == "/delete.html") {
+                return deleteRequest(conn);
+            } else if (Url{conn->uri} == "/delete_unallowed.html") {
+                return deleteUnallowedRequest(conn);
             }
             return MG_FALSE;
         default:
