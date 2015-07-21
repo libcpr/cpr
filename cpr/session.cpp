@@ -49,6 +49,7 @@ class Session::Impl {
     void SetOption(const long& max_redirects);
     void SetOption(const Cookies& cookies);
 
+    Response Delete();
     Response Get();
     Response Head();
     Response Post();
@@ -262,6 +263,18 @@ void Session::Impl::SetCookies(const Cookies& cookies) {
     }
 }
 
+Response Session::Impl::Delete() {
+    auto curl = curl_->handle;
+    if (curl) {
+        curl_easy_setopt(curl, CURLOPT_HTTPGET, 0L);
+        curl_easy_setopt(curl, CURLOPT_POST, 0L);
+        curl_easy_setopt(curl, CURLOPT_NOBODY, 0L);
+        curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "DELETE");
+    }
+
+    return makeRequest(curl);
+}
+
 Response Session::Impl::Get() {
     auto curl = curl_->handle;
     if (curl) {
@@ -368,6 +381,7 @@ void Session::SetOption(Multipart&& multipart) { pimpl_->SetMultipart(std::move(
 void Session::SetOption(const bool& redirect) { pimpl_->SetRedirect(redirect); }
 void Session::SetOption(const long& max_redirects) { pimpl_->SetMaxRedirects(max_redirects); }
 void Session::SetOption(const Cookies& cookies) { pimpl_->SetCookies(cookies); }
+Response Session::Delete() { return pimpl_->Delete(); }
 Response Session::Get() { return pimpl_->Get(); }
 Response Session::Head() { return pimpl_->Head(); }
 Response Session::Post() { return pimpl_->Post(); }

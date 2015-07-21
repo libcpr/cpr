@@ -55,6 +55,7 @@ class Session {
     void SetOption(const long& max_redirects);
     void SetOption(const Cookies& cookies);
 
+    Response Delete();
     Response Get();
     Response Head();
     Response Post();
