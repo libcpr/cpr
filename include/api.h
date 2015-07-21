@@ -62,6 +62,22 @@ namespace cpr {
                                               }, std::move(ts)...);
     }
 
+    // Put methods
+    template <typename... Ts>
+    Response Put(Ts&&... ts) {
+        Session session;
+        priv::set_option(session, std::forward<Ts>(ts)...);
+        return session.Put();
+    }
+
+    // Put async methods
+    template <typename... Ts>
+    AsyncResponse PutAsync(Ts... ts) {
+        return std::async(std::launch::async, [] (Ts... ts) {
+                                                  return Put(std::move(ts)...);
+                                              }, std::move(ts)...);
+    }
+
     // Head methods
     template <typename... Ts>
     Response Head(Ts&&... ts) {
