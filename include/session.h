@@ -59,6 +59,7 @@ class Session {
     Response Get();
     Response Head();
     Response Post();
+    Response Put();
 
   private:
     class Impl;

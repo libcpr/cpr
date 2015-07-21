@@ -53,6 +53,7 @@ class Session::Impl {
     Response Get();
     Response Head();
     Response Post();
+    Response Put();
 
   private:
     std::unique_ptr<CurlHolder, std::function<void(CurlHolder*)>> curl_;
@@ -301,6 +302,16 @@ Response Session::Impl::Post() {
     return makeRequest(curl_->handle);
 }
 
+Response Session::Impl::Put() {
+    auto curl = curl_->handle;
+    if (curl) {
+        curl_easy_setopt(curl, CURLOPT_NOBODY, 0L);
+        curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "PUT");
+    }
+
+    return makeRequest(curl);
+}
+
 Response Session::Impl::makeRequest(CURL* curl) {
     if (!parameters_.content.empty()) {
         Url new_url{url_ + "?" + parameters_.content};
@@ -385,3 +396,4 @@ Response Session::Delete() { return pimpl_->Delete(); }
 Response Session::Get() { return pimpl_->Get(); }
 Response Session::Head() { return pimpl_->Head(); }
 Response Session::Post() { return pimpl_->Post(); }
+Response Session::Put() { return pimpl_->Put(); }
