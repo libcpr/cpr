@@ -158,22 +158,6 @@ TEST(DeleteTests, SessionDeleteUnallowedAfterPostTest) {
     EXPECT_EQ(405, response.status_code);
 }
 
-TEST(DeleteTests, HttpbinDeleteTest) {
-    auto url = Url{"http://www.httpbin.org/delete"};
-    auto response = cpr::Delete(url);
-    EXPECT_EQ(url, response.url);
-    EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
-    EXPECT_EQ(200, response.status_code);
-}
-
-TEST(DeleteTests, BadDeleteTest) {
-    auto url = Url{"http://www.httpbin.org/get"};
-    auto response = cpr::Delete(url);
-    EXPECT_EQ(url, response.url);
-    EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
-    EXPECT_EQ(405, response.status_code);
-}
-
 TEST(DeleteTests, AsyncDeleteTest) {
     auto url = Url{base + "/delete.html"};
     auto future_response = cpr::DeleteAsync(url);
