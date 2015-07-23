@@ -46,6 +46,14 @@ namespace cpr {
                                               }, std::move(ts)...);
     }
 
+    // Get callback methods
+    template <typename Then, typename... Ts>
+    auto GetCallback(Then then, Ts... ts) -> std::future<decltype(then(Get(std::move(ts)...)))> {
+        return std::async(std::launch::async, [] (Then then, Ts... ts) {
+                                                  return then(Get(std::move(ts)...));
+                                              }, std::move(then), std::move(ts)...);
+    }
+
     // Post methods
     template <typename... Ts>
     Response Post(Ts&&... ts) {
@@ -60,6 +68,14 @@ namespace cpr {
         return std::async(std::launch::async, [] (Ts... ts) {
                                                   return Post(std::move(ts)...);
                                               }, std::move(ts)...);
+    }
+
+    // Post callback methods
+    template <typename Then, typename... Ts>
+    auto PostCallback(Then then, Ts... ts) -> std::future<decltype(then(Post(std::move(ts)...)))> {
+        return std::async(std::launch::async, [] (Then then, Ts... ts) {
+                                                  return then(Post(std::move(ts)...));
+                                              }, std::move(then), std::move(ts)...);
     }
 
     // Put methods
@@ -78,6 +94,14 @@ namespace cpr {
                                               }, std::move(ts)...);
     }
 
+    // Put callback methods
+    template <typename Then, typename... Ts>
+    auto PutCallback(Then then, Ts... ts) -> std::future<decltype(then(Put(std::move(ts)...)))> {
+        return std::async(std::launch::async, [] (Then then, Ts... ts) {
+                                                  return then(Put(std::move(ts)...));
+                                              }, std::move(then), std::move(ts)...);
+    }
+
     // Head methods
     template <typename... Ts>
     Response Head(Ts&&... ts) {
@@ -94,6 +118,14 @@ namespace cpr {
                                               }, std::move(ts)...);
     }
 
+    // Head callback methods
+    template <typename Then, typename... Ts>
+    auto HeadCallback(Then then, Ts... ts) -> std::future<decltype(then(Head(std::move(ts)...)))> {
+        return std::async(std::launch::async, [] (Then then, Ts... ts) {
+                                                  return then(Head(std::move(ts)...));
+                                              }, std::move(then), std::move(ts)...);
+    }
+
     // Delete methods
     template <typename... Ts>
     Response Delete(Ts&&... ts) {
@@ -108,6 +140,14 @@ namespace cpr {
         return std::async(std::launch::async, [] (Ts... ts) {
                                                   return Delete(std::move(ts)...);
                                               }, std::move(ts)...);
+    }
+
+    // Delete callback methods
+    template <typename Then, typename... Ts>
+    auto DeleteCallback(Then then, Ts... ts) -> std::future<decltype(then(Delete(std::move(ts)...)))> {
+        return std::async(std::launch::async, [] (Then then, Ts... ts) {
+                                                  return then(Delete(std::move(ts)...));
+                                              }, std::move(then), std::move(ts)...);
     }
 };
 
