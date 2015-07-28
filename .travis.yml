@@ -45,4 +45,4 @@ script:
   - ctest -V
     
 after_success:
-  - if [ "$GENERATE_COVERAGE" == "ON" ]; then coveralls --gcov /usr/bin/gcov-4.8 -i 'cpr' -i 'include' -r ../ -r ../include/cpr.h --verbose; fi
+  - if [ "$GENERATE_COVERAGE" == "ON" ]; then coveralls --gcov /usr/bin/gcov-4.8 -i 'cpr' -i 'include' -e ../include/cpr.h -r ../ --verbose; fi
