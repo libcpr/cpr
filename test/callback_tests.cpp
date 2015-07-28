@@ -10,7 +10,7 @@
 
 static Server* server = new Server();
 auto base = server->GetBaseUrl();
-auto sleep_time = std::chrono::milliseconds(10);
+auto sleep_time = std::chrono::milliseconds(50);
 auto zero = std::chrono::seconds(0);
 
 int status_callback(int& status_code, Response r) {
