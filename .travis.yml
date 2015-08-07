@@ -18,7 +18,7 @@ env:
 matrix:
   include:
     - compiler: gcc
-      env: USE_SYSTEM_CURL=OFF USE_SYSTEM_CMAKE=OFF USE_5_1=ON
+      env: USE_SYSTEM_CURL=ON USE_SYSTEM_CMAKE=ON USE_5_1=ON
     - compiler: gcc
       env: USE_SYSTEM_CURL=OFF USE_SYSTEM_CMAKE=OFF GENERATE_COVERAGE=ON
 
