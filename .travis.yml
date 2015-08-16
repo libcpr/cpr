@@ -1,42 +1,43 @@
 language: cpp
 
+sudo: false
+
 compiler:
   - gcc
-  - clang
 
 env:
   global:
     - BUILD_CPR_TESTS=ON
     - GTEST_SHUFFLE=1
     - INSECURE_CURL=ON
+    - USE_SYSTEM_CURL=ON
   matrix:
-    - USE_SYSTEM_CURL=ON USE_SYSTEM_CMAKE=ON
-    - USE_SYSTEM_CURL=OFF USE_SYSTEM_CMAKE=ON
-    - USE_SYSTEM_CURL=OFF USE_SYSTEM_CMAKE=OFF
-    - USE_SYSTEM_CURL=ON USE_SYSTEM_CMAKE=OFF
+    - COMPILER=g++-4.8 CCOMPILER=gcc-4.8
+    - COMPILER=g++-4.9 CCOMPILER=gcc-4.9
+    - COMPILER=g++-5 CCOMPILER=gcc-5
+    - COMPILER=clang++-3.6 CCOMPILER=clang-3.6
 
-matrix:
-  include:
-    - compiler: gcc
-      env: USE_SYSTEM_CURL=ON USE_SYSTEM_CMAKE=ON USE_5_1=ON
-    - compiler: gcc
-      env: USE_SYSTEM_CURL=OFF USE_SYSTEM_CMAKE=OFF GENERATE_COVERAGE=ON
-
-sudo: required
-
-before_install:
-  - sudo apt-get update
-  - if [ "$GENERATE_COVERAGE" == "ON" ]; then sudo pip install cpp-coveralls; fi
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+      - llvm-toolchain-precise
+      - llvm-toolchain-precise-3.6
+      - llvm-toolchain-precise-3.7
+    packages:
+      - g++-4.8
+      - g++-4.9
+      - g++-5
+      - clang-3.6
+      - valgrind
+      - python-pip
+      - python-yaml
 
 install:
-  - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
-  - sudo apt-get update
-  - if [ "$USE_5_1" == "ON" ]; then sudo apt-get install g++-5 -y --force-yes; else sudo apt-get install g++-4.8 -y --force-yes; fi
-  - if [ "$CXX" == "g++" ]; then if [ "$USE_5_1" == "ON" ]; then export CXX="g++-5" CC="gcc-5"; else export CXX="g++-4.8" CC="gcc-4.8"; fi; fi
-  - if [ "$USE_SYSTEM_CURL" == "OFF" ]; then sudo apt-get remove curl libcurl3; fi
-  - if [ "$USE_SYSTEM_CMAKE" == "OFF" ]; then sudo apt-get remove cmake && wget http://www.cmake.org/files/v3.2/cmake-3.2.1.tar.gz && tar -xzf cmake-3.2.1.tar.gz && cd cmake-3.2.1 && ./bootstrap > /dev/null && make -j8 > /dev/null && sudo make install && cd .. && rm -rf cmake-3.2.1 cmake-3.2.1.tar.gz; else sudo apt-get install -y cmake; fi
+  - if [ "$COMPILER" == "g++-4.9" ]; then pip install --user git+git://github.com/eddyxu/cpp-coveralls.git; fi
 
 before_script:
+  - export CXX=$COMPILER CC=$CCOMPILER
   - cmake --version
   - mkdir build
   - cd build
@@ -47,4 +48,4 @@ script:
   - ctest -V
     
 after_success:
-  - if [ "$GENERATE_COVERAGE" == "ON" ]; then coveralls --gcov /usr/bin/gcov-4.8 -i 'cpr' -i 'include' -e ../include/cpr.h -r ../ --verbose; fi
+  - if [ "$COMPILER" == "g++-4.9" ]; then coveralls -i 'cpr' -i 'include' -e '../include/cpr.h' --root '../' --verbose --gcov-options '\-lp' --gcov 'gcov-4.9'; fi
