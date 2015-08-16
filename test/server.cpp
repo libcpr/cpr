@@ -79,7 +79,7 @@ static int digestAuth(struct mg_connection* conn) {
     {
         FILE *fp;
         if ((fp = fopen("digest.txt", "w")) != NULL) {
-            fprintf(fp, "user:mydomain.com:0cf722ef3dd136b48da83758c5d855f8");
+            fprintf(fp, "user:mydomain.com:0cf722ef3dd136b48da83758c5d855f8\n");
             fclose(fp);
         }
     }
