@@ -45,13 +45,13 @@ C++ Requests currently supports:
 * Proxy support
 * Callback interface
 * PUT methods
+* DELETE methods
+* HEAD methods
 
 ## Planned
 
 Support for the following will be forthcoming (in rough order of implementation priority):
 
-* [DELETE methods](https://github.com/whoshuu/cpr/issues/22)
-* [HEAD methods](https://github.com/whoshuu/cpr/issues/24)
 * [Streamed requests](https://github.com/whoshuu/cpr/issues/25)
 
 and much more!

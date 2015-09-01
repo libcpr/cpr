@@ -323,3 +323,27 @@ std::cout << r.text << std::endl;
 {% endraw %}
 
 Most often, PUTs are used to update an existing object with new or modified data. Of course, there's no guarantee that any particular API uses PUT semantics this way, so use it only when it makes sense to.
+
+## Other Request Methods
+
+C++ Requests also supports `DELETE` and `HEAD` methods in the expected forms:
+
+```c++
+// Regular, blocking modes
+auto delete_response = cpr::Delete(Url{"http://www.httpbin.org/delete"});
+auto head_response = cpr::Head(Url{"http://www.httpbin.org/get"});
+
+// Asynchronous, future mode
+auto async_delete_response = cpr::DeleteAsync(Url{"http://www.httpbin.org/delete"});
+auto async_head_response = cpr::HeadAsync(Url{"http://www.httpbin.org/get"});
+
+// Asynchronous, callback mode
+auto cb_delete_response = cpr::DeleteCallback([](Response r) {
+        return r.text;
+    }, Url{"http://www.httpbin.org/delete"});
+auto cb_head_response = cpr::HeadCallback([](Response r) {
+        return r.status_code;
+    }, Url{"http://www.httpbin.org/get"});
+```
+
+Currently, `"OPTIONS"` is not an implemented HTTP method. It soon will be, and its mechanics will be identitical to the example above. Stay tuned!
