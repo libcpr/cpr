@@ -285,3 +285,41 @@ std::cout << another_r.text << std::endl;
 {% endraw %}
 
  Take note of how the cookies were encoded using a url-encoding pattern, as required by [RFC 2965](http://www.ietf.org/rfc/rfc2965.txt). Other than that quirk, using `Cookies` is fairly straightforward and just works.
+
+## PUT Requests
+
+PUT requests work identically to POST requests, with the only modification being that the specified HTTP method is `"PUT"` instead of `"POST"`. Use this when the semantics of the API you're calling implements special behavior for PUT requests:
+
+{% raw %}
+```c++
+#include <assert.h>
+
+// We can't POST to the "/put" endpoint so the status code is rightly 405
+assert(cpr::Post(Url{"http://www.httpbin.org/put"},
+                 Payload{{"key", "value"}}).status_code == 405);
+
+// On the other hand, this works just fine
+auto r = cpr::Put(Url{"http://www.httpbin.org/put"},
+                  Payload{{"key", "value"}});
+std::cout << r.text << std::endl;
+
+/* {
+ *   "args": {},
+ *   "data": "",
+ *   "files": {},
+ *   "form": {
+ *     "key": "value"
+ *   },
+ *   "headers": {
+ *     ..
+ *     "Content-Type": "application/x-www-form-urlencoded",
+ *     ..
+ *   },
+ *   "json": null,
+ *   "url": "https://httpbin.org/put"
+ * }
+ */
+```
+{% endraw %}
+
+Most often, PUTs are used to update an existing object with new or modified data. Of course, there's no guarantee that any particular API uses PUT semantics this way, so use it only when it makes sense to.
