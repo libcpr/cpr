@@ -322,7 +322,7 @@ std::cout << r.text << std::endl;
 ```
 {% endraw %}
 
-Most often, PUTs are used to update an existing object with new or modified data. Of course, there's no guarantee that any particular API uses PUT semantics this way, so use it only when it makes sense to.
+Most often, PUTs are used to update an existing object with a new object. Of course, there's no guarantee that any particular API uses PUT semantics this way, so use it only when it makes sense to.
 
 ## Other Request Methods
 
