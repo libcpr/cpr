@@ -53,6 +53,9 @@ C++ Requests currently supports:
 Support for the following will be forthcoming (in rough order of implementation priority):
 
 * [Streamed requests](https://github.com/whoshuu/cpr/issues/25)
+* [OPTIONS methods](https://github.com/whoshuu/cpr/issues/34)
+* [PATCH methods](https://github.com/whoshuu/cpr/issues/36)
+* [OpenSSL support](https://github.com/whoshuu/cpr/issues/31)
 
 and much more!
 
