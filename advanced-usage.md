@@ -167,6 +167,29 @@ An important note to make here is that arguments passed to an asynchronous call 
 
 It's possible to force `std::async` out of this default so that the arguments are passed by reference as opposed to value. Currently, however, `cpr::<method>Async` has no support for forced pass by reference, though this is planned for a future release.
 
+## Asynchronous Callbacks
+
+C++ Requests also supports a callback interface for asynchronous requests. Using the callback interface, you pass in a functor (lambda, function pointer, etc.) as the first argument, and then pass in the rest of the options you normally would in a blocking request. The functor needs to have a single parameter, a `Response` object -- this response is populated when the request completes and the function body executes.
+
+Here's a simple example:
+
+```c++
+auto future_text = cpr::GetCallback([](Response r) {
+        return r.text;
+    }, Url{"http://www.httpbin.org/get"});
+// Sometime later
+if (future_text.wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
+    std::cout << future_text.get() << std::endl;
+}
+```
+
+There are a couple of key features to point out here:
+
+1. The return value is a `std::string`. This isn't hardcoded -- the callback is free to return any value it pleases! When it's time to get that value, a check for if the request is complete is made, and a simple `.get()` call on the future grabs the correct value. This flexibility makes the callback interface delightfully simple, generic, and effective!
+2. The lambda capture is empty, but absolutely doesn't need to be. Anything that can be captured inside a lambda normally can be captured in a lambda passed into the callback interface. This additional vector of flexibility makes it highly preferable to use lambdas, though any functor with a `Response` parameter will compile and work.
+
+Additionally, you can enforce immutability of the `Response` simply with a `const Response&` parameter instead of `Response`.
+
 ## Setting a Timeout
 
 It's possible to set a timeout for your request if you have strict timing requirements:
