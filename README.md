@@ -66,9 +66,8 @@ If you already have a project you need to integrate C++ Requests with, the prima
 
 ```
 git submodule add git@github.com:whoshuu/cpr.git
+git submodule update --init --recursive
 ```
-
-Make sure to run a `git submodule update --init --recursive` after adding C++ Requests as a submodule.
 
 Next, add this subdirectory to your CMakeLists.txt before declaring any targets that might use it:
 
