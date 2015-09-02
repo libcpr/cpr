@@ -58,25 +58,32 @@ Support for the following will be forthcoming (in rough order of implementation 
 
 and much more!
 
-## Install
+## Usage
 
-The easiest way to install is to use cmake:
+For just getting this library up and running, I highly recommend forking the [example project](https://github.com/whoshuu/cpr-example). It's configured with the minimum CMake magic and boilerplate needed to start playing around with networked applications.
 
-```shell
-mkdir build
-cd build
-cmake ..
-make
+If you already have a project you need to integrate C++ Requests with, the primary way is to use git submodules. Add this repository as a submodule of your root repository:
+
+```
+git submodule add git@github.com:whoshuu/cpr.git
 ```
 
-By default, the embedded libcurl is used by this library. If you want to use your system libcurl, then run:
+Make sure to run a `git submodule update --init --recursive` after adding C++ Requests as a submodule.
 
-```shell
-cmake -DUSE_SYSTEM_CURL=ON ..
-make
+Next, add this subdirectory to your CMakeLists.txt before declaring any targets that might use it:
+
+```
+add_subdirectory(cpr)
 ```
 
-A successful build should produce a single library archive that you can link against your project. You should also make the include directory visible to your build as well so that you can include [cpr.h](https://github.com/whoshuu/cpr/blob/master/include/cpr.h).
+This will produce two important CMake variables, `CPR_INCLUDE_DIRS` and `CPR_LIBRARIES`, which you'll use in the typical way:
+
+```
+include_directories(${CPR_INCLUDE_DIRS})
+target_link_library(your_target_name ${CPR_LIBRARIES})
+```
+
+and that should do it! Using the submodule method of integrating C++ Requests, there's no need to handle libcurl yourself, all of those dependencies are taken care of for you.
 
 ## Requirements
 
