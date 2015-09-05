@@ -4,6 +4,7 @@
 #include <map>
 #include <string>
 
+namespace cpr {
 
 class CaseInsenstiveCompare {
   public:
@@ -16,5 +17,7 @@ class CaseInsenstiveCompare {
 
 typedef std::map<std::string, std::string, CaseInsenstiveCompare> Header;
 typedef std::string Url;
+
+}
 
 #endif

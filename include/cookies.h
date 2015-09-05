@@ -6,6 +6,7 @@
 #include <sstream>
 #include <initializer_list>
 
+namespace cpr {
 
 class Cookies {
   public:
@@ -19,5 +20,7 @@ class Cookies {
   private:
     std::map<std::string, std::string> map_;
 };
+
+}
 
 #endif

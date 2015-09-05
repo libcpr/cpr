@@ -6,6 +6,7 @@
 #include <string>
 #include <utility>
 
+namespace cpr {
 
 class Proxies {
   public:
@@ -18,5 +19,7 @@ class Proxies {
   private:
     std::map<std::string, std::string> hosts_;
 };
+
+}
 
 #endif

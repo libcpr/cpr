@@ -5,6 +5,7 @@
 #include <string>
 #include <initializer_list>
 
+namespace cpr {
 
 struct Parameter {
     Parameter(const std::string& key, const std::string& value) : key{key}, value{value} {}
@@ -20,5 +21,7 @@ class Parameters {
 
     std::string content;
 };
+
+}
 
 #endif

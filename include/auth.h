@@ -3,6 +3,7 @@
 
 #include <string>
 
+namespace cpr {
 
 class Authentication {
   public:
@@ -16,5 +17,7 @@ class Authentication {
     std::string password_;
     std::string auth_string_;
 };
+
+}
 
 #endif

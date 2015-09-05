@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 
+namespace cpr {
 
 struct File {
     File(const std::string& filepath) : filepath{filepath} {}
@@ -31,5 +32,7 @@ class Multipart {
 
     std::vector<Part> parts;
 };
+
+}
 
 #endif

@@ -5,6 +5,7 @@
 #include <string>
 #include <initializer_list>
 
+namespace cpr {
 
 struct Pair {
     Pair(const std::string& key, const std::string& value) : key{key}, value{value} {}
@@ -21,5 +22,7 @@ class Payload {
 
     std::string content;
 };
+
+}
 
 #endif

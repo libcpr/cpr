@@ -5,6 +5,7 @@
 
 #include "auth.h"
 
+namespace cpr {
 
 class Digest : public Authentication {
   public:
@@ -13,5 +14,8 @@ class Digest : public Authentication {
 
     const char* GetAuthString() const;
 };
+
+
+}
 
 #endif

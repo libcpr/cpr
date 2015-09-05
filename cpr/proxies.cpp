@@ -5,6 +5,7 @@
 #include <string>
 #include <utility>
 
+namespace cpr {
 
 Proxies::Proxies(const std::initializer_list<std::pair<std::string, std::string>>& hosts) {
     for (auto& host : hosts) {
@@ -18,4 +19,6 @@ bool Proxies::has(const std::string& protocol) {
 
 const std::string& Proxies::operator[](const std::string& protocol) {
     return hosts_[protocol];
+}
+
 }

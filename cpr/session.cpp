@@ -9,6 +9,7 @@
 #include "curlholder.h"
 #include "util.h"
 
+namespace cpr {
 
 class Session::Impl {
   public:
@@ -397,3 +398,5 @@ Response Session::Get() { return pimpl_->Get(); }
 Response Session::Head() { return pimpl_->Head(); }
 Response Session::Post() { return pimpl_->Post(); }
 Response Session::Put() { return pimpl_->Put(); }
+
+}

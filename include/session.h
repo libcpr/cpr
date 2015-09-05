@@ -14,6 +14,7 @@
 #include "response.h"
 #include "timeout.h"
 
+namespace cpr {
 
 class Session {
   public:
@@ -65,5 +66,7 @@ class Session {
     class Impl;
     std::unique_ptr<Impl> pimpl_;
 };
+
+}
 
 #endif

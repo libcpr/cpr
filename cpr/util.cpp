@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 
+namespace cpr {
 
 Header cpr::util::parseHeader(const std::string& headers) {
     Header header;
@@ -82,4 +83,6 @@ std::string cpr::util::urlEncode(const std::string& value) {
     }
 
     return escaped.str();
+}
+
 }

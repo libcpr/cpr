@@ -6,6 +6,7 @@
 #include "cookies.h"
 #include "cprtypes.h"
 
+namespace cpr {
 
 class Response {
   public:
@@ -25,5 +26,7 @@ class Response {
     double elapsed;
     Cookies cookies;
 };
+
+}
 
 #endif

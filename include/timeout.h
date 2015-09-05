@@ -1,6 +1,7 @@
 #ifndef TIMEOUT_H
 #define TIMEOUT_H
 
+namespace cpr {
 
 class Timeout {
   public:
@@ -8,5 +9,7 @@ class Timeout {
 
     long ms;
 };
+
+}
 
 #endif

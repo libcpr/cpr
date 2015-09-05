@@ -2,6 +2,7 @@
 
 #include "util.h"
 
+namespace cpr {
 
 Cookies::Cookies(const std::initializer_list<std::pair<std::string, std::string>>& pairs) {
     for (auto& pair : pairs) {
@@ -19,4 +20,6 @@ std::string Cookies::GetEncoded() const {
 
 std::string& Cookies::operator[](const std::string& key) {
     return map_[key];
+}
+
 }
