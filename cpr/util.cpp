@@ -8,81 +8,81 @@
 
 namespace cpr {
 
-Header cpr::util::parseHeader(const std::string& headers) {
-    Header header;
-    std::vector<std::string> lines;
-    std::istringstream stream(headers);
-    {
-        std::string line;
-        while (std::getline(stream, line, '\n')) {
-            lines.push_back(line);
-        }
-    }
-
-    for (auto& line : lines) {
-        if (line.substr(0, 5) == "HTTP/") {
-            header.clear();
-        }
-        
-        if (line.length() > 0) {
-            auto found = line.find(":");
-            if (found != std::string::npos) {
-                auto value = line.substr(found + 2, line.length() - 1);
-                if (value.back() == '\r') {
-                    value = value.substr(0, value.length() - 1);
-                }
-                header[line.substr(0, found)] = value;
+    Header cpr::util::parseHeader(const std::string& headers) {
+        Header header;
+        std::vector<std::string> lines;
+        std::istringstream stream(headers);
+        {
+            std::string line;
+            while (std::getline(stream, line, '\n')) {
+                lines.push_back(line);
             }
         }
-    }
 
-    return header;
-}
-
-std::string cpr::util::parseResponse(const std::string& response) {
-    if (!response.empty()) {
-        if (response.back() == '\n') {
-            return response.substr(0, response.length() - 1);
+        for (auto& line : lines) {
+            if (line.substr(0, 5) == "HTTP/") {
+                header.clear();
+            }
+        
+            if (line.length() > 0) {
+                auto found = line.find(":");
+                if (found != std::string::npos) {
+                    auto value = line.substr(found + 2, line.length() - 1);
+                    if (value.back() == '\r') {
+                        value = value.substr(0, value.length() - 1);
+                    }
+                    header[line.substr(0, found)] = value;
+                }
+            }
         }
+
+        return header;
     }
 
-    return response;
-}
-
-std::vector<std::string> cpr::util::split(const std::string& to_split, char delimiter) {
-    std::vector<std::string> tokens;
-
-    std::stringstream stream(to_split);
-    std::string item;
-    while (std::getline(stream, item, delimiter)) {
-        tokens.push_back(item);
-    }
-
-    return tokens;
-}
-
-size_t cpr::util::writeFunction(void *ptr, size_t size, size_t nmemb, std::string* data) {
-    data->append((char*) ptr, size * nmemb);
-    return size * nmemb;
-}
-
-std::string cpr::util::urlEncode(const std::string& value) {
-    std::ostringstream escaped;
-    escaped.fill('0');
-    escaped << std::hex;
-
-    for (auto i = value.cbegin(), n = value.cend(); i != n; ++i) {
-        std::string::value_type c = (*i);
-        // Keep alphanumeric and other accepted characters intact
-        if (std::isalnum(c) || c == '-' || c == '_' || c == '.' || c == '~') {
-            escaped << c;
-            continue;
+    std::string cpr::util::parseResponse(const std::string& response) {
+        if (!response.empty()) {
+            if (response.back() == '\n') {
+                return response.substr(0, response.length() - 1);
+            }
         }
-        // Any other characters are percent-encoded
-        escaped << '%' << std::setw(2) << int((unsigned char) c);
+
+        return response;
     }
 
-    return escaped.str();
-}
+    std::vector<std::string> cpr::util::split(const std::string& to_split, char delimiter) {
+        std::vector<std::string> tokens;
+
+        std::stringstream stream(to_split);
+        std::string item;
+        while (std::getline(stream, item, delimiter)) {
+            tokens.push_back(item);
+        }
+
+        return tokens;
+    }
+
+    size_t cpr::util::writeFunction(void *ptr, size_t size, size_t nmemb, std::string* data) {
+        data->append((char*) ptr, size * nmemb);
+        return size * nmemb;
+    }
+
+    std::string cpr::util::urlEncode(const std::string& value) {
+        std::ostringstream escaped;
+        escaped.fill('0');
+        escaped << std::hex;
+
+        for (auto i = value.cbegin(), n = value.cend(); i != n; ++i) {
+            std::string::value_type c = (*i);
+            // Keep alphanumeric and other accepted characters intact
+            if (std::isalnum(c) || c == '-' || c == '_' || c == '.' || c == '~') {
+                escaped << c;
+                continue;
+            }
+            // Any other characters are percent-encoded
+            escaped << '%' << std::setw(2) << int((unsigned char) c);
+        }
+
+        return escaped.str();
+    }
 
 }

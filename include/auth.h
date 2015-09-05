@@ -5,18 +5,18 @@
 
 namespace cpr {
 
-class Authentication {
-  public:
-    Authentication(const std::string& username, const std::string& password) :
-        username_{username}, password_{password}, auth_string_{username + ":" + password} {}
+    class Authentication {
+      public:
+        Authentication(const std::string& username, const std::string& password) :
+            username_{username}, password_{password}, auth_string_{username + ":" + password} {}
 
-    const char* GetAuthString() const;
+        const char* GetAuthString() const;
 
-  private:
-    std::string username_;
-    std::string password_;
-    std::string auth_string_;
-};
+      private:
+        std::string username_;
+        std::string password_;
+        std::string auth_string_;
+    };
 
 }
 

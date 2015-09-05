@@ -7,12 +7,11 @@
 
 namespace cpr {
 
-typedef struct {
-    CURL* handle;
-    struct curl_slist* chunk;
-    char error[CURL_ERROR_SIZE];
-} CurlHolder;
-
+    typedef struct {
+        CURL* handle;
+        struct curl_slist* chunk;
+        char error[CURL_ERROR_SIZE];
+    } CurlHolder;
 
 }
 
