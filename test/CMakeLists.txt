@@ -1,6 +1,6 @@
 macro(add_cpr_test _TEST_NAME)
     add_executable(${_TEST_NAME}_tests
-        ${_TEST_NAME}_tests.cpp server.cpp)
+        ${_TEST_NAME}_tests.cpp server.cpp server.h)
     target_link_libraries(${_TEST_NAME}_tests
         ${GTEST_LIBRARIES}
         ${CPR_LIBRARIES}
