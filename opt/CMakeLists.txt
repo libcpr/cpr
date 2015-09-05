@@ -50,15 +50,15 @@ if(NOT USE_SYSTEM_CURL OR NOT CURL_FOUND)
     set(CURL_INCLUDE_DIRS
         ${CURL_SOURCE_DIR}/include
         ${CURL_BINARY_DIR}/include/curl)
+        
+    # Group under the "external" project folder in IDEs such as Visual Studio.
+    set_property(TARGET curl PROPERTY FOLDER "external")
+    set_property(TARGET libcurl PROPERTY FOLDER "external")
 endif()
 
 set_cache_variable(CURL_FOUND "Set if libcurl is found or built")
 set_cache_variable(CURL_LIBRARIES "Location of libcurl")
 set_cache_variable(CURL_INCLUDE_DIRS "Location of curl include files")
-
-# Group under the "external" project folder in IDEs such as Visual Studio.
-set_property(TARGET curl PROPERTY FOLDER "external")
-set_property(TARGET libcurl PROPERTY FOLDER "external")
 
 
 # GTest configuration
@@ -81,6 +81,10 @@ if(BUILD_CPR_TESTS)
         set(GTEST_MAIN_LIBRARIES gtest_main)
         set(GTEST_BOTH_LIBRARIES gtest gtest_main)
         set(GTEST_INCLUDE_DIRS ${gtest_SOURCE_DIR}/include)
+        
+        # Group under the "tests/gtest" project folder in IDEs such as Visual Studio.
+    set_property(TARGET gtest PROPERTY FOLDER "tests/gtest")
+    set_property(TARGET gtest_main PROPERTY FOLDER "tests/gtest")
     endif()
 
     set_cache_variable(GTEST_FOUND "Set if libgtest was found or built")
@@ -89,10 +93,6 @@ if(BUILD_CPR_TESTS)
     set_cache_variable(GTEST_BOTH_LIBRARIES "Location of both gtest libraries")
     set_cache_variable(GTEST_INCLUDE_DIRS "Location of gtest include files")
 endif()
-
-# Group under the "tests/gtest" project folder in IDEs such as Visual Studio.
-set_property(TARGET gtest PROPERTY FOLDER "tests/gtest")
-set_property(TARGET gtest_main PROPERTY FOLDER "tests/gtest")
 
 
 # Mongoose configuration
@@ -107,7 +107,7 @@ if(BUILD_CPR_TESTS)
     set_cache_variable(MONGOOSE_FOUND "Set if libmongoose was found or built")
     set_cache_variable(MONGOOSE_LIBRARIES "Location of libmongoose")
     set_cache_variable(MONGOOSE_INCLUDE_DIRS "Location of mongoose include files")
+    
+    # Group under the "external" project folder in IDEs such as Visual Studio.
+    set_property(TARGET mongoose PROPERTY FOLDER "external")
 endif()
-
-# Group under the "external" project folder in IDEs such as Visual Studio.
-set_property(TARGET mongoose PROPERTY FOLDER "external")
