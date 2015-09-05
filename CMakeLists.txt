@@ -1,4 +1,10 @@
 cmake_minimum_required(VERSION 2.8.7)
+
+# Allow use of project folders for IDEs like Visual Studio, so we
+# could organize projects into relevant folders: "cpr", "tests" & "external (libraries)".
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "CMake")
+
 project(cpr)
 
 if(NOT ${CMAKE_VERSION} LESS 3.2)

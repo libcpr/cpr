@@ -56,6 +56,10 @@ set_cache_variable(CURL_FOUND "Set if libcurl is found or built")
 set_cache_variable(CURL_LIBRARIES "Location of libcurl")
 set_cache_variable(CURL_INCLUDE_DIRS "Location of curl include files")
 
+# Group under the "external" project folder in IDEs such as Visual Studio.
+set_property(TARGET curl PROPERTY FOLDER "external")
+set_property(TARGET libcurl PROPERTY FOLDER "external")
+
 
 # GTest configuration
 
@@ -86,6 +90,10 @@ if(BUILD_CPR_TESTS)
     set_cache_variable(GTEST_INCLUDE_DIRS "Location of gtest include files")
 endif()
 
+# Group under the "tests/gtest" project folder in IDEs such as Visual Studio.
+set_property(TARGET gtest PROPERTY FOLDER "tests/gtest")
+set_property(TARGET gtest_main PROPERTY FOLDER "tests/gtest")
+
 
 # Mongoose configuration
 
@@ -100,3 +108,6 @@ if(BUILD_CPR_TESTS)
     set_cache_variable(MONGOOSE_LIBRARIES "Location of libmongoose")
     set_cache_variable(MONGOOSE_INCLUDE_DIRS "Location of mongoose include files")
 endif()
+
+# Group under the "external" project folder in IDEs such as Visual Studio.
+set_property(TARGET mongoose PROPERTY FOLDER "external")

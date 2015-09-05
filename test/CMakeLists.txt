@@ -6,6 +6,8 @@ macro(add_cpr_test _TEST_NAME)
         ${CPR_LIBRARIES}
         ${MONGOOSE_LIBRARIES})
     add_test(NAME cpr_${_TEST_NAME}_tests COMMAND ${_TEST_NAME}_tests)
+    # Group under the "tests" project folder in IDEs such as Visual Studio.
+    set_property(TARGET ${_TEST_NAME}_tests PROPERTY FOLDER "tests")
     if(WIN32)
         add_custom_command(TARGET ${_TEST_NAME}_tests POST_BUILD
                            COMMAND ${CMAKE_COMMAND} -E copy
