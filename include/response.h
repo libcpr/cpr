@@ -17,6 +17,7 @@ class Response {
              const double& elapsed, const Cookies& cookies)
         : status_code{status_code}, text{text}, header{header}, url{url}, elapsed{elapsed},
           cookies{cookies} {};
+    Response() = default;
 
     long status_code;
     std::string text;
