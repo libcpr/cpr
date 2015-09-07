@@ -4,17 +4,20 @@
 #include <map>
 #include <string>
 
+namespace cpr {
 
-class CaseInsenstiveCompare {
-  public:
-    bool operator()(const std::string& a, const std::string& b) const;
+    class CaseInsenstiveCompare {
+      public:
+        bool operator()(const std::string& a, const std::string& b) const;
 
-  private:
-    static void char_to_lower(char& c);
-    static std::string to_lower(const std::string& a);
-};
+      private:
+        static void char_to_lower(char& c);
+        static std::string to_lower(const std::string& a);
+    };
 
-typedef std::map<std::string, std::string, CaseInsenstiveCompare> Header;
-typedef std::string Url;
+    typedef std::map<std::string, std::string, CaseInsenstiveCompare> Header;
+    typedef std::string Url;
+
+}
 
 #endif

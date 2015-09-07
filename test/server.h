@@ -7,6 +7,7 @@
 
 #include <cpr.h>
 
+using namespace cpr;
 
 class Server: public ::testing::Environment {
   public:

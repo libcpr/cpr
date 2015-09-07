@@ -9,6 +9,7 @@
 #include "multipart.h"
 #include "server.h"
 
+using namespace cpr;
 
 static Server* server = new Server();
 auto base = server->GetBaseUrl();

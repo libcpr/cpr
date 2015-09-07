@@ -5,13 +5,16 @@
 
 #include "auth.h"
 
+namespace cpr {
 
-class Digest : public Authentication {
-  public:
-    Digest(const std::string& username, const std::string& password) :
-        Authentication{username, password} {}
+    class Digest : public Authentication {
+      public:
+        Digest(const std::string& username, const std::string& password) :
+            Authentication{username, password} {}
 
-    const char* GetAuthString() const;
-};
+        const char* GetAuthString() const;
+    };
+
+}
 
 #endif

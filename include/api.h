@@ -13,10 +13,10 @@
 #include "response.h"
 #include "session.h"
 
-
-using AsyncResponse = std::future<Response>;
-
 namespace cpr {
+
+    using AsyncResponse = std::future<Response>;
+
     namespace priv {
         template <typename T>
         void set_option(Session& session, T&& t) {

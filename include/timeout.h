@@ -1,12 +1,15 @@
 #ifndef TIMEOUT_H
 #define TIMEOUT_H
 
+namespace cpr {
 
-class Timeout {
-  public:
-    Timeout(const long& timeout) : ms(timeout) {}
+    class Timeout {
+      public:
+        Timeout(const long& timeout) : ms(timeout) {}
 
-    long ms;
-};
+        long ms;
+    };
+
+}
 
 #endif

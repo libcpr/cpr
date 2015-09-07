@@ -10,6 +10,7 @@
 #define HTTP_PROXY "104.131.214.38:3128"
 #define HTTPS_PROXY "104.131.214.38:3128"
 
+using namespace cpr;
 
 TEST(ProxyTests, SingleProxyTest) {
     auto url = Url{"http://www.httpbin.org/get"};
