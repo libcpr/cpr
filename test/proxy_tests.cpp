@@ -29,6 +29,7 @@ TEST(ProxyTests, MultipleProxyHttpTest) {
     EXPECT_EQ(200, response.status_code);
 }
 
+#if !defined(INSECURE_CURL)
 TEST(ProxyTests, MultipleProxyHttpsTest) {
     auto url = Url{"https://www.httpbin.org/get"};
     auto response = cpr::Get(url, Proxies{{"http", HTTP_PROXY},
@@ -37,6 +38,7 @@ TEST(ProxyTests, MultipleProxyHttpsTest) {
     EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
 }
+#endif
 
 TEST(ProxyTests, CopyProxyTest) {
     auto url = Url{"http://www.httpbin.org/get"};
