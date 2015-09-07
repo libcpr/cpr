@@ -73,7 +73,7 @@ if(BUILD_CPR_TESTS)
             # By default, GTest compiles on Windows in CRT static linkage mode. We use this
             # variable to force it into using the CRT in dynamic linkage (DLL), just as CPR
             # does.
-            set(gtest_force_shared_crt ON)
+            set(gtest_force_shared_crt ON CACHE BOOL "Force gtest to use the shared c runtime")
         endif()
         add_subdirectory(googletest)
         set(GTEST_FOUND TRUE)
