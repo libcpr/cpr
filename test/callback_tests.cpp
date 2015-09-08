@@ -85,7 +85,8 @@ TEST(CallbackGetTests, CallbackGetLambdaTextReferenceTest) {
 TEST(CallbackGetTests, CallbackGetFunctionStatusTest) {
     auto url = Url{base + "/hello.html"};
     auto status_code = 0;
-    auto callback = std::bind(status_callback, std::ref(status_code), std::placeholders::_1);
+    auto callback = std::function<int(Response)>(std::bind(status_callback, std::ref(status_code),
+                                                           std::placeholders::_1));
     auto future = cpr::GetCallback(callback, url);
     std::this_thread::sleep_for(sleep_time);
     EXPECT_EQ(future.wait_for(zero), std::future_status::ready);
@@ -95,7 +96,9 @@ TEST(CallbackGetTests, CallbackGetFunctionStatusTest) {
 TEST(CallbackGetTests, CallbackGetFunctionTextTest) {
     auto url = Url{base + "/hello.html"};
     auto expected_text = std::string{};
-    auto callback = std::bind(text_callback, std::ref(expected_text), std::placeholders::_1);
+    auto callback = std::function<std::string(Response)>(std::bind(text_callback,
+                                                                   std::ref(expected_text),
+                                                                   std::placeholders::_1));
     auto future = cpr::GetCallback(callback, url);
     std::this_thread::sleep_for(sleep_time);
     EXPECT_EQ(future.wait_for(zero), std::future_status::ready);
@@ -105,7 +108,9 @@ TEST(CallbackGetTests, CallbackGetFunctionTextTest) {
 TEST(CallbackGetTests, CallbackGetFunctionStatusReferenceTest) {
     auto url = Url{base + "/hello.html"};
     auto status_code = 0;
-    auto callback = std::bind(status_callback_ref, std::ref(status_code), std::placeholders::_1);
+    auto callback = std::function<int(Response)>(std::bind(status_callback_ref,
+                                                           std::ref(status_code),
+                                                           std::placeholders::_1));
     auto future = cpr::GetCallback(callback, url);
     std::this_thread::sleep_for(sleep_time);
     EXPECT_EQ(future.wait_for(zero), std::future_status::ready);
@@ -115,7 +120,9 @@ TEST(CallbackGetTests, CallbackGetFunctionStatusReferenceTest) {
 TEST(CallbackGetTests, CallbackGetFunctionTextReferenceTest) {
     auto url = Url{base + "/hello.html"};
     auto expected_text = std::string{};
-    auto callback = std::bind(text_callback_ref, std::ref(expected_text), std::placeholders::_1);
+    auto callback = std::function<std::string(Response)>(std::bind(text_callback_ref,
+                                                                   std::ref(expected_text),
+                                                                   std::placeholders::_1));
     auto future = cpr::GetCallback(callback, url);
     std::this_thread::sleep_for(sleep_time);
     EXPECT_EQ(future.wait_for(zero), std::future_status::ready);
@@ -173,7 +180,8 @@ TEST(CallbackDeleteTests, CallbackDeleteLambdaTextReferenceTest) {
 TEST(CallbackDeleteTests, CallbackDeleteFunctionStatusTest) {
     auto url = Url{base + "/delete.html"};
     auto status_code = 0;
-    auto callback = std::bind(status_callback, std::ref(status_code), std::placeholders::_1);
+    auto callback = std::function<int(Response)>(std::bind(status_callback, std::ref(status_code),
+                                                           std::placeholders::_1));
     auto future = cpr::DeleteCallback(callback, url);
     std::this_thread::sleep_for(sleep_time);
     EXPECT_EQ(future.wait_for(zero), std::future_status::ready);
@@ -183,7 +191,9 @@ TEST(CallbackDeleteTests, CallbackDeleteFunctionStatusTest) {
 TEST(CallbackDeleteTests, CallbackDeleteFunctionTextTest) {
     auto url = Url{base + "/delete.html"};
     auto expected_text = std::string{};
-    auto callback = std::bind(text_callback, std::ref(expected_text), std::placeholders::_1);
+    auto callback = std::function<std::string(Response)>(std::bind(text_callback,
+                                                                   std::ref(expected_text),
+                                                                   std::placeholders::_1));
     auto future = cpr::DeleteCallback(callback, url);
     std::this_thread::sleep_for(sleep_time);
     EXPECT_EQ(future.wait_for(zero), std::future_status::ready);
@@ -193,7 +203,9 @@ TEST(CallbackDeleteTests, CallbackDeleteFunctionTextTest) {
 TEST(CallbackDeleteTests, CallbackDeleteFunctionStatusReferenceTest) {
     auto url = Url{base + "/delete.html"};
     auto status_code = 0;
-    auto callback = std::bind(status_callback_ref, std::ref(status_code), std::placeholders::_1);
+    auto callback = std::function<int(Response)>(std::bind(status_callback_ref,
+                                                           std::ref(status_code),
+                                                           std::placeholders::_1));
     auto future = cpr::DeleteCallback(callback, url);
     std::this_thread::sleep_for(sleep_time);
     EXPECT_EQ(future.wait_for(zero), std::future_status::ready);
@@ -203,7 +215,9 @@ TEST(CallbackDeleteTests, CallbackDeleteFunctionStatusReferenceTest) {
 TEST(CallbackDeleteTests, CallbackDeleteFunctionTextReferenceTest) {
     auto url = Url{base + "/delete.html"};
     auto expected_text = std::string{};
-    auto callback = std::bind(text_callback_ref, std::ref(expected_text), std::placeholders::_1);
+    auto callback = std::function<std::string(Response)>(std::bind(text_callback_ref,
+                                                                   std::ref(expected_text),
+                                                                   std::placeholders::_1));
     auto future = cpr::DeleteCallback(callback, url);
     std::this_thread::sleep_for(sleep_time);
     EXPECT_EQ(future.wait_for(zero), std::future_status::ready);
@@ -261,7 +275,8 @@ TEST(CallbackHeadTests, CallbackHeadLambdaTextReferenceTest) {
 TEST(CallbackHeadTests, CallbackHeadFunctionStatusTest) {
     auto url = Url{base + "/hello.html"};
     auto status_code = 0;
-    auto callback = std::bind(status_callback, std::ref(status_code), std::placeholders::_1);
+    auto callback = std::function<int(Response)>(std::bind(status_callback, std::ref(status_code),
+                                                           std::placeholders::_1));
     auto future = cpr::HeadCallback(callback, url);
     std::this_thread::sleep_for(sleep_time);
     EXPECT_EQ(future.wait_for(zero), std::future_status::ready);
@@ -271,7 +286,9 @@ TEST(CallbackHeadTests, CallbackHeadFunctionStatusTest) {
 TEST(CallbackHeadTests, CallbackHeadFunctionTextTest) {
     auto url = Url{base + "/hello.html"};
     auto expected_text = std::string{};
-    auto callback = std::bind(text_callback, std::ref(expected_text), std::placeholders::_1);
+    auto callback = std::function<std::string(Response)>(std::bind(text_callback,
+                                                                   std::ref(expected_text),
+                                                                   std::placeholders::_1));
     auto future = cpr::HeadCallback(callback, url);
     std::this_thread::sleep_for(sleep_time);
     EXPECT_EQ(future.wait_for(zero), std::future_status::ready);
@@ -281,7 +298,9 @@ TEST(CallbackHeadTests, CallbackHeadFunctionTextTest) {
 TEST(CallbackHeadTests, CallbackHeadFunctionStatusReferenceTest) {
     auto url = Url{base + "/hello.html"};
     auto status_code = 0;
-    auto callback = std::bind(status_callback_ref, std::ref(status_code), std::placeholders::_1);
+    auto callback = std::function<int(Response)>(std::bind(status_callback_ref,
+                                                           std::ref(status_code),
+                                                           std::placeholders::_1));
     auto future = cpr::HeadCallback(callback, url);
     std::this_thread::sleep_for(sleep_time);
     EXPECT_EQ(future.wait_for(zero), std::future_status::ready);
@@ -291,7 +310,9 @@ TEST(CallbackHeadTests, CallbackHeadFunctionStatusReferenceTest) {
 TEST(CallbackHeadTests, CallbackHeadFunctionTextReferenceTest) {
     auto url = Url{base + "/hello.html"};
     auto expected_text = std::string{};
-    auto callback = std::bind(text_callback_ref, std::ref(expected_text), std::placeholders::_1);
+    auto callback = std::function<std::string(Response)>(std::bind(text_callback_ref,
+                                                                   std::ref(expected_text),
+                                                                   std::placeholders::_1));
     auto future = cpr::HeadCallback(callback, url);
     std::this_thread::sleep_for(sleep_time);
     EXPECT_EQ(future.wait_for(zero), std::future_status::ready);
@@ -354,7 +375,8 @@ TEST(CallbackPostTests, CallbackPostFunctionStatusTest) {
     auto url = Url{base + "/url_post.html"};
     auto payload = Payload{{"x", "5"}};
     auto status_code = 0;
-    auto callback = std::bind(status_callback, std::ref(status_code), std::placeholders::_1);
+    auto callback = std::function<int(Response)>(std::bind(status_callback, std::ref(status_code),
+                                                           std::placeholders::_1));
     auto future = cpr::PostCallback(callback, url, payload);
     std::this_thread::sleep_for(sleep_time);
     EXPECT_EQ(future.wait_for(zero), std::future_status::ready);
@@ -365,7 +387,9 @@ TEST(CallbackPostTests, CallbackPostFunctionTextTest) {
     auto url = Url{base + "/url_post.html"};
     auto payload = Payload{{"x", "5"}};
     auto expected_text = std::string{};
-    auto callback = std::bind(text_callback, std::ref(expected_text), std::placeholders::_1);
+    auto callback = std::function<std::string(Response)>(std::bind(text_callback,
+                                                                   std::ref(expected_text),
+                                                                   std::placeholders::_1));
     auto future = cpr::PostCallback(callback, url, payload);
     std::this_thread::sleep_for(sleep_time);
     EXPECT_EQ(future.wait_for(zero), std::future_status::ready);
@@ -376,7 +400,9 @@ TEST(CallbackPostTests, CallbackPostFunctionStatusReferenceTest) {
     auto url = Url{base + "/url_post.html"};
     auto payload = Payload{{"x", "5"}};
     auto status_code = 0;
-    auto callback = std::bind(status_callback_ref, std::ref(status_code), std::placeholders::_1);
+    auto callback = std::function<int(Response)>(std::bind(status_callback_ref,
+                                                           std::ref(status_code),
+                                                           std::placeholders::_1));
     auto future = cpr::PostCallback(callback, url, payload);
     std::this_thread::sleep_for(sleep_time);
     EXPECT_EQ(future.wait_for(zero), std::future_status::ready);
@@ -387,7 +413,9 @@ TEST(CallbackPostTests, CallbackPostFunctionTextReferenceTest) {
     auto url = Url{base + "/url_post.html"};
     auto payload = Payload{{"x", "5"}};
     auto expected_text = std::string{};
-    auto callback = std::bind(text_callback_ref, std::ref(expected_text), std::placeholders::_1);
+    auto callback = std::function<std::string(Response)>(std::bind(text_callback_ref,
+                                                                   std::ref(expected_text),
+                                                                   std::placeholders::_1));
     auto future = cpr::PostCallback(callback, url, payload);
     std::this_thread::sleep_for(sleep_time);
     EXPECT_EQ(future.wait_for(zero), std::future_status::ready);
@@ -450,7 +478,8 @@ TEST(CallbackPutTests, CallbackPutFunctionStatusTest) {
     auto url = Url{base + "/url_post.html"};
     auto payload = Payload{{"x", "5"}};
     auto status_code = 0;
-    auto callback = std::bind(status_callback, std::ref(status_code), std::placeholders::_1);
+    auto callback = std::function<int(Response)>(std::bind(status_callback, std::ref(status_code),
+                                                           std::placeholders::_1));
     auto future = cpr::PutCallback(callback, url, payload);
     std::this_thread::sleep_for(sleep_time);
     EXPECT_EQ(future.wait_for(zero), std::future_status::ready);
@@ -461,7 +490,9 @@ TEST(CallbackPutTests, CallbackPutFunctionTextTest) {
     auto url = Url{base + "/url_post.html"};
     auto payload = Payload{{"x", "5"}};
     auto expected_text = std::string{};
-    auto callback = std::bind(text_callback, std::ref(expected_text), std::placeholders::_1);
+    auto callback = std::function<std::string(Response)>(std::bind(text_callback,
+                                                                   std::ref(expected_text),
+                                                                   std::placeholders::_1));
     auto future = cpr::PutCallback(callback, url, payload);
     std::this_thread::sleep_for(sleep_time);
     EXPECT_EQ(future.wait_for(zero), std::future_status::ready);
@@ -472,7 +503,9 @@ TEST(CallbackPutTests, CallbackPutFunctionStatusReferenceTest) {
     auto url = Url{base + "/url_post.html"};
     auto payload = Payload{{"x", "5"}};
     auto status_code = 0;
-    auto callback = std::bind(status_callback_ref, std::ref(status_code), std::placeholders::_1);
+    auto callback = std::function<int(Response)>(std::bind(status_callback_ref,
+                                                           std::ref(status_code),
+                                                           std::placeholders::_1));
     auto future = cpr::PutCallback(callback, url, payload);
     std::this_thread::sleep_for(sleep_time);
     EXPECT_EQ(future.wait_for(zero), std::future_status::ready);
@@ -483,7 +516,9 @@ TEST(CallbackPutTests, CallbackPutFunctionTextReferenceTest) {
     auto url = Url{base + "/url_post.html"};
     auto payload = Payload{{"x", "5"}};
     auto expected_text = std::string{};
-    auto callback = std::bind(text_callback_ref, std::ref(expected_text), std::placeholders::_1);
+    auto callback = std::function<std::string(Response)>(std::bind(text_callback_ref,
+                                                                   std::ref(expected_text),
+                                                                   std::placeholders::_1));
     auto future = cpr::PutCallback(callback, url, payload);
     std::this_thread::sleep_for(sleep_time);
     EXPECT_EQ(future.wait_for(zero), std::future_status::ready);
