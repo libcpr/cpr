@@ -4,11 +4,8 @@
 
 namespace cpr {
 
-    Cookies::Cookies(const std::initializer_list<std::pair<std::string, std::string>>& pairs) {
-        for (auto& pair : pairs) {
-            map_[pair.first] = pair.second;
-        }
-    }
+    Cookies::Cookies(const std::initializer_list<std::pair<const std::string, std::string>>& pairs) 
+        : map_{pairs} { }
 
     std::string Cookies::GetEncoded() const {
         std::stringstream stream;

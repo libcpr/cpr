@@ -8,12 +8,12 @@
 namespace cpr {
 
     Parameters::Parameters(const std::initializer_list<Parameter>& parameters) {
-        for (auto parameter = parameters.begin(); parameter != parameters.end(); ++parameter) {
+        for (const auto& parameter : parameters) {
             if (!content.empty()) {
                 content += "&";
             }
-            auto escaped = cpr::util::urlEncode(parameter->value);
-            content += parameter->key + "=" + escaped;
+            auto escaped = cpr::util::urlEncode(parameter.value);
+            content += parameter.key + "=" + escaped;
         }
     }
 

@@ -9,8 +9,9 @@ namespace cpr {
     }
 
     void CaseInsenstiveCompare::char_to_lower(char& c) {
-        if (c >= 'A' && c <= 'Z')
-        c += ('a' - 'A');
+        if (c >= 'A' && c <= 'Z') {
+            c += ('a' - 'A');
+        }
     }
 
     std::string CaseInsenstiveCompare::to_lower(const std::string& a) {
