@@ -8,12 +8,12 @@
 namespace cpr {
 
     Payload::Payload(const std::initializer_list<Pair>& pairs) {
-        for (auto pair = pairs.begin(); pair != pairs.end(); ++pair) {
+        for (const auto& pair : pairs) {
             if (!content.empty()) {
                 content += "&";
             }
-            auto escaped = cpr::util::urlEncode(pair->value);
-            content += pair->key + "=" + escaped;
+            auto escaped = cpr::util::urlEncode(pair.value);
+            content += pair.key + "=" + escaped;
         }
     }
 
