@@ -7,11 +7,8 @@
 
 namespace cpr {
 
-    Proxies::Proxies(const std::initializer_list<std::pair<std::string, std::string>>& hosts) {
-        for (auto& host : hosts) {
-            hosts_[host.first] = host.second;
-        }
-    }
+    Proxies::Proxies(const std::initializer_list<std::pair<const std::string, std::string>>& hosts) 
+        : hosts_{hosts} { }
 
     bool Proxies::has(const std::string& protocol) {
         return hosts_.count(protocol) > 0;
