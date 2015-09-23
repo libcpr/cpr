@@ -13,6 +13,8 @@ namespace cpr {
             : username_{std::forward<decltype(username)>(username)},
               password_{std::forward<decltype(password)>(password)},
               auth_string_{username_ + ":" + password_} {}
+        Authentication(const char* username, const char* password)
+            : Authentication{std::string{username}, std::string{password}} {}
 
         const char* GetAuthString() const;
 
