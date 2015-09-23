@@ -1,5 +1,5 @@
-#ifndef COOKIES_H
-#define COOKIES_H
+#ifndef CPR_COOKIES_H
+#define CPR_COOKIES_H
 
 #include <map>
 #include <string>

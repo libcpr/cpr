@@ -1,5 +1,5 @@
-#ifndef MULTIPART_H
-#define MULTIPART_H
+#ifndef CPR_MULTIPART_H
+#define CPR_MULTIPART_H
 
 #include <initializer_list>
 #include <string>

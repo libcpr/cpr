@@ -1,5 +1,5 @@
-#ifndef PROXIES_H
-#define PROXIES_H
+#ifndef CPR_PROXIES_H
+#define CPR_PROXIES_H
 
 #include <initializer_list>
 #include <map>

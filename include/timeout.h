@@ -1,5 +1,5 @@
-#ifndef TIMEOUT_H
-#define TIMEOUT_H
+#ifndef CPR_TIMEOUT_H
+#define CPR_TIMEOUT_H
 
 namespace cpr {
 

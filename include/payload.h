@@ -1,5 +1,5 @@
-#ifndef PAYLOAD_H
-#define PAYLOAD_H
+#ifndef CPR_PAYLOAD_H
+#define CPR_PAYLOAD_H
 
 #include <memory>
 #include <string>

@@ -1,5 +1,5 @@
-#ifndef PARAMETERS_H
-#define PARAMETERS_H
+#ifndef CPR_PARAMETERS_H
+#define CPR_PARAMETERS_H
 
 #include <memory>
 #include <string>
