@@ -15,8 +15,8 @@ namespace cpr {
         static std::string to_lower(const std::string& a);
     };
 
-    typedef std::map<std::string, std::string, CaseInsenstiveCompare> Header;
-    typedef std::string Url;
+    using Header = std::map<std::string, std::string, CaseInsenstiveCompare>;
+    using Url = std::string;
 
 }
 
