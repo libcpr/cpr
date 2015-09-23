@@ -6,14 +6,14 @@
 
 namespace cpr {
 
-    class Digest : public Authentication {
-      public:
-        template<typename UserType, typename PassType>
-        Digest(UserType&& username, PassType&& password)
+class Digest : public Authentication {
+  public:
+    template <typename UserType, typename PassType>
+    Digest(UserType&& username, PassType&& password)
             : Authentication{CPR_FWD(username), CPR_FWD(password)} {}
 
-        const char* GetAuthString() const;
-    };
+    const char* GetAuthString() const;
+};
 
 } // namespace cpr
 

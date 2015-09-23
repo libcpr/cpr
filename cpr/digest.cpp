@@ -2,8 +2,8 @@
 
 namespace cpr {
 
-    const char* Digest::GetAuthString() const {
-        return Authentication::GetAuthString();
-    }
+const char* Digest::GetAuthString() const {
+    return Authentication::GetAuthString();
+}
 
 } // namespace cpr

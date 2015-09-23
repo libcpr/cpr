@@ -3,12 +3,12 @@
 
 namespace cpr {
 
-    class Timeout {
-      public:
-        Timeout(const long& timeout) : ms(timeout) {}
+class Timeout {
+  public:
+    Timeout(const long& timeout) : ms(timeout) {}
 
-        long ms;
-    };
+    long ms;
+};
 
 } // namespace cpr
 

@@ -9,21 +9,22 @@
 
 namespace cpr {
 
-    struct Parameter {
-        template<typename KeyType, typename ValueType>
-        Parameter(KeyType&& key, ValueType&& value) : key{CPR_FWD(key)}, value{CPR_FWD(value)} {}
+struct Parameter {
+    template <typename KeyType, typename ValueType>
+    Parameter(KeyType&& key, ValueType&& value)
+            : key{CPR_FWD(key)}, value{CPR_FWD(value)} {}
 
-        std::string key;
-        std::string value;
-    };
+    std::string key;
+    std::string value;
+};
 
-    class Parameters {
-      public:
-        Parameters() = default;
-        Parameters(const std::initializer_list<Parameter>& parameters);
+class Parameters {
+  public:
+    Parameters() = default;
+    Parameters(const std::initializer_list<Parameter>& parameters);
 
-        std::string content;
-    };
+    std::string content;
+};
 
 } // namespace cpr
 

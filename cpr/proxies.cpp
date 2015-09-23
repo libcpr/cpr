@@ -7,15 +7,15 @@
 
 namespace cpr {
 
-    Proxies::Proxies(const std::initializer_list<std::pair<const std::string, std::string>>& hosts) 
-        : hosts_{hosts} { }
+Proxies::Proxies(const std::initializer_list<std::pair<const std::string, std::string>>& hosts)
+        : hosts_{hosts} {}
 
-    bool Proxies::has(const std::string& protocol) {
-        return hosts_.count(protocol) > 0;
-    }
+bool Proxies::has(const std::string& protocol) {
+    return hosts_.count(protocol) > 0;
+}
 
-    const std::string& Proxies::operator[](const std::string& protocol) {
-        return hosts_[protocol];
-    }
+const std::string& Proxies::operator[](const std::string& protocol) {
+    return hosts_[protocol];
+}
 
 } // namespace cpr
