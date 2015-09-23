@@ -7,6 +7,7 @@
 
 #include "auth.h"
 #include "cprtypes.h"
+#include "defines.h"
 #include "digest.h"
 #include "multipart.h"
 #include "payload.h"
@@ -20,13 +21,13 @@ namespace cpr {
     namespace priv {
         template <typename T>
         void set_option(Session& session, T&& t) {
-            session.SetOption(std::forward<T>(t));
+            session.SetOption(CPR_FWD(t));
         }
 
         template <typename T, typename... Ts>
         void set_option(Session& session, T&& t, Ts&&... ts) {
-            set_option(session, std::forward<T>(t));
-            set_option(session, std::forward<Ts>(ts)...);
+            set_option(session, CPR_FWD(t));
+            set_option(session, CPR_FWD(ts)...);
         }
     }
 
@@ -34,7 +35,7 @@ namespace cpr {
     template <typename... Ts>
     Response Get(Ts&&... ts) {
         Session session;
-        priv::set_option(session, std::forward<Ts>(ts)...);
+        priv::set_option(session, CPR_FWD(ts)...);
         return session.Get();
     }
 
@@ -58,7 +59,7 @@ namespace cpr {
     template <typename... Ts>
     Response Post(Ts&&... ts) {
         Session session;
-        priv::set_option(session, std::forward<Ts>(ts)...);
+        priv::set_option(session, CPR_FWD(ts)...);
         return session.Post();
     }
 
@@ -82,7 +83,7 @@ namespace cpr {
     template <typename... Ts>
     Response Put(Ts&&... ts) {
         Session session;
-        priv::set_option(session, std::forward<Ts>(ts)...);
+        priv::set_option(session, CPR_FWD(ts)...);
         return session.Put();
     }
 
@@ -106,7 +107,7 @@ namespace cpr {
     template <typename... Ts>
     Response Head(Ts&&... ts) {
         Session session;
-        priv::set_option(session, std::forward<Ts>(ts)...);
+        priv::set_option(session, CPR_FWD(ts)...);
         return session.Head();
     }
 
@@ -130,7 +131,7 @@ namespace cpr {
     template <typename... Ts>
     Response Delete(Ts&&... ts) {
         Session session;
-        priv::set_option(session, std::forward<Ts>(ts)...);
+        priv::set_option(session, CPR_FWD(ts)...);
         return session.Delete();
     }
 

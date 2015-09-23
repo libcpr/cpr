@@ -2,7 +2,8 @@
 #define CPR_AUTH_H
 
 #include <string>
-#include <utility>
+
+#include "defines.h"
 
 namespace cpr {
 
@@ -10,8 +11,7 @@ namespace cpr {
       public:
         template<typename UserType, typename PassType>
         Authentication(UserType&& username, PassType&& password)
-            : username_{std::forward<decltype(username)>(username)},
-              password_{std::forward<decltype(password)>(password)},
+            : username_{CPR_FWD(username)}, password_{CPR_FWD(password)},
               auth_string_{username_ + ":" + password_} {}
 
         const char* GetAuthString() const;
