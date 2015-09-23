@@ -7,8 +7,9 @@
 #include <vector>
 
 namespace cpr {
+namespace util {
 
-    Header cpr::util::parseHeader(const std::string& headers) {
+    Header parseHeader(const std::string& headers) {
         Header header;
         std::vector<std::string> lines;
         std::istringstream stream(headers);
@@ -39,7 +40,7 @@ namespace cpr {
         return header;
     }
 
-    std::string cpr::util::parseResponse(const std::string& response) {
+    std::string parseResponse(const std::string& response) {
         if (!response.empty()) {
             if (response.back() == '\n') {
                 return response.substr(0, response.length() - 1);
@@ -49,7 +50,7 @@ namespace cpr {
         return response;
     }
 
-    std::vector<std::string> cpr::util::split(const std::string& to_split, char delimiter) {
+    std::vector<std::string> split(const std::string& to_split, char delimiter) {
         std::vector<std::string> tokens;
 
         std::stringstream stream(to_split);
@@ -61,12 +62,12 @@ namespace cpr {
         return tokens;
     }
 
-    size_t cpr::util::writeFunction(void *ptr, size_t size, size_t nmemb, std::string* data) {
+    size_t writeFunction(void *ptr, size_t size, size_t nmemb, std::string* data) {
         data->append((char*) ptr, size * nmemb);
         return size * nmemb;
     }
 
-    std::string cpr::util::urlEncode(const std::string& value) {
+    std::string urlEncode(const std::string& value) {
         std::ostringstream escaped;
         escaped.fill('0');
         escaped << std::hex;
@@ -85,4 +86,5 @@ namespace cpr {
         return escaped.str();
     }
 
+} // namespace util
 } // namespace cpr
