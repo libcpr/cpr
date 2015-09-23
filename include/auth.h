@@ -8,7 +8,7 @@ namespace cpr {
     class Authentication {
       public:
         Authentication(const std::string& username, const std::string& password) :
-            username_{username}, password_{password}, auth_string_{username + ":" + password} {}
+            username_{username}, password_{password}, auth_string_{username_ + ":" + password_} {}
 
         const char* GetAuthString() const;
 
