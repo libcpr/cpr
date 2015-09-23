@@ -1,7 +1,7 @@
 #ifndef CPR_DIGEST_H
 #define CPR_DIGEST_H
 
-#include <string>
+#include <utility>
 
 #include "auth.h"
 
@@ -9,8 +9,10 @@ namespace cpr {
 
     class Digest : public Authentication {
       public:
-        Digest(const std::string& username, const std::string& password) :
-            Authentication{username, password} {}
+        template<typename UserType, typename PassType>
+        Digest(UserType&& username, PassType&& password)
+            : Authentication{std::forward<decltype(username)>(username),
+                             std::forward<decltype(password)>(password)} {}
 
         const char* GetAuthString() const;
     };
