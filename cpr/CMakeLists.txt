@@ -24,6 +24,7 @@ add_library(${CPR_LIBRARIES}
     "${CPR_INCLUDE_DIRS}/cpr.h"
     "${CPR_INCLUDE_DIRS}/cprtypes.h"
     "${CPR_INCLUDE_DIRS}/curlholder.h"
+    "${CPR_INCLUDE_DIRS}/defines.h"
     "${CPR_INCLUDE_DIRS}/digest.h"
     "${CPR_INCLUDE_DIRS}/multipart.h"
     "${CPR_INCLUDE_DIRS}/parameters.h"
