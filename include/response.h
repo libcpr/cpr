@@ -9,6 +9,7 @@
 namespace cpr {
     class Response {
       public:
+        Response() = default;
         Response(const long& status_code, const std::string& text, const Header& header, const Url& url,
                  const double& elapsed)
             : status_code{status_code}, text{text}, header{header}, url{url}, elapsed{elapsed} {};
@@ -16,7 +17,6 @@ namespace cpr {
                  const double& elapsed, const Cookies& cookies)
             : status_code{status_code}, text{text}, header{header}, url{url}, elapsed{elapsed},
               cookies{cookies} {};
-        Response() = default;
 
         long status_code;
         std::string text;
