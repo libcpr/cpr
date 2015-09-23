@@ -2,13 +2,17 @@
 #define CPR_AUTH_H
 
 #include <string>
+#include <utility>
 
 namespace cpr {
 
     class Authentication {
       public:
-        Authentication(const std::string& username, const std::string& password) :
-            username_{username}, password_{password}, auth_string_{username_ + ":" + password_} {}
+        template<typename UserType, typename PassType>
+        Authentication(UserType&& username, PassType&& password)
+            : username_{std::forward<decltype(username)>(username)},
+              password_{std::forward<decltype(password)>(password)},
+              auth_string_{username_ + ":" + password_} {}
 
         const char* GetAuthString() const;
 
