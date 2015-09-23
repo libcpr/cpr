@@ -5,10 +5,13 @@
 #include <string>
 #include <initializer_list>
 
+#include "defines.h"
+
 namespace cpr {
 
     struct Parameter {
-        Parameter(const std::string& key, const std::string& value) : key{key}, value{value} {}
+        template<typename KeyType, typename ValueType>
+        Parameter(KeyType&& key, ValueType&& value) : key{CPR_FWD(key)}, value{CPR_FWD(value)} {}
 
         std::string key;
         std::string value;
