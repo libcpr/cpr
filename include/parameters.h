@@ -16,7 +16,7 @@ namespace cpr {
 
     class Parameters {
       public:
-        Parameters() {}
+        Parameters() = default;
         Parameters(const std::initializer_list<Parameter>& parameters);
 
         std::string content;
