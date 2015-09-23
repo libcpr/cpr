@@ -29,7 +29,7 @@ namespace cpr {
             set_option(session, CPR_FWD(t));
             set_option(session, CPR_FWD(ts)...);
         }
-    }
+    } // namespace priv
 
     // Get methods
     template <typename... Ts>
