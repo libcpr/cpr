@@ -10,6 +10,6 @@ namespace cpr {
         long ms;
     };
 
-}
+} // namespace cpr
 
 #endif

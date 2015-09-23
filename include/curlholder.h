@@ -13,6 +13,6 @@ namespace cpr {
         char error[CURL_ERROR_SIZE];
     };
 
-}
+} // namespace cpr
 
 #endif

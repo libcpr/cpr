@@ -25,6 +25,6 @@ namespace cpr {
         std::string content;
     };
 
-}
+} // namespace cpr
 
 #endif

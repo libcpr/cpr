@@ -20,4 +20,4 @@ namespace cpr {
         return s;
     }
 
-}
+} // namespace cpr

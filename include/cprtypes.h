@@ -18,6 +18,6 @@ namespace cpr {
     using Header = std::map<std::string, std::string, CaseInsenstiveCompare>;
     using Url = std::string;
 
-}
+} // namespace cpr
 
 #endif

@@ -17,4 +17,4 @@ namespace cpr {
         }
     }
 
-}
+} // namespace cpr

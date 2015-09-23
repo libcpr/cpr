@@ -67,6 +67,6 @@ namespace cpr {
         std::unique_ptr<Impl> pimpl_;
     };
 
-}
+} // namespace cpr
 
 #endif

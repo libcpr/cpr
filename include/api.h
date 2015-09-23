@@ -150,6 +150,6 @@ namespace cpr {
                                                   return then(Delete(std::move(ts)...));
                                               }, std::move(then), std::move(ts)...);
     }
-};
+} // namespace cpr
 
 #endif

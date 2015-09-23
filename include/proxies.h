@@ -20,6 +20,6 @@ namespace cpr {
         std::map<std::string, std::string> hosts_;
     };
 
-}
+} // namespace cpr
 
 #endif

@@ -33,6 +33,6 @@ namespace cpr {
         std::vector<Part> parts;
     };
 
-}
+} // namespace cpr
 
 #endif

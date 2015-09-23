@@ -85,4 +85,4 @@ namespace cpr {
         return escaped.str();
     }
 
-}
+} // namespace cpr

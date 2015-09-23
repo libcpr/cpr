@@ -15,6 +15,6 @@ namespace cpr {
         const char* GetAuthString() const;
     };
 
-}
+} // namespace cpr
 
 #endif

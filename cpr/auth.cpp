@@ -6,4 +6,4 @@ namespace cpr {
         return auth_string_.data();
     }
 
-}
+} // namespace cpr

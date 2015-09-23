@@ -26,6 +26,6 @@ namespace cpr {
         Cookies cookies;
     };
 
-}
+} // namespace cpr
 
 #endif

@@ -19,4 +19,4 @@ namespace cpr {
         return map_[key];
     }
 
-}
+} // namespace cpr

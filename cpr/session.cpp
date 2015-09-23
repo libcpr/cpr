@@ -399,4 +399,4 @@ namespace cpr {
     Response Session::Post() { return pimpl_->Post(); }
     Response Session::Put() { return pimpl_->Put(); }
 
-}
+} // namespace cpr

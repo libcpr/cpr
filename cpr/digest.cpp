@@ -6,4 +6,4 @@ namespace cpr {
         return Authentication::GetAuthString();
     }
 
-}
+} // namespace cpr

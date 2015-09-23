@@ -22,6 +22,6 @@ namespace cpr {
         std::string auth_string_;
     };
 
-}
+} // namespace cpr
 
 #endif

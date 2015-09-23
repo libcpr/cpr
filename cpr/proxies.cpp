@@ -18,4 +18,4 @@ namespace cpr {
         return hosts_[protocol];
     }
 
-}
+} // namespace cpr

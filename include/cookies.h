@@ -21,6 +21,6 @@ namespace cpr {
         std::map<std::string, std::string> map_;
     };
 
-}
+} // namespace cpr
 
 #endif
