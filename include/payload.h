@@ -5,11 +5,18 @@
 #include <string>
 #include <initializer_list>
 
+#include "defines.h"
+
 namespace cpr {
 
 struct Pair {
-    Pair(const std::string& key, const std::string& value) : key{key}, value{value} {}
-    Pair(const std::string& key, const int& value) : key{key}, value{std::to_string(value)} {}
+    template <typename KeyType, typename ValueType,
+              typename std::enable_if<!std::is_integral<ValueType>::value, bool>::type = true>
+    Pair(KeyType&& key, ValueType&& value)
+            : key{CPR_FWD(key)}, value{CPR_FWD(value)} {}
+    template <typename KeyType>
+    Pair(KeyType&& key, const int& value)
+            : key{CPR_FWD(key)}, value{std::to_string(value)} {}
 
     std::string key;
     std::string value;
