@@ -18,8 +18,6 @@ struct Pair {
 class Payload {
   public:
     Payload(const std::initializer_list<Pair>& pairs);
-    Payload(const std::string& content) : content{content} {}
-    Payload(std::string&& content) : content{std::move(content)} {}
 
     std::string content;
 };
