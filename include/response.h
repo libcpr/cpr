@@ -5,6 +5,7 @@
 
 #include "cookies.h"
 #include "cprtypes.h"
+#include "defines.h"
 
 namespace cpr {
 class Response {
