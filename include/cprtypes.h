@@ -6,16 +6,11 @@
 
 namespace cpr {
 
-class CaseInsenstiveCompare {
-  public:
-    bool operator()(const std::string& a, const std::string& b) const;
-
-  private:
-    static void char_to_lower(char& c);
-    static std::string to_lower(const std::string& a);
+struct CaseInsensitiveCompare {
+    bool operator()(const std::string& a, const std::string& b) const noexcept;
 };
 
-using Header = std::map<std::string, std::string, CaseInsenstiveCompare>;
+using Header = std::map<std::string, std::string, CaseInsensitiveCompare>;
 using Url = std::string;
 
 } // namespace cpr
