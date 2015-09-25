@@ -11,7 +11,7 @@ namespace cpr {
 class Response {
   public:
     Response() = default;
- 
+
     template <typename TextType, typename HeaderType, typename UrlType, typename CookiesType>
     Response(const long& p_status_code, TextType&& p_text, HeaderType&& p_header, UrlType&& p_url,
              const double& p_elapsed, CookiesType&& p_cookies = Cookies{})
