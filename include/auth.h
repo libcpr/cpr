@@ -14,7 +14,7 @@ class Authentication {
             : username_{CPR_FWD(username)}, password_{CPR_FWD(password)},
               auth_string_{username_ + ":" + password_} {}
 
-    const char* GetAuthString() const;
+    const char* GetAuthString() const noexcept;
 
   private:
     std::string username_;

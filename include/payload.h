@@ -12,11 +12,11 @@ namespace cpr {
 struct Pair {
     template <typename KeyType, typename ValueType,
               typename std::enable_if<!std::is_integral<ValueType>::value, bool>::type = true>
-    Pair(KeyType&& key, ValueType&& value)
-            : key{CPR_FWD(key)}, value{CPR_FWD(value)} {}
+    Pair(KeyType&& p_key, ValueType&& p_value)
+            : key{CPR_FWD(p_key)}, value{CPR_FWD(p_value)} {}
     template <typename KeyType>
-    Pair(KeyType&& key, const int& value)
-            : key{CPR_FWD(key)}, value{std::to_string(value)} {}
+    Pair(KeyType&& p_key, const int& p_value)
+            : key{CPR_FWD(p_key)}, value{std::to_string(p_value)} {}
 
     std::string key;
     std::string value;

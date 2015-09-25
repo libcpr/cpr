@@ -13,7 +13,7 @@ class Proxies {
     Proxies() {}
     Proxies(const std::initializer_list<std::pair<const std::string, std::string>>& hosts);
 
-    bool has(const std::string& protocol);
+    bool has(const std::string& protocol) const;
     const std::string& operator[](const std::string& protocol);
 
   private:
