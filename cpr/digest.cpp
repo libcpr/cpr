@@ -2,7 +2,7 @@
 
 namespace cpr {
 
-const char* Digest::GetAuthString() const {
+const char* Digest::GetAuthString() const noexcept {
     return Authentication::GetAuthString();
 }
 
