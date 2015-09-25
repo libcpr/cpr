@@ -29,6 +29,7 @@ addons:
       - g++-4.9
       - g++-5
       - clang-3.6
+      - clang-format-3.7
       - valgrind
       - python-pip
       - python-yaml
