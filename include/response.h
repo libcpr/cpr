@@ -11,16 +11,12 @@ namespace cpr {
 class Response {
   public:
     Response() = default;
-    template <typename TextType, typename HeaderType, typename UrlType>
-    Response(const long& status_code, TextType&& text, HeaderType&& header, UrlType&& url,
-             const double& elapsed)
-            : status_code{status_code}, text{CPR_FWD(text)}, header{CPR_FWD(header)},
-              url{CPR_FWD(url)}, elapsed{elapsed} {}
+ 
     template <typename TextType, typename HeaderType, typename UrlType, typename CookiesType>
-    Response(const long& status_code, TextType&& text, HeaderType&& header, UrlType&& url,
-             const double& elapsed, CookiesType&& cookies)
-            : status_code{status_code}, text{CPR_FWD(text)}, header{CPR_FWD(header)},
-              url{CPR_FWD(url)}, elapsed{elapsed}, cookies{CPR_FWD(cookies)} {}
+    Response(const long& p_status_code, TextType&& p_text, HeaderType&& p_header, UrlType&& p_url,
+             const double& p_elapsed, CookiesType&& p_cookies = Cookies{})
+            : status_code{p_status_code}, text{CPR_FWD(p_text)}, header{CPR_FWD(p_header)},
+              url{CPR_FWD(p_url)}, elapsed{p_elapsed}, cookies{CPR_FWD(p_cookies)} {}
 
     long status_code;
     std::string text;
