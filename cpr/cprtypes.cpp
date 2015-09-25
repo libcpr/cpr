@@ -1,6 +1,7 @@
 #include "cprtypes.h"
 
 #include <algorithm>
+#include <cctype>
 
 namespace cpr {
 
