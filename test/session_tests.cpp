@@ -411,6 +411,37 @@ TEST(MultipartTests, SetMultipartValueTest) {
     EXPECT_EQ(201, response.status_code);
 }
 
+TEST(BodyTests, SetBodyTest) {
+    auto url = Url{base + "/url_post.html"};
+    Session session;
+    session.SetUrl(url);
+    session.SetBody({"x=5"});
+    auto response = session.Post();
+    auto expected_text = std::string{"{\n"
+                                     "  \"x\": 5\n"
+                                     "}"};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
+    EXPECT_EQ(201, response.status_code);
+}
+
+TEST(BodyTests, SetBodyValueTest) {
+    auto url = Url{base + "/url_post.html"};
+    Session session;
+    session.SetUrl(url);
+    auto body = Body{"x=5"};
+    session.SetBody(body);
+    auto response = session.Post();
+    auto expected_text = std::string{"{\n"
+                                     "  \"x\": 5\n"
+                                     "}"};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
+    EXPECT_EQ(201, response.status_code);
+}
+
 TEST(DigestTests, SetDigestTest) {
     auto url = Url{base + "/digest_auth.html"};
     Session session;
