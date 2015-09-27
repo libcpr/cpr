@@ -4,6 +4,7 @@
 #include <memory>
 
 #include "auth.h"
+#include "body.h"
 #include "cookies.h"
 #include "cprtypes.h"
 #include "digest.h"
@@ -37,6 +38,8 @@ class Session {
     void SetRedirect(const bool& redirect);
     void SetMaxRedirects(const long& max_redirects);
     void SetCookies(const Cookies& cookies);
+    void SetBody(Body&& body);
+    void SetBody(const Body& body);
 
     // Used in templated functions
     void SetOption(const Url& url);
@@ -55,6 +58,8 @@ class Session {
     void SetOption(const bool& redirect);
     void SetOption(const long& max_redirects);
     void SetOption(const Cookies& cookies);
+    void SetOption(Body&& body);
+    void SetOption(const Body& body);
 
     Response Delete();
     Response Get();
