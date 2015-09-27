@@ -388,7 +388,7 @@ void Session::SetRedirect(const bool& redirect) { pimpl_->SetRedirect(redirect);
 void Session::SetMaxRedirects(const long& max_redirects) { pimpl_->SetMaxRedirects(max_redirects); }
 void Session::SetCookies(const Cookies& cookies) { pimpl_->SetCookies(cookies); }
 void Session::SetBody(const Body& body) { pimpl_->SetBody(body); }
-void Session::SetBody(Body&& body) { pimpl_->SetBody(body); }
+void Session::SetBody(Body&& body) { pimpl_->SetBody(std::move(body)); }
 void Session::SetOption(const Url& url) { pimpl_->SetUrl(url); }
 void Session::SetOption(const Parameters& parameters) { pimpl_->SetParameters(parameters); }
 void Session::SetOption(Parameters&& parameters) { pimpl_->SetParameters(std::move(parameters)); }
@@ -406,7 +406,7 @@ void Session::SetOption(const bool& redirect) { pimpl_->SetRedirect(redirect); }
 void Session::SetOption(const long& max_redirects) { pimpl_->SetMaxRedirects(max_redirects); }
 void Session::SetOption(const Cookies& cookies) { pimpl_->SetCookies(cookies); }
 void Session::SetOption(const Body& body) { pimpl_->SetBody(body); }
-void Session::SetOption(Body&& body) { pimpl_->SetBody(body); }
+void Session::SetOption(Body&& body) { pimpl_->SetBody(std::move(body)); }
 Response Session::Delete() { return pimpl_->Delete(); }
 Response Session::Get() { return pimpl_->Get(); }
 Response Session::Head() { return pimpl_->Head(); }
