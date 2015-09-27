@@ -20,6 +20,7 @@ add_library(${CPR_LIBRARIES}
     # Header files (useful in IDEs)
     "${CPR_INCLUDE_DIRS}/api.h"
     "${CPR_INCLUDE_DIRS}/auth.h"
+    "${CPR_INCLUDE_DIRS}/body.h"
     "${CPR_INCLUDE_DIRS}/cookies.h"
     "${CPR_INCLUDE_DIRS}/cpr.h"
     "${CPR_INCLUDE_DIRS}/cprtypes.h"
