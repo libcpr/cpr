@@ -186,6 +186,31 @@ static int urlPost(struct mg_connection* conn) {
     return MG_TRUE;
 }
 
+static int jsonPost(struct mg_connection* conn) {
+    auto num_headers = conn->num_headers;
+    auto headers = conn->http_headers;
+    auto has_json_header = false;
+    for (int i = 0; i < num_headers; ++i) {
+        auto name = headers[i].name;
+        if (std::string{"Content-Type"} == headers[i].name &&
+                std::string{"application/json"} == headers[i].value) {
+            has_json_header = true;
+        }
+    }
+    if (!has_json_header) {
+        auto response = std::string{"Unsupported Media Type"};
+        mg_send_status(conn, 415);
+        mg_send_header(conn, "content-type", "text/html");
+        mg_send_data(conn, response.data(), response.length()); 
+        return MG_TRUE;
+    }
+    mg_send_status(conn, 201);
+    mg_send_header(conn, "content-type", "application/json");
+    auto response = std::string{conn->content, conn->content_len};
+    mg_send_data(conn, response.data(), response.length());
+    return MG_TRUE;
+}
+
 static int formPost(struct mg_connection* conn) {
     auto content = conn->content;
     auto content_len = conn->content_len;
@@ -338,6 +363,8 @@ static int evHandler(struct mg_connection* conn, enum mg_event ev) {
                 return twoRedirects(conn);
             } else if (Url{conn->uri} == "/url_post.html") {
                 return urlPost(conn);
+            } else if (Url{conn->uri} == "/json_post.html") {
+                return jsonPost(conn);
             } else if (Url{conn->uri} == "/form_post.html") {
                 return formPost(conn);
             } else if (Url{conn->uri} == "/delete.html") {
