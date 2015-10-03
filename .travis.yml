@@ -53,4 +53,4 @@ after_success:
   - if [ "$GENERATE_COVERAGE" == "ON" ]; then coveralls -i 'cpr' -i 'include' -e '../include/cpr.h' --root '../' --verbose --gcov-options '\-lp' --gcov 'gcov-4.9'; fi
 
 after_script:
-  - cd .. && ./format-check.sh
+  - if [ "$FORMAT_CHECK" == "ON" ]; then cd .. && ./format-check.sh; fi
