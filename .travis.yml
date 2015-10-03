@@ -36,6 +36,13 @@ matrix:
           packages: g++-4.8
           sources: *sources
 
+    # gcc 5
+    - env: COMPILER=g++-5 CCOMPILER=gcc-5
+      addons:
+        apt:
+          packages: g++-5
+          sources: *sources
+
 install:
   - if [ "$GENERATE_COVERAGE" == "ON" ]; then pip install --user git+git://github.com/eddyxu/cpp-coveralls.git; fi
 
