@@ -43,6 +43,13 @@ matrix:
           packages: g++-5
           sources: *sources
 
+    # Clang 3.5
+    - env: COMPILER=clang++-3.5 CCOMPILER=clang-3.5
+      addons:
+        apt:
+          packages: clang-3.5
+          sources: *sources
+
 install:
   - if [ "$GENERATE_COVERAGE" == "ON" ]; then pip install --user git+git://github.com/eddyxu/cpp-coveralls.git; fi
 
