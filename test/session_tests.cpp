@@ -415,7 +415,7 @@ TEST(BodyTests, SetBodyTest) {
     auto url = Url{base + "/url_post.html"};
     Session session;
     session.SetUrl(url);
-    session.SetBody({"x=5"});
+    session.SetBody(Body{"x=5"});
     auto response = session.Post();
     auto expected_text = std::string{"{\n"
                                      "  \"x\": 5\n"
