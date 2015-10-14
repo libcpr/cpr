@@ -1,6 +1,9 @@
 #ifndef CPR_BODY_H
 #define CPR_BODY_H
 
+#include <cstring>
+
+#include <initializer_list>
 #include <string>
 
 #include "defines.h"
