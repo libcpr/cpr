@@ -7,6 +7,12 @@ set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "CMake")
 
 project(cpr)
 
+set(CPR_MAJOR_VERSION 0)
+set(CPR_MINOR_VERSION 1)
+set(CPR_PATCH_VERSION 0)
+set(CPR_VERSION ${CPR_MAJOR_VERSION}.${CPR_MINOR_VERSION}.${CPR_PATCH_VERSION})
+
+
 if(NOT ${CMAKE_VERSION} LESS 3.2)
     set(CMAKE_CXX_STANDARD 11)
     set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -35,9 +41,29 @@ else()
     endif()
 endif()
 
-set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
-set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib)
+#set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
+#set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib)
 
+# Offer the user the choice of overriding the installation directories
+set(INSTALL_LIB_DIR lib CACHE PATH "Installation directory for libraries")
+set(INSTALL_BIN_DIR bin CACHE PATH "Installation directory for executables")
+set(INSTALL_INCLUDE_DIR include CACHE PATH "Installation directory for header files")
+if(WIN32 AND NOT CYGWIN)
+    set(DEF_INSTALL_CMAKE_DIR CMake)
+else()
+    set(DEF_INSTALL_CMAKE_DIR lib/CMake/cpr)
+endif()
+set(INSTALL_CMAKE_DIR ${DEF_INSTALL_CMAKE_DIR} CACHE PATH "Installation directory for CMake files")
+
+# Make relative paths absolute (needed later on)
+
+
+# set up include-directories
+include_directories("${PROJECT_BINARY_DIR}/${CMAKE_PROJECT_NAME}"   # to find cpr_export.h
+                    ${PROJECT_BINARY_DIR})                          # to find cpr/config.h
+
+
+# Library names    
 set(CPR_LIBRARIES cpr CACHE INTERNAL "")
 set(CPR_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/include CACHE INTERNAL "")
 
@@ -71,5 +97,39 @@ endif()
 add_subdirectory(opt)
 add_subdirectory(cpr)
 if(BUILD_CPR_TESTS) 
-    add_subdirectory(test)
+    # add_subdirectory(test)
 endif()
+
+
+# The interesting stuff goes here
+# ===============================
+
+# Add all targets to the build-tree export set
+export(TARGETS cpr FILE "${PROJECT_BINARY_DIR}/cpr-targets.cmake")
+
+# Export the package for use from the build-tree
+# (this registers the build-tree with a global CMake-registry)
+export(PACKAGE cpr)
+
+# Create the cpr-config.cmake and cpr-config-version files
+file(RELATIVE_PATH REL_INCLUDE_DIR ${CMAKE_INSTALL_PREFIX}/CMake ${CMAKE_INSTALL_PREFIX}/include)
+# ... for the build tree
+set(CONF_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}" "${PROJECT_BINARY_DIR}")
+configure_file(cpr-config.cmake.in "${PROJECT_BINARY_DIR}/cpr-config.cmake" @ONLY)
+# ... for the install tree
+set(CONF_INCLUDE_DIRS "\${CPR_CMAKE_DIR}/${REL_INCLUDE_DIR}")
+configure_file( cpr-config.cmake.in
+                "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/cpr-config.cmake" @ONLY)
+# ... for both
+configure_file( cpr-config-version.cmake.in
+                "${PROJECT_BINARY_DIR}/cpr-config-version.cmake" @ONLY)
+
+# Install the cpr-config.cmake and cpr-config-version.cmake
+install(FILES
+        "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/cpr-config.cmake"
+        "${PROJECT_BINARY_DIR}/cpr-config-version.cmake"
+        DESTINATION "${INSTALL_CMAKE_DIR}" COMPONENT dev)
+
+# Install the export set for use with the install-tree
+install(EXPORT cpr-targets DESTINATION
+        "${INSTALL_CMAKE_DIR}" COMPONENT dev)

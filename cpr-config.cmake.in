@@ -1,0 +1,14 @@
+# - Config file for the CPR package
+# It defines the following variables
+#  CPR_INCLUDE_DIRS - include directories for CPR
+#  CPR_LIBRARIES    - libraries to link against
+
+# Compute paths
+get_filename_component(CPR_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+set(CPR_INCLUDE_DIRS "@CONF_INCLUDE_DIRS@")
+
+# Our library dependencies (contains definitions for IMPORTED targets)
+include("${CPR_CMAKE_DIR}/cpr-targets.cmake")
+
+# These are IMPORTED targets created by cpr-targets.cmake
+set(CPR_LIBRARIES cpr)

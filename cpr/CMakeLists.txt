@@ -3,8 +3,7 @@ include_directories(
     ${CPR_INCLUDE_DIRS}
     ${CURL_INCLUDE_DIRS})
 
-add_library(${CPR_LIBRARIES}
-
+set(CPR_SRC_FILES    
     # Source files
     auth.cpp
     cookies.cpp
@@ -15,8 +14,9 @@ add_library(${CPR_LIBRARIES}
     payload.cpp
     proxies.cpp
     session.cpp
-    util.cpp 
+    util.cpp)
 
+set(CPR_HEADER_FILES    
     # Header files (useful in IDEs)
     "${CPR_INCLUDE_DIRS}/api.h"
     "${CPR_INCLUDE_DIRS}/auth.h"
@@ -36,6 +36,21 @@ add_library(${CPR_LIBRARIES}
     "${CPR_INCLUDE_DIRS}/timeout.h"
     "${CPR_INCLUDE_DIRS}/util.h")
 
+add_library(${CPR_LIBRARIES} ${CPR_SRC_FILES} ${CPR_HEADER_FILES})
+
 message(STATUS "Using CURL_LIBRARIES: ${CURL_LIBRARIES}.")
-target_link_libraries(${CPR_LIBRARIES}
-    ${CURL_LIBRARIES})
+target_link_libraries(${CPR_LIBRARIES} ${CURL_LIBRARIES})
+
+set_target_properties(${CPR_LIBRARIES} PROPERTIES
+                      PUBLIC_HEADER "${CPR_HEADER_FILES}"
+                      DEBUG_POSTFIX d
+                      LINKER_LANGUAGE CXX)
+
+# Installation.
+install(TARGETS ${CPR_LIBRARIES}
+        EXPORT cpr-targets
+        RUNTIME DESTINATION bin COMPONENT bin
+        LIBRARY DESTINATION lib COMPONENT shlib
+        ARCHIVE DESTINATION lib COMPONENT lib
+        PUBLIC_HEADER DESTINATION include/cpr
+        COMPONENT dev)
