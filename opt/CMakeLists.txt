@@ -57,31 +57,25 @@ if(NOT USE_SYSTEM_CURL OR NOT CURL_FOUND)
     # option(BUILD_CURL_TESTS "Set to ON to build cURL tests." OFF)
     # add_subdirectory(curl)
     # set(CURL_FOUND TRUE)
-    # set(CURL_LIBRARIES libcurl)
+    set(CURL_LIBRARIES libcurl)
     set(CURL_INCLUDE_DIRS
         ${CMAKE_INSTALL_PREFIX}/include)
     #    ${CURL_BINARY_DIR}/include/curl)
     
     add_library(libcurl SHARED IMPORTED GLOBAL)
-    # Import target "libcurl" for configuration "Debug"
-    set_property(TARGET libcurl APPEND PROPERTY IMPORTED_CONFIGURATIONS Debug)
+    # Import target "libcurl" for configuration "ALL" (there is no DEBUG_POSTFIX)
     set_target_properties(libcurl PROPERTIES
-                          IMPORTED_IMPLIB_DEBUG "${CMAKE_INSTALL_PREFIX}/lib/${CMAKE_IMPORT_LIBRARY_PREFIX}libcurl_impl${CMAKE_IMPORT_LIBRARY_SUFFIX}"
-                          IMPORTED_LINK_INTERFACE_LIBRARIES_DEBUG "libcurl"
-                          IMPORTED_LOCATION_DEBUG "${CMAKE_INSTALL_PREFIX}/bin/${CMAKE_SHARED_LIBRARY_PREFIX}libcurl${CMAKE_SHARED_LIBRARY_SUFFIX}"
-                          )
+                          IMPORTED_IMPLIB "${CMAKE_INSTALL_PREFIX}/lib/libcurl_impl${CMAKE_IMPORT_LIBRARY_SUFFIX}"
+                          IMPORTED_LINK_INTERFACE_LIBRARIES "libcurl"
+			 )
+    if(WIN32)
+	set_target_properties(libcurl PROPERTIES
+                          IMPORTED_LOCATION "${CMAKE_INSTALL_PREFIX}/bin/libcurl${CMAKE_SHARED_LIBRARY_SUFFIX}")
+    else()
+	set_target_properties(libcurl PROPERTIES
+		          IMPORTED_LOCATION "${CMAKE_INSTALL_PREFIX}/lib/libcurl${CMAKE_SHARED_LIBRARY_SUFFIX}")
+    endif()
 	  
-    # Import target "libcurl" for configuration "Release"
-    set_property(TARGET libcurl APPEND PROPERTY IMPORTED_CONFIGURATIONS Release)
-    set_target_properties(libcurl PROPERTIES
-                          IMPORTED_IMPLIB_RELEASE "${CMAKE_INSTALL_PREFIX}/lib/${CMAKE_IMPORT_LIBRARY_PREFIX}libcurl_impl${CMAKE_IMPORT_LIBRARY_SUFFIX}"
-                          IMPORTED_LINK_INTERFACE_LIBRARIES_RELEASE "libcurl"
-                          IMPORTED_LOCATION_RELEASE "${CMAKE_INSTALL_PREFIX}/bin/${CMAKE_SHARED_LIBRARY_PREFIX}libcurl${CMAKE_SHARED_LIBRARY_SUFFIX}"
-                          )
-	
-    # TODO: DebWithRelInfo, MinSizeRel
-    
-     
     # # Group under the "external" project folder in IDEs such as Visual Studio.
     # set_property(TARGET curl PROPERTY FOLDER "external")
     set_property(TARGET libcurl PROPERTY FOLDER "external")
