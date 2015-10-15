@@ -57,7 +57,7 @@ if(NOT USE_SYSTEM_CURL OR NOT CURL_FOUND)
     # option(BUILD_CURL_TESTS "Set to ON to build cURL tests." OFF)
     # add_subdirectory(curl)
     # set(CURL_FOUND TRUE)
-    set(CURL_LIBRARIES libcurl)
+    set(CURL_LIBRARIES ${CMAKE_INSTALL_PREFIX}/lib/libcurl_imp${CMAKE_IMPORT_LIBRARY_SUFFIX})
     set(CURL_INCLUDE_DIRS
         ${CMAKE_INSTALL_PREFIX}/include)
     #    ${CURL_BINARY_DIR}/include/curl)
@@ -65,8 +65,8 @@ if(NOT USE_SYSTEM_CURL OR NOT CURL_FOUND)
     add_library(libcurl SHARED IMPORTED GLOBAL)
     # Import target "libcurl" for configuration "ALL" (there is no DEBUG_POSTFIX)
     set_target_properties(libcurl PROPERTIES
-                          IMPORTED_IMPLIB "${CMAKE_INSTALL_PREFIX}/lib/libcurl_impl${CMAKE_IMPORT_LIBRARY_SUFFIX}"
-                          IMPORTED_LINK_INTERFACE_LIBRARIES "libcurl"
+                          IMPORTED_IMPLIB "${CMAKE_INSTALL_PREFIX}/lib/libcurl_imp${CMAKE_IMPORT_LIBRARY_SUFFIX}"
+                          INTERFACE_LINK_LIBRARIES "libcurl_imp"
 			 )
     if(WIN32)
 	set_target_properties(libcurl PROPERTIES
