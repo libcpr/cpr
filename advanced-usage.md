@@ -272,7 +272,7 @@ std::cout << another_r.text << std::endl;
 ```c++
 auto r = cpr::Get(cpr::Url{"http://www.httpbin.org/cookies"},
                   cpr::Cookies{{"ice cream", "is delicious"}});
-std::cout << another_r.text << std::endl;
+std::cout << r.text << std::endl;
 
 /*
  * {
