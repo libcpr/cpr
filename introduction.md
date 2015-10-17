@@ -139,7 +139,33 @@ std::cout << r.text << std::endl;
 ```
 {% endraw %}
 
-This sends up `"key=value"` as a `"x-www-form-urlencoded"` pair in the POST request. For cases where the data being sent up is small, this is suitable. If the data package is large or contains a file, it's more appropriate to use a `Multipart` upload:
+This sends up `"key=value"` as a `"x-www-form-urlencoded"` pair in the POST request. To send data raw and unencoded, use `Body` instead of `Payload`:
+
+{% raw %}
+```c++
+auto r = cpr::Post(Url{"http://www.httpbin.org/post"},
+                   Body{"This is raw POST data"},
+                   Header{{"Content-Type", "text/plain"}});
+std::cout << r.text << std::endl;
+
+/* {
+ *   "args": {},
+ *   "data": "This is raw POST data",
+ *   "files": {},
+ *   "form": {},
+ *   "headers": {
+ *     ..
+ *     "Content-Type": "text/plain",
+ *     ..
+ *   },
+ *   "json": null,
+ *   "url": "http://www.httpbin.org/post"
+ * }
+ */
+```
+{% endraw %}
+
+Here you will notice that the `"Content-Type"` is being set explicitly to `"text/plain"`. This is because by default, `"x-www-form-urlencoded"` is used for raw data POSTs. For cases where the data being sent up is small, either `"x-www-form-urlencoded"` or `"text/plain"` is suitable. If the data package is large or contains a file, it's more appropriate to use a `Multipart` upload:
 
 {% raw %}
 ```c++

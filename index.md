@@ -35,6 +35,7 @@ C++ Requests currently supports:
 * Custom headers
 * Url encoded parameters
 * Url encoded POST values
+* Raw POST upload
 * Multipart form POST upload
 * File POST upload
 * Basic authentication
