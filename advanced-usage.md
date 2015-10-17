@@ -21,7 +21,7 @@ Cookies cookies;  // A map-like collection of cookies returned in the request
 and they're dead simple to access:
 
 ```c++
-auto r = cpr::Get(Url{"http://www.httpbin.org/get"});
+auto r = cpr::Get(cpr::Url{"http://www.httpbin.org/get"});
 if (r.status_code >= 400) {
     std::cerr << "Error [" << r.status_code << "] making request" << std::endl;
 } else {
@@ -33,7 +33,7 @@ if (r.status_code >= 400) {
 The `Header` is essentially a map with an important modification. Its keys are case insensitive as required by [RFC 7230](http://tools.ietf.org/html/rfc7230#section-3.2):
 
 ```c++
-auto r = cpr::Get(Url{"http://www.httpbin.org/get"});
+auto r = cpr::Get(cpr::Url{"http://www.httpbin.org/get"});
 std::cout << r.header["content-type"] << std::endl;
 std::cout << r.header["Content-Type"] << std::endl;
 std::cout << r.header["CoNtEnT-tYpE"] << std::endl;
@@ -42,7 +42,7 @@ std::cout << r.header["CoNtEnT-tYpE"] << std::endl;
 All of these should print the same value, `"application/json"`. Cookies similarly are accessed through a map-like interface, but they're not case insensitive:
 
 ```c++
-auto r = cpr::Get(Url{"http://www.httpbin.org/cookies/set?cookies=yummy"});
+auto r = cpr::Get(cpr::Url{"http://www.httpbin.org/cookies/set?cookies=yummy"});
 std::cout << r.cookies["cookies"] << std::endl; // Prints yummy
 std::cout << r.cookies["Cookies"] << std::endl; // Prints nothing
 ```
@@ -51,12 +51,12 @@ As you can see, the `Response` object is completely transparent. All of its data
 
 ## Request Headers
 
-Speaking of the `Headers`, you can set custom headers in the request call. The object is exactly the same:
+Speaking of the `Header`, you can set custom headers in the request call. The object is exactly the same:
 
 {% raw %}
 ```c++
-auto r = cpr::Get(Url{"http://www.httpbin.org/headers"},
-                  Header{{"accept", "application/json"}});
+auto r = cpr::Get(cpr::Url{"http://www.httpbin.org/headers"},
+                  cpr::Header{{"accept", "application/json"}});
 std::cout << r.text << std::endl;
 
 /*
@@ -73,10 +73,10 @@ You've probably noticed a similarity between `Header`, `Parameters`, `Payload`, 
 
 {% raw %}
 ```c++
-auto header = Header{{"header-key", "header-value"}};
-auto parameters = Parameters{{"parameter-key", "parameter-value"}};
-auto payload = Payload{{"payload-key", "payload-value"}};
-auto multipart = Multipart{{"multipart-key", "multipart-value"}};
+auto header = cpr::Header{{"header-key", "header-value"}};
+auto parameters = cpr::Parameters{{"parameter-key", "parameter-value"}};
+auto payload = cpr::Payload{{"payload-key", "payload-value"}};
+auto multipart = cpr::Multipart{{"multipart-key", "multipart-value"}};
 ```
 {% endraw %}
 
@@ -90,16 +90,16 @@ However, in cases where it is useful to hold on to state, you can use a `Session
 
 {% raw %}
 ```c++
-auto url = Url{"http://www.httpbin.org/get"};
-auto parameters = Parameters{{"hello", "world"}};
-Session session;
+auto url = cpr::Url{"http://www.httpbin.org/get"};
+auto parameters = cpr::Parameters{{"hello", "world"}};
+cpr::Session session;
 session.SetUrl(url);
 session.SetParameters(parameters);
 
 auto r = session.Get();             // Equivalent to cpr::Get(url, parameters);
 std::cout << r.url << std::endl     // Prints http://www.httpbin.org/get?hello=world
 
-auto new_parameters = Parameters{{"key", "value"}};
+auto new_parameters = cpr::Parameters{{"key", "value"}};
 session.SetParameters(new_parameters);
 
 auto new_r = session.Get();         // Equivalent to cpr::Get(url, new_parameters);
@@ -111,9 +111,9 @@ std::cout << new_r.url << std::endl // Prints http://www.httpbin.org/get?key=val
 
 {% raw %}
 ```c++
-auto url = Url{"http://www.httpbin.org/get"};
-auto parameters = Parameters{{"hello", "world"}};
-Session session;
+auto url = cpr::Url{"http://www.httpbin.org/get"};
+auto parameters = cpr::Parameters{{"hello", "world"}};
+cpr::Session session;
 session.SetOption(url);
 session.SetOption(parameters);
 auto r = session.Get();
@@ -131,7 +131,7 @@ The key to all of this is actually the way [libcurl](http://curl.haxx.se/libcurl
 Making an asynchronous request uses a similar but separate interface:
 
 ```c++
-auto fr = cpr::GetAsync(Url{"http://www.httpbin.org/get"});
+auto fr = cpr::GetAsync(cpr::Url{"http://www.httpbin.org/get"});
 // Sometime later
 auto r = fr.get(); // This blocks until the request is complete
 std::cout << r.text << std::endl;
@@ -140,7 +140,7 @@ std::cout << r.text << std::endl;
 The call is otherwise identical except instead of `Get`, it's `GetAsync`. Similarly for POST requests, you would call `PostAsync`. The return value of an asynchronous call is actually a `std::future<Response>`:
 
 ```c++
-auto fr = cpr::GetAsync(Url{"http://www.httpbin.org/get"});
+auto fr = cpr::GetAsync(cpr::Url{"http://www.httpbin.org/get"});
 fr.wait() // This waits until the request is complete
 auto r = fr.get(); // Since the request is complete, this returns immediately
 std::cout << r.text << std::endl;
@@ -150,10 +150,10 @@ You can even put a bunch of requests into a `std` container and get them all lat
 
 {% raw %}
 ```c++
-auto container = std::vector<std::future<Response>>{};
-auto url = Url{"http://www.httpbin.org/get"};
+auto container = std::vector<std::future<cpr::Response>>{};
+auto url = cpr::Url{"http://www.httpbin.org/get"};
 for (int i = 0; i < 10; ++i) {
-    container.emplace_back(cpr::GetAsync(url, Parameters{{"i", std::to_string(i)}}));
+    container.emplace_back(cpr::GetAsync(url, cpr::Parameters{{"i", std::to_string(i)}}));
 }
 // Sometime later
 for (auto& fr: container) {
@@ -174,9 +174,9 @@ C++ Requests also supports a callback interface for asynchronous requests. Using
 Here's a simple example:
 
 ```c++
-auto future_text = cpr::GetCallback([](Response r) {
+auto future_text = cpr::GetCallback([](cpr::Response r) {
         return r.text;
-    }, Url{"http://www.httpbin.org/get"});
+    }, cpr::Url{"http://www.httpbin.org/get"});
 // Sometime later
 if (future_text.wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
     std::cout << future_text.get() << std::endl;
@@ -197,8 +197,8 @@ It's possible to set a timeout for your request if you have strict timing requir
 ```c++
 #include <assert.h>
 
-auto r = cpr::Get(Url{"http://www.httpbin.org/get"},
-                  Timeout{1000}); // Let's hope we aren't using Time Warner Cable
+auto r = cpr::Get(cpr::Url{"http://www.httpbin.org/get"},
+                  cpr::Timeout{1000}); // Let's hope we aren't using Time Warner Cable
 assert(r.elapsed <= 1); // Less than one second should have elapsed
 ```
 
@@ -210,8 +210,8 @@ Setting the `Timeout` option sets the maximum allowed time the transfer operatio
 
 {% raw %}
 ```c++
-auto r = cpr::Get(Url{"http://www.httpbin.org/get"},
-                  Proxies{{"http", "http://www.fakeproxy.com"}});
+auto r = cpr::Get(cpr::Url{"http://www.httpbin.org/get"},
+                  cpr::Proxies{{"http", "http://www.fakeproxy.com"}});
 std::cout << r.url << std::endl; // Prints http://www.httpbin.org/get, not the proxy url
 ```
 {% endraw %}
@@ -220,7 +220,7 @@ It doesn't look immediately useful to have `Proxies` behave like a map, but when
 
 {% raw %}
 ```c++
-Session session;
+cpr::Session session;
 session.SetProxies({{"http", "http://www.fakeproxy.com"},
                     {"https", "http://www.anotherproxy.com"}})
 session.SetUrl("http://www.httpbin.org/get");
@@ -245,7 +245,7 @@ Setting `Proxies` on a `Session` lets you intelligently route requests using dif
 Earlier you saw how to grab a cookie from the request:
 
 ```c++
-auto r = cpr::Get(Url{"http://www.httpbin.org/cookies/set?cookies=yummy"});
+auto r = cpr::Get(cpr::Url{"http://www.httpbin.org/cookies/set?cookies=yummy"});
 std::cout << r.cookies["cookies"] << std::endl; // Prints yummy
 std::cout << r.cookies["Cookies"] << std::endl; // Prints nothing
 ```
@@ -253,8 +253,8 @@ std::cout << r.cookies["Cookies"] << std::endl; // Prints nothing
 You can send back cookies using the same object:
 
 ```c++
-auto r = cpr::Get(Url{"http://www.httpbin.org/cookies/set?cookies=yummy"});
-auto another_r = cpr::Get(Url{"http://www.httpbin.org/cookies"}, r.cookies);
+auto r = cpr::Get(cpr::Url{"http://www.httpbin.org/cookies/set?cookies=yummy"});
+auto another_r = cpr::Get(cpr::Url{"http://www.httpbin.org/cookies"}, r.cookies);
 std::cout << another_r.text << std::endl;
 
 /*
@@ -270,8 +270,8 @@ std::cout << another_r.text << std::endl;
 
 {% raw %}
 ```c++
-auto r = cpr::Get(Url{"http://www.httpbin.org/cookies"},
-                  Cookies{{"ice cream", "is delicious"}});
+auto r = cpr::Get(cpr::Url{"http://www.httpbin.org/cookies"},
+                  cpr::Cookies{{"ice cream", "is delicious"}});
 std::cout << another_r.text << std::endl;
 
 /*
@@ -295,12 +295,12 @@ PUT requests work identically to POST requests, with the only modification being
 #include <assert.h>
 
 // We can't POST to the "/put" endpoint so the status code is rightly 405
-assert(cpr::Post(Url{"http://www.httpbin.org/put"},
-                 Payload{{"key", "value"}}).status_code == 405);
+assert(cpr::Post(cpr::Url{"http://www.httpbin.org/put"},
+                 cpr::Payload{{"key", "value"}}).status_code == 405);
 
 // On the other hand, this works just fine
-auto r = cpr::Put(Url{"http://www.httpbin.org/put"},
-                  Payload{{"key", "value"}});
+auto r = cpr::Put(cpr::Url{"http://www.httpbin.org/put"},
+                  cpr::Payload{{"key", "value"}});
 std::cout << r.text << std::endl;
 
 /* {
@@ -330,20 +330,20 @@ C++ Requests also supports `DELETE` and `HEAD` methods in the expected forms:
 
 ```c++
 // Regular, blocking modes
-auto delete_response = cpr::Delete(Url{"http://www.httpbin.org/delete"});
-auto head_response = cpr::Head(Url{"http://www.httpbin.org/get"});
+auto delete_response = cpr::Delete(cpr::Url{"http://www.httpbin.org/delete"});
+auto head_response = cpr::Head(cpr::Url{"http://www.httpbin.org/get"});
 
 // Asynchronous, future mode
-auto async_delete_response = cpr::DeleteAsync(Url{"http://www.httpbin.org/delete"});
-auto async_head_response = cpr::HeadAsync(Url{"http://www.httpbin.org/get"});
+auto async_delete_response = cpr::DeleteAsync(cpr::Url{"http://www.httpbin.org/delete"});
+auto async_head_response = cpr::HeadAsync(cpr::Url{"http://www.httpbin.org/get"});
 
 // Asynchronous, callback mode
-auto cb_delete_response = cpr::DeleteCallback([](Response r) {
+auto cb_delete_response = cpr::DeleteCallback([](cpr::Response r) {
         return r.text;
-    }, Url{"http://www.httpbin.org/delete"});
-auto cb_head_response = cpr::HeadCallback([](Response r) {
+    }, cpr::Url{"http://www.httpbin.org/delete"});
+auto cb_head_response = cpr::HeadCallback([](cpr::Response r) {
         return r.status_code;
-    }, Url{"http://www.httpbin.org/get"});
+    }, cpr::Url{"http://www.httpbin.org/get"});
 ```
 
 Currently, `"OPTIONS"` is not an implemented HTTP method. It soon will be, and its mechanics will be identitical to the example above. Stay tuned!

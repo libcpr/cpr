@@ -11,8 +11,8 @@ In cpr, options are actually _options_ so if you don't set them they'll default 
 
 {% raw %}
 ```c++
-auto r = cpr::Get(Url{"http://www.httpbin.org/get"},
-                  Parameters{{"hello", "world"}}); // Url object before Parameters
+auto r = cpr::Get(cpr::Url{"http://www.httpbin.org/get"},
+                  cpr::Parameters{{"hello", "world"}}); // Url object before Parameters
 ```
 {% endraw %}
 
@@ -20,8 +20,8 @@ auto r = cpr::Get(Url{"http://www.httpbin.org/get"},
 is exactly identical to
 
 ```c++
-auto r = cpr::Get(Parameters{{"hello", "world"}},
-                  Url{"http://www.httpbin.org/get"}); // Parameters object before Url
+auto r = cpr::Get(cpr::Parameters{{"hello", "world"}},
+                  cpr::Url{"http://www.httpbin.org/get"}); // Parameters object before Url
 ```
 {% endraw %}
 
@@ -35,7 +35,7 @@ Making a GET request with cpr is effortless:
 #include <cpr.h> // Make sure this header is available in your include path
 
 // Somewhere else
-auto r = cpr::Get(Url{"http://www.httpbin.org/get"});
+auto r = cpr::Get(cpr::Url{"http://www.httpbin.org/get"});
 ```
 
 This gives us a `Response` object which we've called `r`. There's a lot of good stuff in there:
@@ -60,8 +60,8 @@ To add URL-encoded parameters, throw in a `Parameters` object to the `Get` call:
 
 {% raw %}
 ```c++
-auto r = cpr::Get(Url{"http://www.httpbin.org/get"},
-                  Parameters{{"hello", "world"}});
+auto r = cpr::Get(cpr::Url{"http://www.httpbin.org/get"},
+                  cpr::Parameters{{"hello", "world"}});
 std::cout << r.url << std::endl; // http://www.httpbin.org/get?hello=world
 std::cout << r.text << std::endl;
 
@@ -83,8 +83,8 @@ std::cout << r.text << std::endl;
 {% raw %}
 ```c++
 // Constructing it in place
-auto r = cpr::Get(Url{"http://www.httpbin.org/get"},
-                  Parameters{{"hello", "world"}, {"stay", "cool"}});
+auto r = cpr::Get(cpr::Url{"http://www.httpbin.org/get"},
+                  cpr::Parameters{{"hello", "world"}, {"stay", "cool"}});
 std::cout << r.url << std::endl; // http://www.httpbin.org/get?hello=world&stay=cool
 std::cout << r.text << std::endl;
 
@@ -101,8 +101,8 @@ std::cout << r.text << std::endl;
  */
 
  // Constructing it outside
-auto parameters = Parameters{{"hello", "world"}, {"stay", "cool"}};
-auto r_outside = cpr::Get(Url{"http://www.httpbin.org/get"}, parameters);
+auto parameters = cpr::Parameters{{"hello", "world"}, {"stay", "cool"}};
+auto r_outside = cpr::Get(cpr::Url{"http://www.httpbin.org/get"}, parameters);
 std::cout << r_outside.url << std::endl; // http://www.httpbin.org/get?hello=world&stay=cool
 std::cout << r_outside.text << std::endl; // Same text response as above
 ```
@@ -116,8 +116,8 @@ Making a POST request is just as easy as a GET request:
 
 {% raw %}
 ```c++
-auto r = cpr::Post(Url{"http://www.httpbin.org/post"},
-                   Payload{{"key", "value"}});
+auto r = cpr::Post(cpr::Url{"http://www.httpbin.org/post"},
+                   cpr::Payload{{"key", "value"}});
 std::cout << r.text << std::endl;
 
 /* {
@@ -143,9 +143,9 @@ This sends up `"key=value"` as a `"x-www-form-urlencoded"` pair in the POST requ
 
 {% raw %}
 ```c++
-auto r = cpr::Post(Url{"http://www.httpbin.org/post"},
-                   Body{"This is raw POST data"},
-                   Header{{"Content-Type", "text/plain"}});
+auto r = cpr::Post(cpr::Url{"http://www.httpbin.org/post"},
+                   cpr::Body{"This is raw POST data"},
+                   cpr::Header{{"Content-Type", "text/plain"}});
 std::cout << r.text << std::endl;
 
 /* {
@@ -169,8 +169,9 @@ Here you will notice that the `"Content-Type"` is being set explicitly to `"text
 
 {% raw %}
 ```c++
-auto r = cpr::Post(Url{"http://www.httpbin.org/post"},
-                   Multipart{{"key", "large value"}, {"name": File{"path-to-file"}}});
+auto r = cpr::Post(cpr::Url{"http://www.httpbin.org/post"},
+                   cpr::Multipart{{"key", "large value"},
+                                  {"name": cpr::File{"path-to-file"}}});
 std::cout << r.text << std::endl;
 
 /* {
@@ -201,8 +202,8 @@ Notice how the `"Content-Type"` in the return header is different now; it's `"mu
 Any self-respecting networking library should have support for authentication. It's rare for a web API to allow unfettered access to the datasets they guard. Most often they require a username/password pair:
 
 ```c++
-auto r = cpr::Get(Url{"http://www.httpbin.org/basic-auth/user/pass"},
-                  Authentication{"user", "pass"});
+auto r = cpr::Get(cpr::Url{"http://www.httpbin.org/basic-auth/user/pass"},
+                  cpr::Authentication{"user", "pass"});
 std::cout << r.text << std::endl;
 
 /*
@@ -216,8 +217,8 @@ std::cout << r.text << std::endl;
 This uses [Basic Authentication](https://en.wikipedia.org/wiki/Basic_access_authentication). To use [Digest Authentication](https://en.wikipedia.org/wiki/Digest_access_authentication), just use the `Digest` authentication object:
 
 ```c++
-auto r = cpr::Get(Url{"http://www.httpbin.org/digest-auth/auth/user/pass"},
-                  Digest{"user", "pass"});
+auto r = cpr::Get(cpr::Url{"http://www.httpbin.org/digest-auth/auth/user/pass"},
+                  cpr::Digest{"user", "pass"});
 std::cout << r.text << std::endl;
 
 /*
