@@ -51,6 +51,56 @@ static int basicCookies(struct mg_connection* conn) {
     return MG_TRUE;
 }
 
+static int v1Cookies(struct mg_connection* conn) {
+    auto response = std::string{"Hello world!"};
+    mg_send_status(conn, 200);
+    mg_send_header(conn, "content-type", "text/html");
+    time_t t = time(NULL) + 5; // Valid for 1 hour
+    char expire[100], expire_epoch[100];
+    snprintf(expire_epoch, sizeof(expire_epoch), "%lu", (unsigned long) t);
+    strftime(expire, sizeof(expire), "%a, %d %b %Y %H:%M:%S GMT", gmtime(&t));
+    std::string v1cookie{"cookie=\"value with spaces (v1 cookie)\"; expires=\"" +
+                         std::string{expire} + "\"; http-only;"};
+    mg_send_header(conn, "Set-Cookie", v1cookie.data());
+    mg_send_data(conn, response.data(), response.length());
+    return MG_TRUE;
+}
+
+static int checkBasicCookies(struct mg_connection* conn) {
+    const char* request_cookies;
+    if ((request_cookies = mg_get_header(conn, "Cookie")) == NULL)
+        return MG_FALSE;
+    std::string cookie_str{request_cookies};
+
+    if (cookie_str.find("cookie=chocolate;") == cookie_str.npos ||
+        cookie_str.find("icecream=vanilla;") == cookie_str.npos) {
+        return MG_FALSE;
+    }
+
+    auto response = std::string{"Hello world!"};
+    mg_send_status(conn, 200);
+    mg_send_header(conn, "content-type", "text/html");
+    mg_send_data(conn, response.data(), response.length());
+    return MG_TRUE;
+}
+
+static int checkV1Cookies(struct mg_connection* conn) {
+    const char* request_cookies;
+    if ((request_cookies = mg_get_header(conn, "Cookie")) == NULL)
+        return MG_FALSE;
+    std::string cookie_str{request_cookies};
+
+    if (cookie_str.find("cookie=\"value with spaces (v1 cookie)\";") == cookie_str.npos) {
+        return MG_FALSE;
+    }
+
+    auto response = std::string{"Hello world!"};
+    mg_send_status(conn, 200);
+    mg_send_header(conn, "content-type", "text/html");
+    mg_send_data(conn, response.data(), response.length());
+    return MG_TRUE;
+}
+
 static int basicAuth(struct mg_connection* conn) {
     auto response = std::string{"Hello world!"};
     const char* requested_auth;
@@ -347,6 +397,12 @@ static int evHandler(struct mg_connection* conn, enum mg_event ev) {
                 return hello(conn);
             } else if (Url{conn->uri} == "/basic_cookies.html") {
                 return basicCookies(conn);
+            } else if (Url{conn->uri} == "/check_cookies.html") {
+                return checkBasicCookies(conn);
+            } else if (Url{conn->uri} == "/v1_cookies.html") {
+                return v1Cookies(conn);
+            } else if (Url{conn->uri} == "/check_v1_cookies.html") {
+                return checkV1Cookies(conn);
             } else if (Url{conn->uri} == "/basic_auth.html") {
                 return headerReflect(conn);
             } else if (Url{conn->uri} == "/digest_auth.html") {
