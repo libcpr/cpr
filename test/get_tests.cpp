@@ -79,6 +79,42 @@ TEST(CookiesTests, SingleCookieTest) {
     EXPECT_EQ(cookies["expires"], response.cookies["expires"]);
 }
 
+TEST(CookiesTests, CheckBasicCookieTest) {
+    // server validates whether the cookies are indeed present
+    auto url = Url{base + "/check_cookies.html"};
+    auto cookies = Cookies{{"cookie", "chocolate"}, {"icecream", "vanilla"}};
+    auto response = cpr::Get(url, cookies);
+    auto expected_text = std::string{"Hello world!"};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+    EXPECT_EQ(200, response.status_code);
+}
+
+TEST(CookiesTests, V1CookieTest) {
+    auto url = Url{base + "/v1_cookies.html"};
+    auto response = cpr::Get(url);
+    auto expected_text = std::string{"Hello world!"};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+    EXPECT_EQ(200, response.status_code);
+    auto cookies = response.cookies;
+    EXPECT_EQ("\"value with spaces (v1 cookie)\"", cookies["cookie"]);
+}
+
+TEST(CookiesTests, CheckV1CookieTest) {
+    // server validates whether the cookie is indeed present
+    auto url = Url{base + "/check_v1_cookies.html"};
+    auto cookies = Cookies{{"cookie", "\"value with spaces (v1 cookie)\""}};
+    auto response = cpr::Get(url, cookies);
+    auto expected_text = std::string{"Hello world!"};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+    EXPECT_EQ(200, response.status_code);
+}
+
 TEST(ParameterTests, SingleParameterTest) {
     auto url = Url{base + "/hello.html"};
     auto parameters = Parameters{{"key", "value"}};
