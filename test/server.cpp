@@ -27,6 +27,25 @@ std::string base64_decode(std::string const& encoded_string);
 static int lowercase(const char *s);
 static int mg_strncasecmp(const char *s1, const char *s2, size_t len);
 
+static int options(struct mg_connection* conn) {
+    if (std::string{conn->request_method} == std::string{"OPTIONS"}) {
+        auto response = std::string{""};
+        mg_send_status(conn, 200);
+        mg_send_header(conn, "content-type", "text/html");
+        mg_send_header(conn, "Access-Control-Allow-Origin", "*");
+        mg_send_header(conn, "Access-Control-Allow-Credentials", "true");
+        mg_send_header(conn, "Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH, OPTIONS");
+        mg_send_header(conn, "Access-Control-Max-Age", "3600");
+        mg_send_data(conn, response.data(), response.length()); 
+    } else {
+        auto response = std::string{"Method unallowed"};
+        mg_send_status(conn, 405);
+        mg_send_header(conn, "content-type", "text/html");
+        mg_send_data(conn, response.data(), response.length()); 
+    }
+    return MG_TRUE;
+}
+
 static int hello(struct mg_connection* conn) {
     if (std::string{conn->request_method} == std::string{"OPTIONS"}) {
         auto response = std::string{""};
@@ -404,7 +423,9 @@ static int evHandler(struct mg_connection* conn, enum mg_event ev) {
             }
             return MG_TRUE;
         case MG_REQUEST:
-            if (Url{conn->uri} == "/hello.html") {
+            if (Url{conn->uri} == "/") {
+                return options(conn);
+            } else if (Url{conn->uri} == "/hello.html") {
                 return hello(conn);
             } else if (Url{conn->uri} == "/basic_cookies.html") {
                 return basicCookies(conn);
