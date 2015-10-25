@@ -165,7 +165,8 @@ AsyncResponse OptionsAsync(Ts... ts) {
 
 // Options callback methods
 template <typename Then, typename... Ts>
-auto OptionsCallback(Then then, Ts... ts) -> std::future<decltype(then(Options(std::move(ts)...)))> {
+auto OptionsCallback(Then then, Ts... ts)
+        -> std::future<decltype(then(Options(std::move(ts)...)))> {
     return std::async(std::launch::async, [](Then then, Ts... ts) {
         return then(Options(std::move(ts)...));
     }, std::move(then), std::move(ts)...);
