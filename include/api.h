@@ -148,6 +148,29 @@ auto DeleteCallback(Then then, Ts... ts) -> std::future<decltype(then(Delete(std
     }, std::move(then), std::move(ts)...);
 }
 
+// Options methods
+template <typename... Ts>
+Response Options(Ts&&... ts) {
+    Session session;
+    priv::set_option(session, CPR_FWD(ts)...);
+    return session.Options();
+}
+
+// Options async methods
+template <typename... Ts>
+AsyncResponse OptionsAsync(Ts... ts) {
+    return std::async(std::launch::async, [](Ts... ts) { return Options(std::move(ts)...); },
+                      std::move(ts)...);
+}
+
+// Options callback methods
+template <typename Then, typename... Ts>
+auto OptionsCallback(Then then, Ts... ts) -> std::future<decltype(then(Options(std::move(ts)...)))> {
+    return std::async(std::launch::async, [](Then then, Ts... ts) {
+        return then(Options(std::move(ts)...));
+    }, std::move(then), std::move(ts)...);
+}
+
 } // namespace cpr
 
 #endif
