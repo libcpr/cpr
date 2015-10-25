@@ -4,8 +4,10 @@
 #include <memory>
 #include <string>
 #include <initializer_list>
+#include <vector>
 
 #include "defines.h"
+#include "util.h"
 
 namespace cpr {
 
@@ -24,7 +26,15 @@ struct Pair {
 
 class Payload {
   public:
+    template <class It>
+    Payload(const It begin, const It end) {
+        for (It pair = begin; pair != end; ++pair) {
+            AddPair(*pair);
+        }
+    }
     Payload(const std::initializer_list<Pair>& pairs);
+
+    void AddPair(const Pair& pair);
 
     std::string content;
 };

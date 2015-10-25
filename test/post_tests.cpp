@@ -27,6 +27,39 @@ TEST(UrlEncodedPostTests, UrlPostSingleTest) {
     EXPECT_EQ(201, response.status_code);
 }
 
+TEST(UrlEncodedPostTests, UrlPostAddPayloadPair) {
+    auto url = Url{base + "/url_post.html"};
+    auto payload = Payload{{"x", "1"}};
+    payload.AddPair({"y", "2"});
+    auto response = cpr::Post(url, Payload(payload));
+    auto expected_text = std::string{"{\n"
+                                             "  \"x\": 1,\n"
+                                             "  \"y\": 2,\n"
+                                             "  \"sum\": 3\n"
+                                             "}"};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
+    EXPECT_EQ(201, response.status_code);
+}
+
+TEST(UrlEncodedPostTests, UrlPostPayloadIteratorTest) {
+    auto url = Url{base + "/url_post.html"};
+    std::vector<Pair> payloadData;
+    payloadData.push_back({"x", "1"});
+    payloadData.push_back({"y", "2"});
+    auto response = cpr::Post(url, Payload(payloadData.begin(), payloadData.end()));
+    auto expected_text = std::string{"{\n"
+                                             "  \"x\": 1,\n"
+                                             "  \"y\": 2,\n"
+                                             "  \"sum\": 3\n"
+                                             "}"};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
+    EXPECT_EQ(201, response.status_code);
+}
+
 TEST(UrlEncodedPostTests, UrlPostEncodeTest) {
     auto url = Url{base + "/url_post.html"};
     auto response = cpr::Post(url, Payload{{"x", "hello world!!~"}});
