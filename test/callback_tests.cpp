@@ -525,6 +525,101 @@ TEST(CallbackPutTests, CallbackPutFunctionTextReferenceTest) {
     EXPECT_EQ(expected_text, future.get());
 }
 
+TEST(CallbackOptionsTests, CallbackOptionsLambdaStatusTest) {
+    auto url = Url{base + "/hello.html"};
+    auto status_code = 0;
+    auto future = cpr::OptionsCallback([&status_code] (Response r) {
+                status_code = r.status_code;
+                return r.status_code;
+            }, url);
+    std::this_thread::sleep_for(sleep_time);
+    EXPECT_EQ(future.wait_for(zero), std::future_status::ready);
+    EXPECT_EQ(status_code, future.get());
+}
+
+TEST(CallbackOptionsTests, CallbackOptionsLambdaTextTest) {
+    auto url = Url{base + "/hello.html"};
+    auto expected_text = std::string{};
+    auto future = cpr::OptionsCallback([&expected_text] (Response r) {
+                expected_text = r.text;
+                return r.text;
+            }, url);
+    std::this_thread::sleep_for(sleep_time);
+    EXPECT_EQ(future.wait_for(zero), std::future_status::ready);
+    EXPECT_EQ(expected_text, future.get());
+}
+
+TEST(CallbackOptionsTests, CallbackOptionsLambdaStatusReferenceTest) {
+    auto url = Url{base + "/hello.html"};
+    auto status_code = 0;
+    auto future = cpr::OptionsCallback([&status_code] (const Response& r) {
+                status_code = r.status_code;
+                return r.status_code;
+            }, url);
+    std::this_thread::sleep_for(sleep_time);
+    EXPECT_EQ(future.wait_for(zero), std::future_status::ready);
+    EXPECT_EQ(status_code, future.get());
+}
+
+TEST(CallbackOptionsTests, CallbackOptionsLambdaTextReferenceTest) {
+    auto url = Url{base + "/hello.html"};
+    auto expected_text = std::string{};
+    auto future = cpr::OptionsCallback([&expected_text] (const Response& r) {
+                expected_text = r.text;
+                return r.text;
+            }, url);
+    std::this_thread::sleep_for(sleep_time);
+    EXPECT_EQ(future.wait_for(zero), std::future_status::ready);
+    EXPECT_EQ(expected_text, future.get());
+}
+
+TEST(CallbackOptionsTests, CallbackOptionsFunctionStatusTest) {
+    auto url = Url{base + "/hello.html"};
+    auto status_code = 0;
+    auto callback = std::function<int(Response)>(std::bind(status_callback, std::ref(status_code),
+                                                           std::placeholders::_1));
+    auto future = cpr::OptionsCallback(callback, url);
+    std::this_thread::sleep_for(sleep_time);
+    EXPECT_EQ(future.wait_for(zero), std::future_status::ready);
+    EXPECT_EQ(status_code, future.get());
+}
+
+TEST(CallbackOptionsTests, CallbackOptionsFunctionTextTest) {
+    auto url = Url{base + "/hello.html"};
+    auto expected_text = std::string{};
+    auto callback = std::function<std::string(Response)>(std::bind(text_callback,
+                                                                   std::ref(expected_text),
+                                                                   std::placeholders::_1));
+    auto future = cpr::OptionsCallback(callback, url);
+    std::this_thread::sleep_for(sleep_time);
+    EXPECT_EQ(future.wait_for(zero), std::future_status::ready);
+    EXPECT_EQ(expected_text, future.get());
+}
+
+TEST(CallbackOptionsTests, CallbackOptionsFunctionStatusReferenceTest) {
+    auto url = Url{base + "/hello.html"};
+    auto status_code = 0;
+    auto callback = std::function<int(Response)>(std::bind(status_callback_ref,
+                                                           std::ref(status_code),
+                                                           std::placeholders::_1));
+    auto future = cpr::OptionsCallback(callback, url);
+    std::this_thread::sleep_for(sleep_time);
+    EXPECT_EQ(future.wait_for(zero), std::future_status::ready);
+    EXPECT_EQ(status_code, future.get());
+}
+
+TEST(CallbackOptionsTests, CallbackOptionsFunctionTextReferenceTest) {
+    auto url = Url{base + "/hello.html"};
+    auto expected_text = std::string{};
+    auto callback = std::function<std::string(Response)>(std::bind(text_callback_ref,
+                                                                   std::ref(expected_text),
+                                                                   std::placeholders::_1));
+    auto future = cpr::OptionsCallback(callback, url);
+    std::this_thread::sleep_for(sleep_time);
+    EXPECT_EQ(future.wait_for(zero), std::future_status::ready);
+    EXPECT_EQ(expected_text, future.get());
+}
+
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
     ::testing::AddGlobalTestEnvironment(server);
