@@ -164,6 +164,21 @@ TEST(HeadTests, ZeroMaxRedirectsHeadTest) {
     EXPECT_EQ(200, response.status_code);
 }
 
+TEST(HeadTests, BasicHeadAsyncTest) {
+    auto url = Url{base + "/hello.html"};
+    std::vector<AsyncResponse> responses;
+    for (int i = 0; i < 10; ++i) {
+        responses.emplace_back(cpr::HeadAsync(url));
+    }
+    for (auto& future_response : responses) {
+        auto response = future_response.get();
+        EXPECT_EQ(std::string{}, response.text);
+        EXPECT_EQ(url, response.url);
+        EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+        EXPECT_EQ(200, response.status_code);
+    }
+}
+
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
     ::testing::AddGlobalTestEnvironment(server);
