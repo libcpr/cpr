@@ -181,6 +181,25 @@ TEST(UrlEncodedPostTests, FormPostContentTypeLValueTest) {
     EXPECT_EQ(201, response.status_code);
 }
 
+TEST(UrlEncodedPostTests, UrlPostAsyncSingleTest) {
+    auto url = Url{base + "/url_post.html"};
+    auto payload = Payload{{"x", "5"}};
+    std::vector<AsyncResponse> responses;
+    for (int i = 0; i < 10; ++i) {
+        responses.emplace_back(cpr::PostAsync(url, payload));
+    }
+    for (auto& future_response : responses) {
+        auto response = future_response.get();
+        auto expected_text = std::string{"{\n"
+                                         "  \"x\": 5\n"
+                                         "}"};
+        EXPECT_EQ(expected_text, response.text);
+        EXPECT_EQ(url, response.url);
+        EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
+        EXPECT_EQ(201, response.status_code);
+    }
+}
+
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
     ::testing::AddGlobalTestEnvironment(server);
