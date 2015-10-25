@@ -64,6 +64,7 @@ class Session {
     Response Delete();
     Response Get();
     Response Head();
+    Response Options();
     Response Post();
     Response Put();
 

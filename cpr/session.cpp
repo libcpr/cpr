@@ -37,6 +37,7 @@ class Session::Impl {
     Response Delete();
     Response Get();
     Response Head();
+    Response Options();
     Response Post();
     Response Put();
 
@@ -288,6 +289,18 @@ Response Session::Impl::Head() {
     return makeRequest(curl);
 }
 
+Response Session::Impl::Options() {
+    auto curl = curl_->handle;
+    if (curl) {
+        curl_easy_setopt(curl, CURLOPT_HTTPGET, 0L);
+        curl_easy_setopt(curl, CURLOPT_POST, 0L);
+        curl_easy_setopt(curl, CURLOPT_NOBODY, 0L);
+        curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "OPTIONS");
+    }
+
+    return makeRequest(curl);
+}
+
 Response Session::Impl::Post() {
     return makeRequest(curl_->handle);
 }
@@ -390,6 +403,7 @@ void Session::SetOption(Body&& body) { pimpl_->SetBody(std::move(body)); }
 Response Session::Delete() { return pimpl_->Delete(); }
 Response Session::Get() { return pimpl_->Get(); }
 Response Session::Head() { return pimpl_->Head(); }
+Response Session::Options() { return pimpl_->Options(); }
 Response Session::Post() { return pimpl_->Post(); }
 Response Session::Put() { return pimpl_->Put(); }
 // clang-format on
