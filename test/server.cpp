@@ -28,10 +28,21 @@ static int lowercase(const char *s);
 static int mg_strncasecmp(const char *s1, const char *s2, size_t len);
 
 static int hello(struct mg_connection* conn) {
-    auto response = std::string{"Hello world!"};
-    mg_send_status(conn, 200);
-    mg_send_header(conn, "content-type", "text/html");
-    mg_send_data(conn, response.data(), response.length()); 
+    if (std::string{conn->request_method} == std::string{"OPTIONS"}) {
+        auto response = std::string{""};
+        mg_send_status(conn, 200);
+        mg_send_header(conn, "content-type", "text/html");
+        mg_send_header(conn, "Access-Control-Allow-Origin", "*");
+        mg_send_header(conn, "Access-Control-Allow-Credentials", "true");
+        mg_send_header(conn, "Access-Control-Allow-Methods", "GET, OPTIONS");
+        mg_send_header(conn, "Access-Control-Max-Age", "3600");
+        mg_send_data(conn, response.data(), response.length()); 
+    } else {
+        auto response = std::string{"Hello world!"};
+        mg_send_status(conn, 200);
+        mg_send_header(conn, "content-type", "text/html");
+        mg_send_data(conn, response.data(), response.length()); 
+    }
     return MG_TRUE;
 }
 
