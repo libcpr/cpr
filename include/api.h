@@ -172,6 +172,29 @@ auto OptionsCallback(Then then, Ts... ts)
     }, std::move(then), std::move(ts)...);
 }
 
+// Patch methods
+template <typename... Ts>
+Response Patch(Ts&&... ts) {
+    Session session;
+    priv::set_option(session, CPR_FWD(ts)...);
+    return session.Patch();
+}
+
+// Patch async methods
+template <typename... Ts>
+AsyncResponse PatchAsync(Ts... ts) {
+    return std::async(std::launch::async, [](Ts... ts) { return Patch(std::move(ts)...); },
+                      std::move(ts)...);
+}
+
+// Patch callback methods
+template <typename Then, typename... Ts>
+auto PatchCallback(Then then, Ts... ts) -> std::future<decltype(then(Patch(std::move(ts)...)))> {
+    return std::async(std::launch::async, [](Then then, Ts... ts) {
+        return then(Patch(std::move(ts)...));
+    }, std::move(then), std::move(ts)...);
+}
+
 } // namespace cpr
 
 #endif
