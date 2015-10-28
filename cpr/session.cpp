@@ -38,6 +38,7 @@ class Session::Impl {
     Response Get();
     Response Head();
     Response Options();
+    Response Patch();
     Response Post();
     Response Put();
 
@@ -301,6 +302,16 @@ Response Session::Impl::Options() {
     return makeRequest(curl);
 }
 
+Response Session::Impl::Patch() {
+    auto curl = curl_->handle;
+    if (curl) {
+        curl_easy_setopt(curl, CURLOPT_NOBODY, 0L);
+        curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "PATCH");
+    }
+
+    return makeRequest(curl);
+}
+
 Response Session::Impl::Post() {
     return makeRequest(curl_->handle);
 }
@@ -404,6 +415,7 @@ Response Session::Delete() { return pimpl_->Delete(); }
 Response Session::Get() { return pimpl_->Get(); }
 Response Session::Head() { return pimpl_->Head(); }
 Response Session::Options() { return pimpl_->Options(); }
+Response Session::Patch() { return pimpl_->Patch(); }
 Response Session::Post() { return pimpl_->Post(); }
 Response Session::Put() { return pimpl_->Put(); }
 // clang-format on
