@@ -326,16 +326,18 @@ Most often, PUTs are used to update an existing object with a new object. Of cou
 
 ## Other Request Methods
 
-C++ Requests also supports `DELETE` and `HEAD` methods in the expected forms:
+C++ Requests also supports `DELETE`, `HEAD`, and `OPTIONS` methods in the expected forms:
 
 ```c++
 // Regular, blocking modes
 auto delete_response = cpr::Delete(cpr::Url{"http://www.httpbin.org/delete"});
 auto head_response = cpr::Head(cpr::Url{"http://www.httpbin.org/get"});
+auto options_response = cpr::OPTIONS(cpr::Url{"http://www.httpbin.org/get"});
 
 // Asynchronous, future mode
 auto async_delete_response = cpr::DeleteAsync(cpr::Url{"http://www.httpbin.org/delete"});
 auto async_head_response = cpr::HeadAsync(cpr::Url{"http://www.httpbin.org/get"});
+auto async_options_response = cpr::OptionsAsync(cpr::Url{"http://www.httpbin.org/get"});
 
 // Asynchronous, callback mode
 auto cb_delete_response = cpr::DeleteCallback([](cpr::Response r) {
@@ -344,6 +346,9 @@ auto cb_delete_response = cpr::DeleteCallback([](cpr::Response r) {
 auto cb_head_response = cpr::HeadCallback([](cpr::Response r) {
         return r.status_code;
     }, cpr::Url{"http://www.httpbin.org/get"});
+auto cb_options_response = cpr::OptionsCallback([](cpr::Response r) {
+        return r.status_code;
+    }, cpr::Url{"http://www.httpbin.org/get"});
 ```
 
-Currently, `"OPTIONS"` is not an implemented HTTP method. It soon will be, and its mechanics will be identitical to the example above. Stay tuned!
+Currently, `"PATCH"` is not an implemented HTTP method. It soon will be, and its mechanics will be identitical to the example above. Stay tuned!
