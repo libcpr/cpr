@@ -49,13 +49,13 @@ C++ Requests currently supports:
 * DELETE methods
 * HEAD methods
 * OPTIONS methods
+* PATCH methods
 
 ## Planned
 
 Support for the following will be forthcoming (in rough order of implementation priority):
 
 * [Streamed requests](https://github.com/whoshuu/cpr/issues/25)
-* [PATCH methods](https://github.com/whoshuu/cpr/issues/36)
 * [OpenSSL support](https://github.com/whoshuu/cpr/issues/31)
 
 and much more!
