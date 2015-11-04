@@ -23,6 +23,8 @@ class Parameters {
     Parameters() = default;
     Parameters(const std::initializer_list<Parameter>& parameters);
 
+    void AddParameter(const Parameter& parameter);
+
     std::string content;
 };
 
