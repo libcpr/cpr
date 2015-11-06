@@ -10,12 +10,13 @@ add_library(${CPR_LIBRARIES}
     cookies.cpp
     cprtypes.cpp
     digest.cpp
+    error.cpp
     multipart.cpp
     parameters.cpp
     payload.cpp
     proxies.cpp
     session.cpp
-    util.cpp 
+    util.cpp
 
     # Header files (useful in IDEs)
     "${CPR_INCLUDE_DIRS}/api.h"
@@ -27,6 +28,7 @@ add_library(${CPR_LIBRARIES}
     "${CPR_INCLUDE_DIRS}/curlholder.h"
     "${CPR_INCLUDE_DIRS}/defines.h"
     "${CPR_INCLUDE_DIRS}/digest.h"
+    "${CPR_INCLUDE_DIRS}/error.h"
     "${CPR_INCLUDE_DIRS}/multipart.h"
     "${CPR_INCLUDE_DIRS}/parameters.h"
     "${CPR_INCLUDE_DIRS}/payload.h"

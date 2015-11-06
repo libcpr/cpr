@@ -347,7 +347,7 @@ Response Session::Impl::makeRequest(CURL* curl) {
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response_string);
     curl_easy_setopt(curl, CURLOPT_HEADERDATA, &header_string);
 
-    curl_easy_perform(curl);
+    auto curl_error = curl_easy_perform(curl);
 
     char* raw_url;
     long response_code;
@@ -355,6 +355,12 @@ Response Session::Impl::makeRequest(CURL* curl) {
     curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response_code);
     curl_easy_getinfo(curl, CURLINFO_TOTAL_TIME, &elapsed);
     curl_easy_getinfo(curl, CURLINFO_EFFECTIVE_URL, &raw_url);
+
+    Error error;
+    if (curl_error != CURLE_OK) {
+        error.code = getErrorCodeForCurlError(curl_error);
+        error.message = curl_->error; //copies the error message
+    }
 
     Cookies cookies;
     struct curl_slist* raw_cookies;
@@ -369,7 +375,7 @@ Response Session::Impl::makeRequest(CURL* curl) {
 
     auto header = cpr::util::parseHeader(header_string);
     response_string = cpr::util::parseResponse(response_string);
-    return Response{response_code, response_string, header, raw_url, elapsed, cookies};
+    return Response{response_code, response_string, header, raw_url, elapsed, error, cookies};
 }
 
 // clang-format off
