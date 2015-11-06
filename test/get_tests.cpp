@@ -19,6 +19,7 @@ TEST(BasicTests, HelloWorldTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(BasicTests, TimeoutTest) {
@@ -29,6 +30,7 @@ TEST(BasicTests, TimeoutTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(BasicTests, BasicJsonTest) {
@@ -44,6 +46,7 @@ TEST(BasicTests, BasicJsonTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"application/octet-stream"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(BasicTests, ResourceNotFoundTest) {
@@ -54,6 +57,7 @@ TEST(BasicTests, ResourceNotFoundTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/plain"}, response.header["content-type"]);
     EXPECT_EQ(404, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(BasicTests, BadHostTest) {
@@ -62,6 +66,7 @@ TEST(BasicTests, BadHostTest) {
     EXPECT_EQ(std::string{}, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(0, response.status_code);
+    EXPECT_EQ(ErrorCode::HOST_RESOLUTION_FAILURE, response.error.code);
 }
 
 TEST(CookiesTests, SingleCookieTest) {
@@ -73,6 +78,7 @@ TEST(CookiesTests, SingleCookieTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
     cookies = response.cookies;
     EXPECT_EQ(cookies["cookie"], response.cookies["cookie"]);
     EXPECT_EQ(cookies["icecream"], response.cookies["icecream"]);
@@ -89,6 +95,7 @@ TEST(CookiesTests, CheckBasicCookieTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(CookiesTests, V1CookieTest) {
@@ -99,6 +106,7 @@ TEST(CookiesTests, V1CookieTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
     auto cookies = response.cookies;
     EXPECT_EQ("\"value with spaces (v1 cookie)\"", cookies["cookie"]);
 }
@@ -113,6 +121,7 @@ TEST(CookiesTests, CheckV1CookieTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(ParameterTests, SingleParameterTest) {
@@ -124,6 +133,7 @@ TEST(ParameterTests, SingleParameterTest) {
     EXPECT_EQ(Url{url + "?key=value"}, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(ParameterTests, MultipleParametersTest) {
@@ -136,6 +146,7 @@ TEST(ParameterTests, MultipleParametersTest) {
     EXPECT_EQ(Url{url + "?key=value&hello=world&test=case"}, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(ParameterTests, MultipleDynamicParametersTest) {
@@ -149,6 +160,7 @@ TEST(ParameterTests, MultipleDynamicParametersTest) {
     EXPECT_EQ(Url{url + "?key=value&hello=world&test=case"}, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(BasicAuthenticationTests, BasicAuthenticationSuccessTest) {
@@ -159,6 +171,7 @@ TEST(BasicAuthenticationTests, BasicAuthenticationSuccessTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(BasicAuthenticationTests, BasicDigestSuccessTest) {
@@ -169,6 +182,7 @@ TEST(BasicAuthenticationTests, BasicDigestSuccessTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(BasicAthenticationParameterTests, BasicAuthenticationSuccessSingleParameterTest) {
@@ -180,6 +194,7 @@ TEST(BasicAthenticationParameterTests, BasicAuthenticationSuccessSingleParameter
     EXPECT_EQ(Url{url + "?hello=world"}, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(BasicAuthenticationParameterTests, BasicAuthenticationSuccessMultipleParametersTest) {
@@ -191,6 +206,7 @@ TEST(BasicAuthenticationParameterTests, BasicAuthenticationSuccessMultipleParame
     EXPECT_EQ(Url{url + "?key=value&hello=world&test=case"}, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(BasicAuthenticationParameterTests, BasicAuthenticationSuccessSingleParameterReverseTest) {
@@ -202,6 +218,7 @@ TEST(BasicAuthenticationParameterTests, BasicAuthenticationSuccessSingleParamete
     EXPECT_EQ(Url{url + "?hello=world"}, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(BasicAuthenticationParameterTests, BasicAuthenticationSuccessMultipleParametersReverseTest) {
@@ -216,6 +233,7 @@ TEST(BasicAuthenticationParameterTests, BasicAuthenticationSuccessMultipleParame
     EXPECT_EQ(Url{url + "?key=value&hello=world&test=case"}, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(BasicAuthenticationHeaderTests, BasicAuthenticationSuccessSingleHeaderTest) {
@@ -228,6 +246,7 @@ TEST(BasicAuthenticationHeaderTests, BasicAuthenticationSuccessSingleHeaderTest)
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(std::string{"world"}, response.header["hello"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(BasicAuthenticationHeaderTests, BasicAuthenticationSuccessMultipleHeadersTest) {
@@ -242,6 +261,7 @@ TEST(BasicAuthenticationHeaderTests, BasicAuthenticationSuccessMultipleHeadersTe
     EXPECT_EQ(std::string{"value"}, response.header["key"]);
     EXPECT_EQ(std::string{"case"}, response.header["test"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(BasicAuthenticationHeaderTests, BasicAuthenticationSuccessSingleHeaderReverseTest) {
@@ -254,6 +274,7 @@ TEST(BasicAuthenticationHeaderTests, BasicAuthenticationSuccessSingleHeaderRever
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(std::string{"world"}, response.header["hello"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(BasicAuthenticationHeaderTests, BasicAuthenticationSuccessMultipleHeadersReverseTest) {
@@ -268,6 +289,7 @@ TEST(BasicAuthenticationHeaderTests, BasicAuthenticationSuccessMultipleHeadersRe
     EXPECT_EQ(std::string{"value"}, response.header["key"]);
     EXPECT_EQ(std::string{"case"}, response.header["test"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(BasicAuthenticationTests, BasicAuthenticationNullFailureTest) {
@@ -277,6 +299,7 @@ TEST(BasicAuthenticationTests, BasicAuthenticationNullFailureTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{}, response.header["content-type"]);
     EXPECT_EQ(401, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(BasicAuthenticationTests, BasicAuthenticationFailureTest) {
@@ -286,6 +309,7 @@ TEST(BasicAuthenticationTests, BasicAuthenticationFailureTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{}, response.header["content-type"]);
     EXPECT_EQ(401, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(BasicAuthenticationParameterTests, BasicAuthenticationFailureSingleParameterTest) {
@@ -296,6 +320,7 @@ TEST(BasicAuthenticationParameterTests, BasicAuthenticationFailureSingleParamete
     EXPECT_EQ(Url{url + "?hello=world"}, response.url);
     EXPECT_EQ(std::string{}, response.header["content-type"]);
     EXPECT_EQ(401, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(BasicAuthenticationParameterTests, BasicAuthenticationFailureMultipleParametersTest) {
@@ -306,6 +331,7 @@ TEST(BasicAuthenticationParameterTests, BasicAuthenticationFailureMultipleParame
     EXPECT_EQ(Url{url + "?key=value&hello=world&test=case"}, response.url);
     EXPECT_EQ(std::string{}, response.header["content-type"]);
     EXPECT_EQ(401, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(HeaderTests, HeaderJsonTest) {
@@ -321,6 +347,7 @@ TEST(HeaderTests, HeaderJsonTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(HeaderTests, HeaderReflectNoneTest) {
@@ -332,6 +359,7 @@ TEST(HeaderTests, HeaderReflectNoneTest) {
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(std::string{}, response.header["hello"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(HeaderTests, HeaderReflectEmptyTest) {
@@ -343,6 +371,7 @@ TEST(HeaderTests, HeaderReflectEmptyTest) {
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(std::string{}, response.header["hello"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(HeaderTests, HeaderReflectSingleTest) {
@@ -354,6 +383,7 @@ TEST(HeaderTests, HeaderReflectSingleTest) {
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(std::string{"world"}, response.header["hello"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(HeaderTests, HeaderReflectMultipleTest) {
@@ -367,6 +397,7 @@ TEST(HeaderTests, HeaderReflectMultipleTest) {
     EXPECT_EQ(std::string{"value"}, response.header["key"]);
     EXPECT_EQ(std::string{"case"}, response.header["test"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(HeaderTests, HeaderReflectCaseInsensitiveTest) {
@@ -380,6 +411,7 @@ TEST(HeaderTests, HeaderReflectCaseInsensitiveTest) {
     EXPECT_EQ(std::string{"wOrLd"}, response.header["HELLO"]);
     EXPECT_EQ(std::string{"wOrLd"}, response.header["hElLo"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(HeaderTests, SetEmptyHeaderTest) {
@@ -391,6 +423,7 @@ TEST(HeaderTests, SetEmptyHeaderTest) {
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(std::string{}, response.header["hello"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(ParameterHeaderTests, HeaderReflectNoneParametersTest) {
@@ -402,6 +435,7 @@ TEST(ParameterHeaderTests, HeaderReflectNoneParametersTest) {
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(std::string{}, response.header["hello"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(ParameterHeaderTests, HeaderReflectEmptyParametersTest) {
@@ -414,6 +448,7 @@ TEST(ParameterHeaderTests, HeaderReflectEmptyParametersTest) {
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(std::string{}, response.header["hello"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(ParameterHeaderTests, HeaderReflectSingleParametersTest) {
@@ -426,6 +461,7 @@ TEST(ParameterHeaderTests, HeaderReflectSingleParametersTest) {
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(std::string{"world"}, response.header["hello"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(ParameterHeaderTests, HeaderReflectMultipleParametersTest) {
@@ -440,6 +476,7 @@ TEST(ParameterHeaderTests, HeaderReflectMultipleParametersTest) {
     EXPECT_EQ(std::string{"value"}, response.header["key"]);
     EXPECT_EQ(std::string{"case"}, response.header["test"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(ParameterHeaderTests, HeaderReflectCaseInsensitiveParametersTest) {
@@ -454,6 +491,7 @@ TEST(ParameterHeaderTests, HeaderReflectCaseInsensitiveParametersTest) {
     EXPECT_EQ(std::string{"wOrLd"}, response.header["HELLO"]);
     EXPECT_EQ(std::string{"wOrLd"}, response.header["hElLo"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(ParameterHeaderTests, HeaderReflectEmptyParametersReverseTest) {
@@ -466,6 +504,7 @@ TEST(ParameterHeaderTests, HeaderReflectEmptyParametersReverseTest) {
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(std::string{}, response.header["hello"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(ParameterHeaderTests, HeaderReflectSingleParametersReverseTest) {
@@ -478,6 +517,7 @@ TEST(ParameterHeaderTests, HeaderReflectSingleParametersReverseTest) {
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(std::string{"world"}, response.header["hello"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(ParameterHeaderTests, HeaderReflectMultipleParametersReverseTest) {
@@ -492,6 +532,7 @@ TEST(ParameterHeaderTests, HeaderReflectMultipleParametersReverseTest) {
     EXPECT_EQ(std::string{"value"}, response.header["key"]);
     EXPECT_EQ(std::string{"case"}, response.header["test"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(ParameterHeaderTests, HeaderReflectCaseInsensitiveParametersReverseTest) {
@@ -506,6 +547,7 @@ TEST(ParameterHeaderTests, HeaderReflectCaseInsensitiveParametersReverseTest) {
     EXPECT_EQ(std::string{"wOrLd"}, response.header["HELLO"]);
     EXPECT_EQ(std::string{"wOrLd"}, response.header["hElLo"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderAATest) {
@@ -517,6 +559,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(std::string{}, response.header["hello"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderABTest) {
@@ -527,6 +570,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
     EXPECT_EQ(std::string{}, response.header["content-type"]);
     EXPECT_EQ(std::string{}, response.header["hello"]);
     EXPECT_EQ(401, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderACTest) {
@@ -539,6 +583,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(std::string{}, response.header["hello"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderADTest) {
@@ -550,6 +595,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
     EXPECT_EQ(std::string{}, response.header["content-type"]);
     EXPECT_EQ(std::string{}, response.header["hello"]);
     EXPECT_EQ(401, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderAETest) {
@@ -562,6 +608,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(std::string{"world"}, response.header["hello"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderAFTest) {
@@ -573,6 +620,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
     EXPECT_EQ(std::string{}, response.header["content-type"]);
     EXPECT_EQ(std::string{}, response.header["hello"]);
     EXPECT_EQ(401, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderAGTest) {
@@ -585,6 +633,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(std::string{"world"}, response.header["hello"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderAHTest) {
@@ -596,6 +645,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
     EXPECT_EQ(std::string{}, response.header["content-type"]);
     EXPECT_EQ(std::string{}, response.header["hello"]);
     EXPECT_EQ(401, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderBATest) {
@@ -607,6 +657,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(std::string{}, response.header["hello"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderBBTest) {
@@ -617,6 +668,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
     EXPECT_EQ(std::string{}, response.header["content-type"]);
     EXPECT_EQ(std::string{}, response.header["hello"]);
     EXPECT_EQ(401, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderBCTest) {
@@ -629,6 +681,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(std::string{}, response.header["hello"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderBDTest) {
@@ -640,6 +693,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
     EXPECT_EQ(std::string{}, response.header["content-type"]);
     EXPECT_EQ(std::string{}, response.header["hello"]);
     EXPECT_EQ(401, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderBETest) {
@@ -652,6 +706,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(std::string{"world"}, response.header["hello"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderBFTest) {
@@ -663,6 +718,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
     EXPECT_EQ(std::string{}, response.header["content-type"]);
     EXPECT_EQ(std::string{}, response.header["hello"]);
     EXPECT_EQ(401, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderBGTest) {
@@ -675,6 +731,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(std::string{"world"}, response.header["hello"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderBHTest) {
@@ -686,6 +743,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
     EXPECT_EQ(std::string{}, response.header["content-type"]);
     EXPECT_EQ(std::string{}, response.header["hello"]);
     EXPECT_EQ(401, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderCATest) {
@@ -697,6 +755,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(std::string{}, response.header["hello"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderCBTest) {
@@ -707,6 +766,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
     EXPECT_EQ(std::string{}, response.header["content-type"]);
     EXPECT_EQ(std::string{}, response.header["hello"]);
     EXPECT_EQ(401, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderCCTest) {
@@ -719,6 +779,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(std::string{}, response.header["hello"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderCDTest) {
@@ -730,6 +791,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
     EXPECT_EQ(std::string{}, response.header["content-type"]);
     EXPECT_EQ(std::string{}, response.header["hello"]);
     EXPECT_EQ(401, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderCETest) {
@@ -742,6 +804,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(std::string{"world"}, response.header["hello"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderCFTest) {
@@ -753,6 +816,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
     EXPECT_EQ(std::string{}, response.header["content-type"]);
     EXPECT_EQ(std::string{}, response.header["hello"]);
     EXPECT_EQ(401, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderCGTest) {
@@ -765,6 +829,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(std::string{"world"}, response.header["hello"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderCHTest) {
@@ -776,6 +841,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
     EXPECT_EQ(std::string{}, response.header["content-type"]);
     EXPECT_EQ(std::string{}, response.header["hello"]);
     EXPECT_EQ(401, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderDATest) {
@@ -787,6 +853,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(std::string{}, response.header["hello"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderDBTest) {
@@ -797,6 +864,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
     EXPECT_EQ(std::string{}, response.header["content-type"]);
     EXPECT_EQ(std::string{}, response.header["hello"]);
     EXPECT_EQ(401, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderDCTest) {
@@ -809,6 +877,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(std::string{}, response.header["hello"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderDDTest) {
@@ -820,6 +889,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
     EXPECT_EQ(std::string{}, response.header["content-type"]);
     EXPECT_EQ(std::string{}, response.header["hello"]);
     EXPECT_EQ(401, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderDETest) {
@@ -832,6 +902,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(std::string{"world"}, response.header["hello"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderDFTest) {
@@ -843,6 +914,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
     EXPECT_EQ(std::string{}, response.header["content-type"]);
     EXPECT_EQ(std::string{}, response.header["hello"]);
     EXPECT_EQ(401, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderDGTest) {
@@ -855,6 +927,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(std::string{"world"}, response.header["hello"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderDHTest) {
@@ -866,6 +939,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
     EXPECT_EQ(std::string{}, response.header["content-type"]);
     EXPECT_EQ(std::string{}, response.header["hello"]);
     EXPECT_EQ(401, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderEATest) {
@@ -877,6 +951,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(std::string{}, response.header["hello"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderEBTest) {
@@ -887,6 +962,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
     EXPECT_EQ(std::string{}, response.header["content-type"]);
     EXPECT_EQ(std::string{}, response.header["hello"]);
     EXPECT_EQ(401, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderECTest) {
@@ -898,6 +974,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(std::string{}, response.header["hello"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderEDTest) {
@@ -908,6 +985,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
     EXPECT_EQ(std::string{}, response.header["content-type"]);
     EXPECT_EQ(std::string{}, response.header["hello"]);
     EXPECT_EQ(401, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderEETest) {
@@ -919,6 +997,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(std::string{"world"}, response.header["hello"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderEFTest) {
@@ -929,6 +1008,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
     EXPECT_EQ(std::string{}, response.header["content-type"]);
     EXPECT_EQ(std::string{}, response.header["hello"]);
     EXPECT_EQ(401, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderEGTest) {
@@ -940,6 +1020,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(std::string{"world"}, response.header["hello"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderEHTest) {
@@ -950,6 +1031,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
     EXPECT_EQ(std::string{}, response.header["content-type"]);
     EXPECT_EQ(std::string{}, response.header["hello"]);
     EXPECT_EQ(401, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderFATest) {
@@ -961,6 +1043,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(std::string{}, response.header["hello"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderFBTest) {
@@ -971,6 +1054,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
     EXPECT_EQ(std::string{}, response.header["content-type"]);
     EXPECT_EQ(std::string{}, response.header["hello"]);
     EXPECT_EQ(401, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderFCTest) {
@@ -982,6 +1066,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(std::string{}, response.header["hello"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderFDTest) {
@@ -992,6 +1077,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
     EXPECT_EQ(std::string{}, response.header["content-type"]);
     EXPECT_EQ(std::string{}, response.header["hello"]);
     EXPECT_EQ(401, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderFETest) {
@@ -1003,6 +1089,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(std::string{"world"}, response.header["hello"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderFFTest) {
@@ -1013,6 +1100,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
     EXPECT_EQ(std::string{}, response.header["content-type"]);
     EXPECT_EQ(std::string{}, response.header["hello"]);
     EXPECT_EQ(401, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderFGTest) {
@@ -1024,6 +1112,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(std::string{"world"}, response.header["hello"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderFHTest) {
@@ -1034,6 +1123,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
     EXPECT_EQ(std::string{}, response.header["content-type"]);
     EXPECT_EQ(std::string{}, response.header["hello"]);
     EXPECT_EQ(401, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(GetRedirectTests, RedirectTest) {
@@ -1044,6 +1134,7 @@ TEST(GetRedirectTests, RedirectTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{}, response.header["content-type"]);
     EXPECT_EQ(302, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(GetRedirectTests, ZeroMaxRedirectsTest) {
@@ -1054,6 +1145,7 @@ TEST(GetRedirectTests, ZeroMaxRedirectsTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 int main(int argc, char** argv) {
