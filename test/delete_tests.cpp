@@ -19,6 +19,7 @@ TEST(DeleteTests, DeleteTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(DeleteTests, DeleteUnallowedTest) {
@@ -29,6 +30,7 @@ TEST(DeleteTests, DeleteUnallowedTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(405, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(DeleteTests, SessionDeleteTest) {
@@ -41,6 +43,7 @@ TEST(DeleteTests, SessionDeleteTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(DeleteTests, SessionDeleteUnallowedTest) {
@@ -53,6 +56,7 @@ TEST(DeleteTests, SessionDeleteUnallowedTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(405, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(DeleteTests, SessionDeleteAfterGetTest) {
@@ -70,6 +74,7 @@ TEST(DeleteTests, SessionDeleteAfterGetTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(DeleteTests, SessionDeleteUnallowedAfterGetTest) {
@@ -87,6 +92,7 @@ TEST(DeleteTests, SessionDeleteUnallowedAfterGetTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(405, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(DeleteTests, SessionDeleteAfterHeadTest) {
@@ -104,6 +110,7 @@ TEST(DeleteTests, SessionDeleteAfterHeadTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(DeleteTests, SessionDeleteUnallowedAfterHeadTest) {
@@ -121,6 +128,7 @@ TEST(DeleteTests, SessionDeleteUnallowedAfterHeadTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(405, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(DeleteTests, SessionDeleteAfterPostTest) {
@@ -139,6 +147,7 @@ TEST(DeleteTests, SessionDeleteAfterPostTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(DeleteTests, SessionDeleteUnallowedAfterPostTest) {
@@ -157,6 +166,7 @@ TEST(DeleteTests, SessionDeleteUnallowedAfterPostTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(405, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(DeleteTests, AsyncDeleteTest) {
@@ -168,6 +178,7 @@ TEST(DeleteTests, AsyncDeleteTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(DeleteTests, AsyncDeleteUnallowedTest) {
@@ -179,6 +190,7 @@ TEST(DeleteTests, AsyncDeleteUnallowedTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(405, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(DeleteTests, AsyncMultipleDeleteTest) {
@@ -194,6 +206,7 @@ TEST(DeleteTests, AsyncMultipleDeleteTest) {
         EXPECT_EQ(url, response.url);
         EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
         EXPECT_EQ(200, response.status_code);
+        EXPECT_EQ(ErrorCode::OK, response.error.code);
     }
 }
 
@@ -210,6 +223,7 @@ TEST(DeleteTests, AsyncMultipleDeleteUnallowedTest) {
         EXPECT_EQ(url, response.url);
         EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
         EXPECT_EQ(405, response.status_code);
+        EXPECT_EQ(ErrorCode::OK, response.error.code);
     }
 }
 

@@ -21,6 +21,7 @@ TEST(RedirectTests, TemporaryDefaultRedirectTest) {
     EXPECT_EQ(Url{base + "/hello.html"}, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(RedirectTests, NoTemporaryRedirectTest) {
@@ -34,6 +35,7 @@ TEST(RedirectTests, NoTemporaryRedirectTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{}, response.header["content-type"]);
     EXPECT_EQ(302, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(RedirectTests, PermanentDefaultRedirectTest) {
@@ -46,6 +48,7 @@ TEST(RedirectTests, PermanentDefaultRedirectTest) {
     EXPECT_EQ(Url{base + "/hello.html"}, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(RedirectTests, NoPermanentRedirectTest) {
@@ -59,6 +62,7 @@ TEST(RedirectTests, NoPermanentRedirectTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{}, response.header["content-type"]);
     EXPECT_EQ(301, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(MaxRedirectsTests, ZeroMaxRedirectsSuccessTest) {
@@ -72,6 +76,7 @@ TEST(MaxRedirectsTests, ZeroMaxRedirectsSuccessTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(MaxRedirectsTests, ZeroMaxRedirectsFailureTest) {
@@ -84,6 +89,7 @@ TEST(MaxRedirectsTests, ZeroMaxRedirectsFailureTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{}, response.header["content-type"]);
     EXPECT_EQ(301, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(MaxRedirectsTests, OneMaxRedirectsSuccessTest) {
@@ -97,6 +103,7 @@ TEST(MaxRedirectsTests, OneMaxRedirectsSuccessTest) {
     EXPECT_EQ(Url{base + "/hello.html"}, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(MaxRedirectsTests, OneMaxRedirectsFailureTest) {
@@ -109,6 +116,7 @@ TEST(MaxRedirectsTests, OneMaxRedirectsFailureTest) {
     EXPECT_EQ(Url{base + "/permanent_redirect.html"}, response.url);
     EXPECT_EQ(std::string{}, response.header["content-type"]);
     EXPECT_EQ(301, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(MaxRedirectsTests, TwoMaxRedirectsSuccessTest) {
@@ -122,6 +130,7 @@ TEST(MaxRedirectsTests, TwoMaxRedirectsSuccessTest) {
     EXPECT_EQ(Url{base + "/hello.html"}, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(MultipleGetTests, BasicMultipleGetTest) {
@@ -135,6 +144,7 @@ TEST(MultipleGetTests, BasicMultipleGetTest) {
         EXPECT_EQ(url, response.url);
         EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
         EXPECT_EQ(200, response.status_code);
+        EXPECT_EQ(ErrorCode::OK, response.error.code);
     }
 }
 
@@ -149,6 +159,7 @@ TEST(MultipleGetTests, UrlChangeMultipleGetTest) {
         EXPECT_EQ(url, response.url);
         EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
         EXPECT_EQ(200, response.status_code);
+        EXPECT_EQ(ErrorCode::OK, response.error.code);
     }
     {
         auto url = Url{base + "/basic.json"};
@@ -164,6 +175,7 @@ TEST(MultipleGetTests, UrlChangeMultipleGetTest) {
         EXPECT_EQ(url, response.url);
         EXPECT_EQ(std::string{"application/octet-stream"}, response.header["content-type"]);
         EXPECT_EQ(200, response.status_code);
+        EXPECT_EQ(ErrorCode::OK, response.error.code);
     }
 }
 
@@ -180,6 +192,7 @@ TEST(MultipleGetTests, HeaderMultipleGetTest) {
         EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
         EXPECT_EQ(std::string{"world"}, response.header["hello"]);
         EXPECT_EQ(200, response.status_code);
+        EXPECT_EQ(ErrorCode::OK, response.error.code);
     }
 }
 
@@ -196,6 +209,7 @@ TEST(MultipleGetTests, HeaderChangeMultipleGetTest) {
         EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
         EXPECT_EQ(std::string{"world"}, response.header["hello"]);
         EXPECT_EQ(200, response.status_code);
+        EXPECT_EQ(ErrorCode::OK, response.error.code);
     }
     session.SetHeader(Header{{"key", "value"}});
     {
@@ -206,6 +220,7 @@ TEST(MultipleGetTests, HeaderChangeMultipleGetTest) {
         EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
         EXPECT_EQ(std::string{"value"}, response.header["key"]);
         EXPECT_EQ(200, response.status_code);
+        EXPECT_EQ(ErrorCode::OK, response.error.code);
     }
 }
 
@@ -221,6 +236,7 @@ TEST(MultipleGetTests, ParameterMultipleGetTest) {
         EXPECT_EQ(Url{url + "?hello=world"}, response.url);
         EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
         EXPECT_EQ(200, response.status_code);
+        EXPECT_EQ(ErrorCode::OK, response.error.code);
     }
 }
 
@@ -236,6 +252,7 @@ TEST(MultipleGetTests, ParameterChangeMultipleGetTest) {
         EXPECT_EQ(Url{url + "?hello=world"}, response.url);
         EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
         EXPECT_EQ(200, response.status_code);
+        EXPECT_EQ(ErrorCode::OK, response.error.code);
     }
     session.SetUrl(url);
     session.SetParameters({{"key", "value"}});
@@ -246,6 +263,7 @@ TEST(MultipleGetTests, ParameterChangeMultipleGetTest) {
         EXPECT_EQ(Url{url + "?key=value"}, response.url);
         EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
         EXPECT_EQ(200, response.status_code);
+        EXPECT_EQ(ErrorCode::OK, response.error.code);
     }
 }
 
@@ -261,6 +279,7 @@ TEST(MultipleGetTests, BasicAuthenticationMultipleGetTest) {
         EXPECT_EQ(url, response.url);
         EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
         EXPECT_EQ(200, response.status_code);
+        EXPECT_EQ(ErrorCode::OK, response.error.code);
     }
 }
 
@@ -276,6 +295,7 @@ TEST(MultipleGetTests, BasicAuthenticationChangeMultipleGetTest) {
         EXPECT_EQ(url, response.url);
         EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
         EXPECT_EQ(200, response.status_code);
+        EXPECT_EQ(ErrorCode::OK, response.error.code);
     }
     session.SetAuth(Authentication{"user", "bad_password"});
     {
@@ -284,6 +304,7 @@ TEST(MultipleGetTests, BasicAuthenticationChangeMultipleGetTest) {
         EXPECT_EQ(url, response.url);
         EXPECT_EQ(std::string{}, response.header["content-type"]);
         EXPECT_EQ(401, response.status_code);
+        EXPECT_EQ(ErrorCode::OK, response.error.code);
     }
     session.SetAuth(Authentication{"bad_user", "password"});
     {
@@ -292,6 +313,7 @@ TEST(MultipleGetTests, BasicAuthenticationChangeMultipleGetTest) {
         EXPECT_EQ(url, response.url);
         EXPECT_EQ(std::string{}, response.header["content-type"]);
         EXPECT_EQ(401, response.status_code);
+        EXPECT_EQ(ErrorCode::OK, response.error.code);
     }
 }
 
@@ -307,6 +329,7 @@ TEST(ParameterTests, ParameterSingleTest) {
     EXPECT_EQ(Url{url + "?hello=world"}, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(ParameterTests, ParameterMultipleTest) {
@@ -321,6 +344,7 @@ TEST(ParameterTests, ParameterMultipleTest) {
     EXPECT_EQ(Url{url + "?hello=world&key=value"}, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(TimeoutTests, SetTimeoutTest) {
@@ -334,6 +358,7 @@ TEST(TimeoutTests, SetTimeoutTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(TimeoutTests, SetTimeoutLongTest) {
@@ -347,6 +372,7 @@ TEST(TimeoutTests, SetTimeoutLongTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(PayloadTests, SetPayloadTest) {
@@ -362,6 +388,7 @@ TEST(PayloadTests, SetPayloadTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
     EXPECT_EQ(201, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(PayloadTests, SetPayloadLValueTest) {
@@ -378,6 +405,7 @@ TEST(PayloadTests, SetPayloadLValueTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
     EXPECT_EQ(201, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(MultipartTests, SetMultipartTest) {
@@ -393,6 +421,7 @@ TEST(MultipartTests, SetMultipartTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
     EXPECT_EQ(201, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(MultipartTests, SetMultipartValueTest) {
@@ -409,6 +438,7 @@ TEST(MultipartTests, SetMultipartValueTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
     EXPECT_EQ(201, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(BodyTests, SetBodyTest) {
@@ -424,6 +454,7 @@ TEST(BodyTests, SetBodyTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
     EXPECT_EQ(201, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(BodyTests, SetBodyValueTest) {
@@ -440,6 +471,7 @@ TEST(BodyTests, SetBodyValueTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
     EXPECT_EQ(201, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(DigestTests, SetDigestTest) {
@@ -453,6 +485,7 @@ TEST(DigestTests, SetDigestTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(CookiesTests, BasicCookiesTest) {
@@ -468,6 +501,7 @@ TEST(CookiesTests, BasicCookiesTest) {
         EXPECT_EQ(url, response.url);
         EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
         EXPECT_EQ(200, response.status_code);
+        EXPECT_EQ(ErrorCode::OK, response.error.code);
         cookies = response.cookies;
     }
     {
@@ -480,6 +514,7 @@ TEST(CookiesTests, BasicCookiesTest) {
         EXPECT_EQ(url, response.url);
         EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
         EXPECT_EQ(200, response.status_code);
+        EXPECT_EQ(ErrorCode::OK, response.error.code);
         EXPECT_EQ(cookies["cookie"], response.cookies["cookie"]);
         EXPECT_EQ(cookies["icecream"], response.cookies["icecream"]);
         EXPECT_EQ(cookies["expires"], response.cookies["expires"]);
@@ -499,6 +534,7 @@ TEST(CookiesTests, CookiesConstructorTest) {
         EXPECT_EQ(url, response.url);
         EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
         EXPECT_EQ(200, response.status_code);
+        EXPECT_EQ(ErrorCode::OK, response.error.code);
         cookies = response.cookies;
     }
     {
@@ -510,6 +546,7 @@ TEST(CookiesTests, CookiesConstructorTest) {
         EXPECT_EQ(url, response.url);
         EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
         EXPECT_EQ(200, response.status_code);
+        EXPECT_EQ(ErrorCode::OK, response.error.code);
         cookies = response.cookies;
         EXPECT_EQ(cookies["cookie"], response.cookies["cookie"]);
         EXPECT_EQ(cookies["icecream"], response.cookies["icecream"]);
@@ -528,6 +565,7 @@ TEST(DifferentMethodTests, GetPostTest) {
         EXPECT_EQ(url, response.url);
         EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
         EXPECT_EQ(200, response.status_code);
+        EXPECT_EQ(ErrorCode::OK, response.error.code);
     }
     {
         auto url = Url{base + "/url_post.html"};
@@ -541,6 +579,7 @@ TEST(DifferentMethodTests, GetPostTest) {
         EXPECT_EQ(url, response.url);
         EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
         EXPECT_EQ(201, response.status_code);
+        EXPECT_EQ(ErrorCode::OK, response.error.code);
     }
 }
 
@@ -558,6 +597,7 @@ TEST(DifferentMethodTests, PostGetTest) {
         EXPECT_EQ(url, response.url);
         EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
         EXPECT_EQ(201, response.status_code);
+        EXPECT_EQ(ErrorCode::OK, response.error.code);
     }
     {
         auto url = Url{base + "/hello.html"};
@@ -568,6 +608,7 @@ TEST(DifferentMethodTests, PostGetTest) {
         EXPECT_EQ(url, response.url);
         EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
         EXPECT_EQ(200, response.status_code);
+        EXPECT_EQ(ErrorCode::OK, response.error.code);
     }
 }
 
@@ -582,6 +623,7 @@ TEST(DifferentMethodTests, GetPostGetTest) {
         EXPECT_EQ(url, response.url);
         EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
         EXPECT_EQ(200, response.status_code);
+        EXPECT_EQ(ErrorCode::OK, response.error.code);
     }
     {
         auto url = Url{base + "/url_post.html"};
@@ -595,6 +637,7 @@ TEST(DifferentMethodTests, GetPostGetTest) {
         EXPECT_EQ(url, response.url);
         EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
         EXPECT_EQ(201, response.status_code);
+        EXPECT_EQ(ErrorCode::OK, response.error.code);
     }
     {
         auto url = Url{base + "/hello.html"};
@@ -605,6 +648,7 @@ TEST(DifferentMethodTests, GetPostGetTest) {
         EXPECT_EQ(url, response.url);
         EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
         EXPECT_EQ(200, response.status_code);
+        EXPECT_EQ(ErrorCode::OK, response.error.code);
     }
 }
 
@@ -622,6 +666,7 @@ TEST(DifferentMethodTests, PostGetPostTest) {
         EXPECT_EQ(url, response.url);
         EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
         EXPECT_EQ(201, response.status_code);
+        EXPECT_EQ(ErrorCode::OK, response.error.code);
     }
     {
         auto url = Url{base + "/hello.html"};
@@ -632,6 +677,7 @@ TEST(DifferentMethodTests, PostGetPostTest) {
         EXPECT_EQ(url, response.url);
         EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
         EXPECT_EQ(200, response.status_code);
+        EXPECT_EQ(ErrorCode::OK, response.error.code);
     }
     {
         auto url = Url{base + "/url_post.html"};
@@ -645,6 +691,7 @@ TEST(DifferentMethodTests, PostGetPostTest) {
         EXPECT_EQ(url, response.url);
         EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
         EXPECT_EQ(201, response.status_code);
+        EXPECT_EQ(ErrorCode::OK, response.error.code);
     }
 }
 
@@ -660,6 +707,7 @@ TEST(DifferentMethodTests, MultipleGetPostTest) {
             EXPECT_EQ(url, response.url);
             EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
             EXPECT_EQ(200, response.status_code);
+            EXPECT_EQ(ErrorCode::OK, response.error.code);
         }
         {
             auto url = Url{base + "/url_post.html"};
@@ -673,6 +721,7 @@ TEST(DifferentMethodTests, MultipleGetPostTest) {
             EXPECT_EQ(url, response.url);
             EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
             EXPECT_EQ(201, response.status_code);
+            EXPECT_EQ(ErrorCode::OK, response.error.code);
         }
     }
 }

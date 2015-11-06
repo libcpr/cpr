@@ -20,6 +20,7 @@ TEST(OptionsTests, BaseUrlTest) {
     EXPECT_EQ(std::string{"GET, POST, PUT, DELETE, PATCH, OPTIONS"},
               response.header["Access-Control-Allow-Methods"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(OptionsTests, SpecificUrlTest) {
@@ -31,6 +32,7 @@ TEST(OptionsTests, SpecificUrlTest) {
     EXPECT_EQ(std::string{"GET, OPTIONS"},
               response.header["Access-Control-Allow-Methods"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(OptionsTests, AsyncBaseUrlTest) {
@@ -47,6 +49,7 @@ TEST(OptionsTests, AsyncBaseUrlTest) {
         EXPECT_EQ(std::string{"GET, POST, PUT, DELETE, PATCH, OPTIONS"},
                   response.header["Access-Control-Allow-Methods"]);
         EXPECT_EQ(200, response.status_code);
+        EXPECT_EQ(ErrorCode::OK, response.error.code);
     }
 }
 
@@ -64,6 +67,7 @@ TEST(OptionsTests, AsyncSpecificUrlTest) {
         EXPECT_EQ(std::string{"GET, OPTIONS"},
                   response.header["Access-Control-Allow-Methods"]);
         EXPECT_EQ(200, response.status_code);
+        EXPECT_EQ(ErrorCode::OK, response.error.code);
     }
 }
 
