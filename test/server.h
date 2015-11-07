@@ -15,6 +15,7 @@ class Server: public ::testing::Environment {
     virtual void TearDown();
 
     Url GetBaseUrl();
+    Url GetBaseUrlSSL();
 };
 
 #endif

@@ -558,7 +558,9 @@ Url Server::GetBaseUrl() {
     return Url{"http://127.0.0.1:"}.append(SERVER_PORT);
 }
 
-Url Server
+Url Server::GetBaseUrlSSL() {
+    return Url{"https://127.0.0.1:"}.append(SERVER_PORT);
+}
 
 static inline bool is_base64(unsigned char c) {
     return (isalnum(c) || (c == '+') || (c == '/'));
