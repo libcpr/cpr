@@ -12,7 +12,6 @@ enum class ErrorCode {
     OK = 0,
     CONNECTION_FAILURE,
     EMPTY_RESPONSE,
-    GENERIC_HTTP2_FAILURE, //really not sure about this one
     HOST_RESOLUTION_FAILURE,
     INTERNAL_ERROR,
     INVALID_URL_FORMAT,
