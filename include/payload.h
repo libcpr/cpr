@@ -4,10 +4,8 @@
 #include <memory>
 #include <string>
 #include <initializer_list>
-#include <vector>
 
 #include "defines.h"
-#include "util.h"
 
 namespace cpr {
 
