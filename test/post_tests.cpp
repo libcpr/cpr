@@ -33,10 +33,10 @@ TEST(UrlEncodedPostTests, UrlPostAddPayloadPair) {
     payload.AddPair({"y", "2"});
     auto response = cpr::Post(url, Payload(payload));
     auto expected_text = std::string{"{\n"
-                                             "  \"x\": 1,\n"
-                                             "  \"y\": 2,\n"
-                                             "  \"sum\": 3\n"
-                                             "}"};
+                                     "  \"x\": 1,\n"
+                                     "  \"y\": 2,\n"
+                                     "  \"sum\": 3\n"
+                                     "}"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
@@ -50,10 +50,10 @@ TEST(UrlEncodedPostTests, UrlPostPayloadIteratorTest) {
     payloadData.push_back({"y", "2"});
     auto response = cpr::Post(url, Payload(payloadData.begin(), payloadData.end()));
     auto expected_text = std::string{"{\n"
-                                             "  \"x\": 1,\n"
-                                             "  \"y\": 2,\n"
-                                             "  \"sum\": 3\n"
-                                             "}"};
+                                     "  \"x\": 1,\n"
+                                     "  \"y\": 2,\n"
+                                     "  \"sum\": 3\n"
+                                     "}"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
