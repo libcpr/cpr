@@ -16,6 +16,7 @@ macro(add_cpr_test _TEST_NAME)
 endmacro()
 
 include_directories(
+    ${CURL_INCLUDE_DIRS}
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CPR_INCLUDE_DIRS}
     ${GTEST_INCLUDE_DIRS}
