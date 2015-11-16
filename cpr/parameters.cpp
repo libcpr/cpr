@@ -1,8 +1,7 @@
-#include "cpr/parameters.h"
-
 #include <initializer_list>
 #include <string>
 
+#include "cpr/parameters.h"
 #include "cpr/util.h"
 
 namespace cpr {
