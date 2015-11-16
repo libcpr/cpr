@@ -1,9 +1,9 @@
-#include "parameters.h"
+#include "cpr/parameters.h"
 
 #include <initializer_list>
 #include <string>
 
-#include "util.h"
+#include "cpr/util.h"
 
 namespace cpr {
 
@@ -17,8 +17,14 @@ void Parameters::AddParameter(const Parameter& parameter) {
     if (!content.empty()) {
         content += "&";
     }
-    auto escaped = cpr::util::urlEncode(parameter.value);
-    content += parameter.key + "=" + escaped;
+
+    auto escapedKey = cpr::util::urlEncode(parameter.key);
+    if (parameter.value.empty()) {
+      content += escapedKey;
+    } else {
+      auto escapedValue = cpr::util::urlEncode(parameter.value);
+      content += escapedKey + "=" + escapedValue;
+    }
 }
 
 } // namespace cpr
