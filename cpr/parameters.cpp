@@ -17,11 +17,13 @@ void Parameters::AddParameter(const Parameter& parameter) {
     if (!content.empty()) {
         content += "&";
     }
+
+    auto escapedKey = cpr::util::urlEncode(parameter.key);
     if (parameter.value.empty()) {
-      content += parameter.key;
+      content += escapedKey;
     } else {
-      auto escaped = cpr::util::urlEncode(parameter.value);
-      content += parameter.key + "=" + escaped;
+      auto escapedValue = cpr::util::urlEncode(parameter.value);
+      content += escapedKey + "=" + escapedValue;
     }
 }
 
