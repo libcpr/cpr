@@ -31,6 +31,7 @@ class Payload {
         }
     }
     Payload(const std::initializer_list<Pair>& pairs);
+    Payload(const std::string& data);
 
     void AddPair(const Pair& pair);
 

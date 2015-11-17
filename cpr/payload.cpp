@@ -16,4 +16,8 @@ void Payload::AddPair(const Pair& pair) {
     content += pair.key + "=" + escaped;
 }
 
+Payload::Payload(const std::string& data) {
+  content += data;
+}
+
 } // namespace cpr
