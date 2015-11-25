@@ -79,7 +79,7 @@ This will produce two important CMake variables, `CPR_INCLUDE_DIRS` and `CPR_LIB
 
 ```cmake
 include_directories(${CPR_INCLUDE_DIRS})
-target_link_library(your_target_name ${CPR_LIBRARIES})
+target_link_libraries(your_target_name ${CPR_LIBRARIES})
 ```
 
 and that should do it! Using the submodule method of integrating C++ Requests, there's no need to handle libcurl yourself, all of those dependencies are taken care of for you.
