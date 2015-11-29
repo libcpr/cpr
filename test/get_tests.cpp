@@ -126,6 +126,17 @@ TEST(ParameterTests, SingleParameterTest) {
     EXPECT_EQ(200, response.status_code);
 }
 
+TEST(ParameterTests, SingleParameterOnlyKeyTest) {
+    auto url = Url{base + "/hello.html"};
+    auto parameters = Parameters{{"key", ""}};
+    auto response = cpr::Get(url, parameters);
+    auto expected_text = std::string{"Hello world!"};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(Url{url + "?key"}, response.url);
+    EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+    EXPECT_EQ(200, response.status_code);
+}
+
 TEST(ParameterTests, MultipleParametersTest) {
     auto url = Url{base + "/hello.html"};
     auto response = cpr::Get(url, Parameters{{"key", "value"},
