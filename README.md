@@ -88,7 +88,7 @@ and that should do it! Using the submodule method of integrating C++ Requests, t
 
 The only explicit requirements are:
 
-* a C++11 compatible compiler such as clang or gcc. The minimum required version of gcc is unknown, so if anyone has trouble building this library with a specific version of gcc, do let me know.
+* a C++11 compatible compiler such as clang or gcc. The minimum required version of gcc is unknown, so if anyone has trouble building this library with a specific version of gcc, do let me know
 * curl and its development libraries
 
 ## Contributing
