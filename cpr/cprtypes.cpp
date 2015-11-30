@@ -1,7 +1,7 @@
-#include "cprtypes.h"
-
 #include <algorithm>
 #include <cctype>
+
+#include "cpr/cprtypes.h"
 
 namespace cpr {
 

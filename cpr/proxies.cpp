@@ -1,9 +1,9 @@
-#include "proxies.h"
-
 #include <initializer_list>
 #include <map>
 #include <string>
 #include <utility>
+
+#include "cpr/proxies.h"
 
 namespace cpr {
 

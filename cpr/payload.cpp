@@ -1,9 +1,8 @@
-#include "payload.h"
-
 #include <initializer_list>
 #include <string>
 
-#include "util.h"
+#include "cpr/payload.h"
+#include "cpr/util.h"
 
 namespace cpr {
 
@@ -15,6 +14,10 @@ void Payload::AddPair(const Pair& pair) {
     }
     auto escaped = cpr::util::urlEncode(pair.value);
     content += pair.key + "=" + escaped;
+}
+
+Payload::Payload(const std::string& data) {
+  content += data;
 }
 
 } // namespace cpr
