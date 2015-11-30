@@ -29,6 +29,13 @@ env:
 
 matrix:
   include:
+    # gcc 4.6
+    - env: COMPILER=g++-4.6 CCOMPILER=gcc-4.6
+      addons:
+        apt:
+          packages: g++-4.6
+          sources: *sources
+
     # gcc 4.7
     - env: COMPILER=g++-4.7 CCOMPILER=gcc-4.7
       addons:
