@@ -103,6 +103,7 @@ matrix:
       osx_image: xcode7
   allow_failures:
     - env: COMPILER=g++-4.6 CCOMPILER=gcc-4.6
+    - env: COMPILER=g++-5.2 CCOMPILER=gcc-5.2
 
 install:
   - if [ "$GENERATE_COVERAGE" == "ON" ]; then pip install --user git+git://github.com/eddyxu/cpp-coveralls.git; fi
