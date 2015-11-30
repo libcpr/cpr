@@ -57,6 +57,13 @@ matrix:
           packages: g++-5
           sources: *sources
 
+    # gcc 5.2
+    - env: COMPILER=g++-5.2 CCOMPILER=gcc-5.2
+      addons:
+        apt:
+          packages: g++-5.2
+          sources: *sources
+
     # Clang 3.5
     - env: COMPILER=clang++-3.5 CCOMPILER=clang-3.5
       addons:
