@@ -359,7 +359,7 @@ Response Session::Impl::makeRequest(CURL* curl) {
     Error error;
     error.code = getErrorCodeForCurlError(curl_error);
     if (error.code != ErrorCode::OK) {
-        error.message = curl_->error; //copies the error message
+        error.message = curl_->error;
     }
 
     Cookies cookies;
