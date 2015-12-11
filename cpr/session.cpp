@@ -356,11 +356,7 @@ Response Session::Impl::makeRequest(CURL* curl) {
     curl_easy_getinfo(curl, CURLINFO_TOTAL_TIME, &elapsed);
     curl_easy_getinfo(curl, CURLINFO_EFFECTIVE_URL, &raw_url);
 
-    Error error;
-    error.code = getErrorCodeForCurlError(curl_error);
-    if (error.code != ErrorCode::OK) {
-        error.message = curl_->error;
-    }
+    Error error(curl_error, curl_->error);
 
     Cookies cookies;
     struct curl_slist* raw_cookies;
