@@ -5,7 +5,7 @@
 
 #include <gtest/gtest.h>
 
-#include <cpr.h>
+#include <cpr/cpr.h>
 
 using namespace cpr;
 
