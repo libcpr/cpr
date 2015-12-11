@@ -31,21 +31,19 @@ enum class ErrorCode {
 ErrorCode getErrorCodeForCurlError(int curl_code);
 
 class Error {
-public:
-    Error()
-        : code{ErrorCode::OK}, message{""} {}
+  public:
+    Error() : code{ErrorCode::OK}, message{""} {}
 
     template <typename ErrorCodeType, typename TextType>
     Error(ErrorCode& p_error_code, TextType&& p_error_message)
-        : code{p_error_code}, message{CPR_FWD(p_error_message)} {}
-
-
-    ErrorCode code;
-    std::string message;
+            : code{p_error_code}, message{CPR_FWD(p_error_message)} {}
 
     explicit operator bool() const {
         return code != ErrorCode::OK;
     }
+
+    ErrorCode code;
+    std::string message;
 };
 
 } // namespace cpr
