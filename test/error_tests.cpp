@@ -5,7 +5,6 @@
 #include <cpr.h>
 #include <curl/curl.h>
 
-
 #include "server.h"
 
 using namespace cpr;
