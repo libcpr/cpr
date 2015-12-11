@@ -28,7 +28,7 @@ enum class ErrorCode {
     UNKNOWN_ERROR = 1000,
 };
 
-ErrorCode getErrorCodeForCurlError(int curl_code); //int so we don't have to include curl.h
+ErrorCode getErrorCodeForCurlError(int curl_code);
 
 class Error {
 public:
@@ -43,8 +43,6 @@ public:
     ErrorCode code;
     std::string message;
 
-    //allow easy checking of errors with:
-    //   if(error) { do something; }
     explicit operator bool() const {
         return code != ErrorCode::OK;
     }
