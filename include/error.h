@@ -34,8 +34,8 @@ class Error {
   public:
     Error() : code{ErrorCode::OK}, message{""} {}
 
-    template <typename ErrorCodeType, typename TextType>
-    Error(ErrorCode& p_error_code, TextType&& p_error_message)
+    template <typename TextType>
+    Error(const ErrorCode& p_error_code, TextType&& p_error_message)
             : code{p_error_code}, message{CPR_FWD(p_error_message)} {}
 
     explicit operator bool() const {
