@@ -13,7 +13,7 @@ Here's a quick GET request:
 
 {% raw %}
 ```c++
-#include <cpr.h>
+#include <cpr/cpr.h>
 
 int main(int argc, char** argv) {
     auto r = cpr::Get(cpr::Url{"https://api.github.com/repos/whoshuu/cpr/contributors"},

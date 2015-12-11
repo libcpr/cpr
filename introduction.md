@@ -32,7 +32,7 @@ That is, the order of options is totally arbitrary, you can place them wherever 
 Making a GET request with cpr is effortless:
 
 ```c++
-#include <cpr.h> // Make sure this header is available in your include path
+#include <cpr/cpr.h> // Make sure this header is available in your include path
 
 // Somewhere else
 auto r = cpr::Get(cpr::Url{"http://www.httpbin.org/get"});
