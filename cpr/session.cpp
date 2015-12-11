@@ -357,8 +357,8 @@ Response Session::Impl::makeRequest(CURL* curl) {
     curl_easy_getinfo(curl, CURLINFO_EFFECTIVE_URL, &raw_url);
 
     Error error;
-    if (curl_error != CURLE_OK) {
-        error.code = getErrorCodeForCurlError(curl_error);
+    error.code = getErrorCodeForCurlError(curl_error);
+    if (error.code != ErrorCode::OK) {
         error.message = curl_->error; //copies the error message
     }
 
