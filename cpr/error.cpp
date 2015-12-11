@@ -4,7 +4,7 @@
 
 namespace cpr {
 
-ErrorCode getErrorCodeForCurlError(int curl_code) {
+ErrorCode Error::getErrorCodeForCurlError(int curl_code) {
     switch (curl_code) {
         case CURLE_OK:
             return ErrorCode::OK;

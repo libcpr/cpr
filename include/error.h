@@ -28,8 +28,6 @@ enum class ErrorCode {
     UNKNOWN_ERROR = 1000,
 };
 
-ErrorCode getErrorCodeForCurlError(int curl_code);
-
 class Error {
   public:
     Error() : code{ErrorCode::OK} {}
@@ -44,6 +42,8 @@ class Error {
 
     ErrorCode code;
     std::string message;
+
+    static ErrorCode getErrorCodeForCurlError(int curl_code);
 };
 
 } // namespace cpr
