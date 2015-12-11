@@ -56,6 +56,17 @@ TEST(ErrorTests, ProxyFailure) {
     EXPECT_EQ(ErrorCode::PROXY_RESOLUTION_FAILURE, response.error.code);
 }
 
+TEST(ErrorTests, BoolFalseTest) {
+    Error error;
+    EXPECT_FALSE(error);
+}
+
+TEST(ErrorTests, BoolTrueTest) {
+    Error error;
+    error.code = ErrorCode::UNSUPPORTED_PROTOCOL;
+    EXPECT_TRUE(error);
+}
+
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
     ::testing::AddGlobalTestEnvironment(server);
