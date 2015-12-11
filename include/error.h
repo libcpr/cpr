@@ -32,7 +32,7 @@ ErrorCode getErrorCodeForCurlError(int curl_code);
 
 class Error {
   public:
-    Error() : code{ErrorCode::OK}, message{""} {}
+    Error() : code{ErrorCode::OK} {}
 
     template <typename TextType>
     Error(const ErrorCode& p_error_code, TextType&& p_error_message)
