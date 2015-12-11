@@ -28,7 +28,7 @@ enum class ErrorCode {
     UNKNOWN_ERROR = 1000,
 };
 
-ErrorCode getErrorCodeForCurlError(int curlCode); //int so we don't have to include curl.h
+ErrorCode getErrorCodeForCurlError(int curl_code); //int so we don't have to include curl.h
 
 class Error {
 public:
