@@ -42,7 +42,7 @@ TEST(ErrorTests, InvalidURLFailure) {
 }
 
 TEST(ErrorTests, TimeoutFailure) {
-    auto url = Url{"http://railstars.com"};
+    auto url = Url{base + "/timeout.html"};
     auto response = cpr::Get(url, cpr::Timeout{1});
     EXPECT_EQ(0, response.status_code);
     EXPECT_EQ(ErrorCode::OPERATION_TIMEDOUT, response.error.code);
