@@ -43,6 +43,7 @@ class Error {
     ErrorCode code;
     std::string message;
 
+  private:
     static ErrorCode getErrorCodeForCurlError(int curl_code);
 };
 
