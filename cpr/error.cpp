@@ -1,4 +1,5 @@
 #include "error.h"
+
 #include <curl/curl.h>
 
 namespace cpr {
