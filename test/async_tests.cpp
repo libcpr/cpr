@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-#include <cpr.h>
+#include <cpr/cpr.h>
 
 #include "server.h"
 

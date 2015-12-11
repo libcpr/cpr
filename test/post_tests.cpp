@@ -4,7 +4,7 @@
 #include <fstream>
 #include <string>
 
-#include <cpr.h>
+#include <cpr/cpr.h>
 
 #include "multipart.h"
 #include "server.h"

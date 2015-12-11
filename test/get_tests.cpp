@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include <cpr.h>
+#include <cpr/cpr.h>
 
 #include "server.h"
 
