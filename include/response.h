@@ -25,8 +25,6 @@ class Response {
     Url url;
     double elapsed;
     Cookies cookies;
-
-    //error conditions
     Error error;
 };
 
