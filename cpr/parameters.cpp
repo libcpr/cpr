@@ -20,10 +20,10 @@ void Parameters::AddParameter(const Parameter& parameter) {
 
     auto escapedKey = cpr::util::urlEncode(parameter.key);
     if (parameter.value.empty()) {
-      content += escapedKey;
+        content += escapedKey;
     } else {
-      auto escapedValue = cpr::util::urlEncode(parameter.value);
-      content += escapedKey + "=" + escapedValue;
+        auto escapedValue = cpr::util::urlEncode(parameter.value);
+        content += escapedKey + "=" + escapedValue;
     }
 }
 
