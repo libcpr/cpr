@@ -18,6 +18,7 @@ TEST(ProxyTests, SingleProxyTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(ProxyTests, MultipleProxyHttpTest) {
@@ -27,6 +28,7 @@ TEST(ProxyTests, MultipleProxyHttpTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 #if !defined(INSECURE_CURL)
@@ -37,6 +39,7 @@ TEST(ProxyTests, MultipleProxyHttpsTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 #endif
 
@@ -47,6 +50,7 @@ TEST(ProxyTests, CopyProxyTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(ProxyTests, ProxySessionTest) {
@@ -58,6 +62,7 @@ TEST(ProxyTests, ProxySessionTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(ProxyTests, ReferenceProxySessionTest) {
@@ -70,6 +75,7 @@ TEST(ProxyTests, ReferenceProxySessionTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 int main(int argc, char** argv) {

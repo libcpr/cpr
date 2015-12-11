@@ -25,6 +25,7 @@ TEST(UrlEncodedPostTests, UrlPostSingleTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
     EXPECT_EQ(201, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(UrlEncodedPostTests, UrlPostAddPayloadPair) {
@@ -70,6 +71,7 @@ TEST(UrlEncodedPostTests, UrlPostEncodeTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
     EXPECT_EQ(201, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(UrlEncodedPostTests, UrlPostEncodeNoCopyTest) {
@@ -84,6 +86,7 @@ TEST(UrlEncodedPostTests, UrlPostEncodeNoCopyTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
     EXPECT_EQ(201, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(UrlEncodedPostTests, UrlPostManyTest) {
@@ -98,6 +101,7 @@ TEST(UrlEncodedPostTests, UrlPostManyTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
     EXPECT_EQ(201, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(UrlEncodedPostTests, UrlPostBadHostTest) {
@@ -107,6 +111,7 @@ TEST(UrlEncodedPostTests, UrlPostBadHostTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{}, response.header["content-type"]);
     EXPECT_EQ(0, response.status_code);
+    EXPECT_EQ(ErrorCode::HOST_RESOLUTION_FAILURE, response.error.code);
 }
 
 TEST(UrlEncodedPostTests, FormPostSingleTest) {
@@ -119,6 +124,7 @@ TEST(UrlEncodedPostTests, FormPostSingleTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
     EXPECT_EQ(201, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(UrlEncodedPostTests, FormPostFileTest) {
@@ -138,6 +144,7 @@ TEST(UrlEncodedPostTests, FormPostFileTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
     EXPECT_EQ(201, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(UrlEncodedPostTests, FormPostFileNoCopyTest) {
@@ -158,6 +165,7 @@ TEST(UrlEncodedPostTests, FormPostFileNoCopyTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
     EXPECT_EQ(201, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(UrlEncodedPostTests, FormPostManyTest) {
@@ -172,6 +180,7 @@ TEST(UrlEncodedPostTests, FormPostManyTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
     EXPECT_EQ(201, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(UrlEncodedPostTests, FormPostManyNoCopyTest) {
@@ -187,6 +196,7 @@ TEST(UrlEncodedPostTests, FormPostManyNoCopyTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
     EXPECT_EQ(201, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(UrlEncodedPostTests, FormPostContentTypeTest) {
@@ -199,6 +209,7 @@ TEST(UrlEncodedPostTests, FormPostContentTypeTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
     EXPECT_EQ(201, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(UrlEncodedPostTests, FormPostContentTypeLValueTest) {
@@ -212,6 +223,7 @@ TEST(UrlEncodedPostTests, FormPostContentTypeLValueTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
     EXPECT_EQ(201, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(UrlEncodedPostTests, UrlPostAsyncSingleTest) {
@@ -230,6 +242,7 @@ TEST(UrlEncodedPostTests, UrlPostAsyncSingleTest) {
         EXPECT_EQ(url, response.url);
         EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
         EXPECT_EQ(201, response.status_code);
+        EXPECT_EQ(ErrorCode::OK, response.error.code);
     }
 }
 

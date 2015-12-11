@@ -36,12 +36,12 @@ static int options(struct mg_connection* conn) {
         mg_send_header(conn, "Access-Control-Allow-Credentials", "true");
         mg_send_header(conn, "Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH, OPTIONS");
         mg_send_header(conn, "Access-Control-Max-Age", "3600");
-        mg_send_data(conn, response.data(), response.length()); 
+        mg_send_data(conn, response.data(), response.length());
     } else {
         auto response = std::string{"Method unallowed"};
         mg_send_status(conn, 405);
         mg_send_header(conn, "content-type", "text/html");
-        mg_send_data(conn, response.data(), response.length()); 
+        mg_send_data(conn, response.data(), response.length());
     }
     return MG_TRUE;
 }
@@ -55,12 +55,12 @@ static int hello(struct mg_connection* conn) {
         mg_send_header(conn, "Access-Control-Allow-Credentials", "true");
         mg_send_header(conn, "Access-Control-Allow-Methods", "GET, OPTIONS");
         mg_send_header(conn, "Access-Control-Max-Age", "3600");
-        mg_send_data(conn, response.data(), response.length()); 
+        mg_send_data(conn, response.data(), response.length());
     } else {
         auto response = std::string{"Hello world!"};
         mg_send_status(conn, 200);
         mg_send_header(conn, "content-type", "text/html");
-        mg_send_data(conn, response.data(), response.length()); 
+        mg_send_data(conn, response.data(), response.length());
     }
     return MG_TRUE;
 }
@@ -77,7 +77,7 @@ static int basicCookies(struct mg_connection* conn) {
     std::string cookie2{"icecream=vanilla; expires=\"" + std::string{expire} + "\"; http-only;"};
     mg_send_header(conn, "Set-Cookie", cookie.data());
     mg_send_header(conn, "Set-Cookie", cookie2.data());
-    mg_send_data(conn, response.data(), response.length()); 
+    mg_send_data(conn, response.data(), response.length());
     return MG_TRUE;
 }
 
@@ -193,7 +193,7 @@ static int basicJson(struct mg_connection* conn) {
     } else {
         mg_send_header(conn, "content-type", "application/octet-stream");
     }
-    mg_send_data(conn, response.data(), response.length()); 
+    mg_send_data(conn, response.data(), response.length());
     return MG_TRUE;
 }
 
@@ -211,7 +211,7 @@ static int headerReflect(struct mg_connection* conn) {
             mg_send_header(conn, name, headers[i].value);
         }
     }
-    mg_send_data(conn, response.data(), response.length()); 
+    mg_send_data(conn, response.data(), response.length());
     return MG_TRUE;
 }
 
@@ -219,7 +219,7 @@ static int temporaryRedirect(struct mg_connection* conn) {
     auto response = std::string{"Found"};
     mg_send_status(conn, 302);
     mg_send_header(conn, "Location", "hello.html");
-    mg_send_data(conn, response.data(), response.length()); 
+    mg_send_data(conn, response.data(), response.length());
     return MG_TRUE;
 }
 
@@ -281,7 +281,7 @@ static int jsonPost(struct mg_connection* conn) {
         auto response = std::string{"Unsupported Media Type"};
         mg_send_status(conn, 415);
         mg_send_header(conn, "content-type", "text/html");
-        mg_send_data(conn, response.data(), response.length()); 
+        mg_send_data(conn, response.data(), response.length());
         return MG_TRUE;
     }
     mg_send_status(conn, 201);
@@ -310,7 +310,7 @@ static int formPost(struct mg_connection* conn) {
             delete[] data;
             break;
         }
-        
+
         forms[name] = std::string{data, (unsigned long) data_len};
     }
 
@@ -339,12 +339,12 @@ static int deleteRequest(struct mg_connection* conn) {
         auto response = std::string{"Delete success"};
         mg_send_status(conn, 200);
         mg_send_header(conn, "content-type", "text/html");
-        mg_send_data(conn, response.data(), response.length()); 
+        mg_send_data(conn, response.data(), response.length());
     } else {
         auto response = std::string{"Method unallowed"};
         mg_send_status(conn, 405);
         mg_send_header(conn, "content-type", "text/html");
-        mg_send_data(conn, response.data(), response.length()); 
+        mg_send_data(conn, response.data(), response.length());
     }
     return MG_TRUE;
 }
@@ -354,12 +354,12 @@ static int deleteUnallowedRequest(struct mg_connection* conn) {
         auto response = std::string{"Method unallowed"};
         mg_send_status(conn, 405);
         mg_send_header(conn, "content-type", "text/html");
-        mg_send_data(conn, response.data(), response.length()); 
+        mg_send_data(conn, response.data(), response.length());
     } else {
         auto response = std::string{"Delete success"};
         mg_send_status(conn, 200);
         mg_send_header(conn, "content-type", "text/html");
-        mg_send_data(conn, response.data(), response.length()); 
+        mg_send_data(conn, response.data(), response.length());
     }
     return MG_TRUE;
 }
@@ -393,7 +393,7 @@ static int patch(struct mg_connection* conn) {
         auto response = std::string{"Method unallowed"};
         mg_send_status(conn, 405);
         mg_send_header(conn, "content-type", "text/html");
-        mg_send_data(conn, response.data(), response.length()); 
+        mg_send_data(conn, response.data(), response.length());
     }
     return MG_TRUE;
 }
@@ -403,12 +403,12 @@ static int patchUnallowed(struct mg_connection* conn) {
         auto response = std::string{"Method unallowed"};
         mg_send_status(conn, 405);
         mg_send_header(conn, "content-type", "text/html");
-        mg_send_data(conn, response.data(), response.length()); 
+        mg_send_data(conn, response.data(), response.length());
     } else {
         auto response = std::string{"Patch success"};
         mg_send_status(conn, 200);
         mg_send_header(conn, "content-type", "text/html");
-        mg_send_data(conn, response.data(), response.length()); 
+        mg_send_data(conn, response.data(), response.length());
     }
     return MG_TRUE;
 }
@@ -442,7 +442,7 @@ static int put(struct mg_connection* conn) {
         auto response = std::string{"Method unallowed"};
         mg_send_status(conn, 405);
         mg_send_header(conn, "content-type", "text/html");
-        mg_send_data(conn, response.data(), response.length()); 
+        mg_send_data(conn, response.data(), response.length());
     }
     return MG_TRUE;
 }
@@ -452,12 +452,12 @@ static int putUnallowed(struct mg_connection* conn) {
         auto response = std::string{"Method unallowed"};
         mg_send_status(conn, 405);
         mg_send_header(conn, "content-type", "text/html");
-        mg_send_data(conn, response.data(), response.length()); 
+        mg_send_data(conn, response.data(), response.length());
     } else {
         auto response = std::string{"Put success"};
         mg_send_status(conn, 200);
         mg_send_header(conn, "content-type", "text/html");
-        mg_send_data(conn, response.data(), response.length()); 
+        mg_send_data(conn, response.data(), response.length());
     }
     return MG_TRUE;
 }
@@ -556,6 +556,10 @@ void Server::TearDown() {
 
 Url Server::GetBaseUrl() {
     return Url{"http://127.0.0.1:"}.append(SERVER_PORT);
+}
+
+Url Server::GetBaseUrlSSL() {
+    return Url{"https://127.0.0.1:"}.append(SERVER_PORT);
 }
 
 static inline bool is_base64(unsigned char c) {

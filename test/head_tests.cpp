@@ -18,6 +18,7 @@ TEST(HeadTests, BasicHeadTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(HeadTests, ComplexHeadTest) {
@@ -27,6 +28,7 @@ TEST(HeadTests, ComplexHeadTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"application/octet-stream"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(HeadTests, ResourceNotFoundHeadTest) {
@@ -36,6 +38,7 @@ TEST(HeadTests, ResourceNotFoundHeadTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/plain"}, response.header["content-type"]);
     EXPECT_EQ(404, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(HeadTests, BadHostHeadTest) {
@@ -44,6 +47,7 @@ TEST(HeadTests, BadHostHeadTest) {
     EXPECT_EQ(std::string{}, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(0, response.status_code);
+    EXPECT_EQ(ErrorCode::HOST_RESOLUTION_FAILURE, response.error.code);
 }
 
 TEST(HeadTests, CookieHeadTest) {
@@ -54,6 +58,7 @@ TEST(HeadTests, CookieHeadTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
     cookies = response.cookies;
     EXPECT_EQ(cookies["cookie"], response.cookies["cookie"]);
     EXPECT_EQ(cookies["icecream"], response.cookies["icecream"]);
@@ -68,6 +73,7 @@ TEST(HeadTests, ParameterHeadTest) {
     EXPECT_EQ(Url{url + "?key=value"}, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(HeadTests, AuthenticationSuccessHeadTest) {
@@ -77,6 +83,7 @@ TEST(HeadTests, AuthenticationSuccessHeadTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(HeadTests, AuthenticationNullFailureHeadTest) {
@@ -86,6 +93,7 @@ TEST(HeadTests, AuthenticationNullFailureHeadTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{}, response.header["content-type"]);
     EXPECT_EQ(401, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(HeadTests, AuthenticationFailureHeadTest) {
@@ -95,6 +103,7 @@ TEST(HeadTests, AuthenticationFailureHeadTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{}, response.header["content-type"]);
     EXPECT_EQ(401, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(HeadTests, DISABLED_DigestSuccessHeadTest) { // Is nondeterministic using embedded mongoose
@@ -104,6 +113,7 @@ TEST(HeadTests, DISABLED_DigestSuccessHeadTest) { // Is nondeterministic using e
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(HeadTests, HeaderReflectNoneHeadTest) {
@@ -114,6 +124,7 @@ TEST(HeadTests, HeaderReflectNoneHeadTest) {
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(std::string{}, response.header["hello"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(HeadTests, HeaderReflectEmptyHeadTest) {
@@ -124,6 +135,7 @@ TEST(HeadTests, HeaderReflectEmptyHeadTest) {
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(std::string{}, response.header["hello"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(HeadTests, HeaderReflectHeadTest) {
@@ -134,6 +146,7 @@ TEST(HeadTests, HeaderReflectHeadTest) {
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(std::string{"world"}, response.header["hello"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(HeadTests, SetEmptyHeaderHeadTest) {
@@ -144,6 +157,7 @@ TEST(HeadTests, SetEmptyHeaderHeadTest) {
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(std::string{}, response.header["hello"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(HeadTests, RedirectHeadTest) {
@@ -153,6 +167,7 @@ TEST(HeadTests, RedirectHeadTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{}, response.header["content-type"]);
     EXPECT_EQ(302, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(HeadTests, ZeroMaxRedirectsHeadTest) {
@@ -162,6 +177,7 @@ TEST(HeadTests, ZeroMaxRedirectsHeadTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(HeadTests, BasicHeadAsyncTest) {
@@ -176,6 +192,7 @@ TEST(HeadTests, BasicHeadAsyncTest) {
         EXPECT_EQ(url, response.url);
         EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
         EXPECT_EQ(200, response.status_code);
+        EXPECT_EQ(ErrorCode::OK, response.error.code);
     }
 }
 

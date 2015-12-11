@@ -22,6 +22,7 @@ TEST(PutTests, PutTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(PutTests, PutUnallowedTest) {
@@ -33,6 +34,7 @@ TEST(PutTests, PutUnallowedTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(405, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(PutTests, SessionPutTest) {
@@ -49,6 +51,7 @@ TEST(PutTests, SessionPutTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(PutTests, SessionPutUnallowedTest) {
@@ -63,6 +66,7 @@ TEST(PutTests, SessionPutUnallowedTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(405, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(PutTests, SessionPutAfterGetTest) {
@@ -84,6 +88,7 @@ TEST(PutTests, SessionPutAfterGetTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(PutTests, SessionPutUnallowedAfterGetTest) {
@@ -103,6 +108,7 @@ TEST(PutTests, SessionPutUnallowedAfterGetTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(405, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(PutTests, SessionPutAfterHeadTest) {
@@ -124,6 +130,7 @@ TEST(PutTests, SessionPutAfterHeadTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(PutTests, SessionPutUnallowedAfterHeadTest) {
@@ -143,6 +150,7 @@ TEST(PutTests, SessionPutUnallowedAfterHeadTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(405, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(PutTests, SessionPutAfterPostTest) {
@@ -165,6 +173,7 @@ TEST(PutTests, SessionPutAfterPostTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(PutTests, SessionPutUnallowedAfterPostTest) {
@@ -185,6 +194,7 @@ TEST(PutTests, SessionPutUnallowedAfterPostTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(405, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(PutTests, AsyncPutTest) {
@@ -199,6 +209,7 @@ TEST(PutTests, AsyncPutTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(PutTests, AsyncPutUnallowedTest) {
@@ -211,6 +222,7 @@ TEST(PutTests, AsyncPutUnallowedTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(405, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(PutTests, AsyncMultiplePutTest) {
@@ -229,6 +241,7 @@ TEST(PutTests, AsyncMultiplePutTest) {
         EXPECT_EQ(url, response.url);
         EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
         EXPECT_EQ(200, response.status_code);
+        EXPECT_EQ(ErrorCode::OK, response.error.code);
     }
 }
 
@@ -246,6 +259,7 @@ TEST(PutTests, AsyncMultiplePutUnallowedTest) {
         EXPECT_EQ(url, response.url);
         EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
         EXPECT_EQ(405, response.status_code);
+        EXPECT_EQ(ErrorCode::OK, response.error.code);
     }
 }
 

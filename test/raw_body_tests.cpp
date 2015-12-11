@@ -25,6 +25,7 @@ TEST(BodyPostTests, DefaultUrlEncodedPostTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
     EXPECT_EQ(201, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(BodyPostTests, TextUrlEncodedPostTest) {
@@ -37,6 +38,7 @@ TEST(BodyPostTests, TextUrlEncodedPostTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
     EXPECT_EQ(201, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(BodyPostTests, TextUrlEncodedNoCopyPostTest) {
@@ -51,6 +53,7 @@ TEST(BodyPostTests, TextUrlEncodedNoCopyPostTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
     EXPECT_EQ(201, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(BodyPostTests, UrlEncodedManyPostTest) {
@@ -65,6 +68,7 @@ TEST(BodyPostTests, UrlEncodedManyPostTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
     EXPECT_EQ(201, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(BodyPostTests, CustomHeaderNumberPostTest) {
@@ -75,6 +79,7 @@ TEST(BodyPostTests, CustomHeaderNumberPostTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
     EXPECT_EQ(201, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(BodyPostTests, CustomHeaderTextPostTest) {
@@ -86,6 +91,7 @@ TEST(BodyPostTests, CustomHeaderTextPostTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
     EXPECT_EQ(201, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(BodyPostTests, CustomWrongHeaderPostTest) {
@@ -96,6 +102,7 @@ TEST(BodyPostTests, CustomWrongHeaderPostTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(415, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(BodyPostTests, UrlPostBadHostTest) {
@@ -105,6 +112,7 @@ TEST(BodyPostTests, UrlPostBadHostTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{}, response.header["content-type"]);
     EXPECT_EQ(0, response.status_code);
+    EXPECT_EQ(ErrorCode::HOST_RESOLUTION_FAILURE, response.error.code);
 }
 
 int main(int argc, char** argv) {

@@ -22,6 +22,7 @@ TEST(PatchTests, PatchTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(PatchTests, PatchUnallowedTest) {
@@ -33,6 +34,7 @@ TEST(PatchTests, PatchUnallowedTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(405, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(PatchTests, SessionPatchTest) {
@@ -49,6 +51,7 @@ TEST(PatchTests, SessionPatchTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(PatchTests, SessionPatchUnallowedTest) {
@@ -63,6 +66,7 @@ TEST(PatchTests, SessionPatchUnallowedTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(405, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(PatchTests, SessionPatchAfterGetTest) {
@@ -84,6 +88,7 @@ TEST(PatchTests, SessionPatchAfterGetTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(PatchTests, SessionPatchUnallowedAfterGetTest) {
@@ -103,6 +108,7 @@ TEST(PatchTests, SessionPatchUnallowedAfterGetTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(405, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(PatchTests, SessionPatchAfterHeadTest) {
@@ -124,6 +130,7 @@ TEST(PatchTests, SessionPatchAfterHeadTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(PatchTests, SessionPatchUnallowedAfterHeadTest) {
@@ -143,6 +150,7 @@ TEST(PatchTests, SessionPatchUnallowedAfterHeadTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(405, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(PatchTests, SessionPatchAfterPostTest) {
@@ -165,6 +173,7 @@ TEST(PatchTests, SessionPatchAfterPostTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(PatchTests, SessionPatchUnallowedAfterPostTest) {
@@ -185,6 +194,7 @@ TEST(PatchTests, SessionPatchUnallowedAfterPostTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(405, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(PatchTests, AsyncPatchTest) {
@@ -199,6 +209,7 @@ TEST(PatchTests, AsyncPatchTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(PatchTests, AsyncPatchUnallowedTest) {
@@ -211,6 +222,7 @@ TEST(PatchTests, AsyncPatchUnallowedTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(405, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(PatchTests, AsyncMultiplePatchTest) {
@@ -229,6 +241,7 @@ TEST(PatchTests, AsyncMultiplePatchTest) {
         EXPECT_EQ(url, response.url);
         EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
         EXPECT_EQ(200, response.status_code);
+        EXPECT_EQ(ErrorCode::OK, response.error.code);
     }
 }
 
@@ -246,6 +259,7 @@ TEST(PatchTests, AsyncMultiplePatchUnallowedTest) {
         EXPECT_EQ(url, response.url);
         EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
         EXPECT_EQ(405, response.status_code);
+        EXPECT_EQ(ErrorCode::OK, response.error.code);
     }
 }
 
