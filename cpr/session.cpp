@@ -373,7 +373,7 @@ Response Session::Impl::makeRequest(CURL* curl) {
 
     auto header = cpr::util::parseHeader(header_string);
     response_string = cpr::util::parseResponse(response_string);
-    return Response{response_code, response_string, header, raw_url, elapsed, error, cookies};
+    return Response{response_code, response_string, header, raw_url, elapsed, cookies, error};
 }
 
 // clang-format off
