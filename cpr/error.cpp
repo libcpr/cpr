@@ -38,4 +38,4 @@ ErrorCode getErrorCodeForCurlError(int curlCode) {
 
 }
 
-}
+} // namespace cpr
