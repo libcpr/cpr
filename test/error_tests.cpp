@@ -57,7 +57,6 @@ TEST(ErrorTests, ProxyFailure) {
     EXPECT_EQ(ErrorCode::PROXY_RESOLUTION_FAILURE, response.error.code);
 }
 
-
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
     ::testing::AddGlobalTestEnvironment(server);
