@@ -6,7 +6,7 @@
 
 #include <cpr/cpr.h>
 
-#include "multipart.h"
+#include "cpr/multipart.h"
 #include "server.h"
 
 using namespace cpr;
