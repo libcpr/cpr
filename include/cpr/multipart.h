@@ -5,10 +5,13 @@
 #include <string>
 #include <vector>
 
+#include "defines.h"
+
 namespace cpr {
 
 struct File {
-    File(const std::string& filepath) : filepath{filepath} {}
+    template <typename StringType>
+    File(StringType&& filepath) : filepath{CPR_FWD(filepath)} {}
     std::string filepath;
 };
 
