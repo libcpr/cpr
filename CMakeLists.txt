@@ -62,6 +62,7 @@ cpr_option(INSECURE_CURL "Set to ON to disable verification of SSL certificates.
 cpr_option(GENERATE_COVERAGE "Set to ON to generate coverage reports." OFF)
 cpr_option(USE_SYSTEM_GTEST
     "If ON, this project will look in the system paths for an installed gtest library" OFF)
+cpr_option(CMAKE_USE_OPENSSL "Use OpenSSL code. Experimental" ON)
 message(STATUS "=======================================================")
 
 if(BUILD_CPR_TESTS)
