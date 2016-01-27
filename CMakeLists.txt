@@ -64,10 +64,6 @@ cpr_option(USE_SYSTEM_GTEST
     "If ON, this project will look in the system paths for an installed gtest library" OFF)
 message(STATUS "=======================================================")
 
-if(WIN32)
-    add_definitions(-DENABLE_WINSSL=no)
-endif()
-
 if(BUILD_CPR_TESTS)
     enable_testing()
 endif()
