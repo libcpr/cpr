@@ -171,7 +171,7 @@ Here you will notice that the `"Content-Type"` is being set explicitly to `"text
 ```c++
 auto r = cpr::Post(cpr::Url{"http://www.httpbin.org/post"},
                    cpr::Multipart{{"key", "large value"},
-                                  {"name": cpr::File{"path-to-file"}}});
+                                  {"name", cpr::File{"path-to-file"}}});
 std::cout << r.text << std::endl;
 
 /* {
