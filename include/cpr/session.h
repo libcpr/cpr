@@ -2,6 +2,7 @@
 #define CPR_SESSION_H
 
 #include <memory>
+#include <cstdint>
 
 #include "auth.h"
 #include "body.h"

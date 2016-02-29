@@ -221,7 +221,7 @@ void Session::Impl::SetMultipart(const Multipart& multipart) {
 void Session::Impl::SetRedirect(const bool& redirect) {
     auto curl = curl_->handle;
     if (curl) {
-        curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, long(redirect));
+        curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, std::int32_t(redirect));
     }
 }
 
@@ -352,7 +352,7 @@ Response Session::Impl::makeRequest(CURL* curl) {
     auto curl_error = curl_easy_perform(curl);
 
     char* raw_url;
-    long response_code;
+    std::int32_t response_code;
     double elapsed;
     curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response_code);
     curl_easy_getinfo(curl, CURLINFO_TOTAL_TIME, &elapsed);
