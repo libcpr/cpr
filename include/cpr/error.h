@@ -2,6 +2,7 @@
 #define CPR_ERROR_H
 
 #include <string>
+#include <cstdint>
 
 #include "cprtypes.h"
 #include "defines.h"
@@ -33,7 +34,7 @@ class Error {
     Error() : code{ErrorCode::OK} {}
 
     template <typename TextType>
-    Error(const int& curl_code, TextType&& p_error_message)
+    Error(const std::int32_t& curl_code, TextType&& p_error_message)
             : code{getErrorCodeForCurlError(curl_code)}, message{CPR_FWD(p_error_message)} {}
 
     explicit operator bool() const {
@@ -44,7 +45,7 @@ class Error {
     std::string message;
 
   private:
-    static ErrorCode getErrorCodeForCurlError(int curl_code);
+    static ErrorCode getErrorCodeForCurlError(std::int32_t curl_code);
 };
 
 } // namespace cpr
