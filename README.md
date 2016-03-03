@@ -16,7 +16,7 @@ int main(int argc, char** argv) {
                       cpr::Authentication{"user", "pass"},
                       cpr::Parameters{{"anon", "true"}, {"key", "value"}});
     r.status_code;                  // 200
-    r.headers["content-type"];      // application/json; charset=utf-8
+    r.header["content-type"];       // application/json; charset=utf-8
     r.text;                         // JSON text string
 }
 ```
