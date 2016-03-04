@@ -11,7 +11,7 @@ namespace cpr {
 
 struct File {
     template <typename StringType>
-    File(StringType&& filepath) : filepath{CPR_FWD(filepath)} {}
+    explicit File(StringType&& filepath) : filepath{CPR_FWD(filepath)} {}
     std::string filepath;
 };
 
