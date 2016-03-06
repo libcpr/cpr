@@ -1,6 +1,7 @@
 #include "cpr/util.h"
 
 #include <cctype>
+#include <cstdint>
 #include <iomanip>
 #include <sstream>
 #include <string>
@@ -80,7 +81,7 @@ std::string urlEncode(const std::string& value) {
             continue;
         }
         // Any other characters are percent-encoded
-        escaped << '%' << std::setw(2) << int((unsigned char) c);
+        escaped << '%' << std::setw(2) << std::int32_t((unsigned char) c);
     }
 
     return escaped.str();

@@ -2,6 +2,7 @@
 #define CPR_SESSION_H
 
 #include <memory>
+#include <cstdint>
 
 #include "auth.h"
 #include "body.h"
@@ -36,7 +37,7 @@ class Session {
     void SetMultipart(Multipart&& multipart);
     void SetMultipart(const Multipart& multipart);
     void SetRedirect(const bool& redirect);
-    void SetMaxRedirects(const long& max_redirects);
+    void SetMaxRedirects(const std::int32_t& max_redirects);
     void SetCookies(const Cookies& cookies);
     void SetBody(Body&& body);
     void SetBody(const Body& body);
@@ -56,7 +57,7 @@ class Session {
     void SetOption(Multipart&& multipart);
     void SetOption(const Multipart& multipart);
     void SetOption(const bool& redirect);
-    void SetOption(const long& max_redirects);
+    void SetOption(const std::int32_t& max_redirects);
     void SetOption(const Cookies& cookies);
     void SetOption(Body&& body);
     void SetOption(const Body& body);

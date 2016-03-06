@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <string>
+#include <cstdint>
 #include <initializer_list>
 
 #include "defines.h"
@@ -15,7 +16,7 @@ struct Pair {
     Pair(KeyType&& p_key, ValueType&& p_value)
             : key{CPR_FWD(p_key)}, value{CPR_FWD(p_value)} {}
     template <typename KeyType>
-    Pair(KeyType&& p_key, const int& p_value)
+    Pair(KeyType&& p_key, const std::int32_t& p_value)
             : key{CPR_FWD(p_key)}, value{std::to_string(p_value)} {}
 
     std::string key;
