@@ -14,7 +14,7 @@ class CPRConan(ConanFile):
     default_options = "build_cpr_tests=False", "insecure_curl=False", "generate_coverage=False", "use_openssl=True"
 
     def source(self):
-        self.run("git clone https://github.com/DEGoodmanWilson/cpr.git --branch conan")
+        self.run("git clone https://github.com/whoshuu/cpr.git --branch %s" % (self.version))
 
     def config(self):
         if self.options.use_openssl:
@@ -24,10 +24,10 @@ class CPRConan(ConanFile):
 
         if self.options.build_cpr_tests:
             self.requires.add("gtest/1.7.0@lasote/stable", private=False)
-            #self.options["gtest"].shared = self.options.shared
             self.options["gtest"].shared = False
         else:
-            del self.requires["gtest"]
+            if "gtest" in self.requires:
+                del self.requires["gtest"]
 
         #TODO if building test, add gtest!
 
