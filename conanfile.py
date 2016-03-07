@@ -29,8 +29,6 @@ class CPRConan(ConanFile):
             if "gtest" in self.requires:
                 del self.requires["gtest"]
 
-        #TODO if building test, add gtest!
-
     def build(self):
         cmake = CMake(self.settings)
         build_tests = "-DBUILD_CPR_TESTS=OFF" if not self.options.build_cpr_tests else ""
