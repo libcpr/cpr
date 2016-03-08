@@ -1,4 +1,5 @@
 message(STATUS "Using CURL_INCLUDE_DIRS: ${CURL_INCLUDE_DIRS}.")
+message(STATUS "******* ${OPENSSL_LIBRARIES}")
 include_directories(
     ${CPR_INCLUDE_DIRS}
     ${CURL_INCLUDE_DIRS})

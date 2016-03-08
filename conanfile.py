@@ -18,13 +18,16 @@ class CPRConan(ConanFile):
         self.run("git clone https://github.com/DEGoodmanWilson/cpr.git --branch conan")
         #self.run("git clone https://github.com/whoshuu/cpr.git --branch %s" % (self.version))
         #we have to do this next step to get mongoose. If and when Mongoose is on conan, we can do away with this
-        self.run("cd cpr && git submodule update --init")
+        self.run("cd cpr && git submodule update --init opt/mongoose")
 
     def config(self):
         if self.options.use_openssl:
             self.options["libcurl"].with_openssl = True
+            self.requires.add("OpenSSL/1.0.2e@lasote/stable", private=False)
         else:
             self.options["libcurl"].with_openssl = False
+            if "OpenSSL" in self.requires:
+                del self.requires["OpenSSL"]
 
         if self.options.build_cpr_tests:
             self.requires.add("gtest/1.7.0@lasote/stable", private=False)
