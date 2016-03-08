@@ -11,7 +11,7 @@ class CPRConan(ConanFile):
                "insecure_curl": [True, False],
                "generate_coverage": [True, False],
                "use_openssl": [True, False]}
-    default_options = "libcurl:shared=False", "build_cpr_tests=False", "insecure_curl=False", "generate_coverage=False", "use_openssl=True"
+    default_options = "libcurl:shared=False", "libcurl:with_ldap=False", "build_cpr_tests=False", "insecure_curl=False", "generate_coverage=False", "use_openssl=True"
     generators = "cmake"
 
     def source(self):
