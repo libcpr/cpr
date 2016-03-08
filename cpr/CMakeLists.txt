@@ -41,4 +41,5 @@ add_library(${CPR_LIBRARIES}
 
 message(STATUS "Using CURL_LIBRARIES: ${CURL_LIBRARIES}.")
 target_link_libraries(${CPR_LIBRARIES}
-    ${CURL_LIBRARIES})
+    ${CURL_LIBRARIES}
+    ${OPENSSL_LIBRARIES})

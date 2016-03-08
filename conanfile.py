@@ -11,10 +11,14 @@ class CPRConan(ConanFile):
                "insecure_curl": [True, False],
                "generate_coverage": [True, False],
                "use_openssl": [True, False]}
-    default_options = "build_cpr_tests=False", "insecure_curl=False", "generate_coverage=False", "use_openssl=True"
+    default_options = "libcurl:shared=False", "build_cpr_tests=False", "insecure_curl=False", "generate_coverage=False", "use_openssl=True"
+    generators = "cmake"
 
     def source(self):
-        self.run("git clone https://github.com/whoshuu/cpr.git --branch %s" % (self.version))
+        self.run("git clone https://github.com/DEGoodmanWilson/cpr.git --branch conan")
+        #self.run("git clone https://github.com/whoshuu/cpr.git --branch %s" % (self.version))
+        #we have to do this next step to get mongoose. If and when Mongoose is on conan, we can do away with this
+        self.run("cd cpr && git submodule update --init")
 
     def config(self):
         if self.options.use_openssl:
@@ -35,7 +39,7 @@ class CPRConan(ConanFile):
         insecure_curl = "-DINSECURE_CURL=ON" if self.options.insecure_curl else ""
         generate_coverage = "-DGENERATE_COVERAGE=ON" if self.options.generate_coverage else ""
 
-        self.run('cmake -DUSE_SYSTEM_CURL=ON %s %s %s "%s/cpr" %s' % (build_tests, insecure_curl, generate_coverage, self.conanfile_directory, cmake.command_line))
+        self.run('cmake -DUSE_SYSTEM_CURL=ON -DUSE_SYSTEM_GTEST=ON %s %s %s "%s/cpr" %s' % (build_tests, insecure_curl, generate_coverage, self.conanfile_directory, cmake.command_line))
         self.run('cmake --build . %s' % cmake.build_config)
 
     def package(self):

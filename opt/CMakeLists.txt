@@ -40,6 +40,7 @@ endif()
 
 if(USE_SYSTEM_CURL)
     find_package(CURL)
+    find_package(OpenSSL)
 endif()
 if(NOT USE_SYSTEM_CURL OR NOT CURL_FOUND)
     message(STATUS "Not using system Curl, using built-in curl project instead.")
