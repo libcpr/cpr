@@ -64,7 +64,7 @@ TEST(ErrorTests, BoolFalseTest) {
 TEST(ErrorTests, BoolTrueTest) {
     Error error;
     error.code = ErrorCode::UNSUPPORTED_PROTOCOL;
-    EXPECT_TRUE(error);
+    EXPECT_TRUE(static_cast<bool>(error));
 }
 
 int main(int argc, char** argv) {
