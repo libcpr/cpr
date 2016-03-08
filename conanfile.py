@@ -5,7 +5,7 @@ class CPRConan(ConanFile):
     version = "1.2.0"
     url = "https://github.com/whoshuu/cpr.git"
     license = "MIT"
-    requires = "libcurl/7.47.1@lasote/stable"
+    requires = "libcurl/7.47.1@curl/testing"
     settings = "os", "compiler", "build_type", "arch"
     options = {"build_cpr_tests": [True, False],
                "insecure_curl": [True, False],
@@ -42,7 +42,7 @@ class CPRConan(ConanFile):
         insecure_curl = "-DINSECURE_CURL=ON" if self.options.insecure_curl else ""
         generate_coverage = "-DGENERATE_COVERAGE=ON" if self.options.generate_coverage else ""
 
-        self.run('cmake -DUSE_SYSTEM_CURL=ON -DUSE_SYSTEM_GTEST=ON %s %s %s "%s/cpr" %s' % (build_tests, insecure_curl, generate_coverage, self.conanfile_directory, cmake.command_line))
+        self.run('cmake -DCONAN=YES -DUSE_SYSTEM_CURL=ON -DUSE_SYSTEM_GTEST=ON %s %s %s "%s/cpr" %s' % (build_tests, insecure_curl, generate_coverage, self.conanfile_directory, cmake.command_line))
         self.run('cmake --build . %s' % cmake.build_config)
 
     def package(self):

@@ -40,9 +40,13 @@ add_library(${CPR_LIBRARIES}
     "${CPR_INCLUDE_DIRS}/cpr/util.h")
 
 message(STATUS "Using CURL_LIBRARIES: ${CURL_LIBRARIES}.")
-if(CMAKE_USE_OPENSSL)
-    message(STATUS "Using OPENSSL_LIBRARIES: ${OPENSSL_LIBRARIES}.")
+if(CONAN)
+    if(CMAKE_USE_OPENSSL)
+        message(STATUS "Using OPENSSL_LIBRARIES: ${OPENSSL_LIBRARIES}.")
+    endif()
+    message(STATUS "Using ZLIB_LIBRARIES: ${ZLIB_LIBRARIES}.")
 endif()
 target_link_libraries(${CPR_LIBRARIES}
     ${CURL_LIBRARIES}
-    ${OPENSSL_LIBRARIES} crypto ssl)
+    ${OPENSSL_LIBRARIES}
+    ${ZLIB_LIBRARIES})
