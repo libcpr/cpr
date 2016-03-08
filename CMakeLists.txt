@@ -65,8 +65,8 @@ cpr_option(USE_SYSTEM_GTEST
 cpr_option(CMAKE_USE_OPENSSL "Use OpenSSL code. Experimental" ON)
 message(STATUS "=======================================================")
 
-message(STATUS "${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")
 if(EXISTS ${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+    message(STATUS "Using Conan dependency manager")
     include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
     conan_basic_setup()
 endif()
