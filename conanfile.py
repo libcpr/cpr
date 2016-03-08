@@ -46,7 +46,7 @@ class CPRConan(ConanFile):
         self.run('cmake --build . %s' % cmake.build_config)
 
     def package(self):
-        self.copy("*.h", dst="include/cpr", src="cpr/include")
+        self.copy("*.h", dst="include", src="cpr/include")
         self.copy("*.lib", dst="lib", src="lib")
         self.copy("*.a", dst="lib", src="lib")
 
