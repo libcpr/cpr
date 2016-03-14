@@ -8,6 +8,7 @@
 #include "cookies.h"
 #include "cprtypes.h"
 #include "digest.h"
+#include "max_redirects.h"
 #include "multipart.h"
 #include "parameters.h"
 #include "payload.h"
@@ -36,7 +37,7 @@ class Session {
     void SetMultipart(Multipart&& multipart);
     void SetMultipart(const Multipart& multipart);
     void SetRedirect(const bool& redirect);
-    void SetMaxRedirects(const long& max_redirects);
+    void SetMaxRedirects(const MaxRedirects& max_redirects);
     void SetCookies(const Cookies& cookies);
     void SetBody(Body&& body);
     void SetBody(const Body& body);
@@ -56,7 +57,7 @@ class Session {
     void SetOption(Multipart&& multipart);
     void SetOption(const Multipart& multipart);
     void SetOption(const bool& redirect);
-    void SetOption(const long& max_redirects);
+    void SetOption(const MaxRedirects& max_redirects);
     void SetOption(const Cookies& cookies);
     void SetOption(Body&& body);
     void SetOption(const Body& body);
