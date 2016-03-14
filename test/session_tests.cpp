@@ -69,7 +69,7 @@ TEST(MaxRedirectsTests, ZeroMaxRedirectsSuccessTest) {
     auto url = Url{base + "/hello.html"};
     Session session;
     session.SetUrl(url);
-    session.SetMaxRedirects(0);
+    session.SetMaxRedirects(MaxRedirects(0));
     auto response = session.Get();
     auto expected_text = std::string{"Hello world!"};
     EXPECT_EQ(expected_text, response.text);
@@ -83,7 +83,7 @@ TEST(MaxRedirectsTests, ZeroMaxRedirectsFailureTest) {
     auto url = Url{base + "/permanent_redirect.html"};
     Session session;
     session.SetUrl(url);
-    session.SetMaxRedirects(0);
+    session.SetMaxRedirects(MaxRedirects(0));
     auto response = session.Get();
     EXPECT_EQ(std::string{}, response.text);
     EXPECT_EQ(url, response.url);
@@ -96,7 +96,7 @@ TEST(MaxRedirectsTests, OneMaxRedirectsSuccessTest) {
     auto url = Url{base + "/permanent_redirect.html"};
     Session session;
     session.SetUrl(url);
-    session.SetMaxRedirects(1);
+    session.SetMaxRedirects(MaxRedirects(1));
     auto response = session.Get();
     auto expected_text = std::string{"Hello world!"};
     EXPECT_EQ(expected_text, response.text);
@@ -110,7 +110,7 @@ TEST(MaxRedirectsTests, OneMaxRedirectsFailureTest) {
     auto url = Url{base + "/two_redirects.html"};
     Session session;
     session.SetUrl(url);
-    session.SetMaxRedirects(1);
+    session.SetMaxRedirects(MaxRedirects(1));
     auto response = session.Get();
     EXPECT_EQ(std::string{}, response.text);
     EXPECT_EQ(Url{base + "/permanent_redirect.html"}, response.url);
@@ -123,7 +123,7 @@ TEST(MaxRedirectsTests, TwoMaxRedirectsSuccessTest) {
     auto url = Url{base + "/two_redirects.html"};
     Session session;
     session.SetUrl(url);
-    session.SetMaxRedirects(2);
+    session.SetMaxRedirects(MaxRedirects(2));
     auto response = session.Get();
     auto expected_text = std::string{"Hello world!"};
     EXPECT_EQ(expected_text, response.text);

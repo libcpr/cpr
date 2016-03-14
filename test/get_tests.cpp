@@ -1150,7 +1150,7 @@ TEST(GetRedirectTests, RedirectTest) {
 
 TEST(GetRedirectTests, ZeroMaxRedirectsTest) {
     auto url = Url{base + "/hello.html"};
-    auto response = cpr::Get(url, 0L);
+    auto response = cpr::Get(url, MaxRedirects(0));
     auto expected_text = std::string{"Hello world!"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
