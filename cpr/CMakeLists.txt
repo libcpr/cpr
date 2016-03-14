@@ -29,6 +29,7 @@ add_library(${CPR_LIBRARIES}
     "${CPR_INCLUDE_DIRS}/cpr/defines.h"
     "${CPR_INCLUDE_DIRS}/cpr/digest.h"
     "${CPR_INCLUDE_DIRS}/cpr/error.h"
+    "${CPR_INCLUDE_DIRS}/cpr/max_redirects.h"
     "${CPR_INCLUDE_DIRS}/cpr/multipart.h"
     "${CPR_INCLUDE_DIRS}/cpr/parameters.h"
     "${CPR_INCLUDE_DIRS}/cpr/payload.h"
