@@ -1,9 +1,9 @@
 #ifndef CPR_PARAMETERS_H
 #define CPR_PARAMETERS_H
 
+#include <initializer_list>
 #include <memory>
 #include <string>
-#include <initializer_list>
 
 #include "defines.h"
 

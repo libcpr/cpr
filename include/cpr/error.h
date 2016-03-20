@@ -1,8 +1,8 @@
 #ifndef CPR_ERROR_H
 #define CPR_ERROR_H
 
-#include <string>
 #include <cstdint>
+#include <string>
 
 #include "cprtypes.h"
 #include "defines.h"

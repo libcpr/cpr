@@ -1,8 +1,8 @@
 #ifndef CPR_SESSION_H
 #define CPR_SESSION_H
 
-#include <memory>
 #include <cstdint>
+#include <memory>
 
 #include "auth.h"
 #include "body.h"

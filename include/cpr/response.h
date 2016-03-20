@@ -1,8 +1,8 @@
 #ifndef CPR_RESPONSE_H
 #define CPR_RESPONSE_H
 
-#include <string>
 #include <cstdint>
+#include <string>
 
 #include "cookies.h"
 #include "cprtypes.h"

@@ -1,10 +1,10 @@
 #ifndef CPR_COOKIES_H
 #define CPR_COOKIES_H
 
-#include <map>
-#include <string>
-#include <sstream>
 #include <initializer_list>
+#include <map>
+#include <sstream>
+#include <string>
 
 namespace cpr {
 

@@ -1,10 +1,10 @@
 #ifndef CPR_PAYLOAD_H
 #define CPR_PAYLOAD_H
 
-#include <memory>
-#include <string>
 #include <cstdint>
 #include <initializer_list>
+#include <memory>
+#include <string>
 
 #include "defines.h"
 
