@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <functional>
 #include <string>
+#include <type_traits>
 
 #include <curl/curl.h>
 
@@ -126,6 +127,8 @@ void Session::Impl::SetHeader(const Header& header) {
 void Session::Impl::SetTimeout(const Timeout& timeout) {
     auto curl = curl_->handle;
     if (curl) {
+        static_assert(std::is_same<std::chrono::milliseconds, decltype(timeout.ms)>::value,
+                      "Following casting expects milliseconds.");
         long milliseconds = timeout.ms.count();
         curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, milliseconds);
     }
