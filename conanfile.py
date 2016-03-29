@@ -5,44 +5,27 @@ class CPRConan(ConanFile):
     version = "1.2.0"
     url = "https://github.com/whoshuu/cpr.git"
     license = "MIT"
-    requires = "libcurl/7.47.1@curl/testing"
+    requires = "libcurl/7.47.1@lasote/stable"
     settings = "os", "compiler", "build_type", "arch"
-    options = {"build_cpr_tests": [True, False],
-               "insecure_curl": [True, False],
-               "generate_coverage": [True, False],
-               "use_openssl": [True, False]}
-    default_options = "libcurl:shared=False", "libcurl:with_ldap=False", "build_cpr_tests=False", "insecure_curl=False", "generate_coverage=False", "use_openssl=True"
+    options = {"insecure_curl": [True, False],
+               "use_ssl": [True, False]}
+    default_options = "libcurl:shared=False", "insecure_curl=False", "use_ssl=True"
     generators = "cmake"
+    exports = ["./*"] # Useful while develop, get the code from the curren project directory
+    src_folder = "" if exports else "cpr/"
 
-    def source(self):
-        self.run("git clone https://github.com/DEGoodmanWilson/cpr.git --branch conan")
-        #self.run("git clone https://github.com/whoshuu/cpr.git --branch %s" % (self.version))
-        #we have to do this next step to get mongoose. If and when Mongoose is on conan, we can do away with this
-        self.run("cd cpr && git submodule update --init opt/mongoose")
 
     def config(self):
-        if self.options.use_openssl:
+        if self.options.use_ssl:
             self.options["libcurl"].with_openssl = True
-            self.requires.add("OpenSSL/1.0.2e@lasote/stable", private=False)
         else:
             self.options["libcurl"].with_openssl = False
-            if "OpenSSL" in self.requires:
-                del self.requires["OpenSSL"]
-
-        if self.options.build_cpr_tests:
-            self.requires.add("gtest/1.7.0@lasote/stable", private=False)
-            self.options["gtest"].shared = False
-        else:
-            if "gtest" in self.requires:
-                del self.requires["gtest"]
 
     def build(self):
         cmake = CMake(self.settings)
-        build_tests = "-DBUILD_CPR_TESTS=OFF" if not self.options.build_cpr_tests else ""
         insecure_curl = "-DINSECURE_CURL=ON" if self.options.insecure_curl else ""
-        generate_coverage = "-DGENERATE_COVERAGE=ON" if self.options.generate_coverage else ""
 
-        self.run('cmake -DCONAN=YES -DUSE_SYSTEM_CURL=ON -DUSE_SYSTEM_GTEST=ON %s %s %s "%s/cpr" %s' % (build_tests, insecure_curl, generate_coverage, self.conanfile_directory, cmake.command_line))
+        self.run('cmake -DUSE_SYSTEM_CURL=ON -DBUILD_CPR_TESTS=OFF -DGENERATE_COVERAGE=OFF %s "%s/cpr" %s' % (insecure_curl, self.conanfile_directory, cmake.command_line))
         self.run('cmake --build . %s' % cmake.build_config)
 
     def package(self):

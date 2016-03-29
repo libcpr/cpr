@@ -1,22 +1,22 @@
 message(STATUS "Using CURL_INCLUDE_DIRS: ${CURL_INCLUDE_DIRS}.")
 include_directories(
-    ${CPR_INCLUDE_DIRS}
-    ${CURL_INCLUDE_DIRS})
+        ${CPR_INCLUDE_DIRS}
+        ${CURL_INCLUDE_DIRS})
 
 add_library(${CPR_LIBRARIES}
 
-    # Source files
-    auth.cpp
-    cookies.cpp
-    cprtypes.cpp
-    digest.cpp
-    error.cpp
-    multipart.cpp
-    parameters.cpp
-    payload.cpp
-    proxies.cpp
-    session.cpp
-    util.cpp
+        # Source files
+        auth.cpp
+        cookies.cpp
+        cprtypes.cpp
+        digest.cpp
+        error.cpp
+        multipart.cpp
+        parameters.cpp
+        payload.cpp
+        proxies.cpp
+        session.cpp
+        util.cpp
 
     # Header files (useful in IDEs)
     "${CPR_INCLUDE_DIRS}/cpr/api.h"
@@ -40,13 +40,5 @@ add_library(${CPR_LIBRARIES}
     "${CPR_INCLUDE_DIRS}/cpr/util.h")
 
 message(STATUS "Using CURL_LIBRARIES: ${CURL_LIBRARIES}.")
-if(CONAN)
-    if(CMAKE_USE_OPENSSL)
-        message(STATUS "Using OPENSSL_LIBRARIES: ${OPENSSL_LIBRARIES}.")
-    endif()
-    message(STATUS "Using ZLIB_LIBRARIES: ${ZLIB_LIBRARIES}.")
-endif()
 target_link_libraries(${CPR_LIBRARIES}
-    ${CURL_LIBRARIES}
-    ${OPENSSL_LIBRARIES}
-    ${ZLIB_LIBRARIES})
+        ${CURL_LIBRARIES})

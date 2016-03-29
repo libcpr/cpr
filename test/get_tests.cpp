@@ -22,6 +22,17 @@ TEST(BasicTests, HelloWorldTest) {
     EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
+TEST(BasicTests, HttpsTest) {
+    auto url = Url{"https://slack.com/api/api.test"};
+    auto response = cpr::Get(url);
+    EXPECT_EQ("hi", response.error.message);
+    EXPECT_EQ("hi", response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
 TEST(BasicTests, TimeoutTest) {
     auto url = Url{base + "/hello.html"};
     auto response = cpr::Get(url, Timeout{0L});

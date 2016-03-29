@@ -1,0 +1,59 @@
+[settings]
+    arch=x86_64
+    build_type=Release
+    compiler=apple-clang
+    compiler.version=7.0
+    os=Macos
+
+[requires]
+    cpr/1.Y.Z
+
+[options]
+
+
+[full_settings]
+    arch=x86_64
+    build_type=Release
+    compiler=apple-clang
+    compiler.version=7.0
+    os=Macos
+
+[full_requires]
+    OpenSSL/1.0.2e@lasote/stable:9e7091c8c6226ed91fce62db733eda25e2bcc8eb
+    cpr/1.2.0@cpr/testing:9e4861a08cb7bc74877f58c0c55cf271d8dd3ca1
+    gtest/1.7.0@lasote/stable:fe14d39e36e6d4ce8aa676b2f74667ad8d1fac38
+    libcurl/7.47.1@curl/testing:7b520b9b8bb82f9da9adf46a9bb02dd0092f5603
+    zlib/1.2.8@lasote/stable:fe14d39e36e6d4ce8aa676b2f74667ad8d1fac38
+
+[full_options]
+    OpenSSL:386=False
+    OpenSSL:no_asm=False
+    OpenSSL:no_bf=False
+    OpenSSL:no_cast=False
+    OpenSSL:no_des=False
+    OpenSSL:no_dh=False
+    OpenSSL:no_dsa=False
+    OpenSSL:no_hmac=False
+    OpenSSL:no_md2=False
+    OpenSSL:no_md5=False
+    OpenSSL:no_mdc2=False
+    OpenSSL:no_rc2=False
+    OpenSSL:no_rc4=False
+    OpenSSL:no_rc5=False
+    OpenSSL:no_rsa=False
+    OpenSSL:no_sha=False
+    OpenSSL:no_sse2=False
+    OpenSSL:no_threads=False
+    OpenSSL:no_zlib=False
+    OpenSSL:shared=False
+    OpenSSL:zlib_dynamic=False
+    cpr:build_cpr_tests=True
+    cpr:generate_coverage=False
+    cpr:insecure_curl=False
+    cpr:use_openssl=True
+    gtest:shared=False
+    libcurl:disable_threads=False
+    libcurl:shared=False
+    libcurl:with_ldap=False
+    libcurl:with_openssl=True
+    zlib:shared=False

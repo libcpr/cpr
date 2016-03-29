@@ -1,0 +1,5 @@
+[requires]
+cpr/1.2.0@local/testing
+
+[generators]
+cmake
