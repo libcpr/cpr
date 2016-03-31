@@ -65,11 +65,14 @@ cpr_option(USE_SYSTEM_GTEST
 cpr_option(CMAKE_USE_OPENSSL "Use OpenSSL code. Experimental" ON)
 message(STATUS "=======================================================")
 
-if(EXISTS conanbuildinfo.cmake)
+message(${CMAKE_CURRENT_SOURCE_DIR})
+
+if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/build/conanbuildinfo.cmake) # Clion, with conanbuildinfo.cmake in root
     message(STATUS "Using Conan dependency manager")
-    include(conanbuildinfo.cmake)
+    include(${CMAKE_CURRENT_SOURCE_DIR}/build/conanbuildinfo.cmake)
     conan_basic_setup()
 endif()
+
 
 if(BUILD_CPR_TESTS)
     enable_testing()
