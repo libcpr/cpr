@@ -1,7 +1,9 @@
+
 macro(set_cache_variable VAR_NAME VAR_DESCRIPTION)
     set(${VAR_NAME} ${${VAR_NAME}} CACHE INTERNAL ${VAR_DESCRIPTION})
     message(STATUS "Set ${VAR_NAME} to ${${VAR_NAME}}.")
 endmacro()
+
 
 
 # Code coverage
@@ -39,6 +41,7 @@ endif()
 # Curl configuration
 
 if(USE_SYSTEM_CURL)
+    message(STATUS "Using system curl")
     find_package(CURL)
 endif()
 if(NOT USE_SYSTEM_CURL OR NOT CURL_FOUND)

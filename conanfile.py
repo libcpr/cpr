@@ -9,10 +9,10 @@ class CPRConan(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
     options = {"insecure_curl": [True, False],
                "use_ssl": [True, False]}
-    default_options = "libcurl:shared=False", "insecure_curl=False", "use_ssl=True"
+    default_options = "libcurl:with_ldap=False", "libcurl:shared=False", "insecure_curl=False", "use_ssl=True"
     generators = "cmake"
     exports = ["./*"] # Useful while develop, get the code from the curren project directory
-    src_folder = "" if exports else "cpr/"
+    src_folder = ""
 
 
     def config(self):

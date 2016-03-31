@@ -1,4 +1,5 @@
 message(STATUS "Using CURL_INCLUDE_DIRS: ${CURL_INCLUDE_DIRS}.")
+message(STATUS "Using USE_SYSTEM_CURL: ${USE_SYSTEM_CURL}.")
 include_directories(
         ${CPR_INCLUDE_DIRS}
         ${CURL_INCLUDE_DIRS})
