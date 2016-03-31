@@ -1,3 +1,4 @@
+conan remove *cpr/1.2.0*  --force 
 cd ..
 conan export local/testing
 cd .conan
