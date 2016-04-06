@@ -2,6 +2,8 @@
 
 #include <algorithm>
 #include <functional>
+#include <limits>
+#include <stdexcept>
 #include <string>
 #include <type_traits>
 
@@ -127,8 +129,17 @@ void Session::Impl::SetHeader(const Header& header) {
 void Session::Impl::SetTimeout(const Timeout& timeout) {
     auto curl = curl_->handle;
     if (curl) {
+
         static_assert(std::is_same<std::chrono::milliseconds, decltype(timeout.ms)>::value,
                       "Following casting expects milliseconds.");
+
+        if(timeout.ms.count() > std::numeric_limits<long>::max()) {
+            throw std::overflow_error("cpr::Timeout: timeout value overflow: " + std::to_string(timeout.ms.count()) + " ms.");
+        }
+        if(timeout.ms.count() < std::numeric_limits<long>::min()) {
+            throw std::underflow_error("cpr::Timeout: timeout value underflow: " + std::to_string(timeout.ms.count()) + " ms.");
+        }
+
         long milliseconds = timeout.ms.count();
         curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, milliseconds);
     }
