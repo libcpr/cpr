@@ -12,6 +12,8 @@ class Timeout {
     Timeout(const std::int32_t& milliseconds)
             : Timeout{std::chrono::milliseconds(milliseconds)} {}
 
+    long Milliseconds() const;
+
     std::chrono::milliseconds ms;
 };
 
