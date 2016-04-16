@@ -44,10 +44,5 @@ _site/
 # Vim
 .ycm_extra_conf.py*
 
-# Eclipse and compiled conanfile
-.project
-.pydevproject
+# Compiled conanfile
 conanfile.pyc
-.conan/conanbuildinfo.cmake
-.conan/conaninfo.txt
-
