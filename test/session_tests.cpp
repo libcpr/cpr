@@ -186,7 +186,7 @@ TEST(MultipleGetTests, HeaderMultipleGetTest) {
     session.SetHeader(Header{{"hello", "world"}});
     for (int i = 0; i < 100; ++i) {
         auto response = session.Get();
-        auto expected_text = std::string{"Header reflect"};
+        auto expected_text = std::string{"Header reflect GET"};
         EXPECT_EQ(expected_text, response.text);
         EXPECT_EQ(url, response.url);
         EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
@@ -203,7 +203,7 @@ TEST(MultipleGetTests, HeaderChangeMultipleGetTest) {
     session.SetHeader(Header{{"hello", "world"}});
     {
         auto response = session.Get();
-        auto expected_text = std::string{"Header reflect"};
+        auto expected_text = std::string{"Header reflect GET"};
         EXPECT_EQ(expected_text, response.text);
         EXPECT_EQ(url, response.url);
         EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
@@ -214,7 +214,7 @@ TEST(MultipleGetTests, HeaderChangeMultipleGetTest) {
     session.SetHeader(Header{{"key", "value"}});
     {
         auto response = session.Get();
-        auto expected_text = std::string{"Header reflect"};
+        auto expected_text = std::string{"Header reflect GET"};
         EXPECT_EQ(expected_text, response.text);
         EXPECT_EQ(url, response.url);
         EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
@@ -274,7 +274,7 @@ TEST(MultipleGetTests, BasicAuthenticationMultipleGetTest) {
     session.SetAuth(Authentication{"user", "password"});
     for (int i = 0; i < 100; ++i) {
         auto response = session.Get();
-        auto expected_text = std::string{"Header reflect"};
+        auto expected_text = std::string{"Header reflect GET"};
         EXPECT_EQ(expected_text, response.text);
         EXPECT_EQ(url, response.url);
         EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
@@ -290,7 +290,7 @@ TEST(MultipleGetTests, BasicAuthenticationChangeMultipleGetTest) {
     session.SetAuth(Authentication{"user", "password"});
     {
         auto response = session.Get();
-        auto expected_text = std::string{"Header reflect"};
+        auto expected_text = std::string{"Header reflect GET"};
         EXPECT_EQ(expected_text, response.text);
         EXPECT_EQ(url, response.url);
         EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
@@ -480,7 +480,7 @@ TEST(DigestTests, SetDigestTest) {
     session.SetUrl(url);
     session.SetDigest({"user", "password"});
     auto response = session.Get();
-    auto expected_text = std::string{"Header reflect"};
+    auto expected_text = std::string{"Header reflect GET"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
