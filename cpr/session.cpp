@@ -352,7 +352,7 @@ Response Session::Impl::makeRequest(CURL* curl) {
     auto curl_error = curl_easy_perform(curl);
 
     char* raw_url;
-    std::int32_t response_code;
+    std::int64_t response_code;
     double elapsed;
     curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response_code);
     curl_easy_getinfo(curl, CURLINFO_TOTAL_TIME, &elapsed);
