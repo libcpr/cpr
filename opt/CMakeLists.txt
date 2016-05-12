@@ -52,7 +52,10 @@ if(NOT USE_SYSTEM_CURL OR NOT CURL_FOUND)
         ${CURL_BINARY_DIR}/include/curl)
         
     # Group under the "external" project folder in IDEs such as Visual Studio.
-    set_property(TARGET curl PROPERTY FOLDER "external")
+    if(BUILD_CURL_EXE)
+        set_property(TARGET curl PROPERTY FOLDER "external")
+    endif()
+        
     set_property(TARGET libcurl PROPERTY FOLDER "external")
 endif()
 
