@@ -363,7 +363,7 @@ static int deleteRequest(struct mg_connection* conn) {
       } else {
           auto response = std::string{conn->content, conn->content_len};
           mg_send_status(conn, 200);
-          mg_send_header(conn, "content-type", "text/html");
+          mg_send_header(conn, "content-type", "application/json");
           mg_send_data(conn, response.data(), response.length());
       }
     } else {
