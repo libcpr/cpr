@@ -33,6 +33,17 @@ TEST(DeleteTests, DeleteUnallowedTest) {
     EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
+TEST(DeleteTests, DeleteJsonBodyTest) {
+    auto url = Url{base + "/delete.html"};
+    auto response = cpr::Delete(url, cpr::Body{"'foo': 'bar'"}, cpr::Header{{"Content-Type", "application/json"}});
+    auto expected_text = std::string{"'foo': 'bar'"};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
 TEST(DeleteTests, SessionDeleteTest) {
     auto url = Url{base + "/delete.html"};
     Session session;
@@ -56,6 +67,21 @@ TEST(DeleteTests, SessionDeleteUnallowedTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(405, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
+TEST(DeleteTests, SessionDeleteJsonBodyTest) {
+    auto url = Url{base + "/delete.html"};
+    Session session;
+    session.SetUrl(url);
+    session.SetHeader(cpr::Header{{"Content-Type", "application/json"}});
+    session.SetBody(cpr::Body{"{'foo': 'bar'}"});
+    auto response = session.Delete();
+    auto expected_text = std::string{"{'foo': 'bar'}"};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
+    EXPECT_EQ(200, response.status_code);
     EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
