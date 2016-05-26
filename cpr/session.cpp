@@ -352,7 +352,7 @@ Response Session::Impl::makeRequest(CURL* curl) {
     auto curl_error = curl_easy_perform(curl);
 
     char* raw_url;
-    std::int32_t response_code;
+    long response_code;
     double elapsed;
     curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response_code);
     curl_easy_getinfo(curl, CURLINFO_TOTAL_TIME, &elapsed);
@@ -373,7 +373,8 @@ Response Session::Impl::makeRequest(CURL* curl) {
 
     auto header = cpr::util::parseHeader(header_string);
     response_string = cpr::util::parseResponse(response_string);
-    return Response{response_code, response_string, header, raw_url, elapsed, cookies, error};
+    return Response{static_cast<std::int32_t>(response_code),
+        response_string, header, raw_url, elapsed, cookies, error};
 }
 
 // clang-format off
