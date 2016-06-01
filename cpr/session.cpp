@@ -271,6 +271,7 @@ Response Session::Impl::Delete() {
 Response Session::Impl::Get() {
     auto curl = curl_->handle;
     if (curl) {
+        curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, NULL);
         curl_easy_setopt(curl, CURLOPT_HTTPGET, 1L);
         curl_easy_setopt(curl, CURLOPT_POST, 0L);
         curl_easy_setopt(curl, CURLOPT_NOBODY, 0L);

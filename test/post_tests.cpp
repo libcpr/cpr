@@ -246,6 +246,16 @@ TEST(UrlEncodedPostTests, UrlPostAsyncSingleTest) {
     }
 }
 
+TEST(UrlEncodedPostTests, UrlReflectTest) {
+    auto url = Url{base + "/header_reflect.html"};
+    auto response = cpr::Post(url, Payload{{"x", "5"}});
+    auto expected_text = std::string{"Header reflect POST"};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
     ::testing::AddGlobalTestEnvironment(server);

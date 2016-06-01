@@ -207,7 +207,8 @@ static int basicJson(struct mg_connection* conn) {
 }
 
 static int headerReflect(struct mg_connection* conn) {
-    auto response = std::string{"Header reflect"};
+    auto response = std::string{"Header reflect "} +
+                    std::string{conn->request_method};
     mg_send_status(conn, 200);
     mg_send_header(conn, "content-type", "text/html");
     auto num_headers = conn->num_headers;
