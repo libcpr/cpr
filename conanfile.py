@@ -10,8 +10,9 @@ class CPRConan(ConanFile):
     requires = "libcurl/7.47.1@lasote/stable"
     settings = "os", "compiler", "build_type", "arch"
     options = {"insecure_curl": [True, False],
-               "use_ssl": [True, False]}
-    default_options = "libcurl:with_ldap=False", "libcurl:shared=False", "insecure_curl=False", "use_ssl=True"
+               "use_ssl": [True, False],
+               "use_system_curl": [True, False]}
+    default_options = "libcurl:with_ldap=False", "libcurl:shared=False", "insecure_curl=False", "use_ssl=True", "use_system_curl=False"
     generators = "cmake"
     exports = ["*"]  # Useful while develop, get the code from the current project directory
 
@@ -20,6 +21,9 @@ class CPRConan(ConanFile):
             self.options["libcurl"].with_openssl = True
         else:
             self.options["libcurl"].with_openssl = False
+
+        if self.options.use_system_curl:
+            del self.requires["libcurl"]
 
     def build(self):
         if not os.path.exists("./build"):
@@ -38,3 +42,5 @@ class CPRConan(ConanFile):
 
     def package_info(self):
         self.cpp_info.libs = ["cpr"]
+        if self.options.use_system_curl:
+            self.cpp_info.libs.append("curl")
