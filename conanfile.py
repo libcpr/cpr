@@ -7,7 +7,7 @@ class CPRConan(ConanFile):
     version = "1.2.0"
     url = "https://github.com/whoshuu/cpr.git"
     license = "MIT"
-    requires = "libcurl/7.47.1@lasote/stable"
+    requires = "libcurl/7.49.1@lasote/stable"
     settings = "os", "compiler", "build_type", "arch"
     options = {"insecure_curl": [True, False],
                "use_ssl": [True, False],
