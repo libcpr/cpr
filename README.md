@@ -39,6 +39,7 @@ C++ Requests currently supports:
 * Basic authentication
 * Digest authentication
 * Timeout specification
+* Timeout for low speed connection
 * Asynchronous requests
 * :cookie: support!
 * Proxy support
