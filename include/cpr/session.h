@@ -16,6 +16,7 @@
 #include "proxies.h"
 #include "response.h"
 #include "timeout.h"
+#include "low_speed.h"
 
 namespace cpr {
 
@@ -42,6 +43,7 @@ class Session {
     void SetCookies(const Cookies& cookies);
     void SetBody(Body&& body);
     void SetBody(const Body& body);
+    void SetLowSpeed(const LowSpeed& low_speed);
 
     // Used in templated functions
     void SetOption(const Url& url);
@@ -62,6 +64,7 @@ class Session {
     void SetOption(const Cookies& cookies);
     void SetOption(Body&& body);
     void SetOption(const Body& body);
+    void SetOption(const LowSpeed& low_speed);
 
     Response Delete();
     Response Get();
