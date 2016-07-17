@@ -29,7 +29,10 @@ Header parseHeader(const std::string& headers) {
         if (line.length() > 0) {
             auto found = line.find(":");
             if (found != std::string::npos) {
-                auto value = line.substr(found + 2, line.length() - 1);
+                auto value = line.substr(found + 1);
+                if (value.front() == ' ') { 
+                    value = value.substr(1, value.length() - 1); 
+                }
                 if (value.back() == '\r') {
                     value = value.substr(0, value.length() - 1);
                 }
@@ -76,7 +79,8 @@ std::string urlEncode(const std::string& value) {
     for (auto i = value.cbegin(), n = value.cend(); i != n; ++i) {
         std::string::value_type c = (*i);
         // Keep alphanumeric and other accepted characters intact
-        if (std::isalnum(c) || c == '-' || c == '_' || c == '.' || c == '~') {
+        if (std::isalnum(c) || c == '-' || c == '_' || c == '.' || c == '~' 
+            || c == '|' || c == '+' || c == ',') {
             escaped << c;
             continue;
         }
