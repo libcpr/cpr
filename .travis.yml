@@ -117,8 +117,8 @@ before_script:
   - cmake -LAH ..
 
 script:
-  - make VERBOSE=1
-  - ctest -V
+  - make VERBOSE=1 -- -j2
+  - ctest -j2 -V
     
 after_success:
   - if [ "$GENERATE_COVERAGE" == "ON" ]; then coveralls -i 'cpr' -i 'include' -e '../include/cpr.h' --root '../' --verbose --gcov-options '\-lp' --gcov 'gcov-4.9'; fi
