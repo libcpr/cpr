@@ -9,6 +9,7 @@ add_library(${CPR_LIBRARIES}
     digest.cpp
     error.cpp
     multipart.cpp
+    ntlm.cpp
     parameters.cpp
     payload.cpp
     proxies.cpp
@@ -30,6 +31,7 @@ add_library(${CPR_LIBRARIES}
     "${CPR_INCLUDE_DIRS}/cpr/error.h"
     "${CPR_INCLUDE_DIRS}/cpr/max_redirects.h"
     "${CPR_INCLUDE_DIRS}/cpr/multipart.h"
+    "${CPR_INCLUDE_DIRS}/cpr/ntlm.h"
     "${CPR_INCLUDE_DIRS}/cpr/parameters.h"
     "${CPR_INCLUDE_DIRS}/cpr/payload.h"
     "${CPR_INCLUDE_DIRS}/cpr/proxies.h"
