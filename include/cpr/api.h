@@ -11,6 +11,7 @@
 #include "cpr/defines.h"
 #include "cpr/digest.h"
 #include "cpr/multipart.h"
+#include "cpr/ntlm.h"
 #include "cpr/payload.h"
 #include "cpr/response.h"
 #include "cpr/session.h"

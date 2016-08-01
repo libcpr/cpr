@@ -35,6 +35,7 @@ class Session::Impl {
     void SetProxies(const Proxies& proxies);
     void SetMultipart(Multipart&& multipart);
     void SetMultipart(const Multipart& multipart);
+    void SetNTLM(const NTLM& auth);
     void SetRedirect(const bool& redirect);
     void SetMaxRedirects(const MaxRedirects& max_redirects);
     void SetCookies(const Cookies& cookies);
@@ -290,6 +291,14 @@ void Session::Impl::SetLimitRate(const LimitRate& limit_rate) {
     if (curl) {
         curl_easy_setopt(curl, CURLOPT_MAX_RECV_SPEED_LARGE, limit_rate.downrate);
         curl_easy_setopt(curl, CURLOPT_MAX_SEND_SPEED_LARGE, limit_rate.uprate);
+    }
+}
+
+void Session::Impl::SetNTLM(const NTLM& auth) {
+    auto curl = curl_->handle;
+    if (curl) {
+        curl_easy_setopt(curl, CURLOPT_HTTPAUTH, CURLAUTH_NTLM);
+        curl_easy_setopt(curl, CURLOPT_USERPWD, auth.GetAuthString());
     }
 }
 
@@ -639,6 +648,7 @@ void Session::SetProxies(const Proxies& proxies) { pimpl_->SetProxies(proxies); 
 void Session::SetProxies(Proxies&& proxies) { pimpl_->SetProxies(std::move(proxies)); }
 void Session::SetMultipart(const Multipart& multipart) { pimpl_->SetMultipart(multipart); }
 void Session::SetMultipart(Multipart&& multipart) { pimpl_->SetMultipart(std::move(multipart)); }
+void Session::SetNTLM(const NTLM& auth) { pimpl_->SetNTLM(auth); }
 void Session::SetRedirect(const bool& redirect) { pimpl_->SetRedirect(redirect); }
 void Session::SetMaxRedirects(const MaxRedirects& max_redirects) { pimpl_->SetMaxRedirects(max_redirects); }
 void Session::SetCookies(const Cookies& cookies) { pimpl_->SetCookies(cookies); }
@@ -661,6 +671,7 @@ void Session::SetOption(const Proxies& proxies) { pimpl_->SetProxies(proxies); }
 void Session::SetOption(Proxies&& proxies) { pimpl_->SetProxies(std::move(proxies)); }
 void Session::SetOption(const Multipart& multipart) { pimpl_->SetMultipart(multipart); }
 void Session::SetOption(Multipart&& multipart) { pimpl_->SetMultipart(std::move(multipart)); }
+void Session::SetOption(const NTLM& auth) { pimpl_->SetNTLM(auth); }
 void Session::SetOption(const bool& redirect) { pimpl_->SetRedirect(redirect); }
 void Session::SetOption(const MaxRedirects& max_redirects) { pimpl_->SetMaxRedirects(max_redirects); }
 void Session::SetOption(const Cookies& cookies) { pimpl_->SetCookies(cookies); }

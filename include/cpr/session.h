@@ -15,6 +15,7 @@
 #include "cpr/low_speed.h"
 #include "cpr/max_redirects.h"
 #include "cpr/multipart.h"
+#include "cpr/ntlm.h"
 #include "cpr/parameters.h"
 #include "cpr/payload.h"
 #include "cpr/proxies.h"
@@ -50,6 +51,7 @@ class Session {
     void SetProxies(const Proxies& proxies);
     void SetMultipart(Multipart&& multipart);
     void SetMultipart(const Multipart& multipart);
+    void SetNTLM(const NTLM& auth);
     void SetRedirect(const bool& redirect);
     void SetMaxRedirects(const MaxRedirects& max_redirects);
     void SetCookies(const Cookies& cookies);
@@ -78,6 +80,7 @@ class Session {
     void SetOption(const Proxies& proxies);
     void SetOption(Multipart&& multipart);
     void SetOption(const Multipart& multipart);
+    void SetOption(const NTLM& auth);
     void SetOption(const bool& redirect);
     void SetOption(const MaxRedirects& max_redirects);
     void SetOption(const Cookies& cookies);
