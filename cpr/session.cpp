@@ -71,6 +71,9 @@ Session::Impl::Impl() {
         curl_easy_setopt(curl, CURLOPT_MAXREDIRS, 50L);
         curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, curl_->error);
         curl_easy_setopt(curl, CURLOPT_COOKIEFILE, "");
+        if (const char* curl_ca_path = std::getenv("CURL_CA_PATH")) {
+            curl_easy_setopt(curl, CURLOPT_CAPATH, curl_ca_path);
+        }
 #ifdef INSECURE_CURL
         curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
         curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
