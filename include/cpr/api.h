@@ -1,6 +1,7 @@
 #ifndef CPR_API_H
 #define CPR_API_H
 
+#include <fstream>
 #include <functional>
 #include <future>
 #include <string>
@@ -193,6 +194,14 @@ auto PatchCallback(Then then, Ts... ts) -> std::future<decltype(then(Patch(std::
     return std::async(std::launch::async, [](Then then, Ts... ts) {
         return then(Patch(std::move(ts)...));
     }, std::move(then), std::move(ts)...);
+}
+
+// Download methods
+template <typename... Ts>
+Response Download(std::ofstream& file, Ts&&... ts) {
+    Session session;
+    priv::set_option(session, CPR_FWD(ts)...);
+    return session.Download(file);
 }
 
 } // namespace cpr
