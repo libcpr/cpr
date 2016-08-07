@@ -344,11 +344,28 @@ static int formPost(struct mg_connection* conn) {
 }
 
 static int deleteRequest(struct mg_connection* conn) {
+    auto num_headers = conn->num_headers;
+    auto headers = conn->http_headers;
+    auto has_json_header = false;
+    for (int i = 0; i < num_headers; ++i) {
+        auto name = headers[i].name;
+        if (std::string{"Content-Type"} == headers[i].name &&
+                std::string{"application/json"} == headers[i].value) {
+            has_json_header = true;
+        }
+    }
     if (std::string{conn->request_method} == std::string{"DELETE"}) {
-        auto response = std::string{"Delete success"};
-        mg_send_status(conn, 200);
-        mg_send_header(conn, "content-type", "text/html");
-        mg_send_data(conn, response.data(), response.length());
+      if (!has_json_header) {
+          auto response = std::string{"Delete success"};
+          mg_send_status(conn, 200);
+          mg_send_header(conn, "content-type", "text/html");
+          mg_send_data(conn, response.data(), response.length());
+      } else {
+          auto response = std::string{conn->content, conn->content_len};
+          mg_send_status(conn, 200);
+          mg_send_header(conn, "content-type", "application/json");
+          mg_send_data(conn, response.data(), response.length());
+      }
     } else {
         auto response = std::string{"Method unallowed"};
         mg_send_status(conn, 405);
