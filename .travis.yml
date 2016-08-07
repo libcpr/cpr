@@ -117,7 +117,7 @@ before_script:
   - cmake -LAH ..
 
 script:
-  - make VERBOSE=1
+  - make -j2 VERBOSE=1
   - ctest -V
     
 after_success:
