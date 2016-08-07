@@ -1,6 +1,7 @@
 language: cpp
 
 sudo: false
+cache: ccache
 
 compiler: clang
 
