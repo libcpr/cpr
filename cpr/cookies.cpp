@@ -27,4 +27,60 @@ std::string& Cookies::operator[](const std::string& key) {
     return map_[key];
 }
 
+std::string& Cookies::at(const std::string& key) {
+    return map_.at(key);
+}
+
+const std::string& Cookies::at(const std::string& key) const {
+    return map_.at(key);
+}
+
+auto Cookies::begin() -> iterator {
+    return map_.begin();
+}
+
+auto Cookies::end() -> iterator {
+    return map_.end();
+}
+
+auto Cookies::begin() const -> const_iterator {
+    return map_.begin();
+}
+
+auto Cookies::end() const -> const_iterator {
+    return map_.end();
+}
+
+auto Cookies::cbegin() const -> const_iterator {
+    return map_.cbegin();
+}
+
+auto Cookies::cend() const -> const_iterator {
+    return map_.cend();
+}
+
+auto Cookies::rbegin() -> reverse_iterator {
+    return map_.rbegin();
+}
+
+auto Cookies::rend() -> reverse_iterator {
+    return map_.rend();
+}
+
+auto Cookies::rbegin() const -> const_reverse_iterator {
+    return map_.rbegin();
+}
+
+auto Cookies::rend() const -> const_reverse_iterator {
+    return map_.rend();
+}
+
+auto Cookies::crbegin() const -> const_reverse_iterator {
+    return map_.crbegin();
+}
+
+auto Cookies::crend() const -> const_reverse_iterator {
+    return map_.crend();
+}
+
 } // namespace cpr
