@@ -197,6 +197,25 @@ std::cout << r.text << std::endl;
 
 Notice how the `"Content-Type"` in the return header is different now; it's `"multipart/form-data"` as opposed to `"x-www-form-urlencoded"`. This facilitates larger and more generic data uploads with POST.
 
+It is also possible to pass a buffer instead of a filename, if the file's content is already in memory.
+
+{% raw %}
+```c++
+// STL containers like vector, string, etc.
+std::vector<char> content{'t', 'e', 's', 't'};
+auto r = cpr::Post(cpr::Url{"http://www.httpbin.org/post"},
+                   cpr::Multipart{{"key", "large value"},
+                                  {"name", cpr::Buffer{content.begin(), content.end(), "filename.txt"}}});
+
+// C-style pointers
+const char *content = "test";
+int length = 4;
+auto r = cpr::Post(cpr::Url{"http://www.httpbin.org/post"},
+                   cpr::Multipart{{"key", "large value"},
+                                  {"name", cpr::Buffer{content, content + length, "filename.txt"}}});
+```
+{% endraw %}
+
 ## Authentication
 
 Any self-respecting networking library should have support for authentication. It's rare for a web API to allow unfettered access to the datasets they guard. Most often they require a username/password pair:
