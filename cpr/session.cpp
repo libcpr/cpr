@@ -180,17 +180,40 @@ void Session::Impl::SetMultipart(Multipart&& multipart) {
         struct curl_httppost* lastptr = NULL;
 
         for (auto& part : multipart.parts) {
-            auto content_option = CURLFORM_COPYCONTENTS;
-            if (part.is_file) {
-                content_option = CURLFORM_FILE;
-            }
-            if (part.content_type.empty()) {
-                curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, part.name.data(),
-                             content_option, part.value.data(), CURLFORM_END);
+            if (part.is_buffer) {
+                if (part.content_type.empty()) {
+                    curl_formadd(&formpost, &lastptr,
+                                 CURLFORM_COPYNAME, part.name.data(),
+                                 CURLFORM_BUFFER, part.value.data(),
+                                 CURLFORM_BUFFERPTR, part.data,
+                                 CURLFORM_BUFFERLENGTH, part.datalen,
+                                 CURLFORM_END);
+                } else {
+                    curl_formadd(&formpost, &lastptr,
+                                 CURLFORM_COPYNAME, part.name.data(),
+                                 CURLFORM_BUFFER, part.value.data(),
+                                 CURLFORM_BUFFERPTR, part.data,
+                                 CURLFORM_BUFFERLENGTH, part.datalen,
+                                 CURLFORM_CONTENTTYPE, part.content_type.data(),
+                                 CURLFORM_END);
+                }
             } else {
-                curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, part.name.data(),
-                             content_option, part.value.data(), CURLFORM_CONTENTTYPE,
-                             part.content_type.data(), CURLFORM_END);
+                auto content_option = CURLFORM_COPYCONTENTS;
+                if (part.is_file) {
+                    content_option = CURLFORM_FILE;
+                }
+                if (part.content_type.empty()) {
+                    curl_formadd(&formpost, &lastptr,
+                                 CURLFORM_COPYNAME, part.name.data(),
+                                 content_option, part.value.data(),
+                                 CURLFORM_END);
+                } else {
+                    curl_formadd(&formpost, &lastptr,
+                                 CURLFORM_COPYNAME, part.name.data(),
+                                 content_option, part.value.data(),
+                                 CURLFORM_CONTENTTYPE, part.content_type.data(),
+                                 CURLFORM_END);
+                }
             }
         }
         curl_easy_setopt(curl, CURLOPT_HTTPPOST, formpost);
@@ -204,17 +227,40 @@ void Session::Impl::SetMultipart(const Multipart& multipart) {
         struct curl_httppost* lastptr = NULL;
 
         for (auto& part : multipart.parts) {
-            auto content_option = CURLFORM_PTRCONTENTS;
-            if (part.is_file) {
-                content_option = CURLFORM_FILE;
-            }
-            if (part.content_type.empty()) {
-                curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, part.name.data(),
-                             content_option, part.value.data(), CURLFORM_END);
+            if (part.is_buffer) {
+                if (part.content_type.empty()) {
+                    curl_formadd(&formpost, &lastptr,
+                                 CURLFORM_COPYNAME, part.name.data(),
+                                 CURLFORM_BUFFER, part.value.data(),
+                                 CURLFORM_BUFFERPTR, part.data,
+                                 CURLFORM_BUFFERLENGTH, part.datalen,
+                                 CURLFORM_END);
+                } else {
+                    curl_formadd(&formpost, &lastptr,
+                                 CURLFORM_COPYNAME, part.name.data(),
+                                 CURLFORM_BUFFER, part.value.data(),
+                                 CURLFORM_BUFFERPTR, part.data,
+                                 CURLFORM_BUFFERLENGTH, part.datalen,
+                                 CURLFORM_CONTENTTYPE, part.content_type.data(),
+                                 CURLFORM_END);
+                }
             } else {
-                curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, part.name.data(),
-                             content_option, part.value.data(), CURLFORM_CONTENTTYPE,
-                             part.content_type.data(), CURLFORM_END);
+                auto content_option = CURLFORM_COPYCONTENTS;
+                if (part.is_file) {
+                    content_option = CURLFORM_FILE;
+                }
+                if (part.content_type.empty()) {
+                    curl_formadd(&formpost, &lastptr,
+                                 CURLFORM_COPYNAME, part.name.data(),
+                                 content_option, part.value.data(),
+                                 CURLFORM_END);
+                } else {
+                    curl_formadd(&formpost, &lastptr,
+                                 CURLFORM_COPYNAME, part.name.data(),
+                                 content_option, part.value.data(),
+                                 CURLFORM_CONTENTTYPE, part.content_type.data(),
+                                 CURLFORM_END);
+                }
             }
         }
         curl_easy_setopt(curl, CURLOPT_HTTPPOST, formpost);
