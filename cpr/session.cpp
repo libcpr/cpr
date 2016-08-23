@@ -14,6 +14,7 @@ namespace cpr {
 class Session::Impl {
   public:
     Impl();
+    ~Impl();
 
     void SetUrl(const Url& url);
     void SetParameters(const Parameters& parameters);
@@ -47,13 +48,15 @@ class Session::Impl {
     Url url_;
     Parameters parameters_;
     Proxies proxies_;
+    struct curl_httppost* formpost_;
 
     Response makeRequest(CURL* curl);
     static void freeHolder(CurlHolder* holder);
     static CurlHolder* newHolder();
 };
 
-Session::Impl::Impl() {
+Session::Impl::Impl()
+    : formpost_(NULL) {
     curl_ = std::unique_ptr<CurlHolder, std::function<void(CurlHolder*) >>(newHolder(),
                                                                            &Impl::freeHolder);
     auto curl = curl_->handle;
@@ -82,6 +85,10 @@ Session::Impl::Impl() {
 #endif
 #endif
     }
+}
+
+Session::Impl::~Impl() {
+    if (formpost_) curl_formfree(formpost_);
 }
 
 void Session::Impl::freeHolder(CurlHolder* holder) {
@@ -176,7 +183,10 @@ void Session::Impl::SetProxies(Proxies&& proxies) {
 void Session::Impl::SetMultipart(Multipart&& multipart) {
     auto curl = curl_->handle;
     if (curl) {
-        struct curl_httppost* formpost = NULL;
+        if (formpost_) {
+            curl_formfree(formpost_);
+            formpost_ = NULL;
+        }
         struct curl_httppost* lastptr = NULL;
 
         for (auto& part : multipart.parts) {
@@ -195,18 +205,21 @@ void Session::Impl::SetMultipart(Multipart&& multipart) {
               formdata.push_back({CURLFORM_CONTENTTYPE, part.content_type.data()});
             }
             formdata.push_back({CURLFORM_END, nullptr});
-            curl_formadd(&formpost, &lastptr,
+            curl_formadd(&formpost_, &lastptr,
                          CURLFORM_ARRAY, formdata.data(),
                          CURLFORM_END);
         }
-        curl_easy_setopt(curl, CURLOPT_HTTPPOST, formpost);
+        curl_easy_setopt(curl, CURLOPT_HTTPPOST, formpost_);
     }
 }
 
 void Session::Impl::SetMultipart(const Multipart& multipart) {
     auto curl = curl_->handle;
     if (curl) {
-        struct curl_httppost* formpost = NULL;
+        if (formpost_) {
+            curl_formfree(formpost_);
+            formpost_ = NULL;
+        }
         struct curl_httppost* lastptr = NULL;
 
         for (auto& part : multipart.parts) {
@@ -225,11 +238,11 @@ void Session::Impl::SetMultipart(const Multipart& multipart) {
               formdata.push_back({CURLFORM_CONTENTTYPE, part.content_type.data()});
             }
             formdata.push_back({CURLFORM_END, nullptr});
-            curl_formadd(&formpost, &lastptr,
+            curl_formadd(&formpost_, &lastptr,
                          CURLFORM_ARRAY, formdata.data(),
                          CURLFORM_END);
         }
-        curl_easy_setopt(curl, CURLOPT_HTTPPOST, formpost);
+        curl_easy_setopt(curl, CURLOPT_HTTPPOST, formpost_);
     }
 }
 
