@@ -84,6 +84,29 @@ target_link_libraries(your_target_name ${CPR_LIBRARIES})
 
 and that should do it! Using the submodule method of integrating C++ Requests, there's no need to handle libcurl yourself, all of those dependencies are taken care of for you.
 
+### Depending on the library from multiple apps with find\_package
+Simply install the library on your system : 
+```shell
+mkdir build/
+cmake .. -DUSE_SYSTEM_CURL=ON -DBUILD_CPR_TESTS=OFF
+make install
+```
+
+And then simply create your CMake project as such, include directories and libraries to link will be forwarded to your target. : 
+```cmake
+cmake_minimum_required(VERSION 3.0.0)
+
+project(yourproject)
+
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+find_package(cpr 1.2.1 REQUIRED)
+
+add_executable(yourproject main.cpp)
+target_link_libraries(yourproject cpr::cpr)
+```
+
 ## Requirements
 
 The only explicit requirements are:
