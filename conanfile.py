@@ -23,7 +23,8 @@ class CPRConan(ConanFile):
             self.options["libcurl"].with_openssl = False
 
         if self.options.use_system_curl:
-            del self.requires["libcurl"]
+            if "libcurl" in self.requires:
+                del self.requires["libcurl"]
 
     def build(self):
         if not os.path.exists("./build"):
