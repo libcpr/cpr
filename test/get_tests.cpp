@@ -52,7 +52,7 @@ TEST(BasicTests, BasicJsonTest) {
 TEST(BasicTests, ResourceNotFoundTest) {
     auto url = Url{base + "/error.html"};
     auto response = cpr::Get(url);
-    auto expected_text = std::string{"404 Not Found"};
+    auto expected_text = std::string{"404 Not Found\n"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/plain"}, response.header["content-type"]);

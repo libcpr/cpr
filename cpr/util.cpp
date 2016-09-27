@@ -41,16 +41,6 @@ Header parseHeader(const std::string& headers) {
     return header;
 }
 
-std::string parseResponse(const std::string& response) {
-    if (!response.empty()) {
-        if (response.back() == '\n') {
-            return response.substr(0, response.length() - 1);
-        }
-    }
-
-    return response;
-}
-
 std::vector<std::string> split(const std::string& to_split, char delimiter) {
     std::vector<std::string> tokens;
 
