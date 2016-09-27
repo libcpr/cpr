@@ -129,8 +129,7 @@ void Session::Impl::SetHeader(const Header& header) {
 void Session::Impl::SetTimeout(const Timeout& timeout) {
     auto curl = curl_->handle;
     if (curl) {
-        long milliseconds = timeout.Milliseconds();
-        curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, milliseconds);
+        curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, timeout.Milliseconds());
     }
 }
 
