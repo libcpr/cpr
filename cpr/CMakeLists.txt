@@ -16,6 +16,7 @@ add_library(${CPR_LIBRARIES}
     payload.cpp
     proxies.cpp
     session.cpp
+    timeout.cpp
     util.cpp
 
     # Header files (useful in IDEs)
