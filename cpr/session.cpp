@@ -381,7 +381,6 @@ Response Session::Impl::makeRequest(CURL* curl) {
     curl_slist_free_all(raw_cookies);
 
     auto header = cpr::util::parseHeader(header_string);
-    response_string = cpr::util::parseResponse(response_string);
     return Response{static_cast<std::int32_t>(response_code),
         response_string, header, raw_url, elapsed, cookies, error};
 }
