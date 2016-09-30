@@ -260,8 +260,7 @@ void Session::Impl::SetBody(const Body& body) {
     }
 }
 
-void Session::Impl::SetLowSpeed(const LowSpeed& low_speed)
-{
+void Session::Impl::SetLowSpeed(const LowSpeed& low_speed) {
     auto curl = curl_->handle;
     if (curl) {
         curl_easy_setopt(curl, CURLOPT_LOW_SPEED_LIMIT, low_speed.limit);
