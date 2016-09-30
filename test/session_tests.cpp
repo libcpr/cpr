@@ -404,6 +404,20 @@ TEST(TimeoutTests, SetChronoTimeoutLongTest) {
     EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
+TEST(LowSpeedTests, SetLowSpeedTest) {
+    auto url = Url{base + "/hello.html"};
+    Session session;
+    session.SetUrl(url);
+    session.SetLowSpeed({1, 1});
+    auto response = session.Get();
+    auto expected_text = std::string{"Hello world!"};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
 TEST(PayloadTests, SetPayloadTest) {
     auto url = Url{base + "/url_post.html"};
     Session session;
