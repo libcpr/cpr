@@ -83,6 +83,17 @@ static int lowSpeed(struct mg_connection* conn) {
     return MG_TRUE;
 }
 
+static int lowSpeedBytes(struct mg_connection* conn) {
+    auto response = std::string{"a"};
+    mg_send_status(conn, 200);
+    mg_send_header(conn, "content-type", "text/html");
+    for (auto i = 0; i < 20; ++i) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        mg_send_data(conn, response.data(), response.length());
+    }
+    return MG_TRUE;
+}
+
 static int basicCookies(struct mg_connection* conn) {
     auto response = std::string{"Hello world!"};
     mg_send_status(conn, 200);
@@ -515,6 +526,8 @@ static int evHandler(struct mg_connection* conn, enum mg_event ev) {
                 return timeout(conn);
             } else if (Url{conn->uri} == "/low_speed.html") {
                 return lowSpeed(conn);				
+            } else if (Url{conn->uri} == "/low_speed_bytes.html") {
+                return lowSpeedBytes(conn);				
             } else if (Url{conn->uri} == "/basic_cookies.html") {
                 return basicCookies(conn);
             } else if (Url{conn->uri} == "/check_cookies.html") {
