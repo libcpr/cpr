@@ -78,7 +78,7 @@ static int lowSpeed(struct mg_connection* conn) {
     auto response = std::string{"Hello world!"};
     mg_send_status(conn, 200);
     mg_send_header(conn, "content-type", "text/html");
-    std::this_thread::sleep_for(std::chrono::seconds(8));
+    std::this_thread::sleep_for(std::chrono::seconds(2));
     mg_send_data(conn, response.data(), response.length());
     return MG_TRUE;
 }
