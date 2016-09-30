@@ -63,6 +63,13 @@ TEST(ErrorTests, LowSpeedTimeFailure) {
     EXPECT_EQ(ErrorCode::OPERATION_TIMEDOUT, response.error.code);
 }
 
+TEST(ErrorTests, LowSpeedBytesFailure) {
+    auto url = Url{base + "/low_speed_bytes.html"};
+    auto response = cpr::Get(url, cpr::LowSpeed{1000, 1});
+    EXPECT_EQ(0, response.status_code);
+    EXPECT_EQ(ErrorCode::OPERATION_TIMEDOUT, response.error.code);
+}
+
 TEST(ErrorTests, ProxyFailure) {
     auto url = Url{base + "/hello.html"};
     auto response = cpr::Get(url, cpr::Proxies{{"http", "http://bad_host/"}});
