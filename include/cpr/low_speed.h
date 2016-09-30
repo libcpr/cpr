@@ -7,7 +7,7 @@ namespace cpr {
 
 class LowSpeed {
   public:
-    LowSpeed(const std::int32_t& limit, const std::int32_t& time) : limit(limit), time(time) {}
+    LowSpeed(const std::int32_t limit, const std::int32_t time) : limit(limit), time(time) {}
 
     std::int32_t limit;
     std::int32_t time;
