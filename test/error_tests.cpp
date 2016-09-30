@@ -56,7 +56,7 @@ TEST(ErrorTests, ChronoTimeoutFailure) {
     EXPECT_EQ(ErrorCode::OPERATION_TIMEDOUT, response.error.code);
 }
 
-TEST(ErrorTests, LowSpeedFailure) {
+TEST(ErrorTests, LowSpeedTimeFailure) {
     auto url = Url{base + "/low_speed.html"};
     auto response = cpr::Get(url, cpr::LowSpeed{1000, 1});
     EXPECT_EQ(0, response.status_code);
