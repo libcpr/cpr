@@ -66,7 +66,7 @@ For just getting this library up and running, I highly recommend forking the [ex
 If you already have a project you need to integrate C++ Requests with, the primary way is to use git submodules. Add this repository as a submodule of your root repository:
 
 ```shell
-git submodule add git@github.com:whoshuu/cpr.git
+git submodule add https://github.com/whoshuu/cpr.git
 git submodule update --init --recursive
 ```
 
