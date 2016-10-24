@@ -215,7 +215,8 @@ TEST(UrlEncodedPostTests, FormPostFileBufferArrayTest) {
     const char content[] = "hello world";
     auto url = Url{base + "/form_post.html"};
     // We subtract 1 from std::end() because we don't want to include the terminating null
-    auto response = cpr::Post(url, Multipart{{"x", Buffer{std::begin(content), std::end(content)-1, "test_file"}}});
+    auto response = cpr::Post(
+            url, Multipart{{"x", Buffer{std::begin(content), std::end(content) - 1, "test_file"}}});
     auto expected_text = std::string{"{\n"
                                      "  \"x\": " + std::string(content) + "\n"
                                      "}"};
@@ -229,7 +230,8 @@ TEST(UrlEncodedPostTests, FormPostFileBufferArrayTest) {
 TEST(UrlEncodedPostTests, FormPostFileBufferVectorTest) {
     std::vector<unsigned char> content{'h', 'e', 'l', 'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd'};
     auto url = Url{base + "/form_post.html"};
-    auto response = cpr::Post(url, Multipart{{"x", Buffer{content.begin(), content.end(), "test_file"}}});
+    auto response =
+            cpr::Post(url, Multipart{{"x", Buffer{content.begin(), content.end(), "test_file"}}});
     auto expected_text = std::string{"{\n"
                                      "  \"x\": hello world\n"
                                      "}"};
