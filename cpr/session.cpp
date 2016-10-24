@@ -88,6 +88,7 @@ Session::Impl::Impl() {
 void Session::Impl::freeHolder(CurlHolder* holder) {
     curl_easy_cleanup(holder->handle);
     curl_slist_free_all(holder->chunk);
+    curl_formfree(holder->formpost);
     delete holder;
 }
 
@@ -201,6 +202,9 @@ void Session::Impl::SetMultipart(Multipart&& multipart) {
             curl_formadd(&formpost, &lastptr, CURLFORM_ARRAY, formdata.data(), CURLFORM_END);
         }
         curl_easy_setopt(curl, CURLOPT_HTTPPOST, formpost);
+
+        curl_formfree(curl_->formpost);
+        curl_->formpost = formpost;
     }
 }
 
@@ -230,6 +234,9 @@ void Session::Impl::SetMultipart(const Multipart& multipart) {
             curl_formadd(&formpost, &lastptr, CURLFORM_ARRAY, formdata.data(), CURLFORM_END);
         }
         curl_easy_setopt(curl, CURLOPT_HTTPPOST, formpost);
+
+        curl_formfree(curl_->formpost);
+        curl_->formpost = formpost;
     }
 }
 
