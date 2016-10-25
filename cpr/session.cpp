@@ -189,7 +189,7 @@ void Session::Impl::SetMultipart(Multipart&& multipart) {
                 formdata.push_back(
                         {CURLFORM_COPYCONTENTS, reinterpret_cast<const char*>(part.data)});
                 formdata.push_back(
-                        {CURLFORM_CONTENTLEN, reinterpret_cast<const char*>(part.datalen)});
+                        {CURLFORM_CONTENTSLENGTH, reinterpret_cast<const char*>(part.datalen)});
             } else if (part.is_file) {
                 formdata.push_back({CURLFORM_FILE, part.value.data()});
             } else {
