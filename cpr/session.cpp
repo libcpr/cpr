@@ -181,18 +181,24 @@ void Session::Impl::SetMultipart(Multipart&& multipart) {
         struct curl_httppost* lastptr = NULL;
 
         for (auto& part : multipart.parts) {
-            auto content_option = CURLFORM_COPYCONTENTS;
-            if (part.is_file) {
-                content_option = CURLFORM_FILE;
-            }
-            if (part.content_type.empty()) {
-                curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, part.name.data(),
-                             content_option, part.value.data(), CURLFORM_END);
+            std::vector<struct curl_forms> formdata;
+            formdata.push_back({CURLFORM_COPYNAME, part.name.data()});
+            if (part.is_buffer) {
+              formdata.push_back({CURLFORM_BUFFER, part.value.data()});
+              formdata.push_back({CURLFORM_BUFFERPTR, (const char *)part.data});
+              formdata.push_back({CURLFORM_BUFFERLENGTH, (const char *)part.datalen});
+            } else if (part.is_file) {
+              formdata.push_back({CURLFORM_FILE, part.value.data()});
             } else {
-                curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, part.name.data(),
-                             content_option, part.value.data(), CURLFORM_CONTENTTYPE,
-                             part.content_type.data(), CURLFORM_END);
+              formdata.push_back({CURLFORM_COPYCONTENTS, part.value.data()});
             }
+            if (!part.content_type.empty()) {
+              formdata.push_back({CURLFORM_CONTENTTYPE, part.content_type.data()});
+            }
+            formdata.push_back({CURLFORM_END, nullptr});
+            curl_formadd(&formpost, &lastptr,
+                         CURLFORM_ARRAY, formdata.data(),
+                         CURLFORM_END);
         }
         curl_easy_setopt(curl, CURLOPT_HTTPPOST, formpost);
     }
@@ -205,18 +211,24 @@ void Session::Impl::SetMultipart(const Multipart& multipart) {
         struct curl_httppost* lastptr = NULL;
 
         for (auto& part : multipart.parts) {
-            auto content_option = CURLFORM_PTRCONTENTS;
-            if (part.is_file) {
-                content_option = CURLFORM_FILE;
-            }
-            if (part.content_type.empty()) {
-                curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, part.name.data(),
-                             content_option, part.value.data(), CURLFORM_END);
+            std::vector<struct curl_forms> formdata;
+            formdata.push_back({CURLFORM_COPYNAME, part.name.data()});
+            if (part.is_buffer) {
+              formdata.push_back({CURLFORM_BUFFER, part.value.data()});
+              formdata.push_back({CURLFORM_BUFFERPTR, (const char *)part.data});
+              formdata.push_back({CURLFORM_BUFFERLENGTH, (const char *)part.datalen});
+            } else if (part.is_file) {
+              formdata.push_back({CURLFORM_FILE, part.value.data()});
             } else {
-                curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, part.name.data(),
-                             content_option, part.value.data(), CURLFORM_CONTENTTYPE,
-                             part.content_type.data(), CURLFORM_END);
+              formdata.push_back({CURLFORM_COPYCONTENTS, part.value.data()});
             }
+            if (!part.content_type.empty()) {
+              formdata.push_back({CURLFORM_CONTENTTYPE, part.content_type.data()});
+            }
+            formdata.push_back({CURLFORM_END, nullptr});
+            curl_formadd(&formpost, &lastptr,
+                         CURLFORM_ARRAY, formdata.data(),
+                         CURLFORM_END);
         }
         curl_easy_setopt(curl, CURLOPT_HTTPPOST, formpost);
     }
