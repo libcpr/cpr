@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <initializer_list>
 #include <string>
+#include <type_traits>
 #include <vector>
 
 #include "defines.h"
@@ -25,8 +26,14 @@ struct Buffer {
             : data{reinterpret_cast<data_t>(&(*begin))},
               datalen{static_cast<unsigned long>(std::distance(begin, end))},
               filename{CPR_FWD(filename)} {
+        is_random_access_iterator(begin, end);
         static_assert(sizeof(*begin) == 1, "only byte buffers can be used");
     }
+
+    template <typename Iterator>
+    typename std::enable_if<std::is_same<typename std::iterator_traits<Iterator>::iterator_category,
+                                         std::random_access_iterator_tag>::value>::type
+    is_random_access_iterator(Iterator begin, Iterator end) {}
 
     data_t data;
     unsigned long datalen;
