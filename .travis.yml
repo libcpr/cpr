@@ -1,6 +1,7 @@
 language: cpp
 
 sudo: false
+cache: ccache
 
 compiler: clang
 
@@ -16,7 +17,7 @@ addons: &addons
       - llvm-toolchain-precise-3.5
       - llvm-toolchain-precise-3.6
       - llvm-toolchain-precise-3.7
-      - llvm-toolchain-precise
+      - llvm-toolchain-precise-3.8
 
 env:
   global:
@@ -117,7 +118,7 @@ before_script:
   - cmake -LAH ..
 
 script:
-  - make VERBOSE=1
+  - make -j2 VERBOSE=1
   - ctest -V
     
 after_success:

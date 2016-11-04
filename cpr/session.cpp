@@ -67,6 +67,9 @@ Session::Impl::Impl() {
         curl_easy_setopt(curl, CURLOPT_MAXREDIRS, 50L);
         curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, curl_->error);
         curl_easy_setopt(curl, CURLOPT_COOKIEFILE, "");
+#ifdef CPR_CURL_NOSIGNAL
+        curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1L);
+#endif
 #ifdef INSECURE_CURL
         curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
         curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
@@ -271,6 +274,7 @@ Response Session::Impl::Delete() {
 Response Session::Impl::Get() {
     auto curl = curl_->handle;
     if (curl) {
+        curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, NULL);
         curl_easy_setopt(curl, CURLOPT_HTTPGET, 1L);
         curl_easy_setopt(curl, CURLOPT_POST, 0L);
         curl_easy_setopt(curl, CURLOPT_NOBODY, 0L);
@@ -352,7 +356,7 @@ Response Session::Impl::makeRequest(CURL* curl) {
     auto curl_error = curl_easy_perform(curl);
 
     char* raw_url;
-    std::int32_t response_code;
+    long response_code;
     double elapsed;
     curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response_code);
     curl_easy_getinfo(curl, CURLINFO_TOTAL_TIME, &elapsed);
@@ -373,7 +377,8 @@ Response Session::Impl::makeRequest(CURL* curl) {
 
     auto header = cpr::util::parseHeader(header_string);
     response_string = cpr::util::parseResponse(response_string);
-    return Response{response_code, response_string, header, raw_url, elapsed, cookies, error};
+    return Response{static_cast<std::int32_t>(response_code),
+        response_string, header, raw_url, elapsed, cookies, error};
 }
 
 // clang-format off
