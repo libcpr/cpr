@@ -4,7 +4,6 @@ configuration:
 os: Visual Studio 2015
 before_build:
     - git submodule update --init --recursive
-    - set INSECURE_CURL=ON
     - set CMAKE_USE_OPENSSL=OFF
     - mkdir build
     - cd build
