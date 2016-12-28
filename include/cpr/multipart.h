@@ -33,7 +33,7 @@ struct Buffer {
     template <typename Iterator>
     typename std::enable_if<std::is_same<typename std::iterator_traits<Iterator>::iterator_category,
                                          std::random_access_iterator_tag>::value>::type
-    is_random_access_iterator(Iterator begin, Iterator end) {}
+    is_random_access_iterator(Iterator /* begin */, Iterator /* end */ ) {}
 
     data_t data;
     unsigned long datalen;
