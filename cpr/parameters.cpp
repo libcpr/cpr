@@ -7,24 +7,34 @@
 
 namespace cpr {
 
-Parameters::Parameters(const std::initializer_list<Parameter>& parameters) {
-    for (const auto& parameter : parameters) {
-        AddParameter(parameter);
-    }
-}
-
-void Parameters::AddParameter(const Parameter& parameter) {
-    if (!content.empty()) {
-        content += "&";
+    Parameters::Parameters(const std::initializer_list<Parameter>& parameters) {
+        for (const auto& parameter : parameters) {
+            AddParameter(parameter);
+        }
     }
 
-    auto escapedKey = cpr::util::urlEncode(parameter.key);
-    if (parameter.value.empty()) {
-        content += escapedKey;
-    } else {
-        auto escapedValue = cpr::util::urlEncode(parameter.value);
-        content += escapedKey + "=" + escapedValue;
+
+    Parameters::Parameters(const Parameters::type_parameterS &parameters) {
+        for (const auto &parameter : parameters) {
+            Parameter param(parameter.first, parameter.second);
+            AddParameter(param);
+        }
     }
-}
+
+
+    void Parameters::AddParameter(const Parameter& parameter) {
+        if (!content.empty()) {
+            content += "&";
+        }
+
+        auto escapedKey = cpr::util::urlEncode(parameter.key);
+        if (parameter.value.empty()) {
+            content += escapedKey;
+        } else {
+            auto escapedValue = cpr::util::urlEncode(parameter.value);
+            content += escapedKey + "=" + escapedValue;
+        }
+    }
+
 
 } // namespace cpr
