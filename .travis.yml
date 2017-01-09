@@ -100,7 +100,7 @@ matrix:
 
     # Xcode 7
     - os: osx
-      env: COMPILER=clang++ CCOMPILER=clang BREW_CMAKE=ON
+      env: COMPILER=clang++ CCOMPILER=clang
       osx_image: xcode7
   allow_failures:
     - env: COMPILER=g++-4.6 CCOMPILER=gcc-4.6
@@ -111,7 +111,6 @@ install:
 
 before_script:
   - export CXX=$COMPILER CC=$CCOMPILER
-  - if [ "$BREW_CMAKE" == "ON" ]; then brew update && brew install cmake; fi
   - cmake --version
   - mkdir build
   - cd build
