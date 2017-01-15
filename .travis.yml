@@ -119,9 +119,7 @@ before_script:
 script:
   - make -j2 VERBOSE=1
   - ctest -V
-    
-after_success:
-  - if [ "$GENERATE_COVERAGE" == "ON" ]; then coveralls -i 'cpr' -i 'include' -e '../include/cpr.h' --root '../' --verbose --gcov-options '\-lp' --gcov 'gcov-4.9'; fi
+  - if [ "$FORMAT_CHECK" == "ON" ]; then cd ${TRAVIS_BUILD_DIR} && ./format-check.sh; fi
 
-after_script:
-  - if [ "$FORMAT_CHECK" == "ON" ]; then cd .. && ./format-check.sh; fi
+after_success:
+  - if [ "$GENERATE_COVERAGE" == "ON" ]; then cd ${TRAVIS_BUILD_DIR}/build && coveralls -i 'cpr' -i 'include' -e '../include/cpr.h' --root '../' --verbose --gcov-options '\-lp' --gcov 'gcov-4.9'; fi
