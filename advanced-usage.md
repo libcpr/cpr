@@ -264,7 +264,7 @@ std::cout << another_r.text << std::endl;
  *   }
  * }
  */
- ```
+```
 
  This is especially useful because `Cookies` often go from server to client and back to the server. Setting new `Cookies` should not look surprising at all:
 
@@ -281,7 +281,7 @@ std::cout << r.text << std::endl;
  *   }
  * }
  */
- ```
+```
 {% endraw %}
 
  Take note of how the cookies were encoded using a url-encoding pattern, as required by [RFC 2965](http://www.ietf.org/rfc/rfc2965.txt). Other than that quirk, using `Cookies` is fairly straightforward and just works.
