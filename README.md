@@ -67,6 +67,9 @@ If you already have a project you need to integrate C++ Requests with, the prima
 
 ```shell
 git submodule add git@github.com:whoshuu/cpr.git
+OR 
+git submodule add https://github.com/whoshuu/cpr.git
+
 git submodule update --init --recursive
 ```
 
