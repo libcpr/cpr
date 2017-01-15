@@ -20,7 +20,8 @@ do
             $format_command -style=file -output-replacements-xml $FILE | grep -c "<replacement " >/dev/null
             if [ $? -ne 1 ]
             then
-                echo "Please run clang-format on $FILE"
+                echo "Please run clang-format on $FILE:"
+                $format_command -style=file $FILE | diff - $FILE
                 format_error_exists=1
             fi
         fi
