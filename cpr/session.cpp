@@ -55,8 +55,8 @@ class Session::Impl {
 };
 
 Session::Impl::Impl() {
-    curl_ = std::unique_ptr<CurlHolder, std::function<void(CurlHolder*) >>(newHolder(),
-                                                                           &Impl::freeHolder);
+    curl_ = std::unique_ptr<CurlHolder, std::function<void(CurlHolder*)>>(newHolder(),
+                                                                          &Impl::freeHolder);
     auto curl = curl_->handle;
     if (curl) {
         // Set up some sensible defaults
@@ -409,7 +409,12 @@ Response Session::Impl::makeRequest(CURL* curl) {
 
     auto header = cpr::util::parseHeader(header_string);
     return Response{static_cast<std::int32_t>(response_code),
-        response_string, header, raw_url, elapsed, cookies, error};
+                    response_string,
+                    header,
+                    raw_url,
+                    elapsed,
+                    cookies,
+                    error};
 }
 
 // clang-format off
