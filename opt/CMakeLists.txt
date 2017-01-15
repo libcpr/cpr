@@ -44,6 +44,7 @@ endif()
 if(NOT USE_SYSTEM_CURL OR NOT CURL_FOUND)
     message(STATUS "Not using system Curl, using built-in curl project instead.")
     option(BUILD_CURL_TESTS "Set to ON to build cURL tests." OFF)
+    option(BUILD_CURL_EXE "Set to ON to build cURL executable." OFF)
     add_subdirectory(curl)
     set(CURL_FOUND TRUE)
     set(CURL_LIBRARIES libcurl)
@@ -52,7 +53,6 @@ if(NOT USE_SYSTEM_CURL OR NOT CURL_FOUND)
         ${CURL_BINARY_DIR}/include/curl)
         
     # Group under the "external" project folder in IDEs such as Visual Studio.
-    set_property(TARGET curl PROPERTY FOLDER "external")
     set_property(TARGET libcurl PROPERTY FOLDER "external")
 endif()
 
