@@ -23,6 +23,7 @@ class Body : public std::string {
     explicit Body(const std::string& std_string) : std::string(std_string) {}
     explicit Body(const std::string& std_string, size_t position, size_t length = std::string::npos)
             : std::string(std_string, position, length) {}
+    explicit Body(std::string&& std_string) : std::string(std::move(std_string)) {}
     explicit Body(std::initializer_list<char> il) : std::string(il) {}
     template <class InputIterator>
     explicit Body(InputIterator first, InputIterator last)
