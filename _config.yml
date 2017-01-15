@@ -1,4 +1,4 @@
-markdown: redcarpet
+markdown: kramdown
 redcarpet:
   extensions:
     - with_toc_data
