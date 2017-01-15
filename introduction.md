@@ -46,7 +46,8 @@ std::cout << r.status_code << std::endl; // 200
 std::cout << r.header["content-type"] << std::endl; // application/json
 std::cout << r.text << std::endl;
 
-/* {
+/*
+ * {
  *   "args": {}, 
  *   "headers": {
  *     ..
@@ -65,7 +66,8 @@ auto r = cpr::Get(cpr::Url{"http://www.httpbin.org/get"},
 std::cout << r.url << std::endl; // http://www.httpbin.org/get?hello=world
 std::cout << r.text << std::endl;
 
-/* {
+/*
+ * {
  *   "args": {
  *     "hello": "world"
  *   }, 
@@ -88,7 +90,8 @@ auto r = cpr::Get(cpr::Url{"http://www.httpbin.org/get"},
 std::cout << r.url << std::endl; // http://www.httpbin.org/get?hello=world&stay=cool
 std::cout << r.text << std::endl;
 
-/* {
+/*
+ * {
  *   "args": {
  *     "hello": "world"
  *     "stay": "cool"
@@ -120,7 +123,8 @@ auto r = cpr::Post(cpr::Url{"http://www.httpbin.org/post"},
                    cpr::Payload{{"key", "value"}});
 std::cout << r.text << std::endl;
 
-/* {
+/*
+ * {
  *   "args": {},
  *   "data": "",
  *   "files": {},
@@ -148,7 +152,8 @@ auto r = cpr::Post(cpr::Url{"http://www.httpbin.org/post"},
                    cpr::Header{{"Content-Type", "text/plain"}});
 std::cout << r.text << std::endl;
 
-/* {
+/*
+ * {
  *   "args": {},
  *   "data": "This is raw POST data",
  *   "files": {},
@@ -174,7 +179,8 @@ auto r = cpr::Post(cpr::Url{"http://www.httpbin.org/post"},
                                   {"name", cpr::File{"path-to-file"}}});
 std::cout << r.text << std::endl;
 
-/* {
+/*
+ * {
  *   "args": {},
  *   "data": "",
  *   "files": {

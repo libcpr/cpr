@@ -303,7 +303,8 @@ auto r = cpr::Put(cpr::Url{"http://www.httpbin.org/put"},
                   cpr::Payload{{"key", "value"}});
 std::cout << r.text << std::endl;
 
-/* {
+/*
+ * {
  *   "args": {},
  *   "data": "",
  *   "files": {},
@@ -339,7 +340,8 @@ auto r = cpr::Patch(cpr::Url{"http://www.httpbin.org/patch"},
                     cpr::Payload{{"key", "value"}});
 std::cout << r.text << std::endl;
 
-/* {
+/*
+ * {
  *   "args": {},
  *   "data": "",
  *   "files": {},
