@@ -10,7 +10,7 @@ addons: &addons
   apt:
     packages: &packages
       - g++-4.9
-      - clang-format-3.7
+      - clang-format-3.8
       - python-pip
     sources: &sources
       - ubuntu-toolchain-r-test

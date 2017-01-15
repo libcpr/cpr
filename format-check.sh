@@ -1,10 +1,10 @@
 #!/bin/bash
 
 
-which clang-format-3.7
+which clang-format-3.8
 if [ $? -eq 0 ]
 then
-    format_command=clang-format-3.7
+    format_command=clang-format-3.8
 else
     format_command=clang-format
 fi
