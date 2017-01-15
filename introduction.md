@@ -48,10 +48,10 @@ std::cout << r.text << std::endl;
 
 /*
  * {
- *   "args": {}, 
+ *   "args": {},
  *   "headers": {
  *     ..
- *   }, 
+ *   },
  *   "url": "http://httpbin.org/get"
  * }
  */
@@ -70,10 +70,10 @@ std::cout << r.text << std::endl;
  * {
  *   "args": {
  *     "hello": "world"
- *   }, 
+ *   },
  *   "headers": {
  *     ..
- *   }, 
+ *   },
  *   "url": "http://httpbin.org/get?hello=world"
  * }
  */
@@ -95,10 +95,10 @@ std::cout << r.text << std::endl;
  *   "args": {
  *     "hello": "world"
  *     "stay": "cool"
- *   }, 
+ *   },
  *   "headers": {
  *     ..
- *   }, 
+ *   },
  *   "url": "http://httpbin.org/get?hello=world&stay=cool"
  * }
  */
