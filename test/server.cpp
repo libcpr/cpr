@@ -367,8 +367,7 @@ static int deleteRequest(struct mg_connection* conn) {
     auto headers = conn->http_headers;
     auto has_json_header = false;
     for (int i = 0; i < num_headers; ++i) {
-        auto name = headers[i].name;
-        if (std::string{"Content-Type"} == name &&
+        if (std::string{"Content-Type"} == headers[i].name &&
                 std::string{"application/json"} == headers[i].value) {
             has_json_header = true;
         }
