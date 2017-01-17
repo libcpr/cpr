@@ -164,12 +164,11 @@ static int basicAuth(struct mg_connection* conn) {
     auto response = std::string{"Hello world!"};
     const char* requested_auth;
     auto auth = std::string{"Basic"};
-    std::string auth_string;
     if ((requested_auth = mg_get_header(conn, "Authorization")) == NULL ||
         mg_strncasecmp(requested_auth, auth.data(), auth.length()) != 0) {
         return MG_FALSE;
     }
-    auth_string = {requested_auth};
+    auto auth_string = std::string{requested_auth};
     auto basic_token = auth_string.find(' ') + 1;
     auth_string = auth_string.substr(basic_token, auth_string.length() - basic_token);
     auth_string = base64_decode(auth_string);
@@ -368,7 +367,6 @@ static int deleteRequest(struct mg_connection* conn) {
     auto headers = conn->http_headers;
     auto has_json_header = false;
     for (int i = 0; i < num_headers; ++i) {
-        auto name = headers[i].name;
         if (std::string{"Content-Type"} == headers[i].name &&
                 std::string{"application/json"} == headers[i].value) {
             has_json_header = true;
