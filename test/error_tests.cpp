@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 
+#include <chrono>
 #include <string>
 
 #include <cpr/cpr.h>
@@ -44,6 +45,27 @@ TEST(ErrorTests, InvalidURLFailure) {
 TEST(ErrorTests, TimeoutFailure) {
     auto url = Url{base + "/timeout.html"};
     auto response = cpr::Get(url, cpr::Timeout{1});
+    EXPECT_EQ(0, response.status_code);
+    EXPECT_EQ(ErrorCode::OPERATION_TIMEDOUT, response.error.code);
+}
+
+TEST(ErrorTests, ChronoTimeoutFailure) {
+    auto url = Url{base + "/timeout.html"};
+    auto response = cpr::Get(url, cpr::Timeout{std::chrono::milliseconds{1}});
+    EXPECT_EQ(0, response.status_code);
+    EXPECT_EQ(ErrorCode::OPERATION_TIMEDOUT, response.error.code);
+}
+
+TEST(ErrorTests, LowSpeedTimeFailure) {
+    auto url = Url{base + "/low_speed.html"};
+    auto response = cpr::Get(url, cpr::LowSpeed{1000, 1});
+    EXPECT_EQ(0, response.status_code);
+    EXPECT_EQ(ErrorCode::OPERATION_TIMEDOUT, response.error.code);
+}
+
+TEST(ErrorTests, LowSpeedBytesFailure) {
+    auto url = Url{base + "/low_speed_bytes.html"};
+    auto response = cpr::Get(url, cpr::LowSpeed{1000, 1});
     EXPECT_EQ(0, response.status_code);
     EXPECT_EQ(ErrorCode::OPERATION_TIMEDOUT, response.error.code);
 }

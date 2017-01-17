@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 
+#include <chrono>
 #include <string>
 
 #include <cpr/cpr.h>
@@ -366,6 +367,48 @@ TEST(TimeoutTests, SetTimeoutLongTest) {
     Session session;
     session.SetUrl(url);
     session.SetTimeout(10000L);
+    auto response = session.Get();
+    auto expected_text = std::string{"Hello world!"};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
+TEST(TimeoutTests, SetChronoTimeoutTest) {
+    auto url = Url{base + "/hello.html"};
+    Session session;
+    session.SetUrl(url);
+    session.SetTimeout(std::chrono::milliseconds{0});
+    auto response = session.Get();
+    auto expected_text = std::string{"Hello world!"};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
+TEST(TimeoutTests, SetChronoTimeoutLongTest) {
+    auto url = Url{base + "/hello.html"};
+    Session session;
+    session.SetUrl(url);
+    session.SetTimeout(std::chrono::milliseconds{10000});
+    auto response = session.Get();
+    auto expected_text = std::string{"Hello world!"};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
+TEST(LowSpeedTests, SetLowSpeedTest) {
+    auto url = Url{base + "/hello.html"};
+    Session session;
+    session.SetUrl(url);
+    session.SetLowSpeed({1, 1});
     auto response = session.Get();
     auto expected_text = std::string{"Hello world!"};
     EXPECT_EQ(expected_text, response.text);

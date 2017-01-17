@@ -33,6 +33,8 @@ class Session::Impl {
     void SetCookies(const Cookies& cookies);
     void SetBody(Body&& body);
     void SetBody(const Body& body);
+    void SetLowSpeed(const LowSpeed& low_speed);
+    void SetVerifySsl(const VerifySsl& verify);
 
     Response Delete();
     Response Get();
@@ -54,8 +56,8 @@ class Session::Impl {
 };
 
 Session::Impl::Impl() {
-    curl_ = std::unique_ptr<CurlHolder, std::function<void(CurlHolder*) >>(newHolder(),
-                                                                           &Impl::freeHolder);
+    curl_ = std::unique_ptr<CurlHolder, std::function<void(CurlHolder*)>>(newHolder(),
+                                                                          &Impl::freeHolder);
     auto curl = curl_->handle;
     if (curl) {
         // Set up some sensible defaults
@@ -67,11 +69,8 @@ Session::Impl::Impl() {
         curl_easy_setopt(curl, CURLOPT_MAXREDIRS, 50L);
         curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, curl_->error);
         curl_easy_setopt(curl, CURLOPT_COOKIEFILE, "");
-        /* enable all supported built-in compressions */
-        curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, "");
-#ifdef INSECURE_CURL
-        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
-        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
+#ifdef CPR_CURL_NOSIGNAL
+        curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1L);
 #endif
 #if LIBCURL_VERSION_MAJOR >= 7
 #if LIBCURL_VERSION_MINOR >= 25
@@ -86,6 +85,7 @@ Session::Impl::Impl() {
 void Session::Impl::freeHolder(CurlHolder* holder) {
     curl_easy_cleanup(holder->handle);
     curl_slist_free_all(holder->chunk);
+    curl_formfree(holder->formpost);
     delete holder;
 }
 
@@ -128,7 +128,7 @@ void Session::Impl::SetHeader(const Header& header) {
 void Session::Impl::SetTimeout(const Timeout& timeout) {
     auto curl = curl_->handle;
     if (curl) {
-        curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, timeout.ms);
+        curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, timeout.Milliseconds());
     }
 }
 
@@ -179,20 +179,29 @@ void Session::Impl::SetMultipart(Multipart&& multipart) {
         struct curl_httppost* lastptr = NULL;
 
         for (auto& part : multipart.parts) {
-            auto content_option = CURLFORM_COPYCONTENTS;
-            if (part.is_file) {
-                content_option = CURLFORM_FILE;
-            }
-            if (part.content_type.empty()) {
-                curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, part.name.data(),
-                             content_option, part.value.data(), CURLFORM_END);
+            std::vector<struct curl_forms> formdata;
+            formdata.push_back({CURLFORM_COPYNAME, part.name.data()});
+            if (part.is_buffer) {
+                formdata.push_back({CURLFORM_BUFFER, part.value.data()});
+                formdata.push_back(
+                        {CURLFORM_COPYCONTENTS, reinterpret_cast<const char*>(part.data)});
+                formdata.push_back(
+                        {CURLFORM_CONTENTSLENGTH, reinterpret_cast<const char*>(part.datalen)});
+            } else if (part.is_file) {
+                formdata.push_back({CURLFORM_FILE, part.value.data()});
             } else {
-                curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, part.name.data(),
-                             content_option, part.value.data(), CURLFORM_CONTENTTYPE,
-                             part.content_type.data(), CURLFORM_END);
+                formdata.push_back({CURLFORM_COPYCONTENTS, part.value.data()});
             }
+            if (!part.content_type.empty()) {
+                formdata.push_back({CURLFORM_CONTENTTYPE, part.content_type.data()});
+            }
+            formdata.push_back({CURLFORM_END, nullptr});
+            curl_formadd(&formpost, &lastptr, CURLFORM_ARRAY, formdata.data(), CURLFORM_END);
         }
         curl_easy_setopt(curl, CURLOPT_HTTPPOST, formpost);
+
+        curl_formfree(curl_->formpost);
+        curl_->formpost = formpost;
     }
 }
 
@@ -203,20 +212,28 @@ void Session::Impl::SetMultipart(const Multipart& multipart) {
         struct curl_httppost* lastptr = NULL;
 
         for (auto& part : multipart.parts) {
-            auto content_option = CURLFORM_PTRCONTENTS;
-            if (part.is_file) {
-                content_option = CURLFORM_FILE;
-            }
-            if (part.content_type.empty()) {
-                curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, part.name.data(),
-                             content_option, part.value.data(), CURLFORM_END);
+            std::vector<struct curl_forms> formdata;
+            formdata.push_back({CURLFORM_PTRNAME, part.name.data()});
+            if (part.is_buffer) {
+                formdata.push_back({CURLFORM_BUFFER, part.value.data()});
+                formdata.push_back({CURLFORM_BUFFERPTR, reinterpret_cast<const char*>(part.data)});
+                formdata.push_back(
+                        {CURLFORM_BUFFERLENGTH, reinterpret_cast<const char*>(part.datalen)});
+            } else if (part.is_file) {
+                formdata.push_back({CURLFORM_FILE, part.value.data()});
             } else {
-                curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, part.name.data(),
-                             content_option, part.value.data(), CURLFORM_CONTENTTYPE,
-                             part.content_type.data(), CURLFORM_END);
+                formdata.push_back({CURLFORM_PTRCONTENTS, part.value.data()});
             }
+            if (!part.content_type.empty()) {
+                formdata.push_back({CURLFORM_CONTENTTYPE, part.content_type.data()});
+            }
+            formdata.push_back({CURLFORM_END, nullptr});
+            curl_formadd(&formpost, &lastptr, CURLFORM_ARRAY, formdata.data(), CURLFORM_END);
         }
         curl_easy_setopt(curl, CURLOPT_HTTPPOST, formpost);
+
+        curl_formfree(curl_->formpost);
+        curl_->formpost = formpost;
     }
 }
 
@@ -258,11 +275,26 @@ void Session::Impl::SetBody(const Body& body) {
     }
 }
 
+void Session::Impl::SetLowSpeed(const LowSpeed& low_speed) {
+    auto curl = curl_->handle;
+    if (curl) {
+        curl_easy_setopt(curl, CURLOPT_LOW_SPEED_LIMIT, low_speed.limit);
+        curl_easy_setopt(curl, CURLOPT_LOW_SPEED_TIME, low_speed.time);
+    }
+}
+
+void Session::Impl::SetVerifySsl(const VerifySsl& verify) {
+    auto curl = curl_->handle;
+    if (curl) {
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, verify ? 1L : 0L);
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, verify ? 2L : 0L);
+    }
+}
+
 Response Session::Impl::Delete() {
     auto curl = curl_->handle;
     if (curl) {
         curl_easy_setopt(curl, CURLOPT_HTTPGET, 0L);
-        curl_easy_setopt(curl, CURLOPT_POST, 0L);
         curl_easy_setopt(curl, CURLOPT_NOBODY, 0L);
         curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "DELETE");
     }
@@ -316,7 +348,13 @@ Response Session::Impl::Patch() {
 }
 
 Response Session::Impl::Post() {
-    return makeRequest(curl_->handle);
+    auto curl = curl_->handle;
+    if (curl) {
+        curl_easy_setopt(curl, CURLOPT_HTTPGET, 0L);
+        curl_easy_setopt(curl, CURLOPT_NOBODY, 0L);
+    }
+
+    return makeRequest(curl);
 }
 
 Response Session::Impl::Put() {
@@ -375,9 +413,13 @@ Response Session::Impl::makeRequest(CURL* curl) {
     curl_slist_free_all(raw_cookies);
 
     auto header = cpr::util::parseHeader(header_string);
-    response_string = cpr::util::parseResponse(response_string);
     return Response{static_cast<std::int32_t>(response_code),
-        response_string, header, raw_url, elapsed, cookies, error};
+                    response_string,
+                    header,
+                    raw_url,
+                    elapsed,
+                    cookies,
+                    error};
 }
 
 // clang-format off
@@ -401,6 +443,8 @@ void Session::SetMaxRedirects(const MaxRedirects& max_redirects) { pimpl_->SetMa
 void Session::SetCookies(const Cookies& cookies) { pimpl_->SetCookies(cookies); }
 void Session::SetBody(const Body& body) { pimpl_->SetBody(body); }
 void Session::SetBody(Body&& body) { pimpl_->SetBody(std::move(body)); }
+void Session::SetLowSpeed(const LowSpeed& low_speed) { pimpl_->SetLowSpeed(low_speed); }
+void Session::SetVerifySsl(const VerifySsl& verify) { pimpl_->SetVerifySsl(verify); }
 void Session::SetOption(const Url& url) { pimpl_->SetUrl(url); }
 void Session::SetOption(const Parameters& parameters) { pimpl_->SetParameters(parameters); }
 void Session::SetOption(Parameters&& parameters) { pimpl_->SetParameters(std::move(parameters)); }
@@ -419,6 +463,8 @@ void Session::SetOption(const MaxRedirects& max_redirects) { pimpl_->SetMaxRedir
 void Session::SetOption(const Cookies& cookies) { pimpl_->SetCookies(cookies); }
 void Session::SetOption(const Body& body) { pimpl_->SetBody(body); }
 void Session::SetOption(Body&& body) { pimpl_->SetBody(std::move(body)); }
+void Session::SetOption(const LowSpeed& low_speed) { pimpl_->SetLowSpeed(low_speed); }
+void Session::SetOption(const VerifySsl& verify) { pimpl_->SetVerifySsl(verify); }
 Response Session::Delete() { return pimpl_->Delete(); }
 Response Session::Get() { return pimpl_->Get(); }
 Response Session::Head() { return pimpl_->Head(); }

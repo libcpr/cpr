@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 
+#include <array>
 #include <cstdio>
 #include <fstream>
 #include <string>
@@ -161,6 +162,95 @@ TEST(UrlEncodedPostTests, FormPostFileNoCopyTest) {
                                      "  \"x\": " + content + "\n"
                                      "}"};
     std::remove(filename.data());
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
+    EXPECT_EQ(201, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
+TEST(UrlEncodedPostTests, FormPostFileBufferTest) {
+    auto content = std::string{"hello world"};
+    auto url = Url{base + "/form_post.html"};
+    auto response = cpr::Post(url, Multipart{{"x", Buffer{content.begin(), content.end(), "test_file"}}});
+    auto expected_text = std::string{"{\n"
+                                     "  \"x\": " + content + "\n"
+                                     "}"};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
+    EXPECT_EQ(201, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
+TEST(UrlEncodedPostTests, FormPostFileBufferNoCopyTest) {
+    auto content = std::string{"hello world"};
+    auto url = Url{base + "/form_post.html"};
+    auto multipart = Multipart{{"x", Buffer{content.begin(), content.end(), "test_file"}}};
+    auto response = cpr::Post(url, multipart);
+    auto expected_text = std::string{"{\n"
+                                     "  \"x\": " + content + "\n"
+                                     "}"};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
+    EXPECT_EQ(201, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
+TEST(UrlEncodedPostTests, FormPostFileBufferPointerTest) {
+    const char *content = "hello world";
+    auto url = Url{base + "/form_post.html"};
+    auto response = cpr::Post(url, Multipart{{"x", Buffer{content, 11 + content, "test_file"}}});
+    auto expected_text = std::string{"{\n"
+                                     "  \"x\": " + std::string(content) + "\n"
+                                     "}"};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
+    EXPECT_EQ(201, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
+TEST(UrlEncodedPostTests, FormPostFileBufferArrayTest) {
+    const char content[] = "hello world";
+    auto url = Url{base + "/form_post.html"};
+    // We subtract 1 from std::end() because we don't want to include the terminating null
+    auto response = cpr::Post(
+            url, Multipart{{"x", Buffer{std::begin(content), std::end(content) - 1, "test_file"}}});
+    auto expected_text = std::string{"{\n"
+                                     "  \"x\": " + std::string(content) + "\n"
+                                     "}"};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
+    EXPECT_EQ(201, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
+TEST(UrlEncodedPostTests, FormPostFileBufferVectorTest) {
+    std::vector<unsigned char> content{'h', 'e', 'l', 'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd'};
+    auto url = Url{base + "/form_post.html"};
+    auto response =
+            cpr::Post(url, Multipart{{"x", Buffer{content.begin(), content.end(), "test_file"}}});
+    auto expected_text = std::string{"{\n"
+                                     "  \"x\": hello world\n"
+                                     "}"};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
+    EXPECT_EQ(201, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
+TEST(UrlEncodedPostTests, FormPostFileBufferStdArrayTest) {
+    std::array<unsigned char, 11> content{{'h', 'e', 'l', 'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd'}};
+    auto url = Url{base + "/form_post.html"};
+    auto response =
+            cpr::Post(url, Multipart{{"x", Buffer{content.begin(), content.end(), "test_file"}}});
+    auto expected_text = std::string{"{\n"
+                                     "  \"x\": hello world\n"
+                                     "}"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);

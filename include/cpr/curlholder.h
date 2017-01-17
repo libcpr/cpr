@@ -10,6 +10,7 @@ namespace cpr {
 struct CurlHolder {
     CURL* handle;
     struct curl_slist* chunk;
+    struct curl_httppost* formpost;
     char error[CURL_ERROR_SIZE];
 };
 

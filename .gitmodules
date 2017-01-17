@@ -1,9 +1,9 @@
 [submodule "opt/curl"]
 	path = opt/curl
-	url = git://github.com/whoshuu/curl.git
+	url = https://github.com/whoshuu/curl.git
 [submodule "opt/googletest"]
 	path = opt/googletest
-	url = git://github.com/whoshuu/googletest.git
+	url = https://github.com/whoshuu/googletest.git
 [submodule "opt/mongoose"]
 	path = opt/mongoose
-	url = git://github.com/whoshuu/mongoose.git
+	url = https://github.com/whoshuu/mongoose.git

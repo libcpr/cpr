@@ -74,6 +74,26 @@ static int timeout(struct mg_connection* conn) {
     return MG_TRUE;
 }
 
+static int lowSpeed(struct mg_connection* conn) {
+    auto response = std::string{"Hello world!"};
+    mg_send_status(conn, 200);
+    mg_send_header(conn, "content-type", "text/html");
+    std::this_thread::sleep_for(std::chrono::seconds(2));
+    mg_send_data(conn, response.data(), response.length());
+    return MG_TRUE;
+}
+
+static int lowSpeedBytes(struct mg_connection* conn) {
+    auto response = std::string{"a"};
+    mg_send_status(conn, 200);
+    mg_send_header(conn, "content-type", "text/html");
+    for (auto i = 0; i < 20; ++i) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        mg_send_data(conn, response.data(), response.length());
+    }
+    return MG_TRUE;
+}
+
 static int basicCookies(struct mg_connection* conn) {
     auto response = std::string{"Hello world!"};
     mg_send_status(conn, 200);
@@ -144,12 +164,11 @@ static int basicAuth(struct mg_connection* conn) {
     auto response = std::string{"Hello world!"};
     const char* requested_auth;
     auto auth = std::string{"Basic"};
-    std::string auth_string;
     if ((requested_auth = mg_get_header(conn, "Authorization")) == NULL ||
         mg_strncasecmp(requested_auth, auth.data(), auth.length()) != 0) {
         return MG_FALSE;
     }
-    auth_string = {requested_auth};
+    auto auth_string = std::string{requested_auth};
     auto basic_token = auth_string.find(' ') + 1;
     auth_string = auth_string.substr(basic_token, auth_string.length() - basic_token);
     auth_string = base64_decode(auth_string);
@@ -344,11 +363,27 @@ static int formPost(struct mg_connection* conn) {
 }
 
 static int deleteRequest(struct mg_connection* conn) {
+    auto num_headers = conn->num_headers;
+    auto headers = conn->http_headers;
+    auto has_json_header = false;
+    for (int i = 0; i < num_headers; ++i) {
+        if (std::string{"Content-Type"} == headers[i].name &&
+                std::string{"application/json"} == headers[i].value) {
+            has_json_header = true;
+        }
+    }
     if (std::string{conn->request_method} == std::string{"DELETE"}) {
-        auto response = std::string{"Delete success"};
-        mg_send_status(conn, 200);
-        mg_send_header(conn, "content-type", "text/html");
-        mg_send_data(conn, response.data(), response.length());
+      if (!has_json_header) {
+          auto response = std::string{"Delete success"};
+          mg_send_status(conn, 200);
+          mg_send_header(conn, "content-type", "text/html");
+          mg_send_data(conn, response.data(), response.length());
+      } else {
+          auto response = std::string{conn->content, conn->content_len};
+          mg_send_status(conn, 200);
+          mg_send_header(conn, "content-type", "application/json");
+          mg_send_data(conn, response.data(), response.length());
+      }
     } else {
         auto response = std::string{"Method unallowed"};
         mg_send_status(conn, 405);
@@ -487,6 +522,10 @@ static int evHandler(struct mg_connection* conn, enum mg_event ev) {
                 return hello(conn);
             } else if (Url{conn->uri} == "/timeout.html") {
                 return timeout(conn);
+            } else if (Url{conn->uri} == "/low_speed.html") {
+                return lowSpeed(conn);				
+            } else if (Url{conn->uri} == "/low_speed_bytes.html") {
+                return lowSpeedBytes(conn);				
             } else if (Url{conn->uri} == "/basic_cookies.html") {
                 return basicCookies(conn);
             } else if (Url{conn->uri} == "/check_cookies.html") {

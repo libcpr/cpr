@@ -1,10 +1,10 @@
 #!/bin/bash
 
 
-which clang-format-3.7
+which clang-format-3.8
 if [ $? -eq 0 ]
 then
-    format_command=clang-format-3.7
+    format_command=clang-format-3.8
 else
     format_command=clang-format
 fi
@@ -20,7 +20,8 @@ do
             $format_command -style=file -output-replacements-xml $FILE | grep -c "<replacement " >/dev/null
             if [ $? -ne 1 ]
             then
-                echo "Please run clang-format on $FILE"
+                echo "Please run clang-format on $FILE:"
+                $format_command -style=file $FILE | diff - $FILE
                 format_error_exists=1
             fi
         fi

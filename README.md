@@ -39,6 +39,7 @@ C++ Requests currently supports:
 * Basic authentication
 * Digest authentication
 * Timeout specification
+* Timeout for low speed connection
 * Asynchronous requests
 * :cookie: support!
 * Proxy support
@@ -66,6 +67,9 @@ If you already have a project you need to integrate C++ Requests with, the prima
 
 ```shell
 git submodule add git@github.com:whoshuu/cpr.git
+OR 
+git submodule add https://github.com/whoshuu/cpr.git
+
 git submodule update --init --recursive
 ```
 
@@ -90,7 +94,3 @@ The only explicit requirements are:
 
 * a C++11 compatible compiler such as Clang or GCC. The minimum required version of GCC is unknown, so if anyone has trouble building this library with a specific version of GCC, do let me know
 * curl and its development libraries
-
-## Contributing
-
-Please fork this repository and contribute back using [pull requests](https://github.com/whoshuu/cpr/pulls). Features can be requested using [issues](https://github.com/whoshuu/cpr/issues). All code, comments, and critiques are greatly appreciated.
