@@ -3,7 +3,7 @@ include_directories(
     ${CPR_INCLUDE_DIRS}
     ${CURL_INCLUDE_DIRS})
 
-add_library(${CPR_LIBRARIES}
+set(CPR_SOURCES
 
     # Source files
     auth.cpp
@@ -42,6 +42,11 @@ add_library(${CPR_LIBRARIES}
     "${CPR_INCLUDE_DIRS}/cpr/util.h"
     "${CPR_INCLUDE_DIRS}/cpr/ssl_options.h")
 
+add_library(${CPR_LIBRARIES} SHARED ${CPR_SOURCES})
+add_library(${CPR_LIBRARIES_STATIC} STATIC ${CPR_SOURCES})
+
 message(STATUS "Using CURL_LIBRARIES: ${CURL_LIBRARIES}.")
 target_link_libraries(${CPR_LIBRARIES}
     ${CURL_LIBRARIES})
+
+target_link_libraries(${CPR_LIBRARIES_STATIC} ${CURL_LIBRARIES})
