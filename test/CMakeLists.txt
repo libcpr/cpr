@@ -1,10 +1,12 @@
 macro(add_cpr_test _TEST_NAME)
+    find_package(Threads)
     add_executable(${_TEST_NAME}_tests
         ${_TEST_NAME}_tests.cpp server.cpp server.h)
     target_link_libraries(${_TEST_NAME}_tests
         ${GTEST_LIBRARIES}
         ${CPR_LIBRARIES}
-        ${MONGOOSE_LIBRARIES})
+        ${MONGOOSE_LIBRARIES}
+        ${CMAKE_THREAD_LIBS_INIT})
     add_test(NAME cpr_${_TEST_NAME}_tests COMMAND ${_TEST_NAME}_tests)
     # Group under the "tests" project folder in IDEs such as Visual Studio.
     set_property(TARGET ${_TEST_NAME}_tests PROPERTY FOLDER "tests")
