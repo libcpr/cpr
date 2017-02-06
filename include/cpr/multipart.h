@@ -65,7 +65,15 @@ struct Part {
 
 class Multipart {
   public:
+    template <class It>
+    Multipart(const It begin, const It end) {
+        for (It part = begin; part != end; ++part) {
+            AddPart(*part);
+        }
+    }
     Multipart(const std::initializer_list<Part>& parts);
+
+    void AddPart(const Part& part);
 
     std::vector<Part> parts;
 };

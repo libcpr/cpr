@@ -128,6 +128,41 @@ TEST(UrlEncodedPostTests, FormPostSingleTest) {
     EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
+TEST(UrlEncodedPostTests, FormPostAddMultipartPart) {
+    auto url = Url{base + "/form_post.html"};
+    auto multipart = Multipart{{"x", "5"}};
+    multipart.AddPart({"y", "13"});
+    auto response = cpr::Post(url, multipart);
+    auto expected_text = std::string{"{\n"
+                                     "  \"x\": 5,\n"
+                                     "  \"y\": 13,\n"
+                                     "  \"sum\": 18\n"
+                                     "}"};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
+    EXPECT_EQ(201, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
+TEST(UrlEncodedPostTests, FormPostMultipartIteratorTest) {
+    auto url = Url{base + "/form_post.html"};
+    std::vector<Part> parts;
+    parts.push_back({"x", "5"});
+    parts.push_back({"y", "13"});
+    auto response = cpr::Post(url, Multipart(parts.begin(), parts.end()));
+    auto expected_text = std::string{"{\n"
+                                     "  \"x\": 5,\n"
+                                     "  \"y\": 13,\n"
+                                     "  \"sum\": 18\n"
+                                     "}"};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
+    EXPECT_EQ(201, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
 TEST(UrlEncodedPostTests, FormPostFileTest) {
     auto filename = std::string{"test_file"};
     auto content = std::string{"hello world"};
