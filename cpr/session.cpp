@@ -31,6 +31,7 @@ class Session::Impl {
     void SetRedirect(const bool& redirect);
     void SetMaxRedirects(const MaxRedirects& max_redirects);
     void SetCookies(const Cookies& cookies);
+    void SetCookieFile(const std::string& cookie_file);
     void SetBody(Body&& body);
     void SetBody(const Body& body);
     void SetLowSpeed(const LowSpeed& low_speed);
@@ -261,6 +262,15 @@ void Session::Impl::SetCookies(const Cookies& cookies) {
     }
 }
 
+void Session::Impl::SetCookieFile(const std::string& cookie_file) {
+    auto curl = curl_->handle;
+    if (curl) {
+        curl_easy_setopt(curl, CURLOPT_COOKIELIST, "ALL");
+        curl_easy_setopt(curl, CURLOPT_COOKIEFILE, cookie_file.data());
+        curl_easy_setopt(curl, CURLOPT_COOKIEJAR, cookie_file.data());
+    }
+}
+
 void Session::Impl::SetBody(Body&& body) {
     auto curl = curl_->handle;
     if (curl) {
@@ -443,6 +453,7 @@ void Session::SetMultipart(Multipart&& multipart) { pimpl_->SetMultipart(std::mo
 void Session::SetRedirect(const bool& redirect) { pimpl_->SetRedirect(redirect); }
 void Session::SetMaxRedirects(const MaxRedirects& max_redirects) { pimpl_->SetMaxRedirects(max_redirects); }
 void Session::SetCookies(const Cookies& cookies) { pimpl_->SetCookies(cookies); }
+void Session::SetCookieFile(const std::string& cookie_file) { pimpl_->SetCookieFile(cookie_file); }
 void Session::SetBody(const Body& body) { pimpl_->SetBody(body); }
 void Session::SetBody(Body&& body) { pimpl_->SetBody(std::move(body)); }
 void Session::SetLowSpeed(const LowSpeed& low_speed) { pimpl_->SetLowSpeed(low_speed); }
