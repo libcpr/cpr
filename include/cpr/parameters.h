@@ -11,8 +11,7 @@ namespace cpr {
 
 struct Parameter {
     template <typename KeyType, typename ValueType>
-    Parameter(KeyType&& key, ValueType&& value)
-            : key{CPR_FWD(key)}, value{CPR_FWD(value)} {}
+    Parameter(KeyType&& key, ValueType&& value) : key{CPR_FWD(key)}, value{CPR_FWD(value)} {}
 
     std::string key;
     std::string value;

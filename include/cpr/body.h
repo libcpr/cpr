@@ -26,8 +26,7 @@ class Body : public std::string {
     explicit Body(std::string&& std_string) : std::string(std::move(std_string)) {}
     explicit Body(std::initializer_list<char> il) : std::string(il) {}
     template <class InputIterator>
-    explicit Body(InputIterator first, InputIterator last)
-            : std::string(first, last) {}
+    explicit Body(InputIterator first, InputIterator last) : std::string(first, last) {}
 };
 
 } // namespace cpr

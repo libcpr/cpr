@@ -51,9 +51,9 @@ AsyncResponse GetAsync(Ts... ts) {
 // Get callback methods
 template <typename Then, typename... Ts>
 auto GetCallback(Then then, Ts... ts) -> std::future<decltype(then(Get(std::move(ts)...)))> {
-    return std::async(std::launch::async, [](Then then, Ts... ts) {
-        return then(Get(std::move(ts)...));
-    }, std::move(then), std::move(ts)...);
+    return std::async(std::launch::async,
+                      [](Then then, Ts... ts) { return then(Get(std::move(ts)...)); },
+                      std::move(then), std::move(ts)...);
 }
 
 // Post methods
@@ -74,9 +74,9 @@ AsyncResponse PostAsync(Ts... ts) {
 // Post callback methods
 template <typename Then, typename... Ts>
 auto PostCallback(Then then, Ts... ts) -> std::future<decltype(then(Post(std::move(ts)...)))> {
-    return std::async(std::launch::async, [](Then then, Ts... ts) {
-        return then(Post(std::move(ts)...));
-    }, std::move(then), std::move(ts)...);
+    return std::async(std::launch::async,
+                      [](Then then, Ts... ts) { return then(Post(std::move(ts)...)); },
+                      std::move(then), std::move(ts)...);
 }
 
 // Put methods
@@ -97,9 +97,9 @@ AsyncResponse PutAsync(Ts... ts) {
 // Put callback methods
 template <typename Then, typename... Ts>
 auto PutCallback(Then then, Ts... ts) -> std::future<decltype(then(Put(std::move(ts)...)))> {
-    return std::async(std::launch::async, [](Then then, Ts... ts) {
-        return then(Put(std::move(ts)...));
-    }, std::move(then), std::move(ts)...);
+    return std::async(std::launch::async,
+                      [](Then then, Ts... ts) { return then(Put(std::move(ts)...)); },
+                      std::move(then), std::move(ts)...);
 }
 
 // Head methods
@@ -120,9 +120,9 @@ AsyncResponse HeadAsync(Ts... ts) {
 // Head callback methods
 template <typename Then, typename... Ts>
 auto HeadCallback(Then then, Ts... ts) -> std::future<decltype(then(Head(std::move(ts)...)))> {
-    return std::async(std::launch::async, [](Then then, Ts... ts) {
-        return then(Head(std::move(ts)...));
-    }, std::move(then), std::move(ts)...);
+    return std::async(std::launch::async,
+                      [](Then then, Ts... ts) { return then(Head(std::move(ts)...)); },
+                      std::move(then), std::move(ts)...);
 }
 
 // Delete methods
@@ -143,9 +143,9 @@ AsyncResponse DeleteAsync(Ts... ts) {
 // Delete callback methods
 template <typename Then, typename... Ts>
 auto DeleteCallback(Then then, Ts... ts) -> std::future<decltype(then(Delete(std::move(ts)...)))> {
-    return std::async(std::launch::async, [](Then then, Ts... ts) {
-        return then(Delete(std::move(ts)...));
-    }, std::move(then), std::move(ts)...);
+    return std::async(std::launch::async,
+                      [](Then then, Ts... ts) { return then(Delete(std::move(ts)...)); },
+                      std::move(then), std::move(ts)...);
 }
 
 // Options methods
@@ -167,9 +167,9 @@ AsyncResponse OptionsAsync(Ts... ts) {
 template <typename Then, typename... Ts>
 auto OptionsCallback(Then then, Ts... ts)
         -> std::future<decltype(then(Options(std::move(ts)...)))> {
-    return std::async(std::launch::async, [](Then then, Ts... ts) {
-        return then(Options(std::move(ts)...));
-    }, std::move(then), std::move(ts)...);
+    return std::async(std::launch::async,
+                      [](Then then, Ts... ts) { return then(Options(std::move(ts)...)); },
+                      std::move(then), std::move(ts)...);
 }
 
 // Patch methods
@@ -190,9 +190,9 @@ AsyncResponse PatchAsync(Ts... ts) {
 // Patch callback methods
 template <typename Then, typename... Ts>
 auto PatchCallback(Then then, Ts... ts) -> std::future<decltype(then(Patch(std::move(ts)...)))> {
-    return std::async(std::launch::async, [](Then then, Ts... ts) {
-        return then(Patch(std::move(ts)...));
-    }, std::move(then), std::move(ts)...);
+    return std::async(std::launch::async,
+                      [](Then then, Ts... ts) { return then(Patch(std::move(ts)...)); },
+                      std::move(then), std::move(ts)...);
 }
 
 } // namespace cpr

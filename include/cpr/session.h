@@ -9,15 +9,15 @@
 #include "cookies.h"
 #include "cprtypes.h"
 #include "digest.h"
+#include "low_speed.h"
 #include "max_redirects.h"
 #include "multipart.h"
 #include "parameters.h"
 #include "payload.h"
 #include "proxies.h"
 #include "response.h"
-#include "timeout.h"
-#include "low_speed.h"
 #include "ssl_options.h"
+#include "timeout.h"
 
 namespace cpr {
 

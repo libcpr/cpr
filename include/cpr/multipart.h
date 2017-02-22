@@ -13,8 +13,7 @@ namespace cpr {
 
 struct File {
     template <typename StringType>
-    explicit File(StringType&& filepath)
-            : filepath{CPR_FWD(filepath)} {}
+    explicit File(StringType&& filepath) : filepath{CPR_FWD(filepath)} {}
     std::string filepath;
 };
 
@@ -33,7 +32,7 @@ struct Buffer {
     template <typename Iterator>
     typename std::enable_if<std::is_same<typename std::iterator_traits<Iterator>::iterator_category,
                                          std::random_access_iterator_tag>::value>::type
-    is_random_access_iterator(Iterator /* begin */, Iterator /* end */ ) {}
+    is_random_access_iterator(Iterator /* begin */, Iterator /* end */) {}
 
     data_t data;
     unsigned long datalen;
