@@ -10,7 +10,7 @@ fi
 
 format_error_exists=0
 
-for DIRECTORY in include cpr
+for DIRECTORY in include/cpr cpr
 do
     for FILE in $DIRECTORY/*.h $DIRECTORY/*.cpp
     do
