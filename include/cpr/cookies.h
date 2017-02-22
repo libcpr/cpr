@@ -17,6 +17,16 @@ class Cookies {
     std::string& operator[](const std::string& key);
     std::string GetEncoded() const;
 
+    typedef std::map<std::string, std::string>::iterator iterator;
+    typedef std::map<std::string, std::string>::const_iterator const_iterator;
+
+    iterator begin();
+    iterator end();
+    const_iterator begin() const;
+    const_iterator end() const;
+    const_iterator cbegin() const;
+    const_iterator cend() const;
+
   private:
     std::map<std::string, std::string> map_;
 };
