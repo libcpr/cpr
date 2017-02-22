@@ -1,8 +1,7 @@
 #!/bin/bash
 
 
-which clang-format-3.8
-if [ $? -eq 0 ]
+if hash clang-format-3.8 2>/dev/null
 then
     format_command=clang-format-3.8
 else
