@@ -49,6 +49,7 @@ class Session::Impl {
     Url url_;
     Parameters parameters_;
     Proxies proxies_;
+    std::string body_;
 
     Response makeRequest(CURL* curl);
     static void freeHolder(CurlHolder* holder);
@@ -151,8 +152,9 @@ void Session::Impl::SetDigest(const Digest& auth) {
 void Session::Impl::SetPayload(Payload&& payload) {
     auto curl = curl_->handle;
     if (curl) {
-        curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, payload.content.length());
-        curl_easy_setopt(curl, CURLOPT_COPYPOSTFIELDS, payload.content.data());
+        body_ = std::move(payload.content);
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, body_.length());
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, body_.data());
     }
 }
 
@@ -263,8 +265,9 @@ void Session::Impl::SetCookies(const Cookies& cookies) {
 void Session::Impl::SetBody(Body&& body) {
     auto curl = curl_->handle;
     if (curl) {
-        curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, body.length());
-        curl_easy_setopt(curl, CURLOPT_COPYPOSTFIELDS, body.data());
+        body_ = std::move(body);
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, body_.length());
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, body_.data());
     }
 }
 
