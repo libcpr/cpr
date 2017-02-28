@@ -160,7 +160,7 @@ void Session::Impl::SetPayload(const Payload& payload) {
     auto curl = curl_->handle;
     if (curl) {
         curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, payload.content.length());
-        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, payload.content.data());
+        curl_easy_setopt(curl, CURLOPT_COPYPOSTFIELDS, payload.content.data());
     }
 }
 
@@ -213,16 +213,17 @@ void Session::Impl::SetMultipart(const Multipart& multipart) {
 
         for (auto& part : multipart.parts) {
             std::vector<struct curl_forms> formdata;
-            formdata.push_back({CURLFORM_PTRNAME, part.name.data()});
+            formdata.push_back({CURLFORM_COPYNAME, part.name.data()});
             if (part.is_buffer) {
                 formdata.push_back({CURLFORM_BUFFER, part.value.data()});
-                formdata.push_back({CURLFORM_BUFFERPTR, reinterpret_cast<const char*>(part.data)});
                 formdata.push_back(
-                        {CURLFORM_BUFFERLENGTH, reinterpret_cast<const char*>(part.datalen)});
+                        {CURLFORM_COPYCONTENTS, reinterpret_cast<const char*>(part.data)});
+                formdata.push_back(
+                        {CURLFORM_CONTENTSLENGTH, reinterpret_cast<const char*>(part.datalen)});
             } else if (part.is_file) {
                 formdata.push_back({CURLFORM_FILE, part.value.data()});
             } else {
-                formdata.push_back({CURLFORM_PTRCONTENTS, part.value.data()});
+                formdata.push_back({CURLFORM_COPYCONTENTS, part.value.data()});
             }
             if (!part.content_type.empty()) {
                 formdata.push_back({CURLFORM_CONTENTTYPE, part.content_type.data()});
@@ -271,7 +272,7 @@ void Session::Impl::SetBody(const Body& body) {
     auto curl = curl_->handle;
     if (curl) {
         curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, body.length());
-        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, body.data());
+        curl_easy_setopt(curl, CURLOPT_COPYPOSTFIELDS, body.data());
     }
 }
 
