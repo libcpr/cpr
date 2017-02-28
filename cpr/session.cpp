@@ -50,6 +50,7 @@ class Session::Impl {
     Parameters parameters_;
     Proxies proxies_;
     std::string body_;
+    Multipart multipart_;
 
     Response makeRequest(CURL* curl);
     static void freeHolder(CurlHolder* holder);
@@ -177,22 +178,23 @@ void Session::Impl::SetProxies(Proxies&& proxies) {
 void Session::Impl::SetMultipart(Multipart&& multipart) {
     auto curl = curl_->handle;
     if (curl) {
+        multipart_ = std::move(multipart);
+
         struct curl_httppost* formpost = NULL;
         struct curl_httppost* lastptr = NULL;
 
-        for (auto& part : multipart.parts) {
+        for (auto& part : multipart_.parts) {
             std::vector<struct curl_forms> formdata;
-            formdata.push_back({CURLFORM_COPYNAME, part.name.data()});
+            formdata.push_back({CURLFORM_PTRNAME, part.name.data()});
             if (part.is_buffer) {
                 formdata.push_back({CURLFORM_BUFFER, part.value.data()});
+                formdata.push_back({CURLFORM_BUFFERPTR, reinterpret_cast<const char*>(part.data)});
                 formdata.push_back(
-                        {CURLFORM_COPYCONTENTS, reinterpret_cast<const char*>(part.data)});
-                formdata.push_back(
-                        {CURLFORM_CONTENTSLENGTH, reinterpret_cast<const char*>(part.datalen)});
+                        {CURLFORM_BUFFERLENGTH, reinterpret_cast<const char*>(part.datalen)});
             } else if (part.is_file) {
                 formdata.push_back({CURLFORM_FILE, part.value.data()});
             } else {
-                formdata.push_back({CURLFORM_COPYCONTENTS, part.value.data()});
+                formdata.push_back({CURLFORM_PTRCONTENTS, part.value.data()});
             }
             if (!part.content_type.empty()) {
                 formdata.push_back({CURLFORM_CONTENTTYPE, part.content_type.data()});

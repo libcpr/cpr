@@ -65,7 +65,10 @@ struct Part {
 
 class Multipart {
   public:
+    Multipart() = default;
+    Multipart(Multipart&&) = default;
     Multipart(const std::initializer_list<Part>& parts);
+    Multipart& operator=(Multipart&&) = default;
 
     std::vector<Part> parts;
 };
