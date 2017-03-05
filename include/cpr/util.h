@@ -6,7 +6,6 @@
 
 #include "cpr/cprtypes.h"
 
-
 namespace cpr {
 namespace util {
 

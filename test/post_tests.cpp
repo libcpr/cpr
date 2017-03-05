@@ -15,7 +15,6 @@ using namespace cpr;
 static Server* server = new Server();
 auto base = server->GetBaseUrl();
 
-
 TEST(UrlEncodedPostTests, UrlPostSingleTest) {
     auto url = Url{base + "/url_post.html"};
     auto response = cpr::Post(url, Payload{{"x", "5"}});

@@ -10,6 +10,7 @@
 #include "cpr/error.h"
 
 namespace cpr {
+
 class Response {
   public:
     Response() = default;

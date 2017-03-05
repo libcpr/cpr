@@ -13,7 +13,6 @@
 
 #define SERVER_PORT "8080"
 
-
 std::mutex shutdown_mutex;
 std::mutex server_mutex;
 std::condition_variable server_cv;
