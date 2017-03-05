@@ -4,10 +4,10 @@
 #include <cstdint>
 #include <string>
 
-#include "cookies.h"
-#include "cprtypes.h"
-#include "defines.h"
-#include "error.h"
+#include "cpr/cookies.h"
+#include "cpr/cprtypes.h"
+#include "cpr/defines.h"
+#include "cpr/error.h"
 
 namespace cpr {
 class Response {

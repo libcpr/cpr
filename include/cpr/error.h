@@ -4,8 +4,8 @@
 #include <cstdint>
 #include <string>
 
-#include "cprtypes.h"
-#include "defines.h"
+#include "cpr/cprtypes.h"
+#include "cpr/defines.h"
 
 namespace cpr {
 

@@ -1,8 +1,8 @@
 #ifndef CPR_DIGEST_H
 #define CPR_DIGEST_H
 
-#include "auth.h"
-#include "defines.h"
+#include "cpr/auth.h"
+#include "cpr/defines.h"
 
 namespace cpr {
 
