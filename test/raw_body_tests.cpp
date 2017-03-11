@@ -5,15 +5,14 @@
 #include <string>
 
 #include <cpr/cpr.h>
+#include <cpr/multipart.h>
 
-#include "cpr/multipart.h"
 #include "server.h"
 
 using namespace cpr;
 
 static Server* server = new Server();
 auto base = server->GetBaseUrl();
-
 
 TEST(BodyPostTests, DefaultUrlEncodedPostTest) {
     auto url = Url{base + "/url_post.html"};

@@ -4,20 +4,20 @@
 #include <cstdint>
 #include <memory>
 
-#include "auth.h"
-#include "body.h"
-#include "cookies.h"
-#include "cprtypes.h"
-#include "digest.h"
-#include "max_redirects.h"
-#include "multipart.h"
-#include "parameters.h"
-#include "payload.h"
-#include "proxies.h"
-#include "response.h"
-#include "timeout.h"
-#include "low_speed.h"
-#include "ssl_options.h"
+#include "cpr/auth.h"
+#include "cpr/body.h"
+#include "cpr/cookies.h"
+#include "cpr/cprtypes.h"
+#include "cpr/digest.h"
+#include "cpr/max_redirects.h"
+#include "cpr/multipart.h"
+#include "cpr/parameters.h"
+#include "cpr/payload.h"
+#include "cpr/proxies.h"
+#include "cpr/response.h"
+#include "cpr/timeout.h"
+#include "cpr/low_speed.h"
+#include "cpr/ssl_options.h"
 
 namespace cpr {
 
