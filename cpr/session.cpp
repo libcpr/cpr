@@ -118,7 +118,11 @@ void Session::Impl::SetHeader(const Header& header) {
             } else {
                 header_string += ": " + item->second;
             }
-            chunk = curl_slist_append(chunk, header_string.data());
+
+            auto temp = curl_slist_append(chunk, header_string.data());
+            if (temp) {
+                chunk = temp;
+            }
         }
         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk);
 
