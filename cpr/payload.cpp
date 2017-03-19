@@ -7,14 +7,23 @@
 
 namespace cpr {
 
-Payload::Payload(const std::initializer_list<Pair>& pairs) : Payload(begin(pairs), end(pairs)) {}
+    Payload::Payload(const std::initializer_list<Pair>& pairs) : Payload(begin(pairs), end(pairs)) {}
 
-void Payload::AddPair(const Pair& pair) {
-    if (!content.empty()) {
-        content += "&";
+    Payload::Payload(const Payload::type_parameterS &parameters) {
+        for (const auto &parameter : parameters) {
+            Pair pair(parameter.first, parameter.second);
+            AddPair(pair);
+        }
     }
-    auto escaped = cpr::util::urlEncode(pair.value);
-    content += pair.key + "=" + escaped;
-}
+
+    void Payload::AddPair(const Pair& pair) {
+        if (!content.empty()) {
+            content += "&";
+        }
+        auto escaped = cpr::util::urlEncode(pair.value);
+        content += pair.key + "=" + escaped;
+    }
+
+
 
 } // namespace cpr
