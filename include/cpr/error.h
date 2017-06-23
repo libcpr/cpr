@@ -41,8 +41,8 @@ class Error {
         return code != ErrorCode::OK;
     }
 
-    ErrorCode code;
     std::string message;
+    ErrorCode code;
 
   private:
     static ErrorCode getErrorCodeForCurlError(std::int32_t curl_code);
