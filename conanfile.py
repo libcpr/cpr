@@ -1,4 +1,5 @@
 from conans import ConanFile, CMake
+from conans.tools import os_info, SystemPackageTool
 import os
 
 
@@ -21,6 +22,10 @@ class CPRConan(ConanFile):
             self.options["libcurl"].with_openssl = True
         else:
             self.options["libcurl"].with_openssl = False
+
+        if os_info.is_linux:
+          #this is hamfisted, but should work.
+          self.options.use_system_curl = True
 
         if self.options.use_system_curl:
             if "libcurl" in self.requires:
