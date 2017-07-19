@@ -294,20 +294,22 @@ void Session::Impl::SetVerifySsl(const VerifySsl& verify) {
 }
 
 void Session::Impl::SetProtocolVersion(const ProtocolVersion& protocolversion) {
+#if LIBCURL_VERSION_MAJOR >= 7
+#if LIBCURL_VERSION_MINOR >= 33
+#if LIBCURL_VERSION_PATCH >= 0
     auto curl = curl_->handle;
     if (curl) {
-        if ( protocolversion == cpr::HTTP::v2 )
-        {
-            if ( curl_version_info(CURLVERSION_NOW)->features & CURL_VERSION_HTTP2 )
-            {
+        if (protocolversion == cpr::HTTP::v2) {
+            if (curl_version_info(CURLVERSION_NOW)->features & CURL_VERSION_HTTP2) {
                 curl_easy_setopt(curl, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_2_0);
-            }
-            else
-            {
+            } else {
                 throw std::runtime_error("no HTTP/2 support");
             }
         }
     }
+#endif
+#endif
+#endif
 }
 
 Response Session::Impl::Delete() {
