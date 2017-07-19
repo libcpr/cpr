@@ -12,6 +12,7 @@ struct CaseInsensitiveCompare {
 
 using Header = std::map<std::string, std::string, CaseInsensitiveCompare>;
 using Url = std::string;
+using ProtocolVersion = enum HTTP { v1x, v2 };
 
 } // namespace cpr
 

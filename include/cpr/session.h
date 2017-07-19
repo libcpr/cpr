@@ -46,6 +46,7 @@ class Session {
     void SetBody(const Body& body);
     void SetLowSpeed(const LowSpeed& low_speed);
     void SetVerifySsl(const VerifySsl& verify);
+    void SetProtocolVersion(const ProtocolVersion& protocolversion);
 
     // Used in templated functions
     void SetOption(const Url& url);
@@ -68,6 +69,7 @@ class Session {
     void SetOption(const Body& body);
     void SetOption(const LowSpeed& low_speed);
     void SetOption(const VerifySsl& verify);
+    void SetOption(const ProtocolVersion& protocolversion);
 
     Response Delete();
     Response Get();
