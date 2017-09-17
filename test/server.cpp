@@ -508,65 +508,75 @@ static int putUnallowed(struct mg_connection* conn) {
 static int evHandler(struct mg_connection* conn, enum mg_event ev) {
     switch (ev) {
         case MG_AUTH:
-            if (Url{conn->uri} == "/basic_auth.html") {
+        {
+            auto uri = Url{conn->uri};
+
+            if (uri == "/basic_auth.html") {
                 return basicAuth(conn);
-            } else if (Url{conn->uri} == "/digest_auth.html") {
+            } else if (uri == "/digest_auth.html") {
                 return digestAuth(conn);
             }
+
             return MG_TRUE;
+        }
         case MG_REQUEST:
-            if (Url{conn->uri} == "/") {
+        {
+            auto uri = Url{conn->uri};
+
+            if (uri == "/") {
                 return options(conn);
-            } else if (Url{conn->uri} == "/hello.html") {
+            } else if (uri == "/hello.html") {
                 return hello(conn);
-            } else if (Url{conn->uri} == "/timeout.html") {
+            } else if (uri == "/timeout.html") {
                 return timeout(conn);
-            } else if (Url{conn->uri} == "/low_speed.html") {
-                return lowSpeed(conn);				
-            } else if (Url{conn->uri} == "/low_speed_bytes.html") {
-                return lowSpeedBytes(conn);				
-            } else if (Url{conn->uri} == "/basic_cookies.html") {
+            } else if (uri == "/low_speed.html") {
+                return lowSpeed(conn);
+            } else if (uri == "/low_speed_bytes.html") {
+                return lowSpeedBytes(conn);
+            } else if (uri == "/basic_cookies.html") {
                 return basicCookies(conn);
-            } else if (Url{conn->uri} == "/check_cookies.html") {
+            } else if (uri == "/check_cookies.html") {
                 return checkBasicCookies(conn);
-            } else if (Url{conn->uri} == "/v1_cookies.html") {
+            } else if (uri == "/v1_cookies.html") {
                 return v1Cookies(conn);
-            } else if (Url{conn->uri} == "/check_v1_cookies.html") {
+            } else if (uri == "/check_v1_cookies.html") {
                 return checkV1Cookies(conn);
-            } else if (Url{conn->uri} == "/basic_auth.html") {
+            } else if (uri == "/basic_auth.html") {
                 return headerReflect(conn);
-            } else if (Url{conn->uri} == "/digest_auth.html") {
+            } else if (uri == "/digest_auth.html") {
                 return headerReflect(conn);
-            } else if (Url{conn->uri} == "/basic.json") {
+            } else if (uri == "/basic.json") {
                 return basicJson(conn);
-            } else if (Url{conn->uri} == "/header_reflect.html") {
+            } else if (uri == "/header_reflect.html") {
                 return headerReflect(conn);
-            } else if (Url{conn->uri} == "/temporary_redirect.html") {
+            } else if (uri == "/temporary_redirect.html") {
                 return temporaryRedirect(conn);
-            } else if (Url{conn->uri} == "/permanent_redirect.html") {
+            } else if (uri == "/permanent_redirect.html") {
                 return permanentRedirect(conn);
-            } else if (Url{conn->uri} == "/two_redirects.html") {
+            } else if (uri == "/two_redirects.html") {
                 return twoRedirects(conn);
-            } else if (Url{conn->uri} == "/url_post.html") {
+            } else if (uri == "/url_post.html") {
                 return urlPost(conn);
-            } else if (Url{conn->uri} == "/json_post.html") {
+            } else if (uri == "/json_post.html") {
                 return jsonPost(conn);
-            } else if (Url{conn->uri} == "/form_post.html") {
+            } else if (uri == "/form_post.html") {
                 return formPost(conn);
-            } else if (Url{conn->uri} == "/delete.html") {
+            } else if (uri == "/delete.html") {
                 return deleteRequest(conn);
-            } else if (Url{conn->uri} == "/delete_unallowed.html") {
+            } else if (uri == "/delete_unallowed.html") {
                 return deleteUnallowedRequest(conn);
-            } else if (Url{conn->uri} == "/put.html") {
+            } else if (uri == "/put.html") {
                 return put(conn);
-            } else if (Url{conn->uri} == "/put_unallowed.html") {
+            } else if (uri == "/put_unallowed.html") {
                 return putUnallowed(conn);
-            } else if (Url{conn->uri} == "/patch.html") {
+            } else if (uri == "/patch.html") {
                 return patch(conn);
-            } else if (Url{conn->uri} == "/patch_unallowed.html") {
+            } else if (uri == "/patch_unallowed.html") {
                 return patchUnallowed(conn);
             }
+
             return MG_FALSE;
+        }
         default:
             return MG_FALSE;
     }
@@ -604,11 +614,11 @@ void Server::TearDown() {
 }
 
 Url Server::GetBaseUrl() {
-    return Url{"http://127.0.0.1:"}.append(SERVER_PORT);
+    return Url{"http://127.0.0.1:"} + SERVER_PORT;
 }
 
 Url Server::GetBaseUrlSSL() {
-    return Url{"https://127.0.0.1:"}.append(SERVER_PORT);
+    return Url{"https://127.0.0.1:"} + SERVER_PORT;
 }
 
 static inline bool is_base64(unsigned char c) {

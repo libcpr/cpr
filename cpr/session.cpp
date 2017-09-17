@@ -35,6 +35,9 @@ class Session::Impl {
     void SetBody(const Body& body);
     void SetLowSpeed(const LowSpeed& low_speed);
     void SetVerifySsl(const VerifySsl& verify);
+    void SetSslCert(const SslCert& cert);
+    void SetSslKey(const SslKey& key);
+    void SetSslKeyPass(const SslKeyPass& pass);
 
     Response Delete();
     Response Get();
@@ -291,6 +294,27 @@ void Session::Impl::SetVerifySsl(const VerifySsl& verify) {
     }
 }
 
+void Session::Impl::SetSslCert(const SslCert& cert) {
+    auto curl = curl_->handle;
+    if (curl) {
+        curl_easy_setopt(curl, CURLOPT_SSLCERT, cert.c_str());
+    }
+}
+
+void Session::Impl::SetSslKey(const SslKey& key) {
+    auto curl = curl_->handle;
+    if (curl) {
+        curl_easy_setopt(curl, CURLOPT_SSLKEY, key.c_str());
+    }
+}
+
+void Session::Impl::SetSslKeyPass(const SslKeyPass& pass) {
+    auto curl = curl_->handle;
+    if (curl) {
+        curl_easy_setopt(curl, CURLOPT_SSLKEYPASSWD, pass.c_str());
+    }
+}
+
 Response Session::Impl::Delete() {
     auto curl = curl_->handle;
     if (curl) {
@@ -368,14 +392,16 @@ Response Session::Impl::Put() {
 }
 
 Response Session::Impl::makeRequest(CURL* curl) {
+    auto new_url = url_;
+
     if (!parameters_.content.empty()) {
-        Url new_url{url_ + "?" + parameters_.content};
-        curl_easy_setopt(curl, CURLOPT_URL, new_url.data());
-    } else {
-        curl_easy_setopt(curl, CURLOPT_URL, url_.data());
+        new_url += "?" + parameters_.content;
     }
 
-    auto protocol = url_.substr(0, url_.find(':'));
+    curl_easy_setopt(curl, CURLOPT_URL, new_url.data());
+
+    const auto &s = new_url.str();
+    auto protocol = s.substr(0, s.find(':'));
     if (proxies_.has(protocol)) {
         curl_easy_setopt(curl, CURLOPT_PROXY, proxies_[protocol].data());
     } else {
@@ -445,6 +471,9 @@ void Session::SetBody(const Body& body) { pimpl_->SetBody(body); }
 void Session::SetBody(Body&& body) { pimpl_->SetBody(std::move(body)); }
 void Session::SetLowSpeed(const LowSpeed& low_speed) { pimpl_->SetLowSpeed(low_speed); }
 void Session::SetVerifySsl(const VerifySsl& verify) { pimpl_->SetVerifySsl(verify); }
+void Session::SetSslCert(const SslCert& cert) { pimpl_->SetSslCert(cert); }
+void Session::SetSslKey(const SslKey& key) { pimpl_->SetSslKey(key); }
+void Session::SetSslKeyPass(const SslKeyPass& pass) { pimpl_->SetSslKeyPass(pass); }
 void Session::SetOption(const Url& url) { pimpl_->SetUrl(url); }
 void Session::SetOption(const Parameters& parameters) { pimpl_->SetParameters(parameters); }
 void Session::SetOption(Parameters&& parameters) { pimpl_->SetParameters(std::move(parameters)); }
@@ -465,6 +494,9 @@ void Session::SetOption(const Body& body) { pimpl_->SetBody(body); }
 void Session::SetOption(Body&& body) { pimpl_->SetBody(std::move(body)); }
 void Session::SetOption(const LowSpeed& low_speed) { pimpl_->SetLowSpeed(low_speed); }
 void Session::SetOption(const VerifySsl& verify) { pimpl_->SetVerifySsl(verify); }
+void Session::SetOption(const SslCert& cert) { pimpl_->SetSslCert(cert); }
+void Session::SetOption(const SslKey& key) { pimpl_->SetSslKey(key); }
+void Session::SetOption(const SslKeyPass& pass) { pimpl_->SetSslKeyPass(pass); }
 Response Session::Delete() { return pimpl_->Delete(); }
 Response Session::Get() { return pimpl_->Get(); }
 Response Session::Head() { return pimpl_->Head(); }
