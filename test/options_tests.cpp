@@ -12,7 +12,7 @@ static Server* server = new Server();
 auto base = server->GetBaseUrl();
 
 TEST(OptionsTests, BaseUrlTest) {
-    auto url = Url{base + "/"};
+    auto url = base + "/";
     auto response = cpr::Options(url);
     auto expected_text = std::string{""};
     EXPECT_EQ(expected_text, response.text);
@@ -24,7 +24,7 @@ TEST(OptionsTests, BaseUrlTest) {
 }
 
 TEST(OptionsTests, SpecificUrlTest) {
-    auto url = Url{base + "/hello.html"};
+    auto url = base + "/hello.html";
     auto response = cpr::Options(url);
     auto expected_text = std::string{""};
     EXPECT_EQ(expected_text, response.text);
@@ -36,7 +36,7 @@ TEST(OptionsTests, SpecificUrlTest) {
 }
 
 TEST(OptionsTests, AsyncBaseUrlTest) {
-    auto url = Url{base + "/"};
+    auto url = base + "/";
     std::vector<AsyncResponse> responses;
     for (int i = 0; i < 10; ++i) {
         responses.emplace_back(cpr::OptionsAsync(url));
@@ -54,7 +54,7 @@ TEST(OptionsTests, AsyncBaseUrlTest) {
 }
 
 TEST(OptionsTests, AsyncSpecificUrlTest) {
-    auto url = Url{base + "/hello.html"};
+    auto url = base + "/hello.html";
     std::vector<AsyncResponse> responses;
     for (int i = 0; i < 10; ++i) {
         responses.emplace_back(cpr::OptionsAsync(url));

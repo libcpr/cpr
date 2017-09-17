@@ -12,7 +12,7 @@ static Server* server = new Server();
 auto base = server->GetBaseUrl();
 
 TEST(HeadTests, BasicHeadTest) {
-    auto url = Url{base + "/hello.html"};
+    auto url = base + "/hello.html";
     auto response = cpr::Head(url);
     EXPECT_EQ(std::string{}, response.text);
     EXPECT_EQ(url, response.url);
@@ -22,7 +22,7 @@ TEST(HeadTests, BasicHeadTest) {
 }
 
 TEST(HeadTests, ComplexHeadTest) {
-    auto url = Url{base + "/basic.json"};
+    auto url = base + "/basic.json";
     auto response = cpr::Head(url);
     EXPECT_EQ(std::string{}, response.text);
     EXPECT_EQ(url, response.url);
@@ -32,7 +32,7 @@ TEST(HeadTests, ComplexHeadTest) {
 }
 
 TEST(HeadTests, ResourceNotFoundHeadTest) {
-    auto url = Url{base + "/error.html"};
+    auto url = base + "/error.html";
     auto response = cpr::Head(url);
     EXPECT_EQ(std::string{}, response.text);
     EXPECT_EQ(url, response.url);
@@ -51,7 +51,7 @@ TEST(HeadTests, BadHostHeadTest) {
 }
 
 TEST(HeadTests, CookieHeadTest) {
-    auto url = Url{base + "/basic_cookies.html"};
+    auto url = base + "/basic_cookies.html";
     auto cookies = Cookies{{"hello", "world"}, {"my", "another; fake=cookie;"}};
     auto response = cpr::Head(url, cookies);
     EXPECT_EQ(std::string{}, response.text);
@@ -66,7 +66,7 @@ TEST(HeadTests, CookieHeadTest) {
 }
 
 TEST(HeadTests, ParameterHeadTest) {
-    auto url = Url{base + "/hello.html"};
+    auto url = base + "/hello.html";
     auto parameters = Parameters{{"key", "value"}};
     auto response = cpr::Head(url, parameters);
     EXPECT_EQ(std::string{}, response.text);
@@ -77,7 +77,7 @@ TEST(HeadTests, ParameterHeadTest) {
 }
 
 TEST(HeadTests, AuthenticationSuccessHeadTest) {
-    auto url = Url{base + "/basic_auth.html"};
+    auto url = base + "/basic_auth.html";
     auto response = cpr::Head(url, Authentication{"user", "password"});
     EXPECT_EQ(std::string{}, response.text);
     EXPECT_EQ(url, response.url);
@@ -87,7 +87,7 @@ TEST(HeadTests, AuthenticationSuccessHeadTest) {
 }
 
 TEST(HeadTests, AuthenticationNullFailureHeadTest) {
-    auto url = Url{base + "/basic_auth.html"};
+    auto url = base + "/basic_auth.html";
     auto response = cpr::Head(url);
     EXPECT_EQ(std::string{}, response.text);
     EXPECT_EQ(url, response.url);
@@ -97,7 +97,7 @@ TEST(HeadTests, AuthenticationNullFailureHeadTest) {
 }
 
 TEST(HeadTests, AuthenticationFailureHeadTest) {
-    auto url = Url{base + "/basic_auth.html"};
+    auto url = base + "/basic_auth.html";
     auto response = cpr::Head(url, Authentication{"user", "bad_password"});
     EXPECT_EQ(std::string{}, response.text);
     EXPECT_EQ(url, response.url);
@@ -107,7 +107,7 @@ TEST(HeadTests, AuthenticationFailureHeadTest) {
 }
 
 TEST(HeadTests, DISABLED_DigestSuccessHeadTest) { // Is nondeterministic using embedded mongoose
-    auto url = Url{base + "/digest_auth.html"};
+    auto url = base + "/digest_auth.html";
     auto response = cpr::Head(url, Digest{"user", "password"});
     EXPECT_EQ(std::string{}, response.text);
     EXPECT_EQ(url, response.url);
@@ -117,7 +117,7 @@ TEST(HeadTests, DISABLED_DigestSuccessHeadTest) { // Is nondeterministic using e
 }
 
 TEST(HeadTests, HeaderReflectNoneHeadTest) {
-    auto url = Url{base + "/header_reflect.html"};
+    auto url = base + "/header_reflect.html";
     auto response = cpr::Head(url);
     EXPECT_EQ(std::string{}, response.text);
     EXPECT_EQ(url, response.url);
@@ -128,7 +128,7 @@ TEST(HeadTests, HeaderReflectNoneHeadTest) {
 }
 
 TEST(HeadTests, HeaderReflectEmptyHeadTest) {
-    auto url = Url{base + "/header_reflect.html"};
+    auto url = base + "/header_reflect.html";
     auto response = cpr::Head(url, Header{});
     EXPECT_EQ(std::string{}, response.text);
     EXPECT_EQ(url, response.url);
@@ -139,7 +139,7 @@ TEST(HeadTests, HeaderReflectEmptyHeadTest) {
 }
 
 TEST(HeadTests, HeaderReflectHeadTest) {
-    auto url = Url{base + "/header_reflect.html"};
+    auto url = base + "/header_reflect.html";
     auto response = cpr::Head(url, Header{{"hello", "world"}});
     EXPECT_EQ(std::string{}, response.text);
     EXPECT_EQ(url, response.url);
@@ -150,7 +150,7 @@ TEST(HeadTests, HeaderReflectHeadTest) {
 }
 
 TEST(HeadTests, SetEmptyHeaderHeadTest) {
-    auto url = Url{base + "/header_reflect.html"};
+    auto url = base + "/header_reflect.html";
     auto response = cpr::Head(url, Header{{"hello", ""}});
     EXPECT_EQ(std::string{}, response.text);
     EXPECT_EQ(url, response.url);
@@ -161,7 +161,7 @@ TEST(HeadTests, SetEmptyHeaderHeadTest) {
 }
 
 TEST(HeadTests, RedirectHeadTest) {
-    auto url = Url{base + "/temporary_redirect.html"};
+    auto url = base + "/temporary_redirect.html";
     auto response = cpr::Head(url, false);
     EXPECT_EQ(std::string{}, response.text);
     EXPECT_EQ(url, response.url);
@@ -171,7 +171,7 @@ TEST(HeadTests, RedirectHeadTest) {
 }
 
 TEST(HeadTests, ZeroMaxRedirectsHeadTest) {
-    auto url = Url{base + "/hello.html"};
+    auto url = base + "/hello.html";
     auto response = cpr::Head(url, 0L);
     EXPECT_EQ(std::string{}, response.text);
     EXPECT_EQ(url, response.url);
@@ -181,7 +181,7 @@ TEST(HeadTests, ZeroMaxRedirectsHeadTest) {
 }
 
 TEST(HeadTests, BasicHeadAsyncTest) {
-    auto url = Url{base + "/hello.html"};
+    auto url = base + "/hello.html";
     std::vector<AsyncResponse> responses;
     for (int i = 0; i < 10; ++i) {
         responses.emplace_back(cpr::HeadAsync(url));

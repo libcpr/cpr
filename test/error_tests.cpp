@@ -43,35 +43,35 @@ TEST(ErrorTests, InvalidURLFailure) {
 }
 
 TEST(ErrorTests, TimeoutFailure) {
-    auto url = Url{base + "/timeout.html"};
+    auto url = base + "/timeout.html";
     auto response = cpr::Get(url, cpr::Timeout{1});
     EXPECT_EQ(0, response.status_code);
     EXPECT_EQ(ErrorCode::OPERATION_TIMEDOUT, response.error.code);
 }
 
 TEST(ErrorTests, ChronoTimeoutFailure) {
-    auto url = Url{base + "/timeout.html"};
+    auto url = base + "/timeout.html";
     auto response = cpr::Get(url, cpr::Timeout{std::chrono::milliseconds{1}});
     EXPECT_EQ(0, response.status_code);
     EXPECT_EQ(ErrorCode::OPERATION_TIMEDOUT, response.error.code);
 }
 
 TEST(ErrorTests, LowSpeedTimeFailure) {
-    auto url = Url{base + "/low_speed.html"};
+    auto url = base + "/low_speed.html";
     auto response = cpr::Get(url, cpr::LowSpeed{1000, 1});
     EXPECT_EQ(0, response.status_code);
     EXPECT_EQ(ErrorCode::OPERATION_TIMEDOUT, response.error.code);
 }
 
 TEST(ErrorTests, LowSpeedBytesFailure) {
-    auto url = Url{base + "/low_speed_bytes.html"};
+    auto url = base + "/low_speed_bytes.html";
     auto response = cpr::Get(url, cpr::LowSpeed{1000, 1});
     EXPECT_EQ(0, response.status_code);
     EXPECT_EQ(ErrorCode::OPERATION_TIMEDOUT, response.error.code);
 }
 
 TEST(ErrorTests, ProxyFailure) {
-    auto url = Url{base + "/hello.html"};
+    auto url = base + "/hello.html";
     auto response = cpr::Get(url, cpr::Proxies{{"http", "http://bad_host/"}});
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(0, response.status_code);

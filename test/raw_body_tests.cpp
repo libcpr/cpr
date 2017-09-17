@@ -15,7 +15,7 @@ static Server* server = new Server();
 auto base = server->GetBaseUrl();
 
 TEST(BodyPostTests, DefaultUrlEncodedPostTest) {
-    auto url = Url{base + "/url_post.html"};
+    auto url = base + "/url_post.html";
     auto response = cpr::Post(url, Body{"x=5"});
     auto expected_text = std::string{"{\n"
                                      "  \"x\": 5\n"
@@ -28,7 +28,7 @@ TEST(BodyPostTests, DefaultUrlEncodedPostTest) {
 }
 
 TEST(BodyPostTests, TextUrlEncodedPostTest) {
-    auto url = Url{base + "/url_post.html"};
+    auto url = base + "/url_post.html";
     auto response = cpr::Post(url, Body{"x=hello world!!~"});
     auto expected_text = std::string{"{\n"
                                      "  \"x\": hello world!!~\n"
@@ -41,7 +41,7 @@ TEST(BodyPostTests, TextUrlEncodedPostTest) {
 }
 
 TEST(BodyPostTests, TextUrlEncodedNoCopyPostTest) {
-    auto url = Url{base + "/url_post.html"};
+    auto url = base + "/url_post.html";
     auto body = Body{"x=hello world!!~"};
     // body lives through the lifetime of Post, so it doesn't need to be copied
     auto response = cpr::Post(url, body);
@@ -56,7 +56,7 @@ TEST(BodyPostTests, TextUrlEncodedNoCopyPostTest) {
 }
 
 TEST(BodyPostTests, UrlEncodedManyPostTest) {
-    auto url = Url{base + "/url_post.html"};
+    auto url = base + "/url_post.html";
     auto response = cpr::Post(url, Body{"x=5&y=13"});
     auto expected_text = std::string{"{\n"
                                      "  \"x\": 5,\n"
@@ -71,7 +71,7 @@ TEST(BodyPostTests, UrlEncodedManyPostTest) {
 }
 
 TEST(BodyPostTests, CustomHeaderNumberPostTest) {
-    auto url = Url{base + "/json_post.html"};
+    auto url = base + "/json_post.html";
     auto response = cpr::Post(url, Body{"{\"x\":5}"}, Header{{"Content-Type", "application/json"}});
     auto expected_text = std::string{"{\"x\":5}"};
     EXPECT_EQ(expected_text, response.text);
@@ -82,7 +82,7 @@ TEST(BodyPostTests, CustomHeaderNumberPostTest) {
 }
 
 TEST(BodyPostTests, CustomHeaderTextPostTest) {
-    auto url = Url{base + "/json_post.html"};
+    auto url = base + "/json_post.html";
     auto response = cpr::Post(url, Body{"{\"x\":\"hello world!!~\"}"},
                               Header{{"Content-Type", "application/json"}});
     auto expected_text = std::string{"{\"x\":\"hello world!!~\"}"};
@@ -94,7 +94,7 @@ TEST(BodyPostTests, CustomHeaderTextPostTest) {
 }
 
 TEST(BodyPostTests, CustomWrongHeaderPostTest) {
-    auto url = Url{base + "/json_post.html"};
+    auto url = base + "/json_post.html";
     auto response = cpr::Post(url, Body{"{\"x\":5}"}, Header{{"Content-Type", "text/plain"}});
     auto expected_text = std::string{"Unsupported Media Type"};
     EXPECT_EQ(expected_text, response.text);
@@ -115,7 +115,7 @@ TEST(BodyPostTests, UrlPostBadHostTest) {
 }
 
 TEST(BodyPostTests, StringMoveBodyTest) {
-    auto url = Url{base + "/url_post.html"};
+    auto url = base + "/url_post.html";
     auto response = cpr::Post(url, Body{std::string{"x=5"}});
     auto expected_text = std::string{"{\n"
                                      "  \"x\": 5\n"
