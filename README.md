@@ -38,6 +38,7 @@ C++ Requests currently supports:
 * File POST upload
 * Basic authentication
 * Digest authentication
+* Client certificate authentication
 * Timeout specification
 * Timeout for low speed connection
 * Asynchronous requests
@@ -92,5 +93,5 @@ and that should do it! Using the submodule method of integrating C++ Requests, t
 
 The only explicit requirements are:
 
-* a C++11 compatible compiler such as Clang or GCC. The minimum required version of GCC is unknown, so if anyone has trouble building this library with a specific version of GCC, do let me know
+* a C++11 compatible compiler such as Clang or GCC (4.8+). The minimum required version of Clang is unknown, so if anyone has trouble building this library with a specific version of Clang, please let me know.
 * curl and its development libraries
