@@ -99,7 +99,7 @@ static int basicCookies(struct mg_connection* conn) {
     mg_send_header(conn, "content-type", "text/html");
     time_t t = time(NULL) + 5;  // Valid for 1 hour
     char expire[100], expire_epoch[100];
-    snprintf(expire_epoch, sizeof(expire_epoch), "%lu", (unsigned long) t);
+    snprintf(expire_epoch, sizeof(expire_epoch), "%lu", static_cast<unsigned long>(t));
     strftime(expire, sizeof(expire), "%a, %d %b %Y %H:%M:%S GMT", gmtime(&t));
     std::string cookie{"cookie=chocolate; expires=\"" + std::string{expire} + "\"; http-only;"};
     std::string cookie2{"icecream=vanilla; expires=\"" + std::string{expire} + "\"; http-only;"};
@@ -115,7 +115,7 @@ static int v1Cookies(struct mg_connection* conn) {
     mg_send_header(conn, "content-type", "text/html");
     time_t t = time(NULL) + 5; // Valid for 1 hour
     char expire[100], expire_epoch[100];
-    snprintf(expire_epoch, sizeof(expire_epoch), "%lu", (unsigned long) t);
+    snprintf(expire_epoch, sizeof(expire_epoch), "%lu", static_cast<unsigned long>(t));
     strftime(expire, sizeof(expire), "%a, %d %b %Y %H:%M:%S GMT", gmtime(&t));
     std::string v1cookie{"cookie=\"value with spaces (v1 cookie)\"; expires=\"" +
                          std::string{expire} + "\"; http-only;"};
@@ -342,7 +342,7 @@ static int formPost(struct mg_connection* conn) {
         auto read_len = mg_parse_multipart(content, content_len,
                                            name, sizeof(name),
                                            filename, sizeof(filename),
-                                           (const char**) &data, &data_len);
+                                           const_cast<const char**>(&data), &data_len);
         if (read_len == 0) {
             delete[] data;
             break;
@@ -356,7 +356,7 @@ static int formPost(struct mg_connection* conn) {
             break;
         }
 
-        forms[name] = std::string{data, (unsigned long) data_len};
+        forms[name] = std::string{data, static_cast<unsigned long>(data_len)};
     }
 
     mg_send_status(conn, 201);
@@ -540,9 +540,9 @@ static int evHandler(struct mg_connection* conn, enum mg_event ev) {
             } else if (Url{conn->uri} == "/timeout.html") {
                 return timeout(conn);
             } else if (Url{conn->uri} == "/low_speed.html") {
-                return lowSpeed(conn);				
+                return lowSpeed(conn);
             } else if (Url{conn->uri} == "/low_speed_bytes.html") {
-                return lowSpeedBytes(conn);				
+                return lowSpeedBytes(conn);
             } else if (Url{conn->uri} == "/basic_cookies.html") {
                 return basicCookies(conn);
             } else if (Url{conn->uri} == "/check_cookies.html") {
@@ -684,7 +684,7 @@ std::string base64_decode(std::string const& encoded_string) {
 }
 
 static int lowercase(const char *s) {
-    return tolower(* (const unsigned char *) s);
+    return tolower(* reinterpret_cast<const unsigned char *>(s));
 }
 
 static int mg_strncasecmp(const char *s1, const char *s2, size_t len) {
