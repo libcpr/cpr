@@ -32,7 +32,7 @@ TEST(UrlEncodedPostTests, UrlPostAddPayloadPair) {
     auto url = Url{base + "/url_post.html"};
     auto payload = Payload{{"x", "1"}};
     payload.AddPair({"y", "2"});
-    auto response = cpr::Post(url, Payload(payload));
+    auto response = cpr::Post(url, payload);
     auto expected_text = std::string{"{\n"
                                      "  \"x\": 1,\n"
                                      "  \"y\": 2,\n"

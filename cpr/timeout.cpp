@@ -20,7 +20,7 @@ long Timeout::Milliseconds() const {
                                    std::to_string(ms.count()) + " ms.");
     }
 
-    return static_cast<long>(ms.count());
+    return ms.count();
 }
 
 } // namespace cpr
