@@ -414,12 +414,12 @@ Response Session::Impl::makeRequest(CURL* curl) {
 
     auto header = cpr::util::parseHeader(header_string);
     return Response{static_cast<std::int32_t>(response_code),
-                    response_string,
-                    header,
-                    raw_url,
+                    std::move(response_string),
+                    std::move(header),
+                    std::move(raw_url),
                     elapsed,
-                    cookies,
-                    error};
+                    std::move(cookies),
+                    std::move(error)};
 }
 
 // clang-format off
