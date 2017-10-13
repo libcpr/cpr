@@ -37,7 +37,7 @@ matrix:
           sources: *sources
 
     # gcc 4.7
-    - env: COMPILER=g++-4.7 CCOMPILER=gcc-4.7
+    - env: COMPILER=g++-4.7 CCOMPILER=gcc-4.7 EXTRA_CXXFLAGS=-D_GLIBCXX_USE_NANOSLEEP
       addons:
         apt:
           packages: g++-4.7
@@ -110,6 +110,7 @@ install:
 
 before_script:
   - export CXX=$COMPILER CC=$CCOMPILER
+  - export CXXFLAGS=$EXTRA_CXXFLAGS
   - cmake --version
   - mkdir build
   - cd build
