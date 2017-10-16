@@ -267,6 +267,16 @@ static int twoRedirects(struct mg_connection* conn) {
     return MG_TRUE;
 }
 
+static int bodyGet(struct mg_connection* conn) {
+    char message[100];
+    mg_get_var(conn, "Message", message, sizeof(message));
+    auto response = std::string{message};
+    mg_send_status(conn, 200);
+    mg_send_header(conn, "content-type", "text/html");
+    mg_send_data(conn, response.data(), response.length());
+    return MG_TRUE;
+}
+
 static int urlPost(struct mg_connection* conn) {
     mg_send_status(conn, 201);
     mg_send_header(conn, "content-type", "application/json");
@@ -549,6 +559,8 @@ static int evHandler(struct mg_connection* conn, enum mg_event ev) {
                 return twoRedirects(conn);
             } else if (Url{conn->uri} == "/url_post.html") {
                 return urlPost(conn);
+            } else if (Url{conn->uri} == "/body_get.html") {
+                return bodyGet(conn);
             } else if (Url{conn->uri} == "/json_post.html") {
                 return jsonPost(conn);
             } else if (Url{conn->uri} == "/form_post.html") {
