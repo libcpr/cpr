@@ -329,10 +329,18 @@ static int formPost(struct mg_connection* conn) {
         int data_len;
         char name[100];
         char filename[100];
-        content += mg_parse_multipart(content, content_len,
-                                      name, sizeof(name),
-                                      filename, sizeof(filename),
-                                      (const char**) &data, &data_len);
+        auto read_len = mg_parse_multipart(content, content_len,
+                                           name, sizeof(name),
+                                           filename, sizeof(filename),
+                                           (const char**) &data, &data_len);
+        if (read_len == 0) {
+            delete[] data;
+            break;
+        }
+
+        content += read_len;
+        content_len -= read_len;
+
         if (strlen(data) == 0) {
             delete[] data;
             break;
