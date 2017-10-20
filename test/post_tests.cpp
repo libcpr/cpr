@@ -345,6 +345,19 @@ TEST(UrlEncodedPostTests, UrlReflectTest) {
     EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
+TEST(UrlEncodedPostTests, PostWithNoBodyTest) {
+    auto url = Url{base + "/form_post.html"};
+    auto response = cpr::Post(url);
+    auto expected_text = std::string{"{\n"
+                                     "  \"x\": \n"
+                                     "}"};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
+    EXPECT_EQ(201, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
     ::testing::AddGlobalTestEnvironment(server);
