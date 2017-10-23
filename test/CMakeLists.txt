@@ -1,12 +1,18 @@
+find_package(Threads)
+set(TEST_SERVER_LIBRARY test_server)
+add_library(${TEST_SERVER_LIBRARY}
+    server.cpp)
+target_link_libraries(${TEST_SERVER_LIBRARY}
+    ${MONGOOSE_LIBRARIES}
+    ${CMAKE_THREAD_LIBS_INIT})
+
 macro(add_cpr_test _TEST_NAME)
-    find_package(Threads)
     add_executable(${_TEST_NAME}_tests
-        ${_TEST_NAME}_tests.cpp server.cpp server.h)
+        ${_TEST_NAME}_tests.cpp)
     target_link_libraries(${_TEST_NAME}_tests
+        ${TEST_SERVER_LIBRARY}
         ${GTEST_LIBRARIES}
-        ${CPR_LIBRARIES}
-        ${MONGOOSE_LIBRARIES}
-        ${CMAKE_THREAD_LIBS_INIT})
+        ${CPR_LIBRARIES})
     add_test(NAME cpr_${_TEST_NAME}_tests COMMAND ${_TEST_NAME}_tests)
     # Group under the "tests" project folder in IDEs such as Visual Studio.
     set_property(TARGET ${_TEST_NAME}_tests PROPERTY FOLDER "tests")
