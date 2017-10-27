@@ -394,8 +394,6 @@ Response Session::Impl::makeRequest(CURL* curl) {
     curl_easy_getinfo(curl, CURLINFO_TOTAL_TIME, &elapsed);
     curl_easy_getinfo(curl, CURLINFO_EFFECTIVE_URL, &raw_url);
 
-    Error error(curl_error, curl_->error);
-
     Cookies cookies;
     struct curl_slist* raw_cookies;
     curl_easy_getinfo(curl, CURLINFO_COOKIELIST, &raw_cookies);
@@ -407,14 +405,13 @@ Response Session::Impl::makeRequest(CURL* curl) {
     }
     curl_slist_free_all(raw_cookies);
 
-    auto header = cpr::util::parseHeader(header_string);
     return Response{static_cast<std::int32_t>(response_code),
                     std::move(response_string),
-                    std::move(header),
+                    cpr::util::parseHeader(header_string),
                     std::move(raw_url),
                     elapsed,
                     std::move(cookies),
-                    std::move(error)};
+                    Error(curl_error, curl_->error)};
 }
 
 // clang-format off
