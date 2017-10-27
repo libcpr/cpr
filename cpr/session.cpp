@@ -92,6 +92,8 @@ void Session::Impl::freeHolder(CurlHolder* holder) {
 CurlHolder* Session::Impl::newHolder() {
     CurlHolder* holder = new CurlHolder();
     holder->handle = curl_easy_init();
+    holder->chunk = NULL;
+    holder->formpost = NULL;
     return holder;
 }
 
