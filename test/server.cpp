@@ -603,6 +603,7 @@ void runServer(struct mg_server* server) {
         mg_poll_server(server, 1000);
     } while (!shutdown_mutex.try_lock());
 
+    shutdown_mutex.unlock();
     std::lock_guard<std::mutex> server_lock(server_mutex);
     mg_destroy_server(&server);
     server_cv.notify_one();
