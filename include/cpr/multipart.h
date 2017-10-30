@@ -24,7 +24,7 @@ struct Buffer {
     template <typename Iterator, typename StringType>
     explicit Buffer(Iterator begin, Iterator end, StringType&& filename)
             : data{reinterpret_cast<data_t>(&(*begin))},
-              datalen{static_cast<unsigned long>(std::distance(begin, end))},
+              datalen{std::distance(begin, end)},
               filename{CPR_FWD(filename)} {
         is_random_access_iterator(begin, end);
         static_assert(sizeof(*begin) == 1, "only byte buffers can be used");
@@ -36,7 +36,7 @@ struct Buffer {
     is_random_access_iterator(Iterator /* begin */, Iterator /* end */ ) {}
 
     data_t data;
-    unsigned long datalen;
+    size_t datalen;
     std::string filename;
 };
 
@@ -58,7 +58,7 @@ struct Part {
     std::string value;
     std::string content_type;
     Buffer::data_t data;
-    unsigned long datalen;
+    size_t datalen;
     bool is_file;
     bool is_buffer;
 };
