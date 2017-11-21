@@ -43,6 +43,12 @@ message(STATUS "Using CURL_LIBRARIES: ${CURL_LIBRARIES}.")
 target_link_libraries(${CPR_LIBRARIES}
     ${CURL_LIBRARIES})
 
+if(CPR_SET_PIC)
+    message(STATUS "Setting Position-Independent Code.")
+    set_target_properties(${CPR_LIBRARIES}
+        PROPERTIES POSITION_INDEPENDENT_CODE ON)
+endif()
+
 if(NOT (CMAKE_VERSION VERSION_LESS 3.0))
     target_include_directories(${CPR_LIBRARIES}
         PUBLIC
