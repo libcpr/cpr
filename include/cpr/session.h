@@ -16,6 +16,7 @@
 #include "cpr/proxies.h"
 #include "cpr/response.h"
 #include "cpr/timeout.h"
+#include "cpr/connect_timeout.h"
 #include "cpr/low_speed.h"
 #include "cpr/ssl_options.h"
 
@@ -31,6 +32,7 @@ class Session {
     void SetParameters(Parameters&& parameters);
     void SetHeader(const Header& header);
     void SetTimeout(const Timeout& timeout);
+    void SetConnectTimeout(const ConnectTimeout& timeout);
     void SetAuth(const Authentication& auth);
     void SetDigest(const Digest& auth);
     void SetPayload(Payload&& payload);
@@ -53,6 +55,7 @@ class Session {
     void SetOption(Parameters&& parameters);
     void SetOption(const Header& header);
     void SetOption(const Timeout& timeout);
+    void SetOption(const ConnectTimeout& timeout);
     void SetOption(const Authentication& auth);
     void SetOption(const Digest& auth);
     void SetOption(Payload&& payload);
