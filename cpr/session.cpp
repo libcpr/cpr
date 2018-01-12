@@ -22,6 +22,7 @@ class Session::Impl {
     void SetTimeout(const Timeout& timeout);
     void SetAuth(const Authentication& auth);
     void SetDigest(const Digest& auth);
+    void SetUserAgent(const UserAgent& ua);
     void SetPayload(Payload&& payload);
     void SetPayload(const Payload& payload);
     void SetProxies(Proxies&& proxies);
@@ -153,6 +154,13 @@ void Session::Impl::SetDigest(const Digest& auth) {
     if (curl) {
         curl_easy_setopt(curl, CURLOPT_HTTPAUTH, CURLAUTH_DIGEST);
         curl_easy_setopt(curl, CURLOPT_USERPWD, auth.GetAuthString());
+    }
+}
+
+void Session::Impl::SetUserAgent(const UserAgent& ua) {
+    auto curl = curl_->handle;
+    if (curl) {
+        curl_easy_setopt(curl, CURLOPT_USERAGENT, ua.c_str());
     }
 }
 
@@ -432,6 +440,7 @@ void Session::SetHeader(const Header& header) { pimpl_->SetHeader(header); }
 void Session::SetTimeout(const Timeout& timeout) { pimpl_->SetTimeout(timeout); }
 void Session::SetAuth(const Authentication& auth) { pimpl_->SetAuth(auth); }
 void Session::SetDigest(const Digest& auth) { pimpl_->SetDigest(auth); }
+void Session::SetUserAgent(const UserAgent& ua) { pimpl_->SetUserAgent(ua); }
 void Session::SetPayload(const Payload& payload) { pimpl_->SetPayload(payload); }
 void Session::SetPayload(Payload&& payload) { pimpl_->SetPayload(std::move(payload)); }
 void Session::SetProxies(const Proxies& proxies) { pimpl_->SetProxies(proxies); }
@@ -452,6 +461,7 @@ void Session::SetOption(const Header& header) { pimpl_->SetHeader(header); }
 void Session::SetOption(const Timeout& timeout) { pimpl_->SetTimeout(timeout); }
 void Session::SetOption(const Authentication& auth) { pimpl_->SetAuth(auth); }
 void Session::SetOption(const Digest& auth) { pimpl_->SetDigest(auth); }
+void Session::SetOption(const UserAgent& ua) { pimpl_->SetUserAgent(ua); }
 void Session::SetOption(const Payload& payload) { pimpl_->SetPayload(payload); }
 void Session::SetOption(Payload&& payload) { pimpl_->SetPayload(std::move(payload)); }
 void Session::SetOption(const Proxies& proxies) { pimpl_->SetProxies(proxies); }
