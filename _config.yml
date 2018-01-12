@@ -6,3 +6,5 @@ redcarpet:
 repository: whoshuu/cpr
 gems: ['jekyll-github-metadata', 'jemoji']
 baseurl: '/cpr'
+
+theme: jekyll-theme-cayman
