@@ -413,13 +413,20 @@ Response Session::Impl::makeRequest(CURL* curl) {
     }
     curl_slist_free_all(raw_cookies);
 
+    std::string status_line;
+    std::string reason;
+    Header header = cpr::util::parseHeader(header_string, &status_line, &reason);
+
     return Response{static_cast<std::int32_t>(response_code),
                     std::move(response_string),
-                    cpr::util::parseHeader(header_string),
+                    std::move(header),
                     std::move(raw_url),
                     elapsed,
                     std::move(cookies),
-                    Error(curl_error, curl_->error)};
+                    Error(curl_error, curl_->error),
+                    std::move(header_string),
+                    std::move(status_line),
+                    std::move(reason)};
 }
 
 // clang-format off
