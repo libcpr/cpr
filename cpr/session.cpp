@@ -21,6 +21,8 @@ class Session::Impl {
     void SetHeader(const Header& header);
     void SetTimeout(const Timeout& timeout);
     void SetAuth(const Authentication& auth);
+    void SetProxyAuth(ProxyAuthentication&& auth);
+    void SetProxyAuth(const ProxyAuthentication& auth);
     void SetDigest(const Digest& auth);
     void SetPayload(Payload&& payload);
     void SetPayload(const Payload& payload);
@@ -49,6 +51,7 @@ class Session::Impl {
     Url url_;
     Parameters parameters_;
     Proxies proxies_;
+    ProxyAuthentication proxyAuth_;
 
     Response makeRequest(CURL* curl);
     static void freeHolder(CurlHolder* holder);
@@ -146,6 +149,14 @@ void Session::Impl::SetAuth(const Authentication& auth) {
         curl_easy_setopt(curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
         curl_easy_setopt(curl, CURLOPT_USERPWD, auth.GetAuthString());
     }
+}
+
+void Session::Impl::SetProxyAuth(ProxyAuthentication&& auth) {
+    proxyAuth_ = std::move(auth);
+}
+
+void Session::Impl::SetProxyAuth(const ProxyAuthentication& auth) {
+    proxyAuth_ = auth;
 }
 
 void Session::Impl::SetDigest(const Digest& auth) {
@@ -381,6 +392,10 @@ Response Session::Impl::makeRequest(CURL* curl) {
     auto protocol = url_.substr(0, url_.find(':'));
     if (proxies_.has(protocol)) {
         curl_easy_setopt(curl, CURLOPT_PROXY, proxies_[protocol].data());
+        if (proxyAuth_.has(protocol)) {
+            curl_easy_setopt(curl, CURLOPT_PROXYAUTH, CURLAUTH_ANY);
+            curl_easy_setopt(curl, CURLOPT_PROXYUSERPWD, proxyAuth_[protocol]);
+        }
     } else {
         curl_easy_setopt(curl, CURLOPT_PROXY, "");
     }
@@ -431,6 +446,8 @@ void Session::SetParameters(Parameters&& parameters) { pimpl_->SetParameters(std
 void Session::SetHeader(const Header& header) { pimpl_->SetHeader(header); }
 void Session::SetTimeout(const Timeout& timeout) { pimpl_->SetTimeout(timeout); }
 void Session::SetAuth(const Authentication& auth) { pimpl_->SetAuth(auth); }
+void Session::SetProxyAuth(ProxyAuthentication&& auth) { pimpl_->SetProxyAuth(std::move(auth)); }
+void Session::SetProxyAuth(const ProxyAuthentication& auth) { pimpl_->SetProxyAuth(auth); }
 void Session::SetDigest(const Digest& auth) { pimpl_->SetDigest(auth); }
 void Session::SetPayload(const Payload& payload) { pimpl_->SetPayload(payload); }
 void Session::SetPayload(Payload&& payload) { pimpl_->SetPayload(std::move(payload)); }
@@ -451,6 +468,8 @@ void Session::SetOption(Parameters&& parameters) { pimpl_->SetParameters(std::mo
 void Session::SetOption(const Header& header) { pimpl_->SetHeader(header); }
 void Session::SetOption(const Timeout& timeout) { pimpl_->SetTimeout(timeout); }
 void Session::SetOption(const Authentication& auth) { pimpl_->SetAuth(auth); }
+void Session::SetOption(ProxyAuthentication&& auth) { pimpl_->SetProxyAuth(std::move(auth)); }
+void Session::SetOption(const ProxyAuthentication& auth) { pimpl_->SetProxyAuth(auth); }
 void Session::SetOption(const Digest& auth) { pimpl_->SetDigest(auth); }
 void Session::SetOption(const Payload& payload) { pimpl_->SetPayload(payload); }
 void Session::SetOption(Payload&& payload) { pimpl_->SetPayload(std::move(payload)); }

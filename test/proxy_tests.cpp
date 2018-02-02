@@ -88,6 +88,57 @@ TEST(ProxyTests, ReferenceProxySessionTest) {
     EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
+// TODO: implement a server proxy that we could use locally that uses username and password
+#if defined(false)
+TEST(ProxyTests, ProxyAuthHttpTest) {
+    auto url = Url{"http://www.httpbin.org/get"};
+    auto response = cpr::Get(url,
+                             Proxies{{"http", "127.0.0.1:8080"}},
+                             ProxyAuthentication{{"http", Authentication{"foo", "bar"}}});
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
+TEST(ProxyTests, ProxyAuthHttpsTest) {
+    auto url = Url{"https://www.httpbin.org/get"};
+    auto response = cpr::Get(url,
+                             Proxies{{"https", "127.0.0.1:8080"}},
+                             ProxyAuthentication{{"https", Authentication{"foo", "bar"}}});
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
+TEST(ProxyTests, ProxyAuthMultipleProxyHttpTest) {
+    auto url = Url{"http://www.httpbin.org/get"};
+    auto response = cpr::Get(url,
+                             Proxies{{"http", "127.0.0.1:8080"},
+                                     {"https", "127.0.0.1:8080"}},
+                             ProxyAuthentication{{"http", Authentication{"foo", "bar"}},
+                                                 {"https", Authentication{"foo", "bar"}}});
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
+TEST(ProxyTests, ProxyAuthMultipleProxyHttpsTest) {
+    auto url = Url{"https://www.httpbin.org/get"};
+    auto response = cpr::Get(url,
+                             Proxies{{"http", "127.0.0.1:8080"},
+                                     {"https", "127.0.0.1:8080"}},
+                             ProxyAuthentication{{"http", Authentication{"foo", "bar"}},
+                                                 {"https", Authentication{"foo", "bar"}}});
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+#endif
+
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();

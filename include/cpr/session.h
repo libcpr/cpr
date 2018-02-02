@@ -32,6 +32,8 @@ class Session {
     void SetHeader(const Header& header);
     void SetTimeout(const Timeout& timeout);
     void SetAuth(const Authentication& auth);
+    void SetProxyAuth(ProxyAuthentication&& auth);
+    void SetProxyAuth(const ProxyAuthentication& auth);
     void SetDigest(const Digest& auth);
     void SetPayload(Payload&& payload);
     void SetPayload(const Payload& payload);
@@ -54,6 +56,8 @@ class Session {
     void SetOption(const Header& header);
     void SetOption(const Timeout& timeout);
     void SetOption(const Authentication& auth);
+    void SetOption(ProxyAuthentication&& auth);
+    void SetOption(const ProxyAuthentication& auth);
     void SetOption(const Digest& auth);
     void SetOption(Payload&& payload);
     void SetOption(const Payload& payload);
