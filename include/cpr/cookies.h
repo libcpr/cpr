@@ -21,6 +21,17 @@ class Cookies {
     std::map<std::string, std::string> map_;
 };
 
+class CookieFile {
+public:
+	CookieFile() : str_("cookies.txt") {}
+	CookieFile(const std::string& str) : str_(str) {}
+	CookieFile(const char* raw_string) : str_(raw_string){}
+
+	std::string GetFile() const { return str_; }
+private:
+	std::string str_;
+};
+
 } // namespace cpr
 
 #endif
