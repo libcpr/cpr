@@ -410,8 +410,14 @@ Response Session::Impl::makeRequest(CURL* curl) {
     char* raw_url;
     long response_code;
     double elapsed;
+    double connect_time;
+    double speed;
+    double size;
     curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response_code);
     curl_easy_getinfo(curl, CURLINFO_TOTAL_TIME, &elapsed);
+    curl_easy_getinfo(curl, CURLINFO_CONNECT_TIME, &connect_time);
+    curl_easy_getinfo(curl, CURLINFO_SPEED_DOWNLOAD, &speed);
+    curl_easy_getinfo(curl, CURLINFO_SIZE_DOWNLOAD, &size);
     curl_easy_getinfo(curl, CURLINFO_EFFECTIVE_URL, &raw_url);
 
     Cookies cookies;
@@ -430,6 +436,9 @@ Response Session::Impl::makeRequest(CURL* curl) {
                     cpr::util::parseHeader(header_string),
                     std::move(raw_url),
                     elapsed,
+                    connect_time,
+                    speed,
+                    size,
                     std::move(cookies),
                     Error(curl_error, curl_->error)};
 }
