@@ -409,16 +409,27 @@ Response Session::Impl::makeRequest(CURL* curl) {
 
     char* raw_url;
     long response_code;
+    double connect;
+    double pretransfer;
+    double start;
     double elapsed;
-    double connect_time;
-    double speed;
-    double size;
+    uint64_t upload_size;
+    uint64_t upload_speed;
+    uint64_t download_size;
+    uint64_t download_speed;
+
     curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response_code);
-    curl_easy_getinfo(curl, CURLINFO_TOTAL_TIME, &elapsed);
-    curl_easy_getinfo(curl, CURLINFO_CONNECT_TIME, &connect_time);
-    curl_easy_getinfo(curl, CURLINFO_SPEED_DOWNLOAD, &speed);
-    curl_easy_getinfo(curl, CURLINFO_SIZE_DOWNLOAD, &size);
     curl_easy_getinfo(curl, CURLINFO_EFFECTIVE_URL, &raw_url);
+
+    curl_easy_getinfo(curl, CURLINFO_CONNECT_TIME, &connect);
+    curl_easy_getinfo(curl, CURLINFO_PRETRANSFER_TIME, &pretransfer);
+    curl_easy_getinfo(curl, CURLINFO_STARTTRANSFER_TIME, &start);
+    curl_easy_getinfo(curl, CURLINFO_TOTAL_TIME, &elapsed);
+
+    curl_easy_getinfo(curl, CURLINFO_SIZE_DOWNLOAD_T, &upload_size);
+    curl_easy_getinfo(curl, CURLINFO_SPEED_DOWNLOAD_T, &upload_speed);
+    curl_easy_getinfo(curl, CURLINFO_SIZE_UPLOAD_T, &download_size);
+    curl_easy_getinfo(curl, CURLINFO_SPEED_UPLOAD_T, &download_speed);
 
     Cookies cookies;
     struct curl_slist* raw_cookies;
@@ -436,11 +447,10 @@ Response Session::Impl::makeRequest(CURL* curl) {
                     cpr::util::parseHeader(header_string),
                     std::move(raw_url),
                     elapsed,
-                    connect_time,
-                    speed,
-                    size,
+                    Info(connect, pretransfer, start, elapsed, upload_size, upload_speed, download_size, download_speed),
                     std::move(cookies),
-                    Error(curl_error, curl_->error)};
+                    Error(curl_error, curl_->error)
+                    };
 }
 
 // clang-format off

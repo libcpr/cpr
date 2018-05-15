@@ -18,6 +18,7 @@
 #include "cpr/timeout.h"
 #include "cpr/low_speed.h"
 #include "cpr/ssl_options.h"
+#include "cpr/info.h"
 
 namespace cpr {
 
