@@ -426,10 +426,10 @@ Response Session::Impl::makeRequest(CURL* curl) {
     curl_easy_getinfo(curl, CURLINFO_STARTTRANSFER_TIME, &start);
     curl_easy_getinfo(curl, CURLINFO_TOTAL_TIME, &elapsed);
 
-    curl_easy_getinfo(curl, CURLINFO_SIZE_DOWNLOAD_T, &upload_size);
-    curl_easy_getinfo(curl, CURLINFO_SPEED_DOWNLOAD_T, &upload_speed);
-    curl_easy_getinfo(curl, CURLINFO_SIZE_UPLOAD_T, &download_size);
-    curl_easy_getinfo(curl, CURLINFO_SPEED_UPLOAD_T, &download_speed);
+    curl_easy_getinfo(curl, CURLINFO_SIZE_UPLOAD_T, &upload_size);
+    curl_easy_getinfo(curl, CURLINFO_SPEED_UPLOAD_T, &upload_speed);
+    curl_easy_getinfo(curl, CURLINFO_SIZE_DOWNLOAD_T, &download_size);
+    curl_easy_getinfo(curl, CURLINFO_SPEED_DOWNLOAD_T, &download_speed);
 
     Cookies cookies;
     struct curl_slist* raw_cookies;
