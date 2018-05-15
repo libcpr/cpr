@@ -66,7 +66,8 @@ std::string urlEncode(const std::string& value) {
     for (auto i = value.cbegin(), n = value.cend(); i != n; ++i) {
         std::string::value_type c = (*i);
         // Keep alphanumeric and other accepted characters intact
-        if (std::isalnum(c) || c == '-' || c == '_' || c == '.' || c == '~') {
+        if (std::isalnum(c) || c == '-' || c == '_' || c == '.' || c == '~' 
+            || c == '|' || c == '+' || c == ',') {
             escaped << c;
             continue;
         }

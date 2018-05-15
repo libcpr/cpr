@@ -31,6 +31,7 @@ class Session::Impl {
     void SetRedirect(const bool& redirect);
     void SetMaxRedirects(const MaxRedirects& max_redirects);
     void SetCookies(const Cookies& cookies);
+    void SetCookieFile(const CookieFile& file);
     void SetBody(Body&& body);
     void SetBody(const Body& body);
     void SetLowSpeed(const LowSpeed& low_speed);
@@ -69,6 +70,8 @@ Session::Impl::Impl() {
         curl_easy_setopt(curl, CURLOPT_MAXREDIRS, 50L);
         curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, curl_->error);
         curl_easy_setopt(curl, CURLOPT_COOKIEFILE, "");
+        /* enable all supported built-in compressions */
+        curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, "");
 #ifdef CPR_CURL_NOSIGNAL
         curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1L);
 #endif
@@ -267,6 +270,15 @@ void Session::Impl::SetCookies(const Cookies& cookies) {
     }
 }
 
+void Session::Impl::SetCookieFile(const CookieFile& file) {
+    auto curl = curl_->handle;
+    if (curl) {
+        curl_easy_setopt(curl, CURLOPT_COOKIELIST, "ALL");
+        curl_easy_setopt(curl, CURLOPT_COOKIEFILE, file.GetFile().data());
+        curl_easy_setopt(curl, CURLOPT_COOKIEJAR, file.GetFile().data());
+    }
+}
+
 void Session::Impl::SetBody(Body&& body) {
     auto curl = curl_->handle;
     if (curl) {
@@ -397,10 +409,27 @@ Response Session::Impl::makeRequest(CURL* curl) {
 
     char* raw_url;
     long response_code;
+    double connect;
+    double pretransfer;
+    double start;
     double elapsed;
+    uint64_t upload_size;
+    uint64_t upload_speed;
+    uint64_t download_size;
+    uint64_t download_speed;
+
     curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response_code);
-    curl_easy_getinfo(curl, CURLINFO_TOTAL_TIME, &elapsed);
     curl_easy_getinfo(curl, CURLINFO_EFFECTIVE_URL, &raw_url);
+
+    curl_easy_getinfo(curl, CURLINFO_CONNECT_TIME, &connect);
+    curl_easy_getinfo(curl, CURLINFO_PRETRANSFER_TIME, &pretransfer);
+    curl_easy_getinfo(curl, CURLINFO_STARTTRANSFER_TIME, &start);
+    curl_easy_getinfo(curl, CURLINFO_TOTAL_TIME, &elapsed);
+
+    curl_easy_getinfo(curl, CURLINFO_SIZE_UPLOAD_T, &upload_size);
+    curl_easy_getinfo(curl, CURLINFO_SPEED_UPLOAD_T, &upload_speed);
+    curl_easy_getinfo(curl, CURLINFO_SIZE_DOWNLOAD_T, &download_size);
+    curl_easy_getinfo(curl, CURLINFO_SPEED_DOWNLOAD_T, &download_speed);
 
     Cookies cookies;
     struct curl_slist* raw_cookies;
@@ -418,8 +447,10 @@ Response Session::Impl::makeRequest(CURL* curl) {
                     cpr::util::parseHeader(header_string),
                     std::move(raw_url),
                     elapsed,
+                    Info(connect, pretransfer, start, elapsed, upload_size, upload_speed, download_size, download_speed),
                     std::move(cookies),
-                    Error(curl_error, curl_->error)};
+                    Error(curl_error, curl_->error)
+                    };
 }
 
 // clang-format off
@@ -441,6 +472,7 @@ void Session::SetMultipart(Multipart&& multipart) { pimpl_->SetMultipart(std::mo
 void Session::SetRedirect(const bool& redirect) { pimpl_->SetRedirect(redirect); }
 void Session::SetMaxRedirects(const MaxRedirects& max_redirects) { pimpl_->SetMaxRedirects(max_redirects); }
 void Session::SetCookies(const Cookies& cookies) { pimpl_->SetCookies(cookies); }
+void Session::SetCookieFile(const CookieFile& file) { pimpl_->SetCookieFile(file); }
 void Session::SetBody(const Body& body) { pimpl_->SetBody(body); }
 void Session::SetBody(Body&& body) { pimpl_->SetBody(std::move(body)); }
 void Session::SetLowSpeed(const LowSpeed& low_speed) { pimpl_->SetLowSpeed(low_speed); }
@@ -461,6 +493,7 @@ void Session::SetOption(Multipart&& multipart) { pimpl_->SetMultipart(std::move(
 void Session::SetOption(const bool& redirect) { pimpl_->SetRedirect(redirect); }
 void Session::SetOption(const MaxRedirects& max_redirects) { pimpl_->SetMaxRedirects(max_redirects); }
 void Session::SetOption(const Cookies& cookies) { pimpl_->SetCookies(cookies); }
+void Session::SetOption(const CookieFile& file) { pimpl_->SetCookieFile(file); }
 void Session::SetOption(const Body& body) { pimpl_->SetBody(body); }
 void Session::SetOption(Body&& body) { pimpl_->SetBody(std::move(body)); }
 void Session::SetOption(const LowSpeed& low_speed) { pimpl_->SetLowSpeed(low_speed); }

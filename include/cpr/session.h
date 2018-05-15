@@ -18,6 +18,7 @@
 #include "cpr/timeout.h"
 #include "cpr/low_speed.h"
 #include "cpr/ssl_options.h"
+#include "cpr/info.h"
 
 namespace cpr {
 
@@ -42,6 +43,7 @@ class Session {
     void SetRedirect(const bool& redirect);
     void SetMaxRedirects(const MaxRedirects& max_redirects);
     void SetCookies(const Cookies& cookies);
+    void SetCookieFile(const CookieFile& file);
     void SetBody(Body&& body);
     void SetBody(const Body& body);
     void SetLowSpeed(const LowSpeed& low_speed);
@@ -63,7 +65,8 @@ class Session {
     void SetOption(const Multipart& multipart);
     void SetOption(const bool& redirect);
     void SetOption(const MaxRedirects& max_redirects);
-    void SetOption(const Cookies& cookies);
+	void SetOption(const Cookies& cookies);
+	void SetOption(const CookieFile& cookie_file);
     void SetOption(Body&& body);
     void SetOption(const Body& body);
     void SetOption(const LowSpeed& low_speed);
