@@ -5,14 +5,14 @@
 #include <future>
 #include <string>
 
-#include "auth.h"
-#include "cprtypes.h"
-#include "defines.h"
-#include "digest.h"
-#include "multipart.h"
-#include "payload.h"
-#include "response.h"
-#include "session.h"
+#include "cpr/auth.h"
+#include "cpr/cprtypes.h"
+#include "cpr/defines.h"
+#include "cpr/digest.h"
+#include "cpr/multipart.h"
+#include "cpr/payload.h"
+#include "cpr/response.h"
+#include "cpr/session.h"
 
 namespace cpr {
 

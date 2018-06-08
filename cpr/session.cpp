@@ -92,6 +92,8 @@ void Session::Impl::freeHolder(CurlHolder* holder) {
 CurlHolder* Session::Impl::newHolder() {
     CurlHolder* holder = new CurlHolder();
     holder->handle = curl_easy_init();
+    holder->chunk = NULL;
+    holder->formpost = NULL;
     return holder;
 }
 
@@ -118,10 +120,16 @@ void Session::Impl::SetHeader(const Header& header) {
             } else {
                 header_string += ": " + item->second;
             }
-            chunk = curl_slist_append(chunk, header_string.data());
-            curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk);
-            curl_->chunk = chunk;
+
+            auto temp = curl_slist_append(chunk, header_string.data());
+            if (temp) {
+                chunk = temp;
+            }
         }
+        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk);
+
+        curl_slist_free_all(curl_->chunk);
+        curl_->chunk = chunk;
     }
 }
 
@@ -305,10 +313,8 @@ Response Session::Impl::Delete() {
 Response Session::Impl::Get() {
     auto curl = curl_->handle;
     if (curl) {
-        curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, NULL);
-        curl_easy_setopt(curl, CURLOPT_HTTPGET, 1L);
-        curl_easy_setopt(curl, CURLOPT_POST, 0L);
         curl_easy_setopt(curl, CURLOPT_NOBODY, 0L);
+        curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "GET");
     }
 
     return makeRequest(curl);
@@ -317,8 +323,7 @@ Response Session::Impl::Get() {
 Response Session::Impl::Head() {
     auto curl = curl_->handle;
     if (curl) {
-        curl_easy_setopt(curl, CURLOPT_HTTPGET, 0L);
-        curl_easy_setopt(curl, CURLOPT_POST, 0L);
+        curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, NULL);
         curl_easy_setopt(curl, CURLOPT_NOBODY, 1L);
     }
 
@@ -328,8 +333,6 @@ Response Session::Impl::Head() {
 Response Session::Impl::Options() {
     auto curl = curl_->handle;
     if (curl) {
-        curl_easy_setopt(curl, CURLOPT_HTTPGET, 0L);
-        curl_easy_setopt(curl, CURLOPT_POST, 0L);
         curl_easy_setopt(curl, CURLOPT_NOBODY, 0L);
         curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "OPTIONS");
     }
@@ -350,8 +353,8 @@ Response Session::Impl::Patch() {
 Response Session::Impl::Post() {
     auto curl = curl_->handle;
     if (curl) {
-        curl_easy_setopt(curl, CURLOPT_HTTPGET, 0L);
         curl_easy_setopt(curl, CURLOPT_NOBODY, 0L);
+        curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "POST");
     }
 
     return makeRequest(curl);
@@ -399,8 +402,6 @@ Response Session::Impl::makeRequest(CURL* curl) {
     curl_easy_getinfo(curl, CURLINFO_TOTAL_TIME, &elapsed);
     curl_easy_getinfo(curl, CURLINFO_EFFECTIVE_URL, &raw_url);
 
-    Error error(curl_error, curl_->error);
-
     Cookies cookies;
     struct curl_slist* raw_cookies;
     curl_easy_getinfo(curl, CURLINFO_COOKIELIST, &raw_cookies);
@@ -412,14 +413,13 @@ Response Session::Impl::makeRequest(CURL* curl) {
     }
     curl_slist_free_all(raw_cookies);
 
-    auto header = cpr::util::parseHeader(header_string);
     return Response{static_cast<std::int32_t>(response_code),
-                    response_string,
-                    header,
-                    raw_url,
+                    std::move(response_string),
+                    cpr::util::parseHeader(header_string),
+                    std::move(raw_url),
                     elapsed,
-                    cookies,
-                    error};
+                    std::move(cookies),
+                    Error(curl_error, curl_->error)};
 }
 
 // clang-format off

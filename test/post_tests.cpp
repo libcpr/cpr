@@ -6,15 +6,14 @@
 #include <string>
 
 #include <cpr/cpr.h>
+#include <cpr/multipart.h>
 
-#include "cpr/multipart.h"
 #include "server.h"
 
 using namespace cpr;
 
 static Server* server = new Server();
 auto base = server->GetBaseUrl();
-
 
 TEST(UrlEncodedPostTests, UrlPostSingleTest) {
     auto url = Url{base + "/url_post.html"};
@@ -33,7 +32,7 @@ TEST(UrlEncodedPostTests, UrlPostAddPayloadPair) {
     auto url = Url{base + "/url_post.html"};
     auto payload = Payload{{"x", "1"}};
     payload.AddPair({"y", "2"});
-    auto response = cpr::Post(url, Payload(payload));
+    auto response = cpr::Post(url, payload);
     auto expected_text = std::string{"{\n"
                                      "  \"x\": 1,\n"
                                      "  \"y\": 2,\n"
@@ -343,6 +342,19 @@ TEST(UrlEncodedPostTests, UrlReflectTest) {
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
+TEST(UrlEncodedPostTests, PostWithNoBodyTest) {
+    auto url = Url{base + "/form_post.html"};
+    auto response = cpr::Post(url);
+    auto expected_text = std::string{"{\n"
+                                     "  \"x\": \n"
+                                     "}"};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
+    EXPECT_EQ(201, response.status_code);
     EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 

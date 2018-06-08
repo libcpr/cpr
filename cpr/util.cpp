@@ -1,5 +1,6 @@
 #include "cpr/util.h"
 
+#include <algorithm>
 #include <cctype>
 #include <cstdint>
 #include <iomanip>
@@ -29,10 +30,9 @@ Header parseHeader(const std::string& headers) {
         if (line.length() > 0) {
             auto found = line.find(":");
             if (found != std::string::npos) {
-                auto value = line.substr(found + 2, line.length() - 1);
-                if (value.back() == '\r') {
-                    value = value.substr(0, value.length() - 1);
-                }
+                auto value = line.substr(found + 1);
+                value.erase(0, value.find_first_not_of("\t "));
+                value.resize(std::min(value.size(), value.find_last_not_of("\t\n\r ") + 1));
                 header[line.substr(0, found)] = value;
             }
         }
@@ -54,7 +54,7 @@ std::vector<std::string> split(const std::string& to_split, char delimiter) {
 }
 
 size_t writeFunction(void* ptr, size_t size, size_t nmemb, std::string* data) {
-    data->append((char*) ptr, size * nmemb);
+    data->append(static_cast<char*>(ptr), size * nmemb);
     return size * nmemb;
 }
 
@@ -71,7 +71,7 @@ std::string urlEncode(const std::string& value) {
             continue;
         }
         // Any other characters are percent-encoded
-        escaped << '%' << std::setw(2) << std::int32_t((unsigned char) c);
+        escaped << '%' << std::setw(2) << std::int32_t(static_cast<unsigned char>(c));
     }
 
     return escaped.str();

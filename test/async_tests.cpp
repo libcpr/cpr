@@ -11,7 +11,6 @@
 static Server* server = new Server();
 auto base = server->GetBaseUrl();
 
-
 TEST(UrlEncodedPostTests, AsyncGetTest) {
     auto url = Url{base + "/hello.html"};
     auto future = cpr::GetAsync(url);
