@@ -35,6 +35,8 @@ class Session::Impl {
     void SetBody(const Body& body);
     void SetLowSpeed(const LowSpeed& low_speed);
     void SetVerifySsl(const VerifySsl& verify);
+    void SetSslOptions(const SslOptions& options);
+    void SetVerbose(const Verbose& verbose);
 
     Response Delete();
     Response Get();
@@ -299,6 +301,45 @@ void Session::Impl::SetVerifySsl(const VerifySsl& verify) {
     }
 }
 
+void Session::Impl::SetSslOptions(const SslOptions& opts) {
+    auto curl = curl_->handle;
+    if (curl) {
+        curl_easy_setopt(curl, CURLOPT_SSLCERT, opts.cert_file.c_str());
+        curl_easy_setopt(curl, CURLOPT_SSLCERTTYPE, opts.cert_type.c_str());
+        curl_easy_setopt(curl, CURLOPT_SSLKEY, opts.key_file.c_str());
+        curl_easy_setopt(curl, CURLOPT_SSLKEYTYPE, opts.key_type.c_str());
+        if (!opts.key_pass.empty()) {
+            curl_easy_setopt(curl, CURLOPT_KEYPASSWD, opts.key_pass.c_str());
+        }
+        curl_easy_setopt(curl, CURLOPT_SSL_ENABLE_ALPN, opts.enable_alpn ? 1L : 0L);
+        curl_easy_setopt(curl, CURLOPT_SSL_ENABLE_NPN, opts.enable_npn ? 1L : 0L);
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, opts.verify_peer ? 1L : 0L);
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, opts.verify_host ? 2L : 0L);
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYSTATUS, opts.verify_status ? 1L : 0L);
+        curl_easy_setopt(curl, CURLOPT_SSLVERSION, opts.ssl_version | opts.max_version);
+        if (!opts.ca_info.empty()) {
+            curl_easy_setopt(curl, CURLOPT_CAINFO, opts.ca_info.c_str());
+        }
+        if (!opts.ca_path.empty()) {
+            curl_easy_setopt(curl, CURLOPT_CAPATH, opts.ca_path.c_str());
+        }
+        if (!opts.crl_file.empty()) {
+            curl_easy_setopt(curl, CURLOPT_CRLFILE, opts.crl_file.c_str());
+        }
+        if (!opts.ciphers.empty()) {
+            curl_easy_setopt(curl, CURLOPT_SSL_CIPHER_LIST, opts.ciphers.c_str());
+        }
+        curl_easy_setopt(curl, CURLOPT_SSL_SESSIONID_CACHE, opts.session_id_cache ? 1L : 0L);
+    }
+}
+
+void Session::Impl::SetVerbose(const Verbose& verbose) {
+    auto curl = curl_->handle;
+    if (curl) {
+        curl_easy_setopt(curl, CURLOPT_VERBOSE, 1);
+    }
+}
+
 Response Session::Impl::Delete() {
     auto curl = curl_->handle;
     if (curl) {
@@ -465,6 +506,8 @@ void Session::SetOption(const Body& body) { pimpl_->SetBody(body); }
 void Session::SetOption(Body&& body) { pimpl_->SetBody(std::move(body)); }
 void Session::SetOption(const LowSpeed& low_speed) { pimpl_->SetLowSpeed(low_speed); }
 void Session::SetOption(const VerifySsl& verify) { pimpl_->SetVerifySsl(verify); }
+void Session::SetOption(const SslOptions& options) { pimpl_->SetSslOptions(options); }
+void Session::SetOption(const Verbose& verbose) { pimpl_->SetVerbose(verbose); }
 Response Session::Delete() { return pimpl_->Delete(); }
 Response Session::Get() { return pimpl_->Get(); }
 Response Session::Head() { return pimpl_->Head(); }

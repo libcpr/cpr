@@ -12,9 +12,11 @@
 #include <time.h>
 
 #define SERVER_PORT "8080"
+#define SSL_SERVER_PORT "8443"
 
 std::mutex shutdown_mutex;
 std::mutex server_mutex;
+std::string server_port = SERVER_PORT;
 std::condition_variable server_cv;
 
 static const std::string base64_chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -595,7 +597,7 @@ static int evHandler(struct mg_connection* conn, enum mg_event ev) {
 void runServer(struct mg_server* server) {
     {
         std::lock_guard<std::mutex> server_lock(server_mutex);
-        mg_set_option(server, "listening_port", SERVER_PORT);
+        mg_set_option(server, "listening_port", server_port.c_str());
         server_cv.notify_one();
     }
 
@@ -607,6 +609,14 @@ void runServer(struct mg_server* server) {
     std::lock_guard<std::mutex> server_lock(server_mutex);
     mg_destroy_server(&server);
     server_cv.notify_one();
+}
+
+Server::Server(const std::string cert_file) {
+    std::stringstream ss;
+
+    ss << "ssl://127.0.0.1:" << SSL_SERVER_PORT << ":" << cert_file;
+
+    server_port = ss.str();
 }
 
 void Server::SetUp() {
@@ -629,7 +639,7 @@ Url Server::GetBaseUrl() {
 }
 
 Url Server::GetBaseUrlSSL() {
-    return Url{"https://127.0.0.1:"}.append(SERVER_PORT);
+    return Url{"https://127.0.0.1:"}.append(SSL_SERVER_PORT);
 }
 
 static inline bool is_base64(unsigned char c) {

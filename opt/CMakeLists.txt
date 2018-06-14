@@ -51,12 +51,12 @@ if(NOT USE_SYSTEM_CURL OR NOT CURL_FOUND)
     set(CURL_INCLUDE_DIRS
         ${CURL_SOURCE_DIR}/include
         ${CURL_BINARY_DIR}/include/curl)
-        
+
     # Group under the "external" project folder in IDEs such as Visual Studio.
     if(BUILD_CURL_EXE)
         set_property(TARGET curl PROPERTY FOLDER "external")
     endif()
-        
+
     set_property(TARGET libcurl PROPERTY FOLDER "external")
 endif()
 
@@ -64,6 +64,16 @@ set_cache_variable(CURL_FOUND "Set if libcurl is found or built")
 set_cache_variable(CURL_LIBRARIES "Location of libcurl")
 set_cache_variable(CURL_INCLUDE_DIRS "Location of curl include files")
 
+
+# SSL configuration
+if(CMAKE_USE_OPENSSL)
+    find_package(OpenSSL REQUIRED)
+
+    message(STATUS "using system OpenSSL library.")
+
+    include_directories(${OPENSSL_INCLUDE_DIR})
+    set(SSL_LIBRARIES ${OPENSSL_LIBRARIES})
+endif()
 
 # GTest configuration
 
@@ -85,7 +95,7 @@ if(BUILD_CPR_TESTS)
         set(GTEST_MAIN_LIBRARIES gtest_main)
         set(GTEST_BOTH_LIBRARIES gtest gtest_main)
         set(GTEST_INCLUDE_DIRS ${gtest_SOURCE_DIR}/include)
-        
+
         # Group under the "tests/gtest" project folder in IDEs such as Visual Studio.
     set_property(TARGET gtest PROPERTY FOLDER "tests/gtest")
     set_property(TARGET gtest_main PROPERTY FOLDER "tests/gtest")
@@ -103,15 +113,24 @@ endif()
 
 if(BUILD_CPR_TESTS)
     message(STATUS "Building mongoose project for test support.")
-    add_subdirectory(mongoose)
+
+    project(mongoose C)
+    add_library(mongoose STATIC mongoose/mongoose.c)
+    if(CMAKE_USE_OPENSSL)
+        target_compile_definitions(mongoose PUBLIC NS_ENABLE_SSL)
+        target_link_libraries(mongoose ${OPENSSL_LIBRARIES})
+    endif()
+
     set(MONGOOSE_FOUND TRUE)
     set(MONGOOSE_LIBRARIES mongoose)
-    set(MONGOOSE_INCLUDE_DIRS ${mongoose_SOURCE_DIR})
+    set(MONGOOSE_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/mongoose)
+
+    include_directories(${MONGOOSE_INCLUDE_DIRS})
 
     set_cache_variable(MONGOOSE_FOUND "Set if libmongoose was found or built")
     set_cache_variable(MONGOOSE_LIBRARIES "Location of libmongoose")
     set_cache_variable(MONGOOSE_INCLUDE_DIRS "Location of mongoose include files")
-    
+
     # Group under the "external" project folder in IDEs such as Visual Studio.
     set_property(TARGET mongoose PROPERTY FOLDER "external")
 endif()

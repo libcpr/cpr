@@ -22,9 +22,9 @@ TEST(ErrorTests, BasicSSLFailure) {
     auto curl_version = curl_version_info(CURLVERSION_NOW);
     auto expected = ErrorCode::UNSUPPORTED_PROTOCOL;
     if(curl_version->features & CURL_VERSION_SSL) {
-        expected = ErrorCode::SSL_CONNECT_ERROR;
+        expected = ErrorCode::CONNECTION_FAILURE;
     }
-    EXPECT_EQ(expected, response.error.code);
+    EXPECT_EQ(expected, response.error.code) << response.error.message;
 
 }
 

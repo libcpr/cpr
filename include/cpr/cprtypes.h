@@ -12,6 +12,7 @@ struct CaseInsensitiveCompare {
 
 using Header = std::map<std::string, std::string, CaseInsensitiveCompare>;
 using Url = std::string;
+struct Verbose {};
 
 } // namespace cpr
 

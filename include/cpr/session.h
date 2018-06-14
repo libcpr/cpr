@@ -9,15 +9,15 @@
 #include "cpr/cookies.h"
 #include "cpr/cprtypes.h"
 #include "cpr/digest.h"
+#include "cpr/low_speed.h"
 #include "cpr/max_redirects.h"
 #include "cpr/multipart.h"
 #include "cpr/parameters.h"
 #include "cpr/payload.h"
 #include "cpr/proxies.h"
 #include "cpr/response.h"
-#include "cpr/timeout.h"
-#include "cpr/low_speed.h"
 #include "cpr/ssl_options.h"
+#include "cpr/timeout.h"
 
 namespace cpr {
 
@@ -46,6 +46,8 @@ class Session {
     void SetBody(const Body& body);
     void SetLowSpeed(const LowSpeed& low_speed);
     void SetVerifySsl(const VerifySsl& verify);
+    void SetSslOptions(const SslOptions& options);
+    void SetVerbose(const Verbose& verbose);
 
     // Used in templated functions
     void SetOption(const Url& url);
@@ -68,6 +70,8 @@ class Session {
     void SetOption(const Body& body);
     void SetOption(const LowSpeed& low_speed);
     void SetOption(const VerifySsl& verify);
+    void SetOption(const SslOptions& options);
+    void SetOption(const Verbose& verbose);
 
     Response Delete();
     Response Get();
