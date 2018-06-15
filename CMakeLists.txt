@@ -68,6 +68,7 @@ cpr_option(CPR_CURL_NOSIGNAL "Set to ON to disable use of signals in libcurl." O
 cpr_option(USE_SYSTEM_GTEST
     "If ON, this project will look in the system paths for an installed gtest library" OFF)
 cpr_option(CMAKE_USE_OPENSSL "Use OpenSSL code. Experimental" ON)
+cpr_option(BUILD_SHARED_LIBS "Build shared library" OFF)
 message(STATUS "=======================================================")
 
 if(BUILD_CPR_TESTS)
@@ -79,3 +80,8 @@ add_subdirectory(cpr)
 if(BUILD_CPR_TESTS)
     add_subdirectory(test)
 endif()
+
+
+install(DIRECTORY include/
+        DESTINATION include
+        FILES_MATCHING PATTERN "*.h")
