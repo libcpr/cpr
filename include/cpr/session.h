@@ -18,6 +18,7 @@
 #include "cpr/timeout.h"
 #include "cpr/low_speed.h"
 #include "cpr/ssl_options.h"
+#include "cpr/unix_socket.h"
 
 namespace cpr {
 
@@ -68,6 +69,7 @@ class Session {
     void SetOption(const Body& body);
     void SetOption(const LowSpeed& low_speed);
     void SetOption(const VerifySsl& verify);
+    void SetOption(const UnixSocket& unix_socket);
 
     Response Delete();
     Response Get();
