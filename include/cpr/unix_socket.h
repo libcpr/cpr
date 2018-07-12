@@ -13,6 +13,8 @@ class UnixSocket {
     UnixSocket(UnixSocketType&& unix_socket)
             : unix_socket_{CPR_FWD(unix_socket)} {}
 
+    const char* GetUnixSocketString() const noexcept;
+
   private:
     std::string unix_socket_;
 };

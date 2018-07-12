@@ -15,6 +15,7 @@ add_library(${CPR_LIBRARIES}
     session.cpp
     timeout.cpp
     util.cpp
+    unix_socket.cpp
     ssl_options.cpp
 
     # Header files (useful in IDEs)
@@ -37,6 +38,7 @@ add_library(${CPR_LIBRARIES}
     "${CPR_INCLUDE_DIRS}/cpr/session.h"
     "${CPR_INCLUDE_DIRS}/cpr/timeout.h"
     "${CPR_INCLUDE_DIRS}/cpr/util.h"
+    "${CPR_INCLUDE_DIRS}/cpr/unix_socket.h"
     "${CPR_INCLUDE_DIRS}/cpr/ssl_options.h")
 
 message(STATUS "Using CURL_LIBRARIES: ${CURL_LIBRARIES}.")
