@@ -47,6 +47,8 @@ class Session {
     void SetBody(const Body& body);
     void SetLowSpeed(const LowSpeed& low_speed);
     void SetVerifySsl(const VerifySsl& verify);
+    void SetUnixSocket(const UnixSocket& unix_socket);
+
 
     // Used in templated functions
     void SetOption(const Url& url);
