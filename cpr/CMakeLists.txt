@@ -43,6 +43,8 @@ message(STATUS "Using CURL_LIBRARIES: ${CURL_LIBRARIES}.")
 target_link_libraries(${CPR_LIBRARIES}
     ${CURL_LIBRARIES})
 
+install(TARGETS ${CPR_LIBRARIES} LIBRARY DESTINATION lib)
+
 if(NOT (CMAKE_VERSION VERSION_LESS 3.0))
     target_include_directories(${CPR_LIBRARIES}
         PUBLIC
