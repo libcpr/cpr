@@ -478,7 +478,10 @@ void Session::SetOption(const Body& body) { pimpl_->SetBody(body); }
 void Session::SetOption(Body&& body) { pimpl_->SetBody(std::move(body)); }
 void Session::SetOption(const LowSpeed& low_speed) { pimpl_->SetLowSpeed(low_speed); }
 void Session::SetOption(const VerifySsl& verify) { pimpl_->SetVerifySsl(verify); }
+#ifdef USE_UNIX_SOCKETS
 void Session::SetOption(const UnixSocket& unix_socket) { pimpl_->SetUnixSocket(unix_socket); }
+#endif
+
 
 Response Session::Delete() { return pimpl_->Delete(); }
 Response Session::Get() { return pimpl_->Get(); }
