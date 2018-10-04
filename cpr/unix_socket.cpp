@@ -1,3 +1,5 @@
+#ifdef USE_UNIX_SOCKETS
+
 #include "cpr/unix_socket.h"
 
 namespace cpr {
@@ -7,3 +9,4 @@ const char* UnixSocket::GetUnixSocketString() const noexcept {
 }
 
 } // namespace cpr
+#endif

@@ -1,6 +1,8 @@
 #ifndef CPR_UNIX_SOCKET_H
 #define CPR_UNIX_SOCKET_H
 
+#ifdef USE_UNIX_SOCKETS
+
 #include <string>
 
 #include "cpr/defines.h"
@@ -20,5 +22,7 @@ class UnixSocket {
 };
 
 } // namespace cpr
+
+#endif
 
 #endif

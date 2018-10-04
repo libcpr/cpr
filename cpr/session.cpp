@@ -35,7 +35,10 @@ class Session::Impl {
     void SetBody(const Body& body);
     void SetLowSpeed(const LowSpeed& low_speed);
     void SetVerifySsl(const VerifySsl& verify);
+#ifdef USE_UNIX_SOCKETS
     void SetUnixSocket(const UnixSocket& unix_socket);
+#endif
+
 
     Response Delete();
     Response Get();
@@ -300,12 +303,14 @@ void Session::Impl::SetVerifySsl(const VerifySsl& verify) {
     }
 }
 
+#ifdef USE_UNIX_SOCKETS
 void Session::Impl::SetUnixSocket(const UnixSocket& unix_socket) {
     auto curl = curl_->handle;
     if (curl) {
         curl_easy_setopt(curl, CURLOPT_UNIX_SOCKET_PATH, unix_socket.GetUnixSocketString());
     }
 }
+#endif
 
 Response Session::Impl::Delete() {
     auto curl = curl_->handle;
