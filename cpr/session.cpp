@@ -314,7 +314,7 @@ Response Session::Impl::Get() {
     auto curl = curl_->handle;
     if (curl) {
         curl_easy_setopt(curl, CURLOPT_NOBODY, 0L);
-        curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "GET");
+        curl_easy_setopt(curl, CURLOPT_HTTPGET, 1L);
     }
 
     return makeRequest(curl);
@@ -354,7 +354,7 @@ Response Session::Impl::Post() {
     auto curl = curl_->handle;
     if (curl) {
         curl_easy_setopt(curl, CURLOPT_NOBODY, 0L);
-        curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "POST");
+        curl_easy_setopt(curl, CURLOPT_POST, 1L);
     }
 
     return makeRequest(curl);
