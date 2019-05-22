@@ -34,6 +34,7 @@ class Session::Impl {
     void SetBody(Body&& body);
     void SetBody(const Body& body);
     void SetLowSpeed(const LowSpeed& low_speed);
+    void SetLimitRate(const LimitRate& limit_rate);
     void SetVerifySsl(const VerifySsl& verify);
 
     Response Delete();
@@ -291,6 +292,14 @@ void Session::Impl::SetLowSpeed(const LowSpeed& low_speed) {
     }
 }
 
+void Session::Impl::SetLimitRate(const LimitRate& limit_rate) {
+    auto curl = curl_->handle;
+    if (curl) {
+        curl_easy_setopt(curl, CURLOPT_MAX_RECV_SPEED_LARGE, limit_rate.rate);
+        curl_easy_setopt(curl, CURLOPT_MAX_SEND_SPEED_LARGE, limit_rate.rate);
+    }
+}
+
 void Session::Impl::SetVerifySsl(const VerifySsl& verify) {
     auto curl = curl_->handle;
     if (curl) {
@@ -464,6 +473,7 @@ void Session::SetOption(const Cookies& cookies) { pimpl_->SetCookies(cookies); }
 void Session::SetOption(const Body& body) { pimpl_->SetBody(body); }
 void Session::SetOption(Body&& body) { pimpl_->SetBody(std::move(body)); }
 void Session::SetOption(const LowSpeed& low_speed) { pimpl_->SetLowSpeed(low_speed); }
+void Session::SetOption(const LimitRate& limit_rate) { pimpl_->SetLimitRate(limit_rate); }
 void Session::SetOption(const VerifySsl& verify) { pimpl_->SetVerifySsl(verify); }
 Response Session::Delete() { return pimpl_->Delete(); }
 Response Session::Get() { return pimpl_->Get(); }

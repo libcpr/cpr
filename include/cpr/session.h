@@ -17,6 +17,7 @@
 #include "cpr/response.h"
 #include "cpr/timeout.h"
 #include "cpr/low_speed.h"
+#include "cpr/limit_rate.h"
 #include "cpr/ssl_options.h"
 
 namespace cpr {
@@ -67,6 +68,7 @@ class Session {
     void SetOption(Body&& body);
     void SetOption(const Body& body);
     void SetOption(const LowSpeed& low_speed);
+    void SetOption(const LimitRate& limit_rate);
     void SetOption(const VerifySsl& verify);
 
     Response Delete();
