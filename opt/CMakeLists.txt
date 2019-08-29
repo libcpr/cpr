@@ -57,7 +57,7 @@ if(NOT USE_SYSTEM_CURL OR NOT CURL_FOUND)
 
         if (MSVC)
             option(USE_WINSSL "" ON)
-            option(USE_OPENSSL "" OFF)
+            option(CMAKE_USE_OPENSSL "" OFF)
             option(HTTP_ONLY "" ON)
             option(BUILD_SHARED_LIBS "" OFF)
         endif()
