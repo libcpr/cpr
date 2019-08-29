@@ -55,12 +55,7 @@ if(NOT USE_SYSTEM_CURL OR NOT CURL_FOUND)
         option(BUILD_TESTING "Set to ON to build cURL tests." OFF)
         option(BUILD_CURL_EXE "Set to ON to build cURL executable." OFF)
 
-        if (MSVC)
-            option(USE_WINSSL "" ON)
-            option(CMAKE_USE_OPENSSL "" OFF)
-            option(HTTP_ONLY "" ON)
-            option(BUILD_SHARED_LIBS "" OFF)
-        endif()
+        set(HTTP_ONLY ON CACHE BOOL "Only build HTTP parts of curl." FORCE)
 
         add_subdirectory(${curllib_SOURCE_DIR} ${curllib_BINARY_DIR})
         set(CURL_FOUND TRUE)
