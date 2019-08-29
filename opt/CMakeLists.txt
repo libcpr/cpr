@@ -61,7 +61,7 @@ if(NOT USE_SYSTEM_CURL OR NOT CURL_FOUND)
             option(BUILD_SHARED_LIBS "" OFF)
         endif()
 
-        add_subdirectory(${${curllib_SOURCE_DIR})
+        add_subdirectory(${curllib_SOURCE_DIR})
         set(CURL_FOUND TRUE)
         set(CURL_LIBRARIES libcurl)
         set(CURL_INCLUDE_DIRS
