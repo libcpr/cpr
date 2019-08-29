@@ -42,22 +42,39 @@ if(USE_SYSTEM_CURL)
     find_package(CURL)
 endif()
 if(NOT USE_SYSTEM_CURL OR NOT CURL_FOUND)
-    message(STATUS "Not using system Curl, using built-in curl project instead.")
-    option(BUILD_TESTING "Set to ON to build cURL tests." OFF)
-    option(BUILD_CURL_EXE "Set to ON to build cURL executable." OFF)
-    add_subdirectory(curl)
-    set(CURL_FOUND TRUE)
-    set(CURL_LIBRARIES libcurl)
-    set(CURL_INCLUDE_DIRS
-        ${CURL_SOURCE_DIR}/include
-        ${CURL_BINARY_DIR}/include/curl)
-        
-    # Group under the "external" project folder in IDEs such as Visual Studio.
-    if(BUILD_CURL_EXE)
-        set_property(TARGET curl PROPERTY FOLDER "external")
+    message(STATUS "Not using system Curl, cloning curl project instead.")
+    FetchContent_Declare(
+            curllib
+            GIT_REPOSITORY  https://github.com/curl/curl.git
+            GIT_TAG         curl-7_65_3
+            GIT_SHALLOW     TRUE
+            GIT_PROGRESS    TRUE
+            )
+    if (NOT curllib_POPULATED)
+        FetchContent_Populate(curllib)
+        option(BUILD_TESTING "Set to ON to build cURL tests." OFF)
+        option(BUILD_CURL_EXE "Set to ON to build cURL executable." OFF)
+
+        if (MSVC)
+            option(USE_WINSSL "" OFF)
+            option(HTTP_ONLY "" ON)
+            option(BUILD_SHARED_LIBS "" OFF)
+        endif()
+
+        add_subdirectory(${${curllib_SOURCE_DIR})
+        set(CURL_FOUND TRUE)
+        set(CURL_LIBRARIES libcurl)
+        set(CURL_INCLUDE_DIRS
+                ${CURL_SOURCE_DIR}/include
+                ${CURL_BINARY_DIR}/include/curl)
+
+        # Group under the "external" project folder in IDEs such as Visual Studio.
+        if(BUILD_CURL_EXE)
+            set_property(TARGET curl PROPERTY FOLDER "external")
+        endif()
+
+        set_property(TARGET libcurl PROPERTY FOLDER "external")
     endif()
-        
-    set_property(TARGET libcurl PROPERTY FOLDER "external")
 endif()
 
 set_cache_variable(CURL_FOUND "Set if libcurl is found or built")

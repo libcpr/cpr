@@ -1,6 +1,3 @@
-[submodule "opt/curl"]
-	path = opt/curl
-	url = https://github.com/whoshuu/curl.git
 [submodule "opt/googletest"]
 	path = opt/googletest
 	url = https://github.com/whoshuu/googletest.git
