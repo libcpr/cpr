@@ -84,7 +84,6 @@ constexpr bool is_redirect(const std::int32_t code) {
 constexpr bool is_client_error(const std::int32_t code) {
     return (code >= 400 && code < 500);
 }
-
 constexpr bool is_server_error(const std::int32_t code) {
     return (code >= 500 && code < 600);
 }
