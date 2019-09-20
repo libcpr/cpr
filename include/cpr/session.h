@@ -19,6 +19,8 @@
 #include "cpr/ssl_options.h"
 #include "cpr/timeout.h"
 #include "cpr/user_agent.h"
+#include "cpr/session.h"
+#include "cpr/verbose.h"
 
 namespace cpr {
 
@@ -71,6 +73,7 @@ class Session {
     void SetOption(const Body& body);
     void SetOption(const LowSpeed& low_speed);
     void SetOption(const VerifySsl& verify);
+    void SetOption(const Verbose& verbose);
 
     Response Delete();
     Response Get();

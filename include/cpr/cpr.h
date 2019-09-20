@@ -6,5 +6,6 @@
 #include "cpr/cprtypes.h"
 #include "cpr/response.h"
 #include "cpr/session.h"
+#include "cpr/status_codes.h"
 
 #endif
