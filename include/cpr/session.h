@@ -9,15 +9,16 @@
 #include "cpr/cookies.h"
 #include "cpr/cprtypes.h"
 #include "cpr/digest.h"
+#include "cpr/low_speed.h"
 #include "cpr/max_redirects.h"
 #include "cpr/multipart.h"
 #include "cpr/parameters.h"
 #include "cpr/payload.h"
 #include "cpr/proxies.h"
 #include "cpr/response.h"
-#include "cpr/timeout.h"
-#include "cpr/low_speed.h"
 #include "cpr/ssl_options.h"
+#include "cpr/timeout.h"
+#include "cpr/user_agent.h"
 #include "cpr/session.h"
 #include "cpr/verbose.h"
 
@@ -35,6 +36,7 @@ class Session {
     void SetTimeout(const Timeout& timeout);
     void SetAuth(const Authentication& auth);
     void SetDigest(const Digest& auth);
+    void SetUserAgent(const UserAgent& ua);
     void SetPayload(Payload&& payload);
     void SetPayload(const Payload& payload);
     void SetProxies(Proxies&& proxies);
@@ -57,6 +59,7 @@ class Session {
     void SetOption(const Timeout& timeout);
     void SetOption(const Authentication& auth);
     void SetOption(const Digest& auth);
+    void SetOption(const UserAgent& ua);
     void SetOption(Payload&& payload);
     void SetOption(const Payload& payload);
     void SetOption(Proxies&& proxies);
