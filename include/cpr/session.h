@@ -9,6 +9,7 @@
 #include "cpr/cookies.h"
 #include "cpr/cprtypes.h"
 #include "cpr/digest.h"
+#include "cpr/low_speed.h"
 #include "cpr/max_redirects.h"
 #include "cpr/multipart.h"
 #include "cpr/parameters.h"
@@ -19,6 +20,10 @@
 #include "cpr/connect_timeout.h"
 #include "cpr/low_speed.h"
 #include "cpr/ssl_options.h"
+#include "cpr/timeout.h"
+#include "cpr/user_agent.h"
+#include "cpr/session.h"
+#include "cpr/verbose.h"
 
 namespace cpr {
 
@@ -35,6 +40,7 @@ class Session {
     void SetConnectTimeout(const ConnectTimeout& timeout);
     void SetAuth(const Authentication& auth);
     void SetDigest(const Digest& auth);
+    void SetUserAgent(const UserAgent& ua);
     void SetPayload(Payload&& payload);
     void SetPayload(const Payload& payload);
     void SetProxies(Proxies&& proxies);
@@ -58,6 +64,7 @@ class Session {
     void SetOption(const ConnectTimeout& timeout);
     void SetOption(const Authentication& auth);
     void SetOption(const Digest& auth);
+    void SetOption(const UserAgent& ua);
     void SetOption(Payload&& payload);
     void SetOption(const Payload& payload);
     void SetOption(Proxies&& proxies);
@@ -71,6 +78,7 @@ class Session {
     void SetOption(const Body& body);
     void SetOption(const LowSpeed& low_speed);
     void SetOption(const VerifySsl& verify);
+    void SetOption(const Verbose& verbose);
 
     Response Delete();
     Response Get();
