@@ -20,6 +20,7 @@ class Session::Impl {
     void SetParameters(Parameters&& parameters);
     void SetHeader(const Header& header);
     void SetTimeout(const Timeout& timeout);
+    void SetConnectTimeout(const ConnectTimeout& timeout);
     void SetAuth(const Authentication& auth);
     void SetDigest(const Digest& auth);
     void SetUserAgent(const UserAgent& ua);
@@ -139,6 +140,13 @@ void Session::Impl::SetTimeout(const Timeout& timeout) {
     auto curl = curl_->handle;
     if (curl) {
         curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, timeout.Milliseconds());
+    }
+}
+
+void Session::Impl::SetConnectTimeout(const ConnectTimeout& timeout) {
+    auto curl = curl_->handle;
+    if (curl) {
+        curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT_MS, timeout.Milliseconds());
     }
 }
 
@@ -446,6 +454,7 @@ void Session::SetParameters(const Parameters& parameters) { pimpl_->SetParameter
 void Session::SetParameters(Parameters&& parameters) { pimpl_->SetParameters(std::move(parameters)); }
 void Session::SetHeader(const Header& header) { pimpl_->SetHeader(header); }
 void Session::SetTimeout(const Timeout& timeout) { pimpl_->SetTimeout(timeout); }
+void Session::SetConnectTimeout(const ConnectTimeout& timeout) { pimpl_->SetConnectTimeout(timeout); }
 void Session::SetAuth(const Authentication& auth) { pimpl_->SetAuth(auth); }
 void Session::SetDigest(const Digest& auth) { pimpl_->SetDigest(auth); }
 void Session::SetUserAgent(const UserAgent& ua) { pimpl_->SetUserAgent(ua); }
@@ -467,6 +476,7 @@ void Session::SetOption(const Parameters& parameters) { pimpl_->SetParameters(pa
 void Session::SetOption(Parameters&& parameters) { pimpl_->SetParameters(std::move(parameters)); }
 void Session::SetOption(const Header& header) { pimpl_->SetHeader(header); }
 void Session::SetOption(const Timeout& timeout) { pimpl_->SetTimeout(timeout); }
+void Session::SetOption(const ConnectTimeout& timeout) { pimpl_->SetConnectTimeout(timeout); }
 void Session::SetOption(const Authentication& auth) { pimpl_->SetAuth(auth); }
 void Session::SetOption(const Digest& auth) { pimpl_->SetDigest(auth); }
 void Session::SetOption(const UserAgent& ua) { pimpl_->SetUserAgent(ua); }
