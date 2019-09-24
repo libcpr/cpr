@@ -38,6 +38,7 @@ class Session::Impl {
     void SetLowSpeed(const LowSpeed& low_speed);
     void SetVerbose(const Verbose& verbose);
     void SetVerifySsl(const VerifySsl& verify);
+    void SetInterface(const Interface& interface);
 
     Response Delete();
     Response Get();
@@ -323,6 +324,13 @@ void Session::Impl::SetVerifySsl(const VerifySsl& verify) {
     }
 }
 
+void Session::Impl::SetInterface(const Interface& interface) {
+    auto curl = curl_->handle;
+    if (curl) {
+        curl_easy_setopt(curl, CURLOPT_INTERFACE, interface.interface.data());
+    }
+}
+
 Response Session::Impl::Delete() {
     auto curl = curl_->handle;
     if (curl) {
@@ -471,6 +479,7 @@ void Session::SetBody(const Body& body) { pimpl_->SetBody(body); }
 void Session::SetBody(Body&& body) { pimpl_->SetBody(std::move(body)); }
 void Session::SetLowSpeed(const LowSpeed& low_speed) { pimpl_->SetLowSpeed(low_speed); }
 void Session::SetVerifySsl(const VerifySsl& verify) { pimpl_->SetVerifySsl(verify); }
+void Session::SetInterface(const Interface& interface) { pimpl_->SetInterface(interface); }
 void Session::SetOption(const Url& url) { pimpl_->SetUrl(url); }
 void Session::SetOption(const Parameters& parameters) { pimpl_->SetParameters(parameters); }
 void Session::SetOption(Parameters&& parameters) { pimpl_->SetParameters(std::move(parameters)); }
@@ -494,6 +503,7 @@ void Session::SetOption(Body&& body) { pimpl_->SetBody(std::move(body)); }
 void Session::SetOption(const LowSpeed& low_speed) { pimpl_->SetLowSpeed(low_speed); }
 void Session::SetOption(const VerifySsl& verify) { pimpl_->SetVerifySsl(verify); }
 void Session::SetOption(const Verbose& verbose) { pimpl_->SetVerbose(verbose); }
+void Session::SetOption(const Interface& interface) { pimpl_->SetInterface(interface); }
 Response Session::Delete() { return pimpl_->Delete(); }
 Response Session::Get() { return pimpl_->Get(); }
 Response Session::Head() { return pimpl_->Head(); }

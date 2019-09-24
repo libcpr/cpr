@@ -24,6 +24,7 @@
 #include "cpr/user_agent.h"
 #include "cpr/session.h"
 #include "cpr/verbose.h"
+#include "cpr/interface.h"
 
 namespace cpr {
 
@@ -54,6 +55,7 @@ class Session {
     void SetBody(const Body& body);
     void SetLowSpeed(const LowSpeed& low_speed);
     void SetVerifySsl(const VerifySsl& verify);
+    void SetInterface(const Interface& interface);
 
     // Used in templated functions
     void SetOption(const Url& url);
@@ -79,6 +81,7 @@ class Session {
     void SetOption(const LowSpeed& low_speed);
     void SetOption(const VerifySsl& verify);
     void SetOption(const Verbose& verbose);
+    void SetOption(const Interface& interface);
 
     Response Delete();
     Response Get();
