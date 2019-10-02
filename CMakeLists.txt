@@ -79,5 +79,3 @@ add_subdirectory(cpr)
 if(BUILD_CPR_TESTS)
     add_subdirectory(test)
 endif()
-
-install(DIRECTORY cpr DESTINATION include/cpr)
