@@ -20,8 +20,10 @@ class Session::Impl {
     void SetParameters(Parameters&& parameters);
     void SetHeader(const Header& header);
     void SetTimeout(const Timeout& timeout);
+    void SetConnectTimeout(const ConnectTimeout& timeout);
     void SetAuth(const Authentication& auth);
     void SetDigest(const Digest& auth);
+    void SetUserAgent(const UserAgent& ua);
     void SetPayload(Payload&& payload);
     void SetPayload(const Payload& payload);
     void SetProxies(Proxies&& proxies);
@@ -34,6 +36,7 @@ class Session::Impl {
     void SetBody(Body&& body);
     void SetBody(const Body& body);
     void SetLowSpeed(const LowSpeed& low_speed);
+    void SetVerbose(const Verbose& verbose);
     void SetVerifySsl(const VerifySsl& verify);
 
     Response Delete();
@@ -92,6 +95,8 @@ void Session::Impl::freeHolder(CurlHolder* holder) {
 CurlHolder* Session::Impl::newHolder() {
     CurlHolder* holder = new CurlHolder();
     holder->handle = curl_easy_init();
+    holder->chunk = NULL;
+    holder->formpost = NULL;
     return holder;
 }
 
@@ -118,10 +123,16 @@ void Session::Impl::SetHeader(const Header& header) {
             } else {
                 header_string += ": " + item->second;
             }
-            chunk = curl_slist_append(chunk, header_string.data());
-            curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk);
-            curl_->chunk = chunk;
+
+            auto temp = curl_slist_append(chunk, header_string.data());
+            if (temp) {
+                chunk = temp;
+            }
         }
+        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk);
+
+        curl_slist_free_all(curl_->chunk);
+        curl_->chunk = chunk;
     }
 }
 
@@ -129,6 +140,20 @@ void Session::Impl::SetTimeout(const Timeout& timeout) {
     auto curl = curl_->handle;
     if (curl) {
         curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, timeout.Milliseconds());
+    }
+}
+
+void Session::Impl::SetConnectTimeout(const ConnectTimeout& timeout) {
+    auto curl = curl_->handle;
+    if (curl) {
+        curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT_MS, timeout.Milliseconds());
+    }
+}
+
+void Session::Impl::SetVerbose(const Verbose& verbose) {
+    auto curl = curl_->handle;
+    if (curl) {
+        curl_easy_setopt(curl, CURLOPT_VERBOSE, verbose.verbose);
     }
 }
 
@@ -145,6 +170,13 @@ void Session::Impl::SetDigest(const Digest& auth) {
     if (curl) {
         curl_easy_setopt(curl, CURLOPT_HTTPAUTH, CURLAUTH_DIGEST);
         curl_easy_setopt(curl, CURLOPT_USERPWD, auth.GetAuthString());
+    }
+}
+
+void Session::Impl::SetUserAgent(const UserAgent& ua) {
+    auto curl = curl_->handle;
+    if (curl) {
+        curl_easy_setopt(curl, CURLOPT_USERAGENT, ua.c_str());
     }
 }
 
@@ -305,10 +337,8 @@ Response Session::Impl::Delete() {
 Response Session::Impl::Get() {
     auto curl = curl_->handle;
     if (curl) {
-        curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, NULL);
-        curl_easy_setopt(curl, CURLOPT_HTTPGET, 1L);
-        curl_easy_setopt(curl, CURLOPT_POST, 0L);
         curl_easy_setopt(curl, CURLOPT_NOBODY, 0L);
+        curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "GET");
     }
 
     return makeRequest(curl);
@@ -317,8 +347,7 @@ Response Session::Impl::Get() {
 Response Session::Impl::Head() {
     auto curl = curl_->handle;
     if (curl) {
-        curl_easy_setopt(curl, CURLOPT_HTTPGET, 0L);
-        curl_easy_setopt(curl, CURLOPT_POST, 0L);
+        curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, NULL);
         curl_easy_setopt(curl, CURLOPT_NOBODY, 1L);
     }
 
@@ -328,8 +357,6 @@ Response Session::Impl::Head() {
 Response Session::Impl::Options() {
     auto curl = curl_->handle;
     if (curl) {
-        curl_easy_setopt(curl, CURLOPT_HTTPGET, 0L);
-        curl_easy_setopt(curl, CURLOPT_POST, 0L);
         curl_easy_setopt(curl, CURLOPT_NOBODY, 0L);
         curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "OPTIONS");
     }
@@ -350,8 +377,8 @@ Response Session::Impl::Patch() {
 Response Session::Impl::Post() {
     auto curl = curl_->handle;
     if (curl) {
-        curl_easy_setopt(curl, CURLOPT_HTTPGET, 0L);
         curl_easy_setopt(curl, CURLOPT_NOBODY, 0L);
+        curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "POST");
     }
 
     return makeRequest(curl);
@@ -379,7 +406,7 @@ Response Session::Impl::makeRequest(CURL* curl) {
     if (proxies_.has(protocol)) {
         curl_easy_setopt(curl, CURLOPT_PROXY, proxies_[protocol].data());
     } else {
-        curl_easy_setopt(curl, CURLOPT_PROXY, "");
+        curl_easy_setopt(curl, CURLOPT_PROXY, nullptr);
     }
 
     curl_->error[0] = '\0';
@@ -399,8 +426,6 @@ Response Session::Impl::makeRequest(CURL* curl) {
     curl_easy_getinfo(curl, CURLINFO_TOTAL_TIME, &elapsed);
     curl_easy_getinfo(curl, CURLINFO_EFFECTIVE_URL, &raw_url);
 
-    Error error(curl_error, curl_->error);
-
     Cookies cookies;
     struct curl_slist* raw_cookies;
     curl_easy_getinfo(curl, CURLINFO_COOKIELIST, &raw_cookies);
@@ -412,14 +437,13 @@ Response Session::Impl::makeRequest(CURL* curl) {
     }
     curl_slist_free_all(raw_cookies);
 
-    auto header = cpr::util::parseHeader(header_string);
     return Response{static_cast<std::int32_t>(response_code),
-                    response_string,
-                    header,
-                    raw_url,
+                    std::move(response_string),
+                    cpr::util::parseHeader(header_string),
+                    std::move(raw_url),
                     elapsed,
-                    cookies,
-                    error};
+                    std::move(cookies),
+                    Error(curl_error, curl_->error)};
 }
 
 // clang-format off
@@ -430,8 +454,10 @@ void Session::SetParameters(const Parameters& parameters) { pimpl_->SetParameter
 void Session::SetParameters(Parameters&& parameters) { pimpl_->SetParameters(std::move(parameters)); }
 void Session::SetHeader(const Header& header) { pimpl_->SetHeader(header); }
 void Session::SetTimeout(const Timeout& timeout) { pimpl_->SetTimeout(timeout); }
+void Session::SetConnectTimeout(const ConnectTimeout& timeout) { pimpl_->SetConnectTimeout(timeout); }
 void Session::SetAuth(const Authentication& auth) { pimpl_->SetAuth(auth); }
 void Session::SetDigest(const Digest& auth) { pimpl_->SetDigest(auth); }
+void Session::SetUserAgent(const UserAgent& ua) { pimpl_->SetUserAgent(ua); }
 void Session::SetPayload(const Payload& payload) { pimpl_->SetPayload(payload); }
 void Session::SetPayload(Payload&& payload) { pimpl_->SetPayload(std::move(payload)); }
 void Session::SetProxies(const Proxies& proxies) { pimpl_->SetProxies(proxies); }
@@ -450,8 +476,10 @@ void Session::SetOption(const Parameters& parameters) { pimpl_->SetParameters(pa
 void Session::SetOption(Parameters&& parameters) { pimpl_->SetParameters(std::move(parameters)); }
 void Session::SetOption(const Header& header) { pimpl_->SetHeader(header); }
 void Session::SetOption(const Timeout& timeout) { pimpl_->SetTimeout(timeout); }
+void Session::SetOption(const ConnectTimeout& timeout) { pimpl_->SetConnectTimeout(timeout); }
 void Session::SetOption(const Authentication& auth) { pimpl_->SetAuth(auth); }
 void Session::SetOption(const Digest& auth) { pimpl_->SetDigest(auth); }
+void Session::SetOption(const UserAgent& ua) { pimpl_->SetUserAgent(ua); }
 void Session::SetOption(const Payload& payload) { pimpl_->SetPayload(payload); }
 void Session::SetOption(Payload&& payload) { pimpl_->SetPayload(std::move(payload)); }
 void Session::SetOption(const Proxies& proxies) { pimpl_->SetProxies(proxies); }
@@ -465,6 +493,7 @@ void Session::SetOption(const Body& body) { pimpl_->SetBody(body); }
 void Session::SetOption(Body&& body) { pimpl_->SetBody(std::move(body)); }
 void Session::SetOption(const LowSpeed& low_speed) { pimpl_->SetLowSpeed(low_speed); }
 void Session::SetOption(const VerifySsl& verify) { pimpl_->SetVerifySsl(verify); }
+void Session::SetOption(const Verbose& verbose) { pimpl_->SetVerbose(verbose); }
 Response Session::Delete() { return pimpl_->Delete(); }
 Response Session::Get() { return pimpl_->Get(); }
 Response Session::Head() { return pimpl_->Head(); }

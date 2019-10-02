@@ -4,20 +4,26 @@
 #include <cstdint>
 #include <memory>
 
-#include "auth.h"
-#include "body.h"
-#include "cookies.h"
-#include "cprtypes.h"
-#include "digest.h"
-#include "max_redirects.h"
-#include "multipart.h"
-#include "parameters.h"
-#include "payload.h"
-#include "proxies.h"
-#include "response.h"
-#include "timeout.h"
-#include "low_speed.h"
-#include "ssl_options.h"
+#include "cpr/auth.h"
+#include "cpr/body.h"
+#include "cpr/cookies.h"
+#include "cpr/cprtypes.h"
+#include "cpr/digest.h"
+#include "cpr/low_speed.h"
+#include "cpr/max_redirects.h"
+#include "cpr/multipart.h"
+#include "cpr/parameters.h"
+#include "cpr/payload.h"
+#include "cpr/proxies.h"
+#include "cpr/response.h"
+#include "cpr/timeout.h"
+#include "cpr/connect_timeout.h"
+#include "cpr/low_speed.h"
+#include "cpr/ssl_options.h"
+#include "cpr/timeout.h"
+#include "cpr/user_agent.h"
+#include "cpr/session.h"
+#include "cpr/verbose.h"
 
 namespace cpr {
 
@@ -31,8 +37,10 @@ class Session {
     void SetParameters(Parameters&& parameters);
     void SetHeader(const Header& header);
     void SetTimeout(const Timeout& timeout);
+    void SetConnectTimeout(const ConnectTimeout& timeout);
     void SetAuth(const Authentication& auth);
     void SetDigest(const Digest& auth);
+    void SetUserAgent(const UserAgent& ua);
     void SetPayload(Payload&& payload);
     void SetPayload(const Payload& payload);
     void SetProxies(Proxies&& proxies);
@@ -53,8 +61,10 @@ class Session {
     void SetOption(Parameters&& parameters);
     void SetOption(const Header& header);
     void SetOption(const Timeout& timeout);
+    void SetOption(const ConnectTimeout& timeout);
     void SetOption(const Authentication& auth);
     void SetOption(const Digest& auth);
+    void SetOption(const UserAgent& ua);
     void SetOption(Payload&& payload);
     void SetOption(const Payload& payload);
     void SetOption(Proxies&& proxies);
@@ -68,6 +78,7 @@ class Session {
     void SetOption(const Body& body);
     void SetOption(const LowSpeed& low_speed);
     void SetOption(const VerifySsl& verify);
+    void SetOption(const Verbose& verbose);
 
     Response Delete();
     Response Get();

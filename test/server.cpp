@@ -13,7 +13,6 @@
 
 #define SERVER_PORT "8080"
 
-
 std::mutex shutdown_mutex;
 std::mutex server_mutex;
 std::condition_variable server_cv;
@@ -100,7 +99,7 @@ static int basicCookies(struct mg_connection* conn) {
     mg_send_header(conn, "content-type", "text/html");
     time_t t = time(NULL) + 5;  // Valid for 1 hour
     char expire[100], expire_epoch[100];
-    snprintf(expire_epoch, sizeof(expire_epoch), "%lu", (unsigned long) t);
+    snprintf(expire_epoch, sizeof(expire_epoch), "%lu", static_cast<unsigned long>(t));
     strftime(expire, sizeof(expire), "%a, %d %b %Y %H:%M:%S GMT", gmtime(&t));
     std::string cookie{"cookie=chocolate; expires=\"" + std::string{expire} + "\"; http-only;"};
     std::string cookie2{"icecream=vanilla; expires=\"" + std::string{expire} + "\"; http-only;"};
@@ -116,7 +115,7 @@ static int v1Cookies(struct mg_connection* conn) {
     mg_send_header(conn, "content-type", "text/html");
     time_t t = time(NULL) + 5; // Valid for 1 hour
     char expire[100], expire_epoch[100];
-    snprintf(expire_epoch, sizeof(expire_epoch), "%lu", (unsigned long) t);
+    snprintf(expire_epoch, sizeof(expire_epoch), "%lu", static_cast<unsigned long>(t));
     strftime(expire, sizeof(expire), "%a, %d %b %Y %H:%M:%S GMT", gmtime(&t));
     std::string v1cookie{"cookie=\"value with spaces (v1 cookie)\"; expires=\"" +
                          std::string{expire} + "\"; http-only;"};
@@ -234,9 +233,7 @@ static int headerReflect(struct mg_connection* conn) {
     auto headers = conn->http_headers;
     for (int i = 0; i < num_headers; ++i) {
         auto name = headers[i].name;
-        if (std::string{"User-Agent"} != name &&
-                std::string{"Host"} != name &&
-                std::string{"Accept"} != name) {
+        if (std::string{"Host"} != name && std::string{"Accept"} != name) {
             mg_send_header(conn, name, headers[i].value);
         }
     }
@@ -264,6 +261,16 @@ static int twoRedirects(struct mg_connection* conn) {
     auto response = std::string{"Moved Permanently"};
     mg_send_status(conn, 301);
     mg_send_header(conn, "Location", "permanent_redirect.html");
+    mg_send_data(conn, response.data(), response.length());
+    return MG_TRUE;
+}
+
+static int bodyGet(struct mg_connection* conn) {
+    char message[100];
+    mg_get_var(conn, "Message", message, sizeof(message));
+    auto response = std::string{message};
+    mg_send_status(conn, 200);
+    mg_send_header(conn, "content-type", "text/html");
     mg_send_data(conn, response.data(), response.length());
     return MG_TRUE;
 }
@@ -330,16 +337,24 @@ static int formPost(struct mg_connection* conn) {
         int data_len;
         char name[100];
         char filename[100];
-        content += mg_parse_multipart(content, content_len,
-                                      name, sizeof(name),
-                                      filename, sizeof(filename),
-                                      (const char**) &data, &data_len);
+        auto read_len = mg_parse_multipart(content, content_len,
+                                           name, sizeof(name),
+                                           filename, sizeof(filename),
+                                           const_cast<const char**>(&data), &data_len);
+        if (read_len == 0) {
+            delete[] data;
+            break;
+        }
+
+        content += read_len;
+        content_len -= read_len;
+
         if (strlen(data) == 0) {
             delete[] data;
             break;
         }
 
-        forms[name] = std::string{data, (unsigned long) data_len};
+        forms[name] = std::string{data, static_cast<unsigned long>(data_len)};
     }
 
     mg_send_status(conn, 201);
@@ -523,9 +538,9 @@ static int evHandler(struct mg_connection* conn, enum mg_event ev) {
             } else if (Url{conn->uri} == "/timeout.html") {
                 return timeout(conn);
             } else if (Url{conn->uri} == "/low_speed.html") {
-                return lowSpeed(conn);				
+                return lowSpeed(conn);
             } else if (Url{conn->uri} == "/low_speed_bytes.html") {
-                return lowSpeedBytes(conn);				
+                return lowSpeedBytes(conn);
             } else if (Url{conn->uri} == "/basic_cookies.html") {
                 return basicCookies(conn);
             } else if (Url{conn->uri} == "/check_cookies.html") {
@@ -550,6 +565,8 @@ static int evHandler(struct mg_connection* conn, enum mg_event ev) {
                 return twoRedirects(conn);
             } else if (Url{conn->uri} == "/url_post.html") {
                 return urlPost(conn);
+            } else if (Url{conn->uri} == "/body_get.html") {
+                return bodyGet(conn);
             } else if (Url{conn->uri} == "/json_post.html") {
                 return jsonPost(conn);
             } else if (Url{conn->uri} == "/form_post.html") {
@@ -584,6 +601,7 @@ void runServer(struct mg_server* server) {
         mg_poll_server(server, 1000);
     } while (!shutdown_mutex.try_lock());
 
+    shutdown_mutex.unlock();
     std::lock_guard<std::mutex> server_lock(server_mutex);
     mg_destroy_server(&server);
     server_cv.notify_one();
@@ -665,7 +683,7 @@ std::string base64_decode(std::string const& encoded_string) {
 }
 
 static int lowercase(const char *s) {
-    return tolower(* (const unsigned char *) s);
+    return tolower(* reinterpret_cast<const unsigned char *>(s));
 }
 
 static int mg_strncasecmp(const char *s1, const char *s2, size_t len) {
