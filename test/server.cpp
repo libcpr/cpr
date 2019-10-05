@@ -6,6 +6,7 @@
 #include <mutex>
 #include <sstream>
 #include <thread>
+#include <set>
 
 #include "mongoose.h"
 
@@ -16,6 +17,7 @@
 std::mutex shutdown_mutex;
 std::mutex server_mutex;
 std::condition_variable server_cv;
+std::set<unsigned short> unique_connections;
 
 static const std::string base64_chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                                         "abcdefghijklmnopqrstuvwxyz"
@@ -531,6 +533,7 @@ static int evHandler(struct mg_connection* conn, enum mg_event ev) {
             }
             return MG_TRUE;
         case MG_REQUEST:
+            unique_connections.insert(conn->remote_port);
             if (Url{conn->uri} == "/") {
                 return options(conn);
             } else if (Url{conn->uri} == "/hello.html") {
@@ -628,6 +631,14 @@ Url Server::GetBaseUrl() {
 
 Url Server::GetBaseUrlSSL() {
     return Url{"https://127.0.0.1:"}.append(SERVER_PORT);
+}
+
+size_t Server::GetConnectionCount() {
+    return unique_connections.size();
+}
+
+void Server::ResetConnectionCount() {
+    unique_connections.clear();
 }
 
 static inline bool is_base64(unsigned char c) {

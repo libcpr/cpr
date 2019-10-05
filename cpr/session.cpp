@@ -31,6 +31,7 @@ class Session::Impl {
     void SetMultipart(const Multipart& multipart);
     void SetRedirect(const bool& redirect);
     void SetMaxRedirects(const MaxRedirects& max_redirects);
+    void SetConnectionPool(const ConnectionPool& pool);
     void SetCookies(const Cookies& cookies);
     void SetBody(Body&& body);
     void SetBody(const Body& body);
@@ -275,6 +276,13 @@ void Session::Impl::SetMaxRedirects(const MaxRedirects& max_redirects) {
     }
 }
 
+void Session::Impl::SetConnectionPool(const ConnectionPool& pool) {
+    auto curl = curl_->handle;
+    if (curl) {
+        pool.SetupHandler(curl);
+    }
+}
+
 void Session::Impl::SetCookies(const Cookies& cookies) {
     auto curl = curl_->handle;
     if (curl) {
@@ -462,6 +470,7 @@ void Session::SetBody(const Body& body) { pimpl_->SetBody(body); }
 void Session::SetBody(Body&& body) { pimpl_->SetBody(std::move(body)); }
 void Session::SetLowSpeed(const LowSpeed& low_speed) { pimpl_->SetLowSpeed(low_speed); }
 void Session::SetVerifySsl(const VerifySsl& verify) { pimpl_->SetVerifySsl(verify); }
+void Session::SetConnectionPool(const ConnectionPool& pool) { pimpl_->SetConnectionPool(pool); }
 void Session::SetOption(const Url& url) { pimpl_->SetUrl(url); }
 void Session::SetOption(const Parameters& parameters) { pimpl_->SetParameters(parameters); }
 void Session::SetOption(Parameters&& parameters) { pimpl_->SetParameters(std::move(parameters)); }
@@ -484,6 +493,7 @@ void Session::SetOption(Body&& body) { pimpl_->SetBody(std::move(body)); }
 void Session::SetOption(const LowSpeed& low_speed) { pimpl_->SetLowSpeed(low_speed); }
 void Session::SetOption(const VerifySsl& verify) { pimpl_->SetVerifySsl(verify); }
 void Session::SetOption(const Verbose& verbose) { pimpl_->SetVerbose(verbose); }
+void Session::SetOption(const ConnectionPool& pool) { pimpl_->SetConnectionPool(pool); }
 Response Session::Delete() { return pimpl_->Delete(); }
 Response Session::Get() { return pimpl_->Get(); }
 Response Session::Head() { return pimpl_->Head(); }

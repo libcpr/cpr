@@ -16,6 +16,8 @@ class Server: public ::testing::Environment {
 
     Url GetBaseUrl();
     Url GetBaseUrlSSL();
+    size_t GetConnectionCount();
+    void ResetConnectionCount();
 };
 
 #endif
