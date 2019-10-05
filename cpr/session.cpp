@@ -50,6 +50,7 @@ class Session::Impl {
     void SetMultipart(const Multipart& multipart);
     void SetNTLM(const NTLM& auth);
     void SetRedirect(const Redirect& redirect);
+    void SetConnectionPool(const ConnectionPool& pool);
     void SetCookies(const Cookies& cookies);
     void SetBody(Body&& body);
     void SetBody(const Body& body);
@@ -356,6 +357,13 @@ void Session::Impl::SetRedirect(const Redirect& redirect) {
         mask |= CURL_REDIR_POST_303;
     }
     curl_easy_setopt(curl_->handle, CURLOPT_POSTREDIR, mask);
+}
+
+void Session::Impl::SetConnectionPool(const ConnectionPool& pool) {
+    auto curl = curl_->handle;
+    if (curl) {
+        pool.SetupHandler(curl);
+    }
 }
 
 void Session::Impl::SetCookies(const Cookies& cookies) {
@@ -794,6 +802,7 @@ void Session::SetOption(const HeaderCallback& header) { pimpl_->SetHeaderCallbac
 void Session::SetOption(const WriteCallback& write) { pimpl_->SetWriteCallback(write); }
 void Session::SetOption(const ProgressCallback& progress) { pimpl_->SetProgressCallback(progress); }
 void Session::SetOption(const DebugCallback& debug) { pimpl_->SetDebugCallback(debug); }
+void Session::SetConnectionPool(const ConnectionPool& pool) { pimpl_->SetConnectionPool(pool); }
 void Session::SetOption(const Url& url) { pimpl_->SetUrl(url); }
 void Session::SetOption(const Parameters& parameters) { pimpl_->SetParameters(parameters); }
 void Session::SetOption(Parameters&& parameters) { pimpl_->SetParameters(std::move(parameters)); }
@@ -828,6 +837,7 @@ void Session::SetOption(const Verbose& verbose) { pimpl_->SetVerbose(verbose); }
 void Session::SetOption(const UnixSocket& unix_socket) { pimpl_->SetUnixSocket(unix_socket); }
 void Session::SetOption(const SslOptions& options) { pimpl_->SetSslOptions(options); }
 void Session::SetOption(const Interface& iface) { pimpl_->SetInterface(iface); }
+void Session::SetOption(const ConnectionPool& pool) { pimpl_->SetConnectionPool(pool); }
 
 cpr_off_t Session::GetDownloadFileLength() { return pimpl_->GetDownloadFileLength(); }
 Response Session::Delete() { return pimpl_->Delete(); }
