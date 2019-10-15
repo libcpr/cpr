@@ -414,7 +414,7 @@ Response Session::Impl::makeRequest(CURL* curl) {
     if (proxies_.has(protocol)) {
         curl_easy_setopt(curl, CURLOPT_PROXY, proxies_[protocol].data());
     } else {
-        curl_easy_setopt(curl, CURLOPT_PROXY, "");
+        curl_easy_setopt(curl, CURLOPT_PROXY, nullptr);
     }
 
     curl_->error[0] = '\0';
