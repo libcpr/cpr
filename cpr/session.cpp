@@ -40,6 +40,7 @@ class Session::Impl {
     void SetLowSpeed(const LowSpeed& low_speed);
     void SetVerbose(const Verbose& verbose);
     void SetVerifySsl(const VerifySsl& verify);
+    void SetLimitRate(const LimitRate& limit_rate);
 
     Response Delete();
     Response Download(std::ofstream& file);
@@ -275,6 +276,14 @@ void Session::Impl::SetMultipart(const Multipart& multipart) {
 
         curl_formfree(curl_->formpost);
         curl_->formpost = formpost;
+    }
+}
+
+void Session::Impl::SetLimitRate(const LimitRate& limit_rate) {
+    auto curl = curl_->handle;
+    if (curl) {
+        curl_easy_setopt(curl, CURLOPT_MAX_RECV_SPEED_LARGE, limit_rate.downrate);
+        curl_easy_setopt(curl, CURLOPT_MAX_SEND_SPEED_LARGE, limit_rate.uprate);
     }
 }
 
