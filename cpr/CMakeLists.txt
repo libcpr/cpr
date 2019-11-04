@@ -38,6 +38,7 @@ add_library(${CPR_LIBRARIES}
     "${CPR_INCLUDE_DIRS}/cpr/timeout.h"
     "${CPR_INCLUDE_DIRS}/cpr/util.h"
     "${CPR_INCLUDE_DIRS}/cpr/ssl_options.h"
+	"${CPR_INCLUDE_DIRS}/cpr/limit_rate.h"
     "${CPR_INCLUDE_DIRS}/cpr/verbose.h")
 
 message(STATUS "Using CURL_LIBRARIES: ${CURL_LIBRARIES}.")
