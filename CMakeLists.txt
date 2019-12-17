@@ -10,7 +10,19 @@ endif()
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "CMake")
 
-project(cpr CXX)
+# Read version from text file.
+file(STRINGS "VERSION" cpr_temporary_version_string)
+if(NOT ${CMAKE_VERSION} VERSION_LESS 3.0)
+    project(cpr VERSION "${cpr_temporary_version_string}" LANGUAGES CXX)
+else()
+    # CMake < 3.0 had no way to specify the project version.
+    project(cpr CXX)
+    set(${PROJECT_NAME}_VERSION "${cpr_temporary_version_string}")
+    # Convert version string into list, ...
+    string(REPLACE "." ";" cpr_temporary_list ${${PROJECT_NAME}_VERSION})
+    # ... and set major version to first element.
+    list(GET cpr_temporary_list 0 ${PROJECT_NAME}_VERSION_MAJOR)
+endif()
 
 if(NOT ${CMAKE_VERSION} VERSION_LESS 3.2)
     set(CMAKE_CXX_STANDARD 11)
