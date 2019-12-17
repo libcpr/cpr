@@ -56,6 +56,12 @@ else()
         ${CURL_INCLUDE_DIRS})
 endif()
 
+# Set version for shared libraries.
+set_target_properties(${CPR_LIBRARIES}
+     PROPERTIES
+     VERSION ${${PROJECT_NAME}_VERSION}
+     SOVERSION ${${PROJECT_NAME}_VERSION_MAJOR})
+
 install(TARGETS ${CPR_LIBRARIES}
         RUNTIME DESTINATION bin
         LIBRARY DESTINATION lib
