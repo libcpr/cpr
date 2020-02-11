@@ -319,8 +319,8 @@ void Session::Impl::SetLowSpeed(const LowSpeed& low_speed) {
 void Session::Impl::SetLimitRate(const LimitRate& limit_rate) {
     auto curl = curl_->handle;
     if (curl) {
-        curl_easy_setopt(curl, CURLOPT_MAX_RECV_SPEED_LARGE, limit_rate.rate);
-        curl_easy_setopt(curl, CURLOPT_MAX_SEND_SPEED_LARGE, limit_rate.rate);
+        curl_easy_setopt(curl, CURLOPT_MAX_RECV_SPEED_LARGE, limit_rate.receive_rate);
+        curl_easy_setopt(curl, CURLOPT_MAX_SEND_SPEED_LARGE, limit_rate.send_rate);
     }
 }
 

@@ -7,9 +7,11 @@ namespace cpr {
 
 class LimitRate {
   public:
-    LimitRate(const std::int64_t rate) : rate(rate) {}
+    LimitRate(const std::int64_t receive_rate, const std::int64_t send_rate) 
+      : receive_rate(receive_rate), send_rate(send_rate) {}
 
-    std::int64_t rate = 0;
+    std::int64_t receive_rate = 0;
+    std::int64_t send_rate = 0;
 };
 
 } // namespace cpr
