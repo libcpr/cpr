@@ -12,7 +12,7 @@ set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "CMake")
 
 project(cpr CXX)
 
-if(NOT ${CMAKE_VERSION} LESS 3.2)
+if(NOT ${CMAKE_VERSION} VERSION_LESS 3.2)
     set(CMAKE_CXX_STANDARD 11)
     set(CMAKE_CXX_STANDARD_REQUIRED ON)
 else()
@@ -79,3 +79,5 @@ add_subdirectory(cpr)
 if(BUILD_CPR_TESTS)
     add_subdirectory(test)
 endif()
+
+install(DIRECTORY include/cpr DESTINATION include)
