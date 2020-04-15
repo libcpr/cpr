@@ -1,7 +1,6 @@
 #include "cpr/session.h"
 
 #include <algorithm>
-#include <functional>
 #include <string>
 
 #include <curl/curl.h>
@@ -48,7 +47,13 @@ class Session::Impl {
     Response Put();
 
   private:
-    std::unique_ptr<CurlHolder, std::function<void(CurlHolder*)>> curl_;
+    struct CurlHolderDeleter {
+        void operator()(CurlHolder* holder) {
+            freeHolder(holder);
+        }
+    };
+
+    std::unique_ptr<CurlHolder, CurlHolderDeleter> curl_;
     Url url_;
     Parameters parameters_;
     Proxies proxies_;
@@ -59,8 +64,7 @@ class Session::Impl {
 };
 
 Session::Impl::Impl() {
-    curl_ = std::unique_ptr<CurlHolder, std::function<void(CurlHolder*)>>(newHolder(),
-                                                                          &Impl::freeHolder);
+    curl_ = std::unique_ptr<CurlHolder, CurlHolderDeleter>(newHolder());
     auto curl = curl_->handle;
     if (curl) {
         // Set up some sensible defaults
