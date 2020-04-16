@@ -85,6 +85,7 @@ Session::Impl::Impl() {
 #ifdef CPR_CURL_NOSIGNAL
         curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1L);
 #endif
+
 #if LIBCURL_VERSION_MAJOR >= 7
 #if LIBCURL_VERSION_MINOR >= 25
 #if LIBCURL_VERSION_PATCH >= 0
@@ -486,6 +487,13 @@ Response Session::Impl::makeRequest(CURL* curl) {
     } else {
         curl_easy_setopt(curl, CURLOPT_PROXY, nullptr);
     }
+
+#if LIBCURL_VERSION_MAJOR >= 7
+#if LIBCURL_VERSION_MINOR >= 21
+	/* enable all supported built-in compressions */
+	curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, "");
+#endif
+#endif
 
     curl_->error[0] = '\0';
 
