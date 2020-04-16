@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cctype>
 #include <cstdint>
+#include <fstream>
 #include <iomanip>
 #include <sstream>
 #include <string>
@@ -55,6 +56,11 @@ std::vector<std::string> split(const std::string& to_split, char delimiter) {
 
 size_t writeFunction(void* ptr, size_t size, size_t nmemb, std::string* data) {
     data->append(static_cast<char*>(ptr), size * nmemb);
+    return size * nmemb;
+}
+
+size_t downloadFunction(void* ptr, size_t size, size_t nmemb, std::ofstream* file) {
+    file->write((char*) ptr, size * nmemb);
     return size * nmemb;
 }
 
