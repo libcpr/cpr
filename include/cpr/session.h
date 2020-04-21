@@ -57,9 +57,7 @@ class Session {
     void SetBody(const Body& body);
     void SetLowSpeed(const LowSpeed& low_speed);
     void SetVerifySsl(const VerifySsl& verify);
-#ifdef USE_UNIX_SOCKETS
     void SetUnixSocket(const UnixSocket& unix_socket);
-#endif
 
     // Used in templated functions
     void SetOption(const Url& url);
@@ -86,9 +84,7 @@ class Session {
     void SetOption(const LowSpeed& low_speed);
     void SetOption(const VerifySsl& verify);
     void SetOption(const Verbose& verbose);
-#ifdef USE_UNIX_SOCKETS
     void SetOption(const UnixSocket& unix_socket);
-#endif
 
     Response Delete();
     Response Download(std::ofstream& file);
