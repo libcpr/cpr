@@ -41,6 +41,7 @@ class Session::Impl {
     void SetVerbose(const Verbose& verbose);
     void SetVerifySsl(const VerifySsl& verify);
     void SetLimitRate(const LimitRate& limit_rate);
+    void SetUnixSocket(const UnixSocket& unix_socket);
 
     Response Delete();
     Response Download(std::ofstream& file);
@@ -342,6 +343,13 @@ void Session::Impl::SetVerifySsl(const VerifySsl& verify) {
     }
 }
 
+void Session::Impl::SetUnixSocket(const UnixSocket& unix_socket) {
+    auto curl = curl_->handle;
+    if (curl) {
+        curl_easy_setopt(curl, CURLOPT_UNIX_SOCKET_PATH, unix_socket.GetUnixSocketString());
+    }
+}
+
 Response Session::Impl::Delete() {
     auto curl = curl_->handle;
     if (curl) {
@@ -587,6 +595,8 @@ void Session::SetOption(Body&& body) { pimpl_->SetBody(std::move(body)); }
 void Session::SetOption(const LowSpeed& low_speed) { pimpl_->SetLowSpeed(low_speed); }
 void Session::SetOption(const VerifySsl& verify) { pimpl_->SetVerifySsl(verify); }
 void Session::SetOption(const Verbose& verbose) { pimpl_->SetVerbose(verbose); }
+void Session::SetOption(const UnixSocket& unix_socket) { pimpl_->SetUnixSocket(unix_socket); }
+
 Response Session::Delete() { return pimpl_->Delete(); }
 Response Session::Download(std::ofstream& file) { return pimpl_->Download(file); }
 Response Session::Get() { return pimpl_->Get(); }

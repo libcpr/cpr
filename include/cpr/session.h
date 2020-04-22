@@ -26,6 +26,7 @@
 #include "cpr/session.h"
 #include "cpr/verbose.h"
 #include "cpr/limit_rate.h"
+#include "cpr/unix_socket.h"
 
 namespace cpr {
 
@@ -56,6 +57,7 @@ class Session {
     void SetBody(const Body& body);
     void SetLowSpeed(const LowSpeed& low_speed);
     void SetVerifySsl(const VerifySsl& verify);
+    void SetUnixSocket(const UnixSocket& unix_socket);
 
     // Used in templated functions
     void SetOption(const Url& url);
@@ -82,6 +84,7 @@ class Session {
     void SetOption(const LowSpeed& low_speed);
     void SetOption(const VerifySsl& verify);
     void SetOption(const Verbose& verbose);
+    void SetOption(const UnixSocket& unix_socket);
 
     Response Delete();
     Response Download(std::ofstream& file);
