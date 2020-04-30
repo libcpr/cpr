@@ -6,12 +6,15 @@
 #include <mutex>
 #include <sstream>
 #include <thread>
+#include <memory>
 
-#include "mongoose.h"
+// https://cesanta.com/docs/http/server-example.html
+
+#include "mongoose/mongoose.h"
 
 #include <time.h>
 
-#define SERVER_PORT "8080"
+#define SERVER_PORT std::string{"8080"}
 
 std::mutex shutdown_mutex;
 std::mutex server_mutex;
@@ -23,31 +26,30 @@ static const std::string base64_chars =
         "0123456789+/";
 
 static inline bool is_base64(unsigned char c);
-std::string base64_decode(std::string const& encoded_string);
-static int lowercase(const char* s);
-static int mg_strncasecmp(const char* s1, const char* s2, size_t len);
+std::string base64_decode(const std::string& encoded_string);
+static int lowercase(const char *s);
+static int mg_strncasecmp(const char *s1, const char *s2, size_t len);
 
-static int options(struct mg_connection* conn) {
-    if (std::string{conn->request_method} == std::string{"OPTIONS"}) {
-        auto response = std::string{""};
-        mg_send_status(conn, 200);
-        mg_send_header(conn, "content-type", "text/html");
-        mg_send_header(conn, "Access-Control-Allow-Origin", "*");
-        mg_send_header(conn, "Access-Control-Allow-Credentials", "true");
-        mg_send_header(conn, "Access-Control-Allow-Methods",
-                       "GET, POST, PUT, DELETE, PATCH, OPTIONS");
-        mg_send_header(conn, "Access-Control-Max-Age", "3600");
-        mg_send_data(conn, response.data(), response.length());
+static void options(mg_connection* conn, http_message* msg) {
+    if (std::string{msg->method.p} == std::string{"OPTIONS"}) {
+        std::string headers = "Content-Type: text/plain\r\n"
+        "Access-Control-Allow-Origin: *\r\n"
+        "Access-Control-Allow-Credentials: true"
+        "Access-Control-Allow-Methods: GET, POST, PUT, DELETE, PATCH, OPTIONS"
+        "Access-Control-Max-Age: 3600";
+        mg_send_head(conn, 200, 0, headers.c_str());
+        std::string response;
+        mg_printf(conn, "%.*s", response.length(), response.c_str());
     } else {
-        auto response = std::string{"Method unallowed"};
-        mg_send_status(conn, 405);
-        mg_send_header(conn, "content-type", "text/html");
-        mg_send_data(conn, response.data(), response.length());
+        std::string response{"Method unallowed"};
+        std::string headers = "Content-Type: text/plain\r\n";
+        mg_send_head(conn, 405, response.length(), headers.c_str());
+        mg_printf(conn, "%.*s", response.length(), response.c_str());
     }
-    return MG_TRUE;
 }
 
-static int hello(struct mg_connection* conn) {
+/*
+static int hello(mg_connection* conn) {
     if (std::string{conn->request_method} == std::string{"OPTIONS"}) {
         auto response = std::string{""};
         mg_send_status(conn, 200);
@@ -66,7 +68,7 @@ static int hello(struct mg_connection* conn) {
     return MG_TRUE;
 }
 
-static int timeout(struct mg_connection* conn) {
+static int timeout(mg_connection* conn) {
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
     auto response = std::string{"Hello world!"};
     mg_send_status(conn, 200);
@@ -75,7 +77,7 @@ static int timeout(struct mg_connection* conn) {
     return MG_TRUE;
 }
 
-static int lowSpeed(struct mg_connection* conn) {
+static int lowSpeed(mg_connection* conn) {
     auto response = std::string{"Hello world!"};
     mg_send_status(conn, 200);
     mg_send_header(conn, "content-type", "text/html");
@@ -84,7 +86,7 @@ static int lowSpeed(struct mg_connection* conn) {
     return MG_TRUE;
 }
 
-static int lowSpeedBytes(struct mg_connection* conn) {
+static int lowSpeedBytes(mg_connection* conn) {
     auto response = std::string{"a"};
     mg_send_status(conn, 200);
     mg_send_header(conn, "content-type", "text/html");
@@ -95,11 +97,11 @@ static int lowSpeedBytes(struct mg_connection* conn) {
     return MG_TRUE;
 }
 
-static int basicCookies(struct mg_connection* conn) {
+static int basicCookies(mg_connection* conn) {
     auto response = std::string{"Hello world!"};
     mg_send_status(conn, 200);
     mg_send_header(conn, "content-type", "text/html");
-    time_t t = time(NULL) + 5; // Valid for 1 hour
+    time_t t = time(nullptr) + 5;  // Valid for 1 hour
     char expire[100], expire_epoch[100];
     snprintf(expire_epoch, sizeof(expire_epoch), "%lu", static_cast<unsigned long>(t));
     strftime(expire, sizeof(expire), "%a, %d %b %Y %H:%M:%S GMT", gmtime(&t));
@@ -111,11 +113,11 @@ static int basicCookies(struct mg_connection* conn) {
     return MG_TRUE;
 }
 
-static int v1Cookies(struct mg_connection* conn) {
+static int v1Cookies(mg_connection* conn) {
     auto response = std::string{"Hello world!"};
     mg_send_status(conn, 200);
     mg_send_header(conn, "content-type", "text/html");
-    time_t t = time(NULL) + 5; // Valid for 1 hour
+    time_t t = time(nullptr) + 5; // Valid for 1 hour
     char expire[100], expire_epoch[100];
     snprintf(expire_epoch, sizeof(expire_epoch), "%lu", static_cast<unsigned long>(t));
     strftime(expire, sizeof(expire), "%a, %d %b %Y %H:%M:%S GMT", gmtime(&t));
@@ -126,9 +128,9 @@ static int v1Cookies(struct mg_connection* conn) {
     return MG_TRUE;
 }
 
-static int checkBasicCookies(struct mg_connection* conn) {
+static int checkBasicCookies(mg_connection* conn) {
     const char* request_cookies;
-    if ((request_cookies = mg_get_header(conn, "Cookie")) == NULL)
+    if ((request_cookies = mg_get_header(conn, "Cookie")) == nullptr)
         return MG_FALSE;
     std::string cookie_str{request_cookies};
 
@@ -144,9 +146,9 @@ static int checkBasicCookies(struct mg_connection* conn) {
     return MG_TRUE;
 }
 
-static int checkV1Cookies(struct mg_connection* conn) {
+static int checkV1Cookies(mg_connection* conn) {
     const char* request_cookies;
-    if ((request_cookies = mg_get_header(conn, "Cookie")) == NULL)
+    if ((request_cookies = mg_get_header(conn, "Cookie")) == nullptr)
         return MG_FALSE;
     std::string cookie_str{request_cookies};
 
@@ -161,13 +163,13 @@ static int checkV1Cookies(struct mg_connection* conn) {
     return MG_TRUE;
 }
 
-static int basicAuth(struct mg_connection* conn) {
+static void basicAuth(mg_connection* conn) {
     auto response = std::string{"Hello world!"};
     const char* requested_auth;
     auto auth = std::string{"Basic"};
-    if ((requested_auth = mg_get_header(conn, "Authorization")) == NULL ||
+    if ((requested_auth = mg_get_http_header(conn, "Authorization")) == nullptr ||
         mg_strncasecmp(requested_auth, auth.data(), auth.length()) != 0) {
-        return MG_FALSE;
+        return;
     }
     auto auth_string = std::string{requested_auth};
     auto basic_token = auth_string.find(' ') + 1;
@@ -177,25 +179,23 @@ static int basicAuth(struct mg_connection* conn) {
     auto username = auth_string.substr(0, colon);
     auto password = auth_string.substr(colon + 1, auth_string.length() - colon - 1);
     if (username == "user" && password == "password") {
-        return MG_TRUE;
+        return;
     }
-
-    return MG_FALSE;
 }
 
-static int digestAuth(struct mg_connection* conn) {
+static int digestAuth(mg_connection* conn) {
     int result = MG_FALSE;
     {
-        FILE* fp;
-        if ((fp = fopen("digest.txt", "w")) != NULL) {
+        FILE *fp;
+        if ((fp = fopen("digest.txt", "w")) != nullptr) {
             fprintf(fp, "user:mydomain.com:0cf722ef3dd136b48da83758c5d855f8\n");
             fclose(fp);
         }
     }
 
     {
-        FILE* fp;
-        if ((fp = fopen("digest.txt", "r")) != NULL) {
+        FILE *fp;
+        if ((fp = fopen("digest.txt", "r")) != nullptr) {
             result = mg_authorize_digest(conn, fp);
             fclose(fp);
         }
@@ -204,18 +204,16 @@ static int digestAuth(struct mg_connection* conn) {
     return result;
 }
 
-static int basicJson(struct mg_connection* conn) {
-    auto response = std::string{
-            "[\n"
-            "  {\n"
-            "    \"first_key\": \"first_value\",\n"
-            "    \"second_key\": \"second_value\"\n"
-            "  }\n"
-            "]"};
+static int basicJson(mg_connection* conn) {
+    auto response = std::string{"[\n"
+                                "  {\n"
+                                "    \"first_key\": \"first_value\",\n"
+                                "    \"second_key\": \"second_value\"\n"
+                                "  }\n"
+                                "]"};
     mg_send_status(conn, 200);
     auto raw_header = mg_get_header(conn, "Content-type");
     std::string header;
-    if (raw_header != NULL) {
         header = raw_header;
     }
     if (!header.empty() && header == "application/json") {
@@ -227,8 +225,9 @@ static int basicJson(struct mg_connection* conn) {
     return MG_TRUE;
 }
 
-static int headerReflect(struct mg_connection* conn) {
-    auto response = std::string{"Header reflect "} + std::string{conn->request_method};
+static int headerReflect(mg_connection* conn) {
+    auto response = std::string{"Header reflect "} +
+                    std::string{conn->request_method};
     mg_send_status(conn, 200);
     mg_send_header(conn, "content-type", "text/html");
     auto num_headers = conn->num_headers;
@@ -243,7 +242,7 @@ static int headerReflect(struct mg_connection* conn) {
     return MG_TRUE;
 }
 
-static int temporaryRedirect(struct mg_connection* conn) {
+static int temporaryRedirect(mg_connection* conn) {
     auto response = std::string{"Found"};
     mg_send_status(conn, 302);
     mg_send_header(conn, "Location", "hello.html");
@@ -251,7 +250,7 @@ static int temporaryRedirect(struct mg_connection* conn) {
     return MG_TRUE;
 }
 
-static int permanentRedirect(struct mg_connection* conn) {
+static int permanentRedirect(mg_connection* conn) {
     auto response = std::string{"Moved Permanently"};
     mg_send_status(conn, 301);
     mg_send_header(conn, "Location", "hello.html");
@@ -259,7 +258,7 @@ static int permanentRedirect(struct mg_connection* conn) {
     return MG_TRUE;
 }
 
-static int twoRedirects(struct mg_connection* conn) {
+static int twoRedirects(mg_connection* conn) {
     auto response = std::string{"Moved Permanently"};
     mg_send_status(conn, 301);
     mg_send_header(conn, "Location", "permanent_redirect.html");
@@ -267,7 +266,7 @@ static int twoRedirects(struct mg_connection* conn) {
     return MG_TRUE;
 }
 
-static int bodyGet(struct mg_connection* conn) {
+static int bodyGet(mg_connection* conn) {
     char message[100];
     mg_get_var(conn, "Message", message, sizeof(message));
     auto response = std::string{message};
@@ -277,7 +276,7 @@ static int bodyGet(struct mg_connection* conn) {
     return MG_TRUE;
 }
 
-static int urlPost(struct mg_connection* conn) {
+static int urlPost(mg_connection* conn) {
     mg_send_status(conn, 201);
     mg_send_header(conn, "content-type", "application/json");
     char x[100];
@@ -314,7 +313,7 @@ static int urlPost(struct mg_connection* conn) {
     return MG_TRUE;
 }
 
-static int jsonPost(struct mg_connection* conn) {
+static int jsonPost(mg_connection* conn) {
     auto num_headers = conn->num_headers;
     auto headers = conn->http_headers;
     auto has_json_header = false;
@@ -338,7 +337,7 @@ static int jsonPost(struct mg_connection* conn) {
     return MG_TRUE;
 }
 
-static int formPost(struct mg_connection* conn) {
+static int formPost(mg_connection* conn) {
     auto content = conn->content;
     auto content_len = conn->content_len;
 
@@ -398,7 +397,7 @@ static int formPost(struct mg_connection* conn) {
     return MG_TRUE;
 }
 
-static int deleteRequest(struct mg_connection* conn) {
+static int deleteRequest(mg_connection* conn) {
     auto num_headers = conn->num_headers;
     auto headers = conn->http_headers;
     auto has_json_header = false;
@@ -429,7 +428,7 @@ static int deleteRequest(struct mg_connection* conn) {
     return MG_TRUE;
 }
 
-static int deleteUnallowedRequest(struct mg_connection* conn) {
+static int deleteUnallowedRequest(mg_connection* conn) {
     if (std::string{conn->request_method} == std::string{"DELETE"}) {
         auto response = std::string{"Method unallowed"};
         mg_send_status(conn, 405);
@@ -444,7 +443,7 @@ static int deleteUnallowedRequest(struct mg_connection* conn) {
     return MG_TRUE;
 }
 
-static int patch(struct mg_connection* conn) {
+static int patch(mg_connection* conn) {
     if (std::string{conn->request_method} == std::string{"PATCH"}) {
         mg_send_status(conn, 200);
         mg_send_header(conn, "content-type", "application/json");
@@ -488,7 +487,7 @@ static int patch(struct mg_connection* conn) {
     return MG_TRUE;
 }
 
-static int patchUnallowed(struct mg_connection* conn) {
+static int patchUnallowed(mg_connection* conn) {
     if (std::string{conn->request_method} == std::string{"PATCH"}) {
         auto response = std::string{"Method unallowed"};
         mg_send_status(conn, 405);
@@ -503,7 +502,7 @@ static int patchUnallowed(struct mg_connection* conn) {
     return MG_TRUE;
 }
 
-static int put(struct mg_connection* conn) {
+static int put(mg_connection* conn) {
     if (std::string{conn->request_method} == std::string{"PUT"}) {
         mg_send_status(conn, 200);
         mg_send_header(conn, "content-type", "application/json");
@@ -547,7 +546,7 @@ static int put(struct mg_connection* conn) {
     return MG_TRUE;
 }
 
-static int putUnallowed(struct mg_connection* conn) {
+static int putUnallowed(mg_connection* conn) {
     if (std::string{conn->request_method} == std::string{"PUT"}) {
         auto response = std::string{"Method unallowed"};
         mg_send_status(conn, 405);
@@ -560,107 +559,105 @@ static int putUnallowed(struct mg_connection* conn) {
         mg_send_data(conn, response.data(), response.length());
     }
     return MG_TRUE;
-}
+}*/
 
-static int evHandler(struct mg_connection* conn, enum mg_event ev) {
+static void evHandler(mg_connection* conn, int ev, void* ev_data) {
     switch (ev) {
-        case MG_AUTH:
-            if (Url{conn->uri} == "/basic_auth.html") {
+        case MG_EV_HTTP_REPLY:
+            /*if (Url{conn->uri} == "/basic_auth.html") {
                 return basicAuth(conn);
             } else if (Url{conn->uri} == "/digest_auth.html") {
                 return digestAuth(conn);
-            }
-            return MG_TRUE;
-        case MG_REQUEST:
-            if (Url{conn->uri} == "/") {
-                return options(conn);
-            } else if (Url{conn->uri} == "/hello.html") {
+            }*/
+            break;
+        case MG_EV_HTTP_REQUEST:
+        {
+            http_message* msg = static_cast<http_message*>(ev_data);
+            if (Url{msg->uri.p} == "/") {
+                options(conn, msg);
+            } /*else if (Url{msg->uri.p} == "/hello.html") {
                 return hello(conn);
-            } else if (Url{conn->uri} == "/timeout.html") {
+            } else if (Url{msg->uri.p} == "/timeout.html") {
                 return timeout(conn);
-            } else if (Url{conn->uri} == "/low_speed.html") {
+            } else if (Url{msg->uri.p} == "/low_speed.html") {
                 return lowSpeed(conn);
-            } else if (Url{conn->uri} == "/low_speed_bytes.html") {
+            } else if (Url{msg->uri.p} == "/low_speed_bytes.html") {
                 return lowSpeedBytes(conn);
-            } else if (Url{conn->uri} == "/basic_cookies.html") {
+            } else if (Url{msg->uri.p} == "/basic_cookies.html") {
                 return basicCookies(conn);
-            } else if (Url{conn->uri} == "/check_cookies.html") {
+            } else if (Url{msg->uri.p} == "/check_cookies.html") {
                 return checkBasicCookies(conn);
-            } else if (Url{conn->uri} == "/v1_cookies.html") {
+            } else if (Url{msg->uri.p} == "/v1_cookies.html") {
                 return v1Cookies(conn);
-            } else if (Url{conn->uri} == "/check_v1_cookies.html") {
+            } else if (Url{msg->uri.p} == "/check_v1_cookies.html") {
                 return checkV1Cookies(conn);
-            } else if (Url{conn->uri} == "/basic_auth.html") {
+            } else if (Url{msg->uri.p} == "/basic_auth.html") {
                 return headerReflect(conn);
-            } else if (Url{conn->uri} == "/digest_auth.html") {
+            } else if (Url{msg->uri.p} == "/digest_auth.html") {
                 return headerReflect(conn);
-            } else if (Url{conn->uri} == "/basic.json") {
+            } else if (Url{msg->uri.p} == "/basic.json") {
                 return basicJson(conn);
-            } else if (Url{conn->uri} == "/header_reflect.html") {
+            } else if (Url{msg->uri.p} == "/header_reflect.html") {
                 return headerReflect(conn);
-            } else if (Url{conn->uri} == "/temporary_redirect.html") {
+            } else if (Url{msg->uri.p} == "/temporary_redirect.html") {
                 return temporaryRedirect(conn);
-            } else if (Url{conn->uri} == "/permanent_redirect.html") {
+            } else if (Url{msg->uri.p} == "/permanent_redirect.html") {
                 return permanentRedirect(conn);
-            } else if (Url{conn->uri} == "/two_redirects.html") {
+            } else if (Url{msg->uri.p} == "/two_redirects.html") {
                 return twoRedirects(conn);
-            } else if (Url{conn->uri} == "/url_post.html") {
+            } else if (Url{msg->uri.p} == "/url_post.html") {
                 return urlPost(conn);
-            } else if (Url{conn->uri} == "/body_get.html") {
+            } else if (Url{msg->uri.p} == "/body_get.html") {
                 return bodyGet(conn);
-            } else if (Url{conn->uri} == "/json_post.html") {
+            } else if (Url{msg->uri.p} == "/json_post.html") {
                 return jsonPost(conn);
-            } else if (Url{conn->uri} == "/form_post.html") {
+            } else if (Url{msg->uri.p} == "/form_post.html") {
                 return formPost(conn);
-            } else if (Url{conn->uri} == "/delete.html") {
+            } else if (Url{msg->uri.p} == "/delete.html") {
                 return deleteRequest(conn);
-            } else if (Url{conn->uri} == "/delete_unallowed.html") {
+            } else if (Url{msg->uri.p} == "/delete_unallowed.html") {
                 return deleteUnallowedRequest(conn);
-            } else if (Url{conn->uri} == "/put.html") {
+            } else if (Url{msg->uri.p} == "/put.html") {
                 return put(conn);
-            } else if (Url{conn->uri} == "/put_unallowed.html") {
+            } else if (Url{msg->uri.p} == "/put_unallowed.html") {
                 return putUnallowed(conn);
-            } else if (Url{conn->uri} == "/patch.html") {
+            } else if (Url{msg->uri.p} == "/patch.html") {
                 return patch(conn);
-            } else if (Url{conn->uri} == "/patch_unallowed.html") {
+            } else if (Url{msg->uri.p} == "/patch_unallowed.html") {
                 return patchUnallowed(conn);
+            }*/
             }
-            return MG_FALSE;
+            break;
         default:
-            return MG_FALSE;
+            break;
     }
 }
 
-void runServer(struct mg_server* server, const std::string listening_port) {
-    {
-        std::lock_guard<std::mutex> server_lock(server_mutex);
-        mg_set_option(server, "listening_port", listening_port.c_str());
-        server_cv.notify_one();
-    }
-
+void runServer(std::shared_ptr<mg_mgr> mgr) {
+    server_cv.notify_one();
     do {
-        mg_poll_server(server, 1000);
+        mg_mgr_poll(mgr.get(), 1000);
     } while (!shutdown_mutex.try_lock());
 
     shutdown_mutex.unlock();
     std::lock_guard<std::mutex> server_lock(server_mutex);
-    mg_destroy_server(&server);
+    mg_mgr_free(mgr.get());
     server_cv.notify_one();
 }
 
 void Server::SetUp() {
     shutdown_mutex.lock();
-    struct mg_server* server;
-    server = mg_create_server(NULL, evHandler);
-    std::ostringstream listening_port;
-    if (cert_file.empty()) {
-        listening_port << SERVER_PORT;
-    } else {
-        listening_port << "ssl://0.0.0.0:" << SERVER_PORT << ":" << cert_file;
-    }
+
+    // Setup a new mongoose http server.
+    // Based on: https://cesanta.com/docs/http/server-example.html
+    std::shared_ptr<mg_mgr> mgr;
+    mg_connection *c;
+    mg_mgr_init(mgr.get(), nullptr);
+    c = mg_bind(mgr.get(), SERVER_PORT.c_str(), evHandler);
+    mg_set_protocol_http_websocket(c);
 
     std::unique_lock<std::mutex> server_lock(server_mutex);
-    std::thread(runServer, server, listening_port.str()).detach();
+    std::thread(runServer, mgr).detach();
     server_cv.wait(server_lock);
 }
 
@@ -682,53 +679,27 @@ static inline bool is_base64(unsigned char c) {
     return (isalnum(c) || (c == '+') || (c == '/'));
 }
 
-std::string base64_decode(std::string const& encoded_string) {
-    int in_len = encoded_string.size();
-    int i = 0;
-    int j = 0;
-    int in_ = 0;
-    unsigned char char_array_4[4], char_array_3[3];
-    std::string ret;
+/**
+ * Decodes the given BASE64 string to a normal string.
+ * Source: https://gist.github.com/williamdes/308b95ac9ef1ee89ae0143529c361d37
+ **/
+std::string base64_decode(const std::string& in) {
+    std::string out;
 
-    while (in_len-- && (encoded_string[in_] != '=') && is_base64(encoded_string[in_])) {
-        char_array_4[i++] = encoded_string[in_];
-        in_++;
-        if (i == 4) {
-            for (i = 0; i < 4; i++) {
-                char_array_4[i] = base64_chars.find(char_array_4[i]);
-            }
+    std::vector<int> T(256,-1);
+    for (int i=0; i<64; i++) T[base64_chars[i]] = i;
 
-            char_array_3[0] = (char_array_4[0] << 2) + ((char_array_4[1] & 0x30) >> 4);
-            char_array_3[1] = ((char_array_4[1] & 0xf) << 4) + ((char_array_4[2] & 0x3c) >> 2);
-            char_array_3[2] = ((char_array_4[2] & 0x3) << 6) + char_array_4[3];
-
-            for (i = 0; (i < 3); i++) {
-                ret += char_array_3[i];
-            }
-
-            i = 0;
+    int val=0, valb=-8;
+    for (unsigned char c : in) {
+        if (T[c] == -1) break;
+        val = (val<<6) + T[c];
+        valb += 6;
+        if (valb>=0) {
+            out.push_back(char((val>>valb)&0xFF));
+            valb-=8;
         }
     }
-
-    if (i) {
-        for (j = i; j < 4; j++) {
-            char_array_4[j] = 0;
-        }
-
-        for (j = 0; j < 4; j++) {
-            char_array_4[j] = base64_chars.find(char_array_4[j]);
-        }
-
-        char_array_3[0] = (char_array_4[0] << 2) + ((char_array_4[1] & 0x30) >> 4);
-        char_array_3[1] = ((char_array_4[1] & 0xf) << 4) + ((char_array_4[2] & 0x3c) >> 2);
-        char_array_3[2] = ((char_array_4[2] & 0x3) << 6) + char_array_4[3];
-
-        for (j = 0; (j < i - 1); j++) {
-            ret += char_array_3[j];
-        }
-    }
-
-    return ret;
+    return out;
 }
 
 static int lowercase(const char* s) {
