@@ -9,7 +9,7 @@
 
 using namespace cpr;
 
-class Server : public ::testing::Environment {
+class Server: public testing::Environment {
   public:
     Server() {}
     Server(const std::string cert_file) : cert_file(cert_file) {}
