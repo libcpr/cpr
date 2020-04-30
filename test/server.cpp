@@ -18,7 +18,8 @@
 
 std::mutex shutdown_mutex;
 std::mutex server_mutex;
-std::condition_variable server_cv;
+std::condition_variable server_setup_cv;
+std::condition_variable server_teardown_cv;
 
 static const std::string base64_chars =
         "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -48,26 +49,14 @@ static void options(mg_connection* conn, http_message* msg) {
     }
 }
 
-/*
-static int hello(mg_connection* conn) {
-    if (std::string{conn->request_method} == std::string{"OPTIONS"}) {
-        auto response = std::string{""};
-        mg_send_status(conn, 200);
-        mg_send_header(conn, "content-type", "text/html");
-        mg_send_header(conn, "Access-Control-Allow-Origin", "*");
-        mg_send_header(conn, "Access-Control-Allow-Credentials", "true");
-        mg_send_header(conn, "Access-Control-Allow-Methods", "GET, OPTIONS");
-        mg_send_header(conn, "Access-Control-Max-Age", "3600");
-        mg_send_data(conn, response.data(), response.length());
-    } else {
-        auto response = std::string{"Hello world!"};
-        mg_send_status(conn, 200);
-        mg_send_header(conn, "content-type", "text/html");
-        mg_send_data(conn, response.data(), response.length());
-    }
-    return MG_TRUE;
+static void hello(mg_connection* conn, http_message* msg) {
+    std::string response{"Hello world!"};
+    std::string headers = "Content-Type: text/plain\r\n";
+    mg_send_head(conn, 200, msg->message.len, headers.c_str());
+    mg_printf(conn, "%.*s", static_cast<int>(msg->message.len), msg->message.p);
 }
 
+/*
 static int timeout(mg_connection* conn) {
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
     auto response = std::string{"Hello world!"};
@@ -563,21 +552,27 @@ static int putUnallowed(mg_connection* conn) {
 
 static void evHandler(mg_connection* conn, int ev, void* ev_data) {
     switch (ev) {
-        case MG_EV_HTTP_REPLY:
-            /*if (Url{conn->uri} == "/basic_auth.html") {
+        case MG_EV_POLL:
+            /** Do nothing. Just for housekeeping. **/
+            break;
+
+        /*case MG_EV_WEBSOCKET_FRAME:
+            if (Url{conn->uri} == "/basic_auth.html") {
                 return basicAuth(conn);
             } else if (Url{conn->uri} == "/digest_auth.html") {
                 return digestAuth(conn);
-            }*/
-            break;
+            }
+            break;*/
+
         case MG_EV_HTTP_REQUEST:
         {
             http_message* msg = static_cast<http_message*>(ev_data);
-            if (Url{msg->uri.p} == "/") {
+            std::string uri = std::string(msg->uri.p, msg->uri.len);
+            if (uri == "/") {
                 options(conn, msg);
-            } /*else if (Url{msg->uri.p} == "/hello.html") {
-                return hello(conn);
-            } else if (Url{msg->uri.p} == "/timeout.html") {
+            } else if (uri == "/hello.html") {
+                hello(conn, msg);
+            } /*else if (Url{msg->uri.p} == "/timeout.html") {
                 return timeout(conn);
             } else if (Url{msg->uri.p} == "/low_speed.html") {
                 return lowSpeed(conn);
@@ -633,38 +628,43 @@ static void evHandler(mg_connection* conn, int ev, void* ev_data) {
     }
 }
 
-void runServer(std::shared_ptr<mg_mgr> mgr) {
-    server_cv.notify_one();
+void runServer() {
+    // Setup a new mongoose http server.
+    // Based on: https://cesanta.com/docs/http/server-example.html
+    mg_mgr mgr;
+    mg_connection *c;
+    mg_mgr_init(&mgr, nullptr);
+    c = mg_bind(&mgr, SERVER_PORT.c_str(), evHandler);
+    mg_set_protocol_http_websocket(c);
+
+    // Notify the main thread that the server is up and runing:
+    server_setup_cv.notify_one();
+
+    // Main server loop:
     do {
-        mg_mgr_poll(mgr.get(), 1000);
+        mg_mgr_poll(&mgr, 1000);
     } while (!shutdown_mutex.try_lock());
 
+    // Shutdown and cleanup:
     shutdown_mutex.unlock();
     std::lock_guard<std::mutex> server_lock(server_mutex);
-    mg_mgr_free(mgr.get());
-    server_cv.notify_one();
+    mg_mgr_free(&mgr);
+
+    // Notify the main thread that we have shut down everything:
+    server_teardown_cv.notify_one();
 }
 
 void Server::SetUp() {
     shutdown_mutex.lock();
-
-    // Setup a new mongoose http server.
-    // Based on: https://cesanta.com/docs/http/server-example.html
-    std::shared_ptr<mg_mgr> mgr;
-    mg_connection *c;
-    mg_mgr_init(mgr.get(), nullptr);
-    c = mg_bind(mgr.get(), SERVER_PORT.c_str(), evHandler);
-    mg_set_protocol_http_websocket(c);
-
     std::unique_lock<std::mutex> server_lock(server_mutex);
-    std::thread(runServer, mgr).detach();
-    server_cv.wait(server_lock);
+    std::thread(runServer).detach();
+    server_setup_cv.wait(server_lock);
 }
 
 void Server::TearDown() {
     std::unique_lock<std::mutex> server_lock(server_mutex);
     shutdown_mutex.unlock();
-    server_cv.wait(server_lock);
+    server_teardown_cv.wait(server_lock);
 }
 
 Url Server::GetBaseUrl() {
