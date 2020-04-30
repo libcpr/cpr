@@ -1,9 +1,8 @@
 find_package(Threads)
 set(TEST_SERVER_LIBRARY test_server)
 add_library(${TEST_SERVER_LIBRARY}
-    server.cpp)
-target_include_directories(${TEST_SERVER_LIBRARY} BEFORE PRIVATE
-    ${MONGOOSE_INCLUDE_DIRS})
+    server.cpp
+    httpServer.cpp)
 target_link_libraries(${TEST_SERVER_LIBRARY}
     ${MONGOOSE_LIBRARIES}
     ${CMAKE_THREAD_LIBS_INIT})
