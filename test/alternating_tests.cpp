@@ -4,15 +4,14 @@
 
 #include <cpr/cpr.h>
 
-#include "server.h"
+#include "httpServer.hpp"
 
 using namespace cpr;
 
-static Server* server = new Server();
-auto base = server->GetBaseUrl();
+static HttpServer* server = new HttpServer();
 
 TEST(AlternatingTests, PutGetTest) {
-    auto url = Url{base + "/header_reflect.html"};
+    auto url = Url{server->GetBaseUrl() + "/header_reflect.html"};
     Session session;
     session.SetUrl(url);
 
@@ -37,7 +36,7 @@ TEST(AlternatingTests, PutGetTest) {
 }
 
 TEST(AlternatingTests, PutGetPutGetTest) {
-    auto url = Url{base + "/header_reflect.html"};
+    auto url = Url{server->GetBaseUrl() + "/header_reflect.html"};
     Session session;
     session.SetUrl(url);
 
@@ -81,7 +80,7 @@ TEST(AlternatingTests, PutGetPutGetTest) {
 }
 
 TEST(AlternatingTests, HeadGetTest) {
-    auto url = Url{base + "/header_reflect.html"};
+    auto url = Url{server->GetBaseUrl() + "/header_reflect.html"};
     Session session;
     session.SetUrl(url);
 
@@ -106,7 +105,7 @@ TEST(AlternatingTests, HeadGetTest) {
 }
 
 TEST(AlternatingTests, PutHeadTest) {
-    auto url = Url{base + "/header_reflect.html"};
+    auto url = Url{server->GetBaseUrl() + "/header_reflect.html"};
     Session session;
     session.SetUrl(url);
 
@@ -132,7 +131,7 @@ TEST(AlternatingTests, PutHeadTest) {
 }
 
 TEST(AlternatingTests, PutPostTest) {
-    auto url = Url{base + "/header_reflect.html"};
+    auto url = Url{server->GetBaseUrl() + "/header_reflect.html"};
     Session session;
     session.SetUrl(url);
 

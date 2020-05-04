@@ -43,7 +43,7 @@ TEST(BasicTests, BasicJsonTest) {
             "]"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
-    EXPECT_EQ(std::string{"application/octet-stream"}, response.header["content-type"]);
+    EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
     EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
@@ -51,7 +51,7 @@ TEST(BasicTests, BasicJsonTest) {
 TEST(BasicTests, ResourceNotFoundTest) {
     auto url = Url{server->GetBaseUrl() + "/error.html"};
     auto response = cpr::Get(url);
-    auto expected_text = std::string{"404 Not Found\n"};
+    auto expected_text = std::string{"Not Found"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/plain"}, response.header["content-type"]);
@@ -1160,7 +1160,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
 TEST(GetRedirectTests, RedirectTest) {
     auto url = Url{server->GetBaseUrl() + "/temporary_redirect.html"};
     auto response = cpr::Get(url, false); // This should be turned into an object
-    auto expected_text = std::string{"Found"};
+    auto expected_text = std::string{"Moved Temporarily"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{}, response.header["content-type"]);
