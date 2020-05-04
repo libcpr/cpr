@@ -187,50 +187,124 @@ void HttpServer::OnRequestBasicAuth(mg_connection* conn, http_message* msg) {
     }
 }
 
-void HttpServer::OnRequestDigestAuth(mg_connection* conn, http_message* msg) {}
+void HttpServer::OnRequestDigestAuth(mg_connection* conn, http_message* msg) {
+    // Temporary:
+    OnRequestHello(conn, msg);
+}
 
-void HttpServer::OnRequestBasic(mg_connection* conn, http_message* msg) {}
+void HttpServer::OnRequestBasicJson(mg_connection* conn, http_message* msg) {
+    std::string response =
+            "[\n"
+            "  {\n"
+            "    \"first_key\": \"first_value\",\n"
+            "    \"second_key\": \"second_value\"\n"
+            "  }\n"
+            "]";
+    std::string headers = "Content-Type: application/json";
+    mg_send_head(conn, 200, response.length(), headers.c_str());
+    mg_send(conn, response.c_str(), response.length());
+}
 
 void HttpServer::OnRequestHeaderReflect(mg_connection* conn, http_message* msg) {
     std::string response = "Header reflect " + std::string{msg->method.p, msg->method.len};
     std::string headers = "Content-Type: text/html";
-    for (size_t i = 0; i < sizeof(msg->header_names); ++i) {
+    for (size_t i = 0; i < sizeof(msg->header_names) / sizeof(mg_str); i++) {
+        if (!msg->header_names[i].p) {
+            continue;
+        }
+
         std::string name = std::string(msg->header_names[i].p, msg->header_names[i].len);
         if (std::string{"Host"} != name && std::string{"Accept"} != name) {
             if (!headers.empty()) {
                 headers.append("\r\n");
             }
-            headers.append(name + ": " +
-                           std::string(msg->header_values[i].p, msg->header_values[i].len));
+            if (msg->header_values[i].p) {
+                headers.append(name + ": " +
+                               std::string(msg->header_values[i].p, msg->header_values[i].len));
+            }
         }
     }
     mg_send_head(conn, 200, 0, headers.c_str());
     mg_send(conn, response.data(), response.length());
 }
 
-void HttpServer::OnRequestTempRedirect(mg_connection* conn, http_message* msg) {}
+void HttpServer::OnRequestTempRedirect(mg_connection* conn, http_message* msg) {
+    std::string response = "Moved Temporarily";
+    std::string headers = "Location: hello.html";
+    mg_send_head(conn, 302, response.length(), headers.c_str());
+    mg_send(conn, response.c_str(), response.length());
+}
 
-void HttpServer::OnRequestPermRedirect(mg_connection* conn, http_message* msg) {}
+void HttpServer::OnRequestPermRedirect(mg_connection* conn, http_message* msg) {
+    std::string response = "Moved Permanently";
+    std::string headers = "Location: hello.html";
+    mg_send_head(conn, 301, response.length(), headers.c_str());
+    mg_send(conn, response.c_str(), response.length());
+}
 
-void HttpServer::OnRequestTwoRedirects(mg_connection* conn, http_message* msg) {}
+void HttpServer::OnRequestTwoRedirects(mg_connection* conn, http_message* msg) {
+    std::string response = "Moved Permanently";
+    std::string headers = "Location: permanent_redirect.html";
+    mg_send_head(conn, 301, response.length(), headers.c_str());
+    mg_send(conn, response.c_str(), response.length());
+}
 
-void HttpServer::OnRequestUrlPost(mg_connection* conn, http_message* msg) {}
+void HttpServer::OnRequestUrlPost(mg_connection* conn, http_message* msg) {
+    // Temporary:
+    OnRequestHello(conn, msg);
+}
 
-void HttpServer::OnRequestBodyGet(mg_connection* conn, http_message* msg) {}
+void HttpServer::OnRequestBodyGet(mg_connection* conn, http_message* msg) {
+    char message[100];
+    int i = mg_get_http_var(&(msg->uri), "message", message, sizeof(message));
+    std::string response = message;
+    std::string headers = "Content-Type: text/html";
+    mg_send_head(conn, 200, response.length(), headers.c_str());
+    mg_send(conn, response.c_str(), response.length());
+}
 
-void HttpServer::OnRequestJsonPost(mg_connection* conn, http_message* msg) {}
+void HttpServer::OnRequestJsonPost(mg_connection* conn, http_message* msg) {
+    mg_str* content_type;
+    if ((content_type = mg_get_http_header(msg, "Content-Type")) == nullptr ||
+        std::string{content_type->p, content_type->len} != "application/json") {
+        mg_http_send_error(conn, 415, "Unsupported Media Type");
+        return;
+    }
 
-void HttpServer::OnRequestFormPost(mg_connection* conn, http_message* msg) {}
+    std::string headers = "Content-Type: application/json";
+    mg_send_head(conn, 201, msg->body.len, headers.c_str());
+    mg_send(conn, msg->body.p, msg->body.len);
+}
 
-void HttpServer::OnRequestDelete(mg_connection* conn, http_message* msg) {}
+void HttpServer::OnRequestFormPost(mg_connection* conn, http_message* msg) {
+    // Temporary:
+    OnRequestHello(conn, msg);
+}
 
-void HttpServer::OnRequestDeleteNotAllowed(mg_connection* conn, http_message* msg) {}
+void HttpServer::OnRequestDelete(mg_connection* conn, http_message* msg) {
+    // Temporary:
+    OnRequestHello(conn, msg);
+}
 
-void HttpServer::OnRequestPut(mg_connection* conn, http_message* msg) {}
+void HttpServer::OnRequestDeleteNotAllowed(mg_connection* conn, http_message* msg) {
+    // Temporary:
+    OnRequestHello(conn, msg);
+}
 
-void HttpServer::OnRequestPutNotAllowed(mg_connection* conn, http_message* msg) {}
+void HttpServer::OnRequestPut(mg_connection* conn, http_message* msg) {
+    // Temporary:
+    OnRequestHello(conn, msg);
+}
 
-void HttpServer::OnRequestPatchNotAllowed(mg_connection* conn, http_message* msg) {}
+void HttpServer::OnRequestPutNotAllowed(mg_connection* conn, http_message* msg) {
+    // Temporary:
+    OnRequestHello(conn, msg);
+}
+
+void HttpServer::OnRequestPatchNotAllowed(mg_connection* conn, http_message* msg) {
+    // Temporary:
+    OnRequestHello(conn, msg);
+}
 
 
 void HttpServer::OnRequest(mg_connection* conn, http_message* msg) {
@@ -256,8 +330,8 @@ void HttpServer::OnRequest(mg_connection* conn, http_message* msg) {
         OnRequestHeaderReflect(conn, msg);
     } else if (uri == "/digest_auth.html") {
         OnRequestHeaderReflect(conn, msg);
-    } else if (uri == "/basic.html") {
-        OnRequestBasic(conn, msg);
+    } else if (uri == "/basic.json") {
+        OnRequestBasicJson(conn, msg);
     } else if (uri == "/header_reflect.html") {
         OnRequestHeaderReflect(conn, msg);
     } else if (uri == "/temporary_redirect.html") {
@@ -292,9 +366,6 @@ void HttpServer::OnRequest(mg_connection* conn, http_message* msg) {
 }
 
 static void EventHandler(mg_connection* conn, int event, void* event_data) {
-    if (event != 0) {
-        int z = event;
-    }
     switch (event) {
         case MG_EV_RECV:
             /** Do nothing. Just for housekeeping. **/
@@ -306,6 +377,19 @@ static void EventHandler(mg_connection* conn, int event, void* event_data) {
             /** Do nothing. Just for housekeeping. **/
             break;
         case MG_EV_CLOSE:
+            /** Do nothing. Just for housekeeping. **/
+            break;
+        case MG_EV_ACCEPT:
+            /** Do nothing. Just for housekeeping. **/
+            break;
+        case MG_EV_CONNECT:
+            /** Do nothing. Just for housekeeping. **/
+            break;
+        case MG_EV_TIMER:
+            /** Do nothing. Just for housekeeping. **/
+            break;
+
+        case MG_EV_HTTP_CHUNK:
             /** Do nothing. Just for housekeeping. **/
             break;
 

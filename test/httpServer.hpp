@@ -49,7 +49,7 @@ class HttpServer : public testing::Environment {
     static void OnRequestCheckV1Cookies(mg_connection* conn, http_message* msg);
     static void OnRequestBasicAuth(mg_connection* conn, http_message* msg);
     static void OnRequestDigestAuth(mg_connection* conn, http_message* msg);
-    static void OnRequestBasic(mg_connection* conn, http_message* msg);
+    static void OnRequestBasicJson(mg_connection* conn, http_message* msg);
     static void OnRequestHeaderReflect(mg_connection* conn, http_message* msg);
     static void OnRequestTempRedirect(mg_connection* conn, http_message* msg);
     static void OnRequestPermRedirect(mg_connection* conn, http_message* msg);

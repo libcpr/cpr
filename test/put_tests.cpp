@@ -4,20 +4,20 @@
 
 #include <cpr/cpr.h>
 
-#include "server.h"
+#include "httpServer.hpp"
 
 using namespace cpr;
 
-static Server* server = new Server();
-auto base = server->GetBaseUrl();
+static HttpServer* server = new HttpServer();
 
 TEST(PutTests, PutTest) {
-    auto url = Url{base + "/put.html"};
+    auto url = Url{server->GetBaseUrl() + "/put.html"};
     auto payload = Payload{{"x", "5"}};
     auto response = cpr::Put(url, payload);
-    auto expected_text = std::string{"{\n"
-                                     "  \"x\": 5\n"
-                                     "}"};
+    auto expected_text = std::string{
+            "{\n"
+            "  \"x\": 5\n"
+            "}"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
@@ -26,7 +26,7 @@ TEST(PutTests, PutTest) {
 }
 
 TEST(PutTests, PutUnallowedTest) {
-    auto url = Url{base + "/put_unallowed.html"};
+    auto url = Url{server->GetBaseUrl() + "/put_unallowed.html"};
     auto payload = Payload{{"x", "5"}};
     auto response = cpr::Put(url, payload);
     auto expected_text = std::string{"Method unallowed"};
@@ -38,15 +38,16 @@ TEST(PutTests, PutUnallowedTest) {
 }
 
 TEST(PutTests, SessionPutTest) {
-    auto url = Url{base + "/put.html"};
+    auto url = Url{server->GetBaseUrl() + "/put.html"};
     auto payload = Payload{{"x", "5"}};
     Session session;
     session.SetUrl(url);
     session.SetPayload(payload);
     auto response = session.Put();
-    auto expected_text = std::string{"{\n"
-                                     "  \"x\": 5\n"
-                                     "}"};
+    auto expected_text = std::string{
+            "{\n"
+            "  \"x\": 5\n"
+            "}"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
@@ -55,7 +56,7 @@ TEST(PutTests, SessionPutTest) {
 }
 
 TEST(PutTests, SessionPutUnallowedTest) {
-    auto url = Url{base + "/put_unallowed.html"};
+    auto url = Url{server->GetBaseUrl() + "/put_unallowed.html"};
     auto payload = Payload{{"x", "5"}};
     Session session;
     session.SetUrl(url);
@@ -72,18 +73,19 @@ TEST(PutTests, SessionPutUnallowedTest) {
 TEST(PutTests, SessionPutAfterGetTest) {
     Session session;
     {
-        auto url = Url{base + "/get.html"};
+        auto url = Url{server->GetBaseUrl() + "/get.html"};
         session.SetUrl(url);
         auto response = session.Get();
     }
-    auto url = Url{base + "/put.html"};
+    auto url = Url{server->GetBaseUrl() + "/put.html"};
     auto payload = Payload{{"x", "5"}};
     session.SetUrl(url);
     session.SetPayload(payload);
     auto response = session.Put();
-    auto expected_text = std::string{"{\n"
-                                     "  \"x\": 5\n"
-                                     "}"};
+    auto expected_text = std::string{
+            "{\n"
+            "  \"x\": 5\n"
+            "}"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
@@ -94,11 +96,11 @@ TEST(PutTests, SessionPutAfterGetTest) {
 TEST(PutTests, SessionPutUnallowedAfterGetTest) {
     Session session;
     {
-        auto url = Url{base + "/get.html"};
+        auto url = Url{server->GetBaseUrl() + "/get.html"};
         session.SetUrl(url);
         auto response = session.Get();
     }
-    auto url = Url{base + "/put_unallowed.html"};
+    auto url = Url{server->GetBaseUrl() + "/put_unallowed.html"};
     auto payload = Payload{{"x", "5"}};
     session.SetUrl(url);
     session.SetPayload(payload);
@@ -114,18 +116,19 @@ TEST(PutTests, SessionPutUnallowedAfterGetTest) {
 TEST(PutTests, SessionPutAfterHeadTest) {
     Session session;
     {
-        auto url = Url{base + "/get.html"};
+        auto url = Url{server->GetBaseUrl() + "/get.html"};
         session.SetUrl(url);
         auto response = session.Head();
     }
-    auto url = Url{base + "/put.html"};
+    auto url = Url{server->GetBaseUrl() + "/put.html"};
     auto payload = Payload{{"x", "5"}};
     session.SetUrl(url);
     session.SetPayload(payload);
     auto response = session.Put();
-    auto expected_text = std::string{"{\n"
-                                     "  \"x\": 5\n"
-                                     "}"};
+    auto expected_text = std::string{
+            "{\n"
+            "  \"x\": 5\n"
+            "}"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
@@ -136,11 +139,11 @@ TEST(PutTests, SessionPutAfterHeadTest) {
 TEST(PutTests, SessionPutUnallowedAfterHeadTest) {
     Session session;
     {
-        auto url = Url{base + "/get.html"};
+        auto url = Url{server->GetBaseUrl() + "/get.html"};
         session.SetUrl(url);
         auto response = session.Head();
     }
-    auto url = Url{base + "/put_unallowed.html"};
+    auto url = Url{server->GetBaseUrl() + "/put_unallowed.html"};
     auto payload = Payload{{"x", "5"}};
     session.SetUrl(url);
     session.SetPayload(payload);
@@ -156,19 +159,20 @@ TEST(PutTests, SessionPutUnallowedAfterHeadTest) {
 TEST(PutTests, SessionPutAfterPostTest) {
     Session session;
     {
-        auto url = Url{base + "/url_post.html"};
+        auto url = Url{server->GetBaseUrl() + "/url_post.html"};
         auto payload = Payload{{"x", "5"}};
         session.SetUrl(url);
         auto response = session.Post();
     }
-    auto url = Url{base + "/put.html"};
+    auto url = Url{server->GetBaseUrl() + "/put.html"};
     auto payload = Payload{{"x", "5"}};
     session.SetUrl(url);
     session.SetPayload(payload);
     auto response = session.Put();
-    auto expected_text = std::string{"{\n"
-                                     "  \"x\": 5\n"
-                                     "}"};
+    auto expected_text = std::string{
+            "{\n"
+            "  \"x\": 5\n"
+            "}"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
@@ -179,12 +183,12 @@ TEST(PutTests, SessionPutAfterPostTest) {
 TEST(PutTests, SessionPutUnallowedAfterPostTest) {
     Session session;
     {
-        auto url = Url{base + "/url_post.html"};
+        auto url = Url{server->GetBaseUrl() + "/url_post.html"};
         auto payload = Payload{{"x", "5"}};
         session.SetUrl(url);
         auto response = session.Post();
     }
-    auto url = Url{base + "/put_unallowed.html"};
+    auto url = Url{server->GetBaseUrl() + "/put_unallowed.html"};
     auto payload = Payload{{"x", "5"}};
     session.SetUrl(url);
     session.SetPayload(payload);
@@ -198,13 +202,14 @@ TEST(PutTests, SessionPutUnallowedAfterPostTest) {
 }
 
 TEST(PutTests, AsyncPutTest) {
-    auto url = Url{base + "/put.html"};
+    auto url = Url{server->GetBaseUrl() + "/put.html"};
     auto payload = Payload{{"x", "5"}};
     auto future_response = cpr::PutAsync(url, payload);
     auto response = future_response.get();
-    auto expected_text = std::string{"{\n"
-                                     "  \"x\": 5\n"
-                                     "}"};
+    auto expected_text = std::string{
+            "{\n"
+            "  \"x\": 5\n"
+            "}"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
@@ -213,7 +218,7 @@ TEST(PutTests, AsyncPutTest) {
 }
 
 TEST(PutTests, AsyncPutUnallowedTest) {
-    auto url = Url{base + "/put_unallowed.html"};
+    auto url = Url{server->GetBaseUrl() + "/put_unallowed.html"};
     auto payload = Payload{{"x", "5"}};
     auto future_response = cpr::PutAsync(url, payload);
     auto response = future_response.get();
@@ -226,7 +231,7 @@ TEST(PutTests, AsyncPutUnallowedTest) {
 }
 
 TEST(PutTests, AsyncMultiplePutTest) {
-    auto url = Url{base + "/put.html"};
+    auto url = Url{server->GetBaseUrl() + "/put.html"};
     auto payload = Payload{{"x", "5"}};
     std::vector<AsyncResponse> responses;
     for (int i = 0; i < 10; ++i) {
@@ -234,9 +239,10 @@ TEST(PutTests, AsyncMultiplePutTest) {
     }
     for (auto& future_response : responses) {
         auto response = future_response.get();
-        auto expected_text = std::string{"{\n"
-                                         "  \"x\": 5\n"
-                                         "}"};
+        auto expected_text = std::string{
+                "{\n"
+                "  \"x\": 5\n"
+                "}"};
         EXPECT_EQ(expected_text, response.text);
         EXPECT_EQ(url, response.url);
         EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
@@ -246,7 +252,7 @@ TEST(PutTests, AsyncMultiplePutTest) {
 }
 
 TEST(PutTests, AsyncMultiplePutUnallowedTest) {
-    auto url = Url{base + "/put_unallowed.html"};
+    auto url = Url{server->GetBaseUrl() + "/put_unallowed.html"};
     auto payload = Payload{{"x", "5"}};
     std::vector<AsyncResponse> responses;
     for (int i = 0; i < 10; ++i) {

@@ -4,15 +4,14 @@
 
 #include <cpr/cpr.h>
 
-#include "server.h"
+#include "httpServer.hpp"
 
 using namespace cpr;
 
-static Server* server = new Server();
-auto base = server->GetBaseUrl();
+static HttpServer* server = new HttpServer();
 
 TEST(OptionsTests, BaseUrlTest) {
-    auto url = Url{base + "/"};
+    auto url = Url{server->GetBaseUrl() + "/"};
     auto response = cpr::Options(url);
     auto expected_text = std::string{""};
     EXPECT_EQ(expected_text, response.text);
@@ -24,19 +23,18 @@ TEST(OptionsTests, BaseUrlTest) {
 }
 
 TEST(OptionsTests, SpecificUrlTest) {
-    auto url = Url{base + "/hello.html"};
+    auto url = Url{server->GetBaseUrl() + "/hello.html"};
     auto response = cpr::Options(url);
     auto expected_text = std::string{""};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
-    EXPECT_EQ(std::string{"GET, OPTIONS"},
-              response.header["Access-Control-Allow-Methods"]);
+    EXPECT_EQ(std::string{"GET, OPTIONS"}, response.header["Access-Control-Allow-Methods"]);
     EXPECT_EQ(200, response.status_code);
     EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(OptionsTests, AsyncBaseUrlTest) {
-    auto url = Url{base + "/"};
+    auto url = Url{server->GetBaseUrl() + "/"};
     std::vector<AsyncResponse> responses;
     for (int i = 0; i < 10; ++i) {
         responses.emplace_back(cpr::OptionsAsync(url));
@@ -54,7 +52,7 @@ TEST(OptionsTests, AsyncBaseUrlTest) {
 }
 
 TEST(OptionsTests, AsyncSpecificUrlTest) {
-    auto url = Url{base + "/hello.html"};
+    auto url = Url{server->GetBaseUrl() + "/hello.html"};
     std::vector<AsyncResponse> responses;
     for (int i = 0; i < 10; ++i) {
         responses.emplace_back(cpr::OptionsAsync(url));
@@ -64,8 +62,7 @@ TEST(OptionsTests, AsyncSpecificUrlTest) {
         auto expected_text = std::string{""};
         EXPECT_EQ(expected_text, response.text);
         EXPECT_EQ(url, response.url);
-        EXPECT_EQ(std::string{"GET, OPTIONS"},
-                  response.header["Access-Control-Allow-Methods"]);
+        EXPECT_EQ(std::string{"GET, OPTIONS"}, response.header["Access-Control-Allow-Methods"]);
         EXPECT_EQ(200, response.status_code);
         EXPECT_EQ(ErrorCode::OK, response.error.code);
     }
