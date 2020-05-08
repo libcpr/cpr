@@ -95,6 +95,13 @@ target_link_libraries(your_target_name ${CPR_LIBRARIES})
 
 and that should do it! Using the submodule method of integrating C++ Requests, there's no need to handle libcurl yourself, all of those dependencies are taken care of for you.
 
+if you prefer the `find_package` workflow, make sure you installed this package, then:
+
+```
+find_package(cpr)
+target_link_libraries(your_target_name ${CPR_LIBRARIES})
+```
+
 ## Requirements
 
 The only explicit requirements are:
@@ -113,3 +120,10 @@ You can download and install cpr using the [vcpkg](https://github.com/Microsoft/
     ./vcpkg install cpr
 
 The cpr port in vcpkg is kept up to date by Microsoft team members and community contributors. If the version is out of date, please [create an issue or pull request](https://github.com/Microsoft/vcpkg) on the vcpkg repository.
+
+## Building cpr - Using conan
+
+You can get cpr from the [conan center](https://conan.io/center/):
+just add `cpr/[>=1.4.0]` to your `conanfile.txt`
+
+
