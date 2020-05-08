@@ -50,7 +50,7 @@ target_link_libraries(${CPR_LIBRARIES}
 if(NOT (CMAKE_VERSION VERSION_LESS 3.0))
     target_include_directories(${CPR_LIBRARIES}
         PUBLIC
-        ${CPR_INCLUDE_DIRS}
+        $<BUILD_INTERFACE:${CPR_INCLUDE_DIRS}>
         ${CURL_INCLUDE_DIRS})
 else()
     include_directories(
