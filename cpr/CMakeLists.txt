@@ -51,7 +51,8 @@ if(NOT (CMAKE_VERSION VERSION_LESS 3.0))
     target_include_directories(${CPR_LIBRARIES}
         PUBLIC
         $<BUILD_INTERFACE:${CPR_INCLUDE_DIRS}>
-        ${CURL_INCLUDE_DIRS})
+        $<BUILD_INTERFACE:${CURL_INCLUDE_DIRS}>
+        $<INSTALL_INTERFACE:include>)
 else()
     include_directories(
         ${CPR_INCLUDE_DIRS}
