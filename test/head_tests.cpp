@@ -90,7 +90,7 @@ TEST(HeadTests, AuthenticationNullFailureHeadTest) {
     auto response = cpr::Head(url);
     EXPECT_EQ(std::string{}, response.text);
     EXPECT_EQ(url, response.url);
-    EXPECT_EQ(std::string{}, response.header["content-type"]);
+    EXPECT_EQ("text/plain", response.header["content-type"]);
     EXPECT_EQ(401, response.status_code);
     EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
@@ -100,7 +100,7 @@ TEST(HeadTests, AuthenticationFailureHeadTest) {
     auto response = cpr::Head(url, Authentication{"user", "bad_password"});
     EXPECT_EQ(std::string{}, response.text);
     EXPECT_EQ(url, response.url);
-    EXPECT_EQ(std::string{}, response.header["content-type"]);
+    EXPECT_EQ("text/plain", response.header["content-type"]);
     EXPECT_EQ(401, response.status_code);
     EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
