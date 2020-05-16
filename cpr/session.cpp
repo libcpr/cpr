@@ -477,7 +477,7 @@ Response Session::Impl::Patch() {
 Response Session::Impl::Post() {
     auto curl = curl_->handle;
     if (curl) {
-        curl_easy_setopt(curl, CURLOPT_HTTPPOST, nullptr);
+        curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "POST");
     }
 
     return makeRequest(curl);

@@ -16,10 +16,7 @@ static HttpServer* server = new HttpServer();
 TEST(BodyPostTests, DefaultUrlEncodedPostTest) {
     auto url = Url{server->GetBaseUrl() + "/url_post.html"};
     auto response = cpr::Post(url, Body{"x=5"});
-    auto expected_text = std::string{
-            "{\n"
-            "  \"x\": 5\n"
-            "}"};
+    auto expected_text = "{\n  \"x\": 5\n}";
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
@@ -102,7 +99,7 @@ TEST(BodyPostTests, CustomWrongHeaderPostTest) {
     auto expected_text = std::string{"Unsupported Media Type"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
-    EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+    EXPECT_EQ(std::string{"text/plain"}, response.header["content-type"]);
     EXPECT_EQ(415, response.status_code);
     EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
