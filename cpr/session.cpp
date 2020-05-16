@@ -447,7 +447,7 @@ Response Session::Impl::Get() {
 Response Session::Impl::Head() {
     auto curl = curl_->handle;
     if (curl) {
-        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, nullptr);
+        curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, nullptr);
         curl_easy_setopt(curl, CURLOPT_NOBODY, 1L);
     }
 
