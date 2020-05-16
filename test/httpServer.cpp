@@ -256,7 +256,7 @@ void HttpServer::OnRequestUrlPost(mg_connection* conn, http_message* msg) {
 
 void HttpServer::OnRequestBodyGet(mg_connection* conn, http_message* msg) {
     char message[100];
-    int i = mg_get_http_var(&(msg->uri), "message", message, sizeof(message));
+    int i = mg_get_http_var(&(msg->body), "message", message, sizeof(message));
     std::string response = message;
     std::string headers = "Content-Type: text/html";
     mg_send_head(conn, 200, response.length(), headers.c_str());
@@ -341,7 +341,7 @@ void HttpServer::OnRequest(mg_connection* conn, http_message* msg) {
     } else if (uri == "/two_redirects.html") {
         OnRequestTwoRedirects(conn, msg);
     } else if (uri == "/url_post.html") {
-        Post(conn, msg);
+        OnRequestUrlPost(conn, msg);
     } else if (uri == "/body_get.html") {
         OnRequestBodyGet(conn, msg);
     } else if (uri == "/json_post.html") {
