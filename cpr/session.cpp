@@ -199,7 +199,7 @@ void Session::Impl::SetUserAgent(const UserAgent& ua) {
 void Session::Impl::SetPayload(Payload&& payload) {
     auto curl = curl_->handle;
     if (curl) {
-        curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, payload.content.length());
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE_LARGE, payload.content.length());
         curl_easy_setopt(curl, CURLOPT_COPYPOSTFIELDS, payload.content.data());
     }
 }
@@ -207,7 +207,7 @@ void Session::Impl::SetPayload(Payload&& payload) {
 void Session::Impl::SetPayload(const Payload& payload) {
     auto curl = curl_->handle;
     if (curl) {
-        curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, payload.content.length());
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE_LARGE, payload.content.length());
         curl_easy_setopt(curl, CURLOPT_POSTFIELDS, payload.content.data());
     }
 }
@@ -318,7 +318,7 @@ void Session::Impl::SetCookies(const Cookies& cookies) {
 void Session::Impl::SetBody(Body&& body) {
     auto curl = curl_->handle;
     if (curl) {
-        curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, body.length());
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE_LARGE, body.length());
         curl_easy_setopt(curl, CURLOPT_COPYPOSTFIELDS, body.data());
     }
 }
@@ -326,7 +326,7 @@ void Session::Impl::SetBody(Body&& body) {
 void Session::Impl::SetBody(const Body& body) {
     auto curl = curl_->handle;
     if (curl) {
-        curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, body.length());
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE_LARGE, body.length());
         curl_easy_setopt(curl, CURLOPT_POSTFIELDS, body.data());
     }
 }
