@@ -172,6 +172,7 @@ void HttpServer::OnRequestBasicAuth(mg_connection* conn, http_message* msg) {
     auto auth = std::string{"Basic"};
     if ((requested_auth = mg_get_http_header(msg, "Authorization")) == nullptr ||
         mg_ncasecmp(requested_auth->p, auth.data(), auth.length()) != 0) {
+        mg_http_send_error(conn, 401, "Unauthorized");
         return;
     }
     auto auth_string = std::string{requested_auth->p, requested_auth->len};
@@ -182,8 +183,9 @@ void HttpServer::OnRequestBasicAuth(mg_connection* conn, http_message* msg) {
     auto username = auth_string.substr(0, colon);
     auto password = auth_string.substr(colon + 1, auth_string.length() - colon - 1);
     if (username == "user" && password == "password") {
-        std::string headers = "Content-Type: text/html";
-        mg_send_head(conn, 200, 0, headers.c_str());
+        OnRequestHeaderReflect(conn, msg);
+    } else {
+        mg_http_send_error(conn, 401, "Unauthorized");
     }
 }
 
@@ -224,7 +226,7 @@ void HttpServer::OnRequestHeaderReflect(mg_connection* conn, http_message* msg) 
             }
         }
     }
-    mg_send_head(conn, 200, 0, headers.c_str());
+    mg_send_head(conn, 200, response.length(), headers.c_str());
     mg_send(conn, response.data(), response.length());
 }
 
@@ -327,7 +329,7 @@ void HttpServer::OnRequest(mg_connection* conn, http_message* msg) {
     } else if (uri == "/check_v1_cookies.html") {
         OnRequestCheckV1Cookies(conn, msg);
     } else if (uri == "/basic_auth.html") {
-        OnRequestHeaderReflect(conn, msg);
+        OnRequestBasicAuth(conn, msg);
     } else if (uri == "/digest_auth.html") {
         OnRequestHeaderReflect(conn, msg);
     } else if (uri == "/basic.json") {
