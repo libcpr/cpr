@@ -30,7 +30,7 @@ TEST(RedirectTests, NoTemporaryRedirectTest) {
     session.SetUrl(url);
     session.SetRedirect(false);
     auto response = session.Get();
-    auto expected_text = std::string{"Found"};
+    auto expected_text = std::string{"Moved Temporarily"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{}, response.header["content-type"]);
@@ -174,7 +174,7 @@ TEST(MultipleGetTests, UrlChangeMultipleGetTest) {
                 "]"};
         EXPECT_EQ(expected_text, response.text);
         EXPECT_EQ(url, response.url);
-        EXPECT_EQ(std::string{"application/octet-stream"}, response.header["content-type"]);
+        EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
         EXPECT_EQ(200, response.status_code);
         EXPECT_EQ(ErrorCode::OK, response.error.code);
     }
