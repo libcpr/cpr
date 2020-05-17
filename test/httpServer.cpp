@@ -351,7 +351,7 @@ void HttpServer::OnRequestFormPost(mg_connection* conn, http_message* msg) {
     }
     mg_send_head(conn, 201, response.length(), headers.c_str());
     mg_send(conn, response.c_str(), response.length());
-} // namespace cpr
+}
 
 void HttpServer::OnRequestDelete(mg_connection* conn, http_message* msg) {
     auto has_json_header = false;
