@@ -28,7 +28,7 @@ Url HttpServer::GetBaseUrl() {
 }
 
 Url HttpServer::GetBaseUrlSSL() {
-    return Url{"http://127.0.0.1:"}.append(std::to_string(GetPort()));
+    return Url{"https://127.0.0.1:"}.append(std::to_string(GetPort()));
 }
 
 uint16_t HttpServer::GetPort() {
