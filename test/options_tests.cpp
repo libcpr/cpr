@@ -28,7 +28,8 @@ TEST(OptionsTests, SpecificUrlTest) {
     auto expected_text = std::string{""};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
-    EXPECT_EQ(std::string{"GET, OPTIONS"}, response.header["Access-Control-Allow-Methods"]);
+    EXPECT_EQ(std::string{"GET, POST, PUT, DELETE, PATCH, OPTIONS"},
+              response.header["Access-Control-Allow-Methods"]);
     EXPECT_EQ(200, response.status_code);
     EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
@@ -62,7 +63,8 @@ TEST(OptionsTests, AsyncSpecificUrlTest) {
         auto expected_text = std::string{""};
         EXPECT_EQ(expected_text, response.text);
         EXPECT_EQ(url, response.url);
-        EXPECT_EQ(std::string{"GET, OPTIONS"}, response.header["Access-Control-Allow-Methods"]);
+        EXPECT_EQ(std::string{"GET, POST, PUT, DELETE, PATCH, OPTIONS"},
+                  response.header["Access-Control-Allow-Methods"]);
         EXPECT_EQ(200, response.status_code);
         EXPECT_EQ(ErrorCode::OK, response.error.code);
     }

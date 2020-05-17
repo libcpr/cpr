@@ -301,18 +301,18 @@ TEST(MultipleGetTests, BasicAuthenticationChangeMultipleGetTest) {
     session.SetAuth(Authentication{"user", "bad_password"});
     {
         auto response = session.Get();
-        EXPECT_EQ(std::string{}, response.text);
+        EXPECT_EQ(std::string{"Unauthorized"}, response.text);
         EXPECT_EQ(url, response.url);
-        EXPECT_EQ(std::string{}, response.header["content-type"]);
+        EXPECT_EQ(std::string{"text/plain"}, response.header["content-type"]);
         EXPECT_EQ(401, response.status_code);
         EXPECT_EQ(ErrorCode::OK, response.error.code);
     }
     session.SetAuth(Authentication{"bad_user", "password"});
     {
         auto response = session.Get();
-        EXPECT_EQ(std::string{}, response.text);
+        EXPECT_EQ(std::string{"Unauthorized"}, response.text);
         EXPECT_EQ(url, response.url);
-        EXPECT_EQ(std::string{}, response.header["content-type"]);
+        EXPECT_EQ(std::string{"text/plain"}, response.header["content-type"]);
         EXPECT_EQ(401, response.status_code);
         EXPECT_EQ(ErrorCode::OK, response.error.code);
     }
