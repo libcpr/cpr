@@ -377,7 +377,12 @@ void Session::Impl::SetSslOptions(const SslOptions& opts) {
         curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, opts.verify_peer ? ON : OFF);
         curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, opts.verify_host ? 2L : 0L);
         curl_easy_setopt(curl, CURLOPT_SSL_VERIFYSTATUS, opts.verify_status ? ON : OFF);
-        curl_easy_setopt(curl, CURLOPT_SSLVERSION, opts.ssl_version | opts.max_version);
+        curl_easy_setopt(curl, CURLOPT_SSLVERSION,
+                         opts.ssl_version
+#if SUPPORT_MAX_TLS_VERSION
+                                 | opts.max_version
+#endif
+        );
         if (!opts.ca_info.empty()) {
             curl_easy_setopt(curl, CURLOPT_CAINFO, opts.ca_info.c_str());
         }
