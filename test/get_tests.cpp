@@ -1167,6 +1167,18 @@ TEST(GetRedirectTests, ZeroMaxRedirectsTest) {
     EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
+TEST(BasicTests, RequestBodyTest) {
+    auto url = Url{server->GetBaseUrl() + "/body_get.html"};
+    auto body = Body{"message=abc123"};
+    auto response = cpr::Get(url, body);
+    auto expected_text = std::string{"abc123"};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
     ::testing::AddGlobalTestEnvironment(server);
