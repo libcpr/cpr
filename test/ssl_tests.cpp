@@ -18,9 +18,8 @@ TEST(SslTests, HelloWorldTest) {
     std::this_thread::sleep_for(std::chrono::seconds(1));
 
     auto url = Url{base + "/hello.html"};
-    auto sslOpts = Ssl(ssl::CertFile{basedir + "/cert.pem"},
-                       ssl::KeyFile{basedir + "/key.pem"},
-                       ssl::VerifyStatus{false});
+    auto sslOpts = Ssl(ssl::CertFile{basedir + "/cert.pem"}, ssl::KeyFile{basedir + "/key.pem"},
+                       ssl::MaxTLSv1_1{}, ssl::VerifyStatus{false});
     auto response = cpr::Get(url, sslOpts, Timeout{5000}, Verbose{});
     auto expected_text = std::string{"Hello world!"};
     EXPECT_EQ(expected_text, response.text);

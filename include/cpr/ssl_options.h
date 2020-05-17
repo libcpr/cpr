@@ -7,6 +7,60 @@
 
 #include "defines.h"
 
+#define __LIBCURL_VERSION_GTE(major, minor) \
+    ((LIBCURL_VERSION_MAJOR > (major)) ||   \
+     ((LIBCURL_VERSION_MAJOR == (major)) && (LIBCURL_VERSION_MINOR >= (minor))))
+#define __LIBCURL_VERSION_LT(major, minor) \
+    ((LIBCURL_VERSION_MAJOR < (major)) ||  \
+     ((LIBCURL_VERSION_MAJOR == (major)) && (LIBCURL_VERSION_MINOR < (minor))))
+
+#ifndef SUPPORT_ALPN
+#define SUPPORT_ALPN __LIBCURL_VERSION_GTE(7, 36)
+#endif
+#ifndef SUPPORT_NPN
+#define SUPPORT_NPN __LIBCURL_VERSION_GTE(7, 36)
+#endif
+
+#ifndef SUPPORT_SSLv2
+#define SUPPORT_SSLv2 __LIBCURL_VERSION_LT(7, 19)
+#endif
+#ifndef SUPPORT_SSLv3
+#define SUPPORT_SSLv3 __LIBCURL_VERSION_LT(7, 39)
+#endif
+#ifndef SUPPORT_TLSv1_0
+#define SUPPORT_TLSv1_0 __LIBCURL_VERSION_GTE(7, 34)
+#endif
+#ifndef SUPPORT_TLSv1_1
+#define SUPPORT_TLSv1_1 __LIBCURL_VERSION_GTE(7, 34)
+#endif
+#ifndef SUPPORT_TLSv1_2
+#define SUPPORT_TLSv1_2 __LIBCURL_VERSION_GTE(7, 34)
+#endif
+#ifndef SUPPORT_TLSv1_3
+#define SUPPORT_TLSv1_3 __LIBCURL_VERSION_GTE(7, 52)
+#endif
+#ifndef SUPPORT_MAX_TLS_VERSION
+#define SUPPORT_MAX_TLS_VERSION __LIBCURL_VERSION_GTE(7, 54)
+#endif
+#ifndef SUPPORT_MAX_TLSv1_1
+#define SUPPORT_MAX_TLSv1_1 __LIBCURL_VERSION_GTE(7, 54)
+#endif
+#ifndef SUPPORT_MAX_TLSv1_2
+#define SUPPORT_MAX_TLSv1_2 __LIBCURL_VERSION_GTE(7, 54)
+#endif
+#ifndef SUPPORT_MAX_TLSv1_3
+#define SUPPORT_MAX_TLSv1_3 __LIBCURL_VERSION_GTE(7, 54)
+#endif
+#ifndef SUPPORT_TLSv13_CIPHERS
+#define SUPPORT_TLSv13_CIPHERS __LIBCURL_VERSION_GTE(7, 61)
+#endif
+#ifndef SUPPORT_SESSIONID_CACHE
+#define SUPPORT_SESSIONID_CACHE __LIBCURL_VERSION_GTE(7, 16)
+#endif
+#ifndef SUPPORT_SSL_FALSESTART
+#define SUPPORT_SSL_FALSESTART __LIBCURL_VERSION_GTE(7, 42)
+#endif
+
 namespace cpr {
 
 class VerifySsl {
@@ -81,77 +135,101 @@ class DerKey : public KeyFile {
     }
 };
 
+#if SUPPORT_ALPN
 // This option enables/disables ALPN in the SSL handshake (if the SSL backend libcurl is built to
 // use supports it), which can be used to negotiate http2.
-class Alpn {
+class ALPN {
   public:
-    Alpn(bool p_enabled = true) : enabled(p_enabled) {}
+    ALPN(bool p_enabled) : enabled(p_enabled) {}
 
-    bool enabled;
+    bool enabled = true;
 };
+#endif // SUPPORT_ALPN
 
+#if SUPPORT_NPN
 //  This option enables/disables NPN in the SSL handshake (if the SSL backend libcurl is built to
 //  use supports it), which can be used to negotiate http2.
-class Npn {
+class NPN {
   public:
-    Npn(bool p_enabled = true) : enabled(p_enabled) {}
+    NPN(bool p_enabled) : enabled(p_enabled) {}
 
-    bool enabled;
+    bool enabled = true;
 };
+#endif // SUPPORT_NPN
 
 // This option determines whether libcurl verifies that the server cert is for the server it is
 // known as.
 class VerifyHost {
   public:
-    VerifyHost(bool p_enabled = true) : enabled(p_enabled) {}
+    VerifyHost(bool p_enabled) : enabled(p_enabled) {}
 
-    bool enabled;
+    bool enabled = true;
 };
 
 // This option determines whether libcurl verifies the authenticity of the peer's certificate.
 class VerifyPeer {
   public:
-    VerifyPeer(bool p_enabled = true) : enabled(p_enabled) {}
+    VerifyPeer(bool p_enabled) : enabled(p_enabled) {}
 
-    bool enabled;
+    bool enabled = true;
 };
 
 // This option determines whether libcurl verifies the status of the server cert using the
 // "Certificate Status Request" TLS extension (aka. OCSP stapling).
 class VerifyStatus {
   public:
-    VerifyStatus(bool p_enabled = true) : enabled(p_enabled) {}
+    VerifyStatus(bool p_enabled) : enabled(p_enabled) {}
 
-    bool enabled;
+    bool enabled = false;
 };
 
+// TLS v1.0 or later
 struct TLSv1 {};
-#if LIBCURL_VERSION_MAJOR >= 7
-#if LIBCURL_VERSION_MINOR < 18
+#if SUPPORT_SSLv2
+// SSL v2 (but not SSLv3)
 struct SSLv2 {};
 #endif
-#if LIBCURL_VERSION_MINOR < 39
+#if SUPPORT_SSLv3
+// SSL v3 (but not SSLv2)
 struct SSLv3 {};
 #endif
-#if LIBCURL_VERSION_MINOR >= 34
+#if SUPPORT_TLSv1_0
+// TLS v1.0 or later (Added in 7.34.0)
 struct TLSv1_0 {};
+#endif
+#if SUPPORT_TLSv1_1
+// TLS v1.1 or later (Added in 7.34.0)
 struct TLSv1_1 {};
+#endif
+#if SUPPORT_TLSv1_2
+// TLS v1.2 or later (Added in 7.34.0)
 struct TLSv1_2 {};
-#endif // LIBCURL_VERSION_MINOR >= 34
-#if LIBCURL_VERSION_MINOR >= 52
+#endif
+#if SUPPORT_TLSv1_3
+// TLS v1.3 or later (Added in 7.52.0)
 struct TLSv1_3 {};
 #endif
-#if LIBCURL_VERSION_MINOR >= 54
+#if SUPPORT_MAX_TLS_VERSION
+// The flag defines the maximum supported TLS version by libcurl, or the default value from the SSL
+// library is used.
+struct MaxTLSVersion {};
+#endif
+#if SUPPORT_MAX_TLSv1_0
 // The flag defines maximum supported TLS version as TLSv1.0. (Added in 7.54.0)
 struct MaxTLSv1_0 {};
+#endif
+#if SUPPORT_MAX_TLSv1_1
 // The flag defines maximum supported TLS version as TLSv1.1. (Added in 7.54.0)
 struct MaxTLSv1_1 {};
+#endif
+#if SUPPORT_MAX_TLSv1_2
 // The flag defines maximum supported TLS version as TLSv1.2. (Added in 7.54.0)
 struct MaxTLSv1_2 {};
+#endif
+#if SUPPORT_MAX_TLSv1_3
 // The flag defines maximum supported TLS version as TLSv1.3. (Added in 7.54.0)
 struct MaxTLSv1_3 {};
 #endif
-#endif // LIBCURL_VERSION_MAJOR >= 7
 
 // path to Certificate Authority (CA) bundle
 class CaInfo {
@@ -189,13 +267,35 @@ class Ciphers {
     std::string ciphers;
 };
 
+#if SUPPORT_TLSv13_CIPHERS
+// specify ciphers suites to use for TLS 1.3
+class TLS13_Ciphers {
+  public:
+    template <typename T>
+    TLS13_Ciphers(T&& p_ciphers) : ciphers(CPR_FWD(p_ciphers)) {}
+
+    std::string ciphers;
+};
+#endif
+
+#if SUPPORT_SESSIONID_CACHE
 // enable/disable use of the SSL session-ID cache
 class SessionIdCache {
   public:
-    SessionIdCache(bool p_enabled = true) : enabled(p_enabled) {}
+    SessionIdCache(bool enabled) : enabled(enabled) {}
 
-    bool enabled;
+    bool enabled = true;
 };
+#endif
+
+#if SUPPORT_SSL_FALSESTART
+class SslFastStart {
+  public:
+    SslFastStart(bool enabled) : enabled(enabled) {}
+
+    bool enabled = false;
+};
+#endif
 
 } // namespace ssl
 
@@ -205,30 +305,29 @@ struct SslOptions {
     std::string key_file;
     std::string key_type;
     std::string key_pass;
-    bool enable_alpn;
-    bool enable_npn;
-    bool verify_host;
-    bool verify_peer;
-    bool verify_status;
-    int ssl_version;
-    int max_version;
+#if SUPPORT_ALPN
+    bool enable_alpn = true;
+#endif // SUPPORT_ALPN
+#if SUPPORT_NPN
+    bool enable_npn = true;
+#endif // SUPPORT_ALPN
+    bool verify_host = true;
+    bool verify_peer = true;
+    bool verify_status = false;
+    int ssl_version = CURL_SSLVERSION_DEFAULT;
+#if SUPPORT_MAX_TLS_VERSION
+    int max_version = CURL_SSLVERSION_MAX_DEFAULT;
+#endif
     std::string ca_info;
     std::string ca_path;
     std::string crl_file;
     std::string ciphers;
-    bool session_id_cache;
-
-    SslOptions()
-            : ssl_version(CURL_SSLVERSION_DEFAULT)
-#if LIBCURL_VERSION_MAJOR >= 7
-#if LIBCURL_VERSION_MINOR >= 54
-              ,
-              max_version(CURL_SSLVERSION_MAX_DEFAULT)
+#if SUPPORT_TLSv13_CIPHERS
+    std::string tls13_ciphers;
 #endif
+#if SUPPORT_SESSIONID_CACHE
+    bool session_id_cache = true;
 #endif
-              ,
-              session_id_cache(true) {
-    }
 
     void SetOption(const ssl::CertFile& opt) {
         cert_file = opt.filename;
@@ -239,12 +338,16 @@ struct SslOptions {
         key_type = opt.GetKeyType();
         key_pass = opt.password;
     }
-    void SetOption(const ssl::Alpn& opt) {
+#if SUPPORT_ALPN
+    void SetOption(const ssl::ALPN& opt) {
         enable_alpn = opt.enabled;
     }
-    void SetOption(const ssl::Npn& opt) {
+#endif // SUPPORT_ALPN
+#if SUPPORT_NPN
+    void SetOption(const ssl::NPN& opt) {
         enable_npn = opt.enabled;
     }
+#endif // SUPPORT_NPN
     void SetOption(const ssl::VerifyHost& opt) {
         verify_host = opt.enabled;
     }
@@ -257,48 +360,61 @@ struct SslOptions {
     void SetOption(const ssl::TLSv1& opt) {
         ssl_version = CURL_SSLVERSION_TLSv1;
     }
-#if LIBCURL_VERSION_MAJOR >= 7
-#if LIBCURL_VERSION_MINOR < 18
+#if SUPPORT_SSLv2
     void SetOption(const ssl::SSLv2& opt) {
         ssl_version = CURL_SSLVERSION_SSLv2;
     }
 #endif
-#if LIBCURL_VERSION_MINOR < 39
+#if SUPPORT_SSLv3
     void SetOption(const ssl::SSLv3& opt) {
         ssl_version = CURL_SSLVERSION_SSLv3;
     }
 #endif
-#if LIBCURL_VERSION_MINOR >= 34
+#if SUPPORT_TLSv1_0
     void SetOption(const ssl::TLSv1_0& opt) {
         ssl_version = CURL_SSLVERSION_TLSv1_0;
     }
+#endif
+#if SUPPORT_TLSv1_1
     void SetOption(const ssl::TLSv1_1& opt) {
         ssl_version = CURL_SSLVERSION_TLSv1_1;
     }
+#endif
+#if SUPPORT_TLSv1_2
     void SetOption(const ssl::TLSv1_2& opt) {
         ssl_version = CURL_SSLVERSION_TLSv1_2;
     }
-#endif // LIBCURL_VERSION_MINOR >= 34
-#if LIBCURL_VERSION_MINOR >= 52
+#endif
+#if SUPPORT_TLSv1_3
     void SetOption(const ssl::TLSv1_3& opt) {
         ssl_version = CURL_SSLVERSION_TLSv1_3;
     }
 #endif
-#if LIBCURL_VERSION_MINOR >= 54
+#if SUPPORT_MAX_TLS_VERSION
+    void SetOption(const ssl::MaxTLSVersion& opt) {
+        max_version = CURL_SSLVERSION_DEFAULT;
+    }
+#endif
+#if SUPPORT_MAX_TLSv1_0
     void SetOption(const ssl::MaxTLSv1_0& opt) {
         max_version = CURL_SSLVERSION_MAX_TLSv1_0;
     }
+#endif
+#if SUPPORT_MAX_TLSv1_1
     void SetOption(const ssl::MaxTLSv1_1& opt) {
         max_version = CURL_SSLVERSION_MAX_TLSv1_1;
     }
+#endif
+#if SUPPORT_MAX_TLSv1_2
     void SetOption(const ssl::MaxTLSv1_2& opt) {
         max_version = CURL_SSLVERSION_MAX_TLSv1_2;
     }
+#endif
+#if SUPPORT_MAX_TLSv1_3
     void SetOption(const ssl::MaxTLSv1_3& opt) {
         max_version = CURL_SSLVERSION_MAX_TLSv1_3;
     }
 #endif
-#endif // LIBCURL_VERSION_MAJOR >= 7
     void SetOption(const ssl::CaInfo& opt) {
         ca_info = opt.filename;
     }
@@ -311,9 +427,16 @@ struct SslOptions {
     void SetOption(const ssl::Ciphers& opt) {
         ciphers = opt.ciphers;
     }
+#if SUPPORT_TLSv13_CIPHERS
+    void SetOption(const ssl::TLS13_Ciphers& opt) {
+        tls13_ciphers = opt.ciphers;
+    }
+#endif
+#if SUPPORT_SESSIONID_CACHE
     void SetOption(const ssl::SessionIdCache& opt) {
         session_id_cache = opt.enabled;
     }
+#endif
 };
 
 namespace priv {

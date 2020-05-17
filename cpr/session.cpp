@@ -13,6 +13,9 @@
 
 namespace cpr {
 
+const long ON = 1L;
+const long OFF = 1L;
+
 class Session::Impl {
   public:
     Impl();
@@ -38,10 +41,10 @@ class Session::Impl {
     void SetBody(Body&& body);
     void SetBody(const Body& body);
     void SetLowSpeed(const LowSpeed& low_speed);
-    void SetVerbose(const Verbose& verbose);
     void SetVerifySsl(const VerifySsl& verify);
     void SetLimitRate(const LimitRate& limit_rate);
     void SetUnixSocket(const UnixSocket& unix_socket);
+    void SetVerbose(const Verbose& verbose);
     void SetSslOptions(const SslOptions& options);
 
     Response Delete();
@@ -166,7 +169,7 @@ void Session::Impl::SetConnectTimeout(const ConnectTimeout& timeout) {
 void Session::Impl::SetVerbose(const Verbose& verbose) {
     auto curl = curl_->handle;
     if (curl) {
-        curl_easy_setopt(curl, CURLOPT_VERBOSE, verbose.verbose);
+        curl_easy_setopt(curl, CURLOPT_VERBOSE, ON);
     }
 }
 
@@ -339,7 +342,7 @@ void Session::Impl::SetLowSpeed(const LowSpeed& low_speed) {
 void Session::Impl::SetVerifySsl(const VerifySsl& verify) {
     auto curl = curl_->handle;
     if (curl) {
-        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, verify ? 1L : 0L);
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, verify ? ON : OFF);
         curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, verify ? 2L : 0L);
     }
 }
@@ -355,17 +358,25 @@ void Session::Impl::SetSslOptions(const SslOptions& opts) {
     auto curl = curl_->handle;
     if (curl) {
         curl_easy_setopt(curl, CURLOPT_SSLCERT, opts.cert_file.c_str());
-        curl_easy_setopt(curl, CURLOPT_SSLCERTTYPE, opts.cert_type.c_str());
+        if (!opts.cert_type.empty()) {
+            curl_easy_setopt(curl, CURLOPT_SSLCERTTYPE, opts.cert_type.c_str());
+        }
         curl_easy_setopt(curl, CURLOPT_SSLKEY, opts.key_file.c_str());
-        curl_easy_setopt(curl, CURLOPT_SSLKEYTYPE, opts.key_type.c_str());
+        if (!opts.key_type.empty()) {
+            curl_easy_setopt(curl, CURLOPT_SSLKEYTYPE, opts.key_type.c_str());
+        }
         if (!opts.key_pass.empty()) {
             curl_easy_setopt(curl, CURLOPT_KEYPASSWD, opts.key_pass.c_str());
         }
-        curl_easy_setopt(curl, CURLOPT_SSL_ENABLE_ALPN, opts.enable_alpn ? 1L : 0L);
-        curl_easy_setopt(curl, CURLOPT_SSL_ENABLE_NPN, opts.enable_npn ? 1L : 0L);
-        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, opts.verify_peer ? 1L : 0L);
+#if SUPPORT_ALPN
+        curl_easy_setopt(curl, CURLOPT_SSL_ENABLE_ALPN, opts.enable_alpn ? ON : OFF);
+#endif
+#if SUPPORT_NPN
+        curl_easy_setopt(curl, CURLOPT_SSL_ENABLE_NPN, opts.enable_npn ? ON : OFF);
+#endif
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, opts.verify_peer ? ON : OFF);
         curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, opts.verify_host ? 2L : 0L);
-        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYSTATUS, opts.verify_status ? 1L : 0L);
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYSTATUS, opts.verify_status ? ON : OFF);
         curl_easy_setopt(curl, CURLOPT_SSLVERSION, opts.ssl_version | opts.max_version);
         if (!opts.ca_info.empty()) {
             curl_easy_setopt(curl, CURLOPT_CAINFO, opts.ca_info.c_str());
@@ -379,7 +390,14 @@ void Session::Impl::SetSslOptions(const SslOptions& opts) {
         if (!opts.ciphers.empty()) {
             curl_easy_setopt(curl, CURLOPT_SSL_CIPHER_LIST, opts.ciphers.c_str());
         }
-        curl_easy_setopt(curl, CURLOPT_SSL_SESSIONID_CACHE, opts.session_id_cache ? 1L : 0L);
+#if SUPPORT_TLSv13_CIPHERS
+        if (!opts.tls13_ciphers.empty()) {
+            curl_easy_setopt(curl, CURLOPT_TLS13_CIPHERS, opts.ciphers.c_str());
+        }
+#endif
+#if SUPPORT_SESSIONID_CACHE
+        curl_easy_setopt(curl, CURLOPT_SSL_SESSIONID_CACHE, opts.session_id_cache ? ON : OFF);
+#endif
     }
 }
 
