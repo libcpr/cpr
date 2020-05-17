@@ -56,6 +56,20 @@ TEST(ErrorTests, ChronoTimeoutFailure) {
     EXPECT_EQ(ErrorCode::OPERATION_TIMEDOUT, response.error.code);
 }
 
+TEST(ErrorTests, ConnectTimeoutFailure) {
+    auto url = Url{"http://localhost:67"};
+    auto response = cpr::Get(url, cpr::ConnectTimeout{1});
+    EXPECT_EQ(0, response.status_code);
+    EXPECT_EQ(ErrorCode::OPERATION_TIMEDOUT, response.error.code);
+}
+
+TEST(ErrorTests, ChronoConnectTimeoutFailure) {
+    auto url = Url{"http://localhost:67"};
+    auto response = cpr::Get(url, cpr::ConnectTimeout{std::chrono::milliseconds{1}});
+    EXPECT_EQ(0, response.status_code);
+    EXPECT_EQ(ErrorCode::OPERATION_TIMEDOUT, response.error.code);
+}
+
 TEST(ErrorTests, LowSpeedTimeFailure) {
     auto url = Url{base + "/low_speed.html"};
     auto response = cpr::Get(url, cpr::LowSpeed{1000, 1});

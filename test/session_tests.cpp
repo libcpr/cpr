@@ -404,6 +404,62 @@ TEST(TimeoutTests, SetChronoTimeoutLongTest) {
     EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
+TEST(ConnectTimeoutTests, SetConnectTimeoutTest) {
+    auto url = Url{base + "/hello.html"};
+    Session session;
+    session.SetUrl(url);
+    session.SetConnectTimeout(0L);
+    auto response = session.Get();
+    auto expected_text = std::string{"Hello world!"};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
+TEST(ConnectTimeoutTests, SetConnectTimeoutLongTest) {
+    auto url = Url{base + "/hello.html"};
+    Session session;
+    session.SetUrl(url);
+    session.SetConnectTimeout(10000L);
+    auto response = session.Get();
+    auto expected_text = std::string{"Hello world!"};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
+TEST(ConnectTimeoutTests, SetChronoConnectTimeoutTest) {
+    auto url = Url{base + "/hello.html"};
+    Session session;
+    session.SetUrl(url);
+    session.SetConnectTimeout(std::chrono::milliseconds{0});
+    auto response = session.Get();
+    auto expected_text = std::string{"Hello world!"};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
+TEST(ConnectTimeoutTests, SetChronoConnectTimeoutLongTest) {
+    auto url = Url{base + "/hello.html"};
+    Session session;
+    session.SetUrl(url);
+    session.SetConnectTimeout(std::chrono::milliseconds{10000});
+    auto response = session.Get();
+    auto expected_text = std::string{"Hello world!"};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
 TEST(LowSpeedTests, SetLowSpeedTest) {
     auto url = Url{base + "/hello.html"};
     Session session;
@@ -527,6 +583,22 @@ TEST(DigestTests, SetDigestTest) {
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
+TEST(UserAgentTests, SetUserAgentTest) {
+    auto url = Url{base + "/header_reflect.html"};
+    auto userAgent = UserAgent{"Test User Agent"};
+    Session session;
+    session.SetUrl(url);
+    session.SetUserAgent(userAgent);
+    auto response = session.Get();
+    auto expected_text = std::string{"Header reflect GET"};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+    EXPECT_EQ(userAgent, response.header["User-Agent"]);
     EXPECT_EQ(200, response.status_code);
     EXPECT_EQ(ErrorCode::OK, response.error.code);
 }

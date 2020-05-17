@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cctype>
 #include <cstdint>
+#include <fstream>
 #include <iomanip>
 #include <sstream>
 #include <string>
@@ -11,7 +12,7 @@
 namespace cpr {
 namespace util {
 
-Header parseHeader(const std::string& headers) {
+Header parseHeader(const std::string& headers, std::string* status_line, std::string* reason) {
     Header header;
     std::vector<std::string> lines;
     std::istringstream stream(headers);
@@ -24,6 +25,26 @@ Header parseHeader(const std::string& headers) {
 
     for (auto& line : lines) {
         if (line.substr(0, 5) == "HTTP/") {
+            // set the status_line if it was given
+            if ((status_line != nullptr) || (reason != nullptr)) {
+                line.resize(std::min(line.size(), line.find_last_not_of("\t\n\r ") + 1));
+                if (status_line != nullptr) {
+                    *status_line = line;
+                }
+
+                // set the reason if it was given
+                if (reason != nullptr) {
+                    auto pos1 = line.find_first_of("\t ");
+                    size_t pos2 = std::string::npos;
+                    if (pos1 != std::string::npos) {
+                        pos2 = line.find_first_of("\t ", pos1 + 1);
+                    }
+                    if (pos2 != std::string::npos) {
+                        line.erase(0, pos2 + 1);
+                        *reason = line;
+                    }
+                }
+            }
             header.clear();
         }
 
@@ -55,6 +76,11 @@ std::vector<std::string> split(const std::string& to_split, char delimiter) {
 
 size_t writeFunction(void* ptr, size_t size, size_t nmemb, std::string* data) {
     data->append(static_cast<char*>(ptr), size * nmemb);
+    return size * nmemb;
+}
+
+size_t downloadFunction(void* ptr, size_t size, size_t nmemb, std::ofstream* file) {
+    file->write((char*) ptr, size * nmemb);
     return size * nmemb;
 }
 

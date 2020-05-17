@@ -2,13 +2,16 @@
 #define CPR_SESSION_H
 
 #include <cstdint>
+#include <fstream>
 #include <memory>
 
 #include "cpr/auth.h"
 #include "cpr/body.h"
+#include "cpr/connect_timeout.h"
 #include "cpr/cookies.h"
 #include "cpr/cprtypes.h"
 #include "cpr/digest.h"
+#include "cpr/limit_rate.h"
 #include "cpr/low_speed.h"
 #include "cpr/max_redirects.h"
 #include "cpr/multipart.h"
@@ -18,6 +21,9 @@
 #include "cpr/response.h"
 #include "cpr/ssl_options.h"
 #include "cpr/timeout.h"
+#include "cpr/unix_socket.h"
+#include "cpr/user_agent.h"
+#include "cpr/verbose.h"
 
 namespace cpr {
 
@@ -31,8 +37,10 @@ class Session {
     void SetParameters(Parameters&& parameters);
     void SetHeader(const Header& header);
     void SetTimeout(const Timeout& timeout);
+    void SetConnectTimeout(const ConnectTimeout& timeout);
     void SetAuth(const Authentication& auth);
     void SetDigest(const Digest& auth);
+    void SetUserAgent(const UserAgent& ua);
     void SetPayload(Payload&& payload);
     void SetPayload(const Payload& payload);
     void SetProxies(Proxies&& proxies);
@@ -46,6 +54,7 @@ class Session {
     void SetBody(const Body& body);
     void SetLowSpeed(const LowSpeed& low_speed);
     void SetVerifySsl(const VerifySsl& verify);
+    void SetUnixSocket(const UnixSocket& unix_socket);
     void SetSslOptions(const SslOptions& options);
     void SetVerbose(const Verbose& verbose);
 
@@ -55,10 +64,13 @@ class Session {
     void SetOption(Parameters&& parameters);
     void SetOption(const Header& header);
     void SetOption(const Timeout& timeout);
+    void SetOption(const ConnectTimeout& timeout);
     void SetOption(const Authentication& auth);
     void SetOption(const Digest& auth);
+    void SetOption(const UserAgent& ua);
     void SetOption(Payload&& payload);
     void SetOption(const Payload& payload);
+    void SetOption(const LimitRate& limit_rate);
     void SetOption(Proxies&& proxies);
     void SetOption(const Proxies& proxies);
     void SetOption(Multipart&& multipart);
@@ -70,10 +82,12 @@ class Session {
     void SetOption(const Body& body);
     void SetOption(const LowSpeed& low_speed);
     void SetOption(const VerifySsl& verify);
-    void SetOption(const SslOptions& options);
     void SetOption(const Verbose& verbose);
+    void SetOption(const UnixSocket& unix_socket);
+    void SetOption(const SslOptions& options);
 
     Response Delete();
+    Response Download(std::ofstream& file);
     Response Get();
     Response Head();
     Response Options();
