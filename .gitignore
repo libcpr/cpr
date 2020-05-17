@@ -43,3 +43,6 @@ _site/
 
 # Vim
 .ycm_extra_conf.py*
+
+# VSCode
+.vscode/
