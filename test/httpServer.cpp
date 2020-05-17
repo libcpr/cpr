@@ -396,13 +396,52 @@ void HttpServer::OnRequestDeleteNotAllowed(mg_connection* conn, http_message* ms
 }
 
 void HttpServer::OnRequestPut(mg_connection* conn, http_message* msg) {
-    // Temporary:
-    OnRequestHello(conn, msg);
+    if (std::string{msg->method.p, msg->method.len} == std::string{"PUT"}) {
+        char x[100];
+        char y[100];
+        mg_get_http_var(&(msg->body), "x", x, sizeof(x));
+        mg_get_http_var(&(msg->body), "y", y, sizeof(y));
+        std::string x_string = std::string{x};
+        std::string y_string = std::string{y};
+        std::string headers = "Content-Type: application/json";
+        std::string response;
+        if (y_string.empty()) {
+            response = std::string{
+                    "{\n"
+                    "  \"x\": " +
+                    x_string +
+                    "\n"
+                    "}"};
+        } else {
+            response = std::string{
+                    "{\n"
+                    "  \"x\": " +
+                    x_string +
+                    ",\n"
+                    "  \"y\": " +
+                    y_string +
+                    ",\n"
+                    "  \"sum\": " +
+                    std::to_string(atoi(x) + atoi(y)) +
+                    "\n"
+                    "}"};
+        }
+        mg_send_head(conn, 200, response.length(), headers.c_str());
+        mg_send(conn, response.c_str(), response.length());
+    } else {
+        mg_http_send_error(conn, 405, "Method Not Allowed");
+    }
 }
 
 void HttpServer::OnRequestPutNotAllowed(mg_connection* conn, http_message* msg) {
-    // Temporary:
-    OnRequestHello(conn, msg);
+    if (std::string{msg->method.p, msg->method.len} == std::string{"PUT"}) {
+        mg_http_send_error(conn, 405, "Method Not Allowed");
+    } else {
+        std::string headers = "Content-Type: text/html";
+        std::string response = "Delete success";
+        mg_send_head(conn, 200, response.length(), headers.c_str());
+        mg_send(conn, response.c_str(), response.length());
+    }
 }
 
 void HttpServer::OnRequestPatch(mg_connection* conn, http_message* msg) {

@@ -29,10 +29,10 @@ TEST(PutTests, PutUnallowedTest) {
     auto url = Url{server->GetBaseUrl() + "/put_unallowed.html"};
     auto payload = Payload{{"x", "5"}};
     auto response = cpr::Put(url, payload);
-    auto expected_text = std::string{"Method unallowed"};
+    auto expected_text = std::string{"Method Not Allowed"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
-    EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+    EXPECT_EQ(std::string{"text/plain"}, response.header["content-type"]);
     EXPECT_EQ(405, response.status_code);
     EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
@@ -62,10 +62,10 @@ TEST(PutTests, SessionPutUnallowedTest) {
     session.SetUrl(url);
     session.SetPayload(payload);
     auto response = session.Put();
-    auto expected_text = std::string{"Method unallowed"};
+    auto expected_text = std::string{"Method Not Allowed"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
-    EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+    EXPECT_EQ(std::string{"text/plain"}, response.header["content-type"]);
     EXPECT_EQ(405, response.status_code);
     EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
@@ -105,10 +105,10 @@ TEST(PutTests, SessionPutUnallowedAfterGetTest) {
     session.SetUrl(url);
     session.SetPayload(payload);
     auto response = session.Put();
-    auto expected_text = std::string{"Method unallowed"};
+    auto expected_text = std::string{"Method Not Allowed"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
-    EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+    EXPECT_EQ(std::string{"text/plain"}, response.header["content-type"]);
     EXPECT_EQ(405, response.status_code);
     EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
@@ -148,10 +148,10 @@ TEST(PutTests, SessionPutUnallowedAfterHeadTest) {
     session.SetUrl(url);
     session.SetPayload(payload);
     auto response = session.Put();
-    auto expected_text = std::string{"Method unallowed"};
+    auto expected_text = std::string{"Method Not Allowed"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
-    EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+    EXPECT_EQ(std::string{"text/plain"}, response.header["content-type"]);
     EXPECT_EQ(405, response.status_code);
     EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
@@ -193,10 +193,10 @@ TEST(PutTests, SessionPutUnallowedAfterPostTest) {
     session.SetUrl(url);
     session.SetPayload(payload);
     auto response = session.Put();
-    auto expected_text = std::string{"Method unallowed"};
+    auto expected_text = std::string{"Method Not Allowed"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
-    EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+    EXPECT_EQ(std::string{"text/plain"}, response.header["content-type"]);
     EXPECT_EQ(405, response.status_code);
     EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
@@ -222,10 +222,10 @@ TEST(PutTests, AsyncPutUnallowedTest) {
     auto payload = Payload{{"x", "5"}};
     auto future_response = cpr::PutAsync(url, payload);
     auto response = future_response.get();
-    auto expected_text = std::string{"Method unallowed"};
+    auto expected_text = std::string{"Method Not Allowed"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
-    EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+    EXPECT_EQ(std::string{"text/plain"}, response.header["content-type"]);
     EXPECT_EQ(405, response.status_code);
     EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
@@ -260,10 +260,10 @@ TEST(PutTests, AsyncMultiplePutUnallowedTest) {
     }
     for (auto& future_response : responses) {
         auto response = future_response.get();
-        auto expected_text = std::string{"Method unallowed"};
+        auto expected_text = std::string{"Method Not Allowed"};
         EXPECT_EQ(expected_text, response.text);
         EXPECT_EQ(url, response.url);
-        EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+        EXPECT_EQ(std::string{"text/plain"}, response.header["content-type"]);
         EXPECT_EQ(405, response.status_code);
         EXPECT_EQ(ErrorCode::OK, response.error.code);
     }
