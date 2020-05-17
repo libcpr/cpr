@@ -159,7 +159,7 @@ TEST(PatchTests, SessionPatchUnallowedAfterHeadTest) {
 TEST(PatchTests, SessionPatchAfterPostTest) {
     Session session;
     {
-        auto url = Url{server->GetBaseUrl() + "/url_post_no_body.html"};
+        auto url = Url{server->GetBaseUrl() + "/url_post.html"};
         auto payload = Payload{{"x", "5"}};
         session.SetUrl(url);
         auto response = session.Post();
@@ -196,7 +196,7 @@ TEST(PatchTests, SessionPatchUnallowedAfterPostTest) {
     auto expected_text = std::string{"Method Not Allowed"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
-    EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+    EXPECT_EQ(std::string{"text/plain"}, response.header["content-type"]);
     EXPECT_EQ(405, response.status_code);
     EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
@@ -225,7 +225,7 @@ TEST(PatchTests, AsyncPatchUnallowedTest) {
     auto expected_text = std::string{"Method Not Allowed"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
-    EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+    EXPECT_EQ(std::string{"text/plain"}, response.header["content-type"]);
     EXPECT_EQ(405, response.status_code);
     EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
@@ -263,7 +263,7 @@ TEST(PatchTests, AsyncMultiplePatchUnallowedTest) {
         auto expected_text = std::string{"Method Not Allowed"};
         EXPECT_EQ(expected_text, response.text);
         EXPECT_EQ(url, response.url);
-        EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+        EXPECT_EQ(std::string{"text/plain"}, response.header["content-type"]);
         EXPECT_EQ(405, response.status_code);
         EXPECT_EQ(ErrorCode::OK, response.error.code);
     }

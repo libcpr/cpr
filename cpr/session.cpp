@@ -57,6 +57,8 @@ class Session::Impl {
     Response Put();
 
   private:
+    bool hasBodyOrPayload_{false};
+
     struct CurlHolderDeleter {
         void operator()(CurlHolder* holder) {
             freeHolder(holder);
@@ -81,7 +83,7 @@ Session::Impl::Impl() {
         // Set up some sensible defaults
         auto version_info = curl_version_info(CURLVERSION_NOW);
         auto version = std::string{"curl/"} + std::string{version_info->version};
-        curl_easy_setopt(curl, CURLOPT_USERAGENT, version.data());
+        curl_easy_setopt(curl, CURLOPT_USERAGENT, version.c_str());
         curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
         curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 1L);
         curl_easy_setopt(curl, CURLOPT_MAXREDIRS, 50L);
@@ -140,7 +142,7 @@ void Session::Impl::SetHeader(const Header& header) {
                 header_string += ": " + item->second;
             }
 
-            auto temp = curl_slist_append(chunk, header_string.data());
+            auto temp = curl_slist_append(chunk, header_string.c_str());
             if (temp) {
                 chunk = temp;
             }
@@ -197,18 +199,20 @@ void Session::Impl::SetUserAgent(const UserAgent& ua) {
 }
 
 void Session::Impl::SetPayload(Payload&& payload) {
+    hasBodyOrPayload_ = true;
     auto curl = curl_->handle;
     if (curl) {
         curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE_LARGE, payload.content.length());
-        curl_easy_setopt(curl, CURLOPT_COPYPOSTFIELDS, payload.content.data());
+        curl_easy_setopt(curl, CURLOPT_COPYPOSTFIELDS, payload.content.c_str());
     }
 }
 
 void Session::Impl::SetPayload(const Payload& payload) {
+    hasBodyOrPayload_ = true;
     auto curl = curl_->handle;
     if (curl) {
         curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE_LARGE, payload.content.length());
-        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, payload.content.data());
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, payload.content.c_str());
     }
 }
 
@@ -228,25 +232,26 @@ void Session::Impl::SetMultipart(Multipart&& multipart) {
 
         for (auto& part : multipart.parts) {
             std::vector<struct curl_forms> formdata;
-            formdata.push_back({CURLFORM_COPYNAME, part.name.data()});
+            formdata.push_back({CURLFORM_COPYNAME, part.name.c_str()});
             if (part.is_buffer) {
-                formdata.push_back({CURLFORM_BUFFER, part.value.data()});
+                formdata.push_back({CURLFORM_BUFFER, part.value.c_str()});
                 formdata.push_back(
                         {CURLFORM_COPYCONTENTS, reinterpret_cast<const char*>(part.data)});
                 formdata.push_back(
                         {CURLFORM_CONTENTSLENGTH, reinterpret_cast<const char*>(part.datalen)});
             } else if (part.is_file) {
-                formdata.push_back({CURLFORM_FILE, part.value.data()});
+                formdata.push_back({CURLFORM_FILE, part.value.c_str()});
             } else {
-                formdata.push_back({CURLFORM_COPYCONTENTS, part.value.data()});
+                formdata.push_back({CURLFORM_COPYCONTENTS, part.value.c_str()});
             }
             if (!part.content_type.empty()) {
-                formdata.push_back({CURLFORM_CONTENTTYPE, part.content_type.data()});
+                formdata.push_back({CURLFORM_CONTENTTYPE, part.content_type.c_str()});
             }
             formdata.push_back({CURLFORM_END, nullptr});
             curl_formadd(&formpost, &lastptr, CURLFORM_ARRAY, formdata.data(), CURLFORM_END);
         }
         curl_easy_setopt(curl, CURLOPT_HTTPPOST, formpost);
+        hasBodyOrPayload_ = true;
 
         curl_formfree(curl_->formpost);
         curl_->formpost = formpost;
@@ -261,24 +266,25 @@ void Session::Impl::SetMultipart(const Multipart& multipart) {
 
         for (auto& part : multipart.parts) {
             std::vector<struct curl_forms> formdata;
-            formdata.push_back({CURLFORM_PTRNAME, part.name.data()});
+            formdata.push_back({CURLFORM_PTRNAME, part.name.c_str()});
             if (part.is_buffer) {
-                formdata.push_back({CURLFORM_BUFFER, part.value.data()});
+                formdata.push_back({CURLFORM_BUFFER, part.value.c_str()});
                 formdata.push_back({CURLFORM_BUFFERPTR, reinterpret_cast<const char*>(part.data)});
                 formdata.push_back(
                         {CURLFORM_BUFFERLENGTH, reinterpret_cast<const char*>(part.datalen)});
             } else if (part.is_file) {
-                formdata.push_back({CURLFORM_FILE, part.value.data()});
+                formdata.push_back({CURLFORM_FILE, part.value.c_str()});
             } else {
-                formdata.push_back({CURLFORM_PTRCONTENTS, part.value.data()});
+                formdata.push_back({CURLFORM_PTRCONTENTS, part.value.c_str()});
             }
             if (!part.content_type.empty()) {
-                formdata.push_back({CURLFORM_CONTENTTYPE, part.content_type.data()});
+                formdata.push_back({CURLFORM_CONTENTTYPE, part.content_type.c_str()});
             }
             formdata.push_back({CURLFORM_END, nullptr});
             curl_formadd(&formpost, &lastptr, CURLFORM_ARRAY, formdata.data(), CURLFORM_END);
         }
         curl_easy_setopt(curl, CURLOPT_HTTPPOST, formpost);
+        hasBodyOrPayload_ = true;
 
         curl_formfree(curl_->formpost);
         curl_->formpost = formpost;
@@ -311,23 +317,25 @@ void Session::Impl::SetCookies(const Cookies& cookies) {
     auto curl = curl_->handle;
     if (curl) {
         curl_easy_setopt(curl, CURLOPT_COOKIELIST, "ALL");
-        curl_easy_setopt(curl, CURLOPT_COOKIE, cookies.GetEncoded().data());
+        curl_easy_setopt(curl, CURLOPT_COOKIE, cookies.GetEncoded().c_str());
     }
 }
 
 void Session::Impl::SetBody(Body&& body) {
+    hasBodyOrPayload_ = true;
     auto curl = curl_->handle;
     if (curl) {
         curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE_LARGE, body.length());
-        curl_easy_setopt(curl, CURLOPT_COPYPOSTFIELDS, body.data());
+        curl_easy_setopt(curl, CURLOPT_COPYPOSTFIELDS, body.c_str());
     }
 }
 
 void Session::Impl::SetBody(const Body& body) {
+    hasBodyOrPayload_ = true;
     auto curl = curl_->handle;
     if (curl) {
         curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE_LARGE, body.length());
-        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, body.data());
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, body.c_str());
     }
 }
 
@@ -420,7 +428,8 @@ Response Session::Impl::Delete() {
 Response Session::Impl::Download(std::ofstream& file) {
     auto curl = curl_->handle;
     if (curl) {
-        curl_easy_setopt(curl, CURLOPT_HTTPGET, 1L);
+        curl_easy_setopt(curl, CURLOPT_NOBODY, 0L);
+        curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "GET");
     }
 
     return makeDownloadRequest(curl, file);
@@ -429,7 +438,8 @@ Response Session::Impl::Download(std::ofstream& file) {
 Response Session::Impl::Get() {
     auto curl = curl_->handle;
     if (curl) {
-        curl_easy_setopt(curl, CURLOPT_HTTPGET, 1L);
+        curl_easy_setopt(curl, CURLOPT_NOBODY, 0L);
+        curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "GET");
     }
 
     return makeRequest(curl);
@@ -468,7 +478,13 @@ Response Session::Impl::Patch() {
 Response Session::Impl::Post() {
     auto curl = curl_->handle;
     if (curl) {
+        curl_easy_setopt(curl, CURLOPT_NOBODY, 0L);
         curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "POST");
+
+        // In case there is no body or payload set it to an empty post:
+        if (!hasBodyOrPayload_) {
+            curl_easy_setopt(curl, CURLOPT_POSTFIELDS, "");
+        }
     }
 
     return makeRequest(curl);
@@ -487,14 +503,14 @@ Response Session::Impl::Put() {
 Response Session::Impl::makeDownloadRequest(CURL* curl, std::ofstream& file) {
     if (!parameters_.content.empty()) {
         Url new_url{url_ + "?" + parameters_.content};
-        curl_easy_setopt(curl, CURLOPT_URL, new_url.data());
+        curl_easy_setopt(curl, CURLOPT_URL, new_url.c_str());
     } else {
-        curl_easy_setopt(curl, CURLOPT_URL, url_.data());
+        curl_easy_setopt(curl, CURLOPT_URL, url_.c_str());
     }
 
     auto protocol = url_.substr(0, url_.find(':'));
     if (proxies_.has(protocol)) {
-        curl_easy_setopt(curl, CURLOPT_PROXY, proxies_[protocol].data());
+        curl_easy_setopt(curl, CURLOPT_PROXY, proxies_[protocol].c_str());
     } else {
         curl_easy_setopt(curl, CURLOPT_PROXY, "");
     }
@@ -542,14 +558,14 @@ Response Session::Impl::makeDownloadRequest(CURL* curl, std::ofstream& file) {
 Response Session::Impl::makeRequest(CURL* curl) {
     if (!parameters_.content.empty()) {
         Url new_url{url_ + "?" + parameters_.content};
-        curl_easy_setopt(curl, CURLOPT_URL, new_url.data());
+        curl_easy_setopt(curl, CURLOPT_URL, new_url.c_str());
     } else {
-        curl_easy_setopt(curl, CURLOPT_URL, url_.data());
+        curl_easy_setopt(curl, CURLOPT_URL, url_.c_str());
     }
 
     auto protocol = url_.substr(0, url_.find(':'));
     if (proxies_.has(protocol)) {
-        curl_easy_setopt(curl, CURLOPT_PROXY, proxies_[protocol].data());
+        curl_easy_setopt(curl, CURLOPT_PROXY, proxies_[protocol].c_str());
     } else {
         curl_easy_setopt(curl, CURLOPT_PROXY, nullptr);
     }
@@ -592,6 +608,9 @@ Response Session::Impl::makeRequest(CURL* curl) {
     std::string status_line;
     std::string reason;
     Header header = cpr::util::parseHeader(header_string, &status_line, &reason);
+
+    // Reset the has no body property:
+    hasBodyOrPayload_ = false;
 
     return Response{static_cast<std::int32_t>(response_code),
                     std::move(response_string),

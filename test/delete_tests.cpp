@@ -165,7 +165,7 @@ TEST(DeleteTests, SessionDeleteAfterPostTest) {
         session.SetUrl(url);
         auto response = session.Post();
     }
-    auto url = Url{server->GetBaseUrl() + "/delete.html"};
+    auto url = Url{server->GetBaseUrl() + "/patch_unallowed.html"};
     session.SetUrl(url);
     auto response = session.Delete();
     auto expected_text = std::string{"Delete success"};
@@ -190,7 +190,7 @@ TEST(DeleteTests, SessionDeleteUnallowedAfterPostTest) {
     auto expected_text = std::string{"Method Not Allowed"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
-    EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+    EXPECT_EQ(std::string{"text/plain"}, response.header["content-type"]);
     EXPECT_EQ(405, response.status_code);
     EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
