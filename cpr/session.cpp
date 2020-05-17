@@ -169,7 +169,7 @@ void Session::Impl::SetConnectTimeout(const ConnectTimeout& timeout) {
 void Session::Impl::SetVerbose(const Verbose& verbose) {
     auto curl = curl_->handle;
     if (curl) {
-        curl_easy_setopt(curl, CURLOPT_VERBOSE, ON);
+        curl_easy_setopt(curl, CURLOPT_VERBOSE, verbose.verbose ? ON : OFF);
     }
 }
 

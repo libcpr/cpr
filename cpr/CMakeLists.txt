@@ -40,6 +40,7 @@ add_library(${CPR_LIBRARIES}
     "${CPR_INCLUDE_DIRS}/cpr/util.h"
     "${CPR_INCLUDE_DIRS}/cpr/ssl_options.h"
     "${CPR_INCLUDE_DIRS}/cpr/limit_rate.h"
+    "${CPR_INCLUDE_DIRS}/cpr/verbose.h"
     "${CPR_INCLUDE_DIRS}/cpr/unix_socket.h")
 
 message(STATUS "Using CURL_LIBRARIES: ${CURL_LIBRARIES}.")

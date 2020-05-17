@@ -23,6 +23,7 @@
 #include "cpr/timeout.h"
 #include "cpr/unix_socket.h"
 #include "cpr/user_agent.h"
+#include "cpr/verbose.h"
 
 namespace cpr {
 
