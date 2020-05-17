@@ -19,7 +19,10 @@ TEST(SslTests, HelloWorldTest) {
 
     auto url = Url{base + "/hello.html"};
     auto sslOpts = Ssl(ssl::CertFile{basedir + "/cert.pem"}, ssl::KeyFile{basedir + "/key.pem"},
-                       ssl::MaxTLSv1_1{}, ssl::VerifyStatus{false});
+#if SUPPORT_MAX_TLS_VERSION
+                       ssl::MaxTLSv1_1{},
+#endif
+                       ssl::VerifyStatus{false});
     auto response = cpr::Get(url, sslOpts, Timeout{5000}, Verbose{});
     auto expected_text = std::string{"Hello world!"};
     EXPECT_EQ(expected_text, response.text);
