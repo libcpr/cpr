@@ -36,7 +36,7 @@ uint16_t HttpServer::GetPort() {
 }
 
 void HttpServer::OnRequestHello(mg_connection* conn, http_message* msg) {
-    if (std::string{msg->method.p} == std::string{"OPTIONS"}) {
+    if (std::string{msg->method.p, msg->method.len} == std::string{"OPTIONS"}) {
         OnRequestOptions(conn, msg);
     } else {
         std::string response{"Hello world!"};
@@ -47,7 +47,7 @@ void HttpServer::OnRequestHello(mg_connection* conn, http_message* msg) {
 }
 
 void HttpServer::OnRequestRoot(mg_connection* conn, http_message* msg) {
-    if (std::string{msg->method.p} == std::string{"OPTIONS"}) {
+    if (std::string{msg->method.p, msg->method.len} == std::string{"OPTIONS"}) {
         OnRequestOptions(conn, msg);
     } else {
         mg_http_send_error(conn, 405, "Method Not Allowed");
@@ -55,7 +55,7 @@ void HttpServer::OnRequestRoot(mg_connection* conn, http_message* msg) {
 }
 
 void HttpServer::OnRequestNotFound(mg_connection* conn, http_message* msg) {
-    if (std::string{msg->method.p} == std::string{"OPTIONS"}) {
+    if (std::string{msg->method.p, msg->method.len} == std::string{"OPTIONS"}) {
         OnRequestOptions(conn, msg);
     } else {
         mg_http_send_error(conn, 404, "Not Found");
@@ -354,13 +354,45 @@ void HttpServer::OnRequestFormPost(mg_connection* conn, http_message* msg) {
 } // namespace cpr
 
 void HttpServer::OnRequestDelete(mg_connection* conn, http_message* msg) {
-    // Temporary:
-    OnRequestHello(conn, msg);
+    auto has_json_header = false;
+    for (size_t i = 0; i < sizeof(msg->header_names) / sizeof(mg_str); i++) {
+        if (!msg->header_names[i].p) {
+            continue;
+        }
+
+        std::string name = std::string(msg->header_names[i].p, msg->header_names[i].len);
+        std::string value = std::string(msg->header_values[i].p, msg->header_values[i].len);
+        if (std::string{"Content-Type"} == name && std::string{"application/json"} == value) {
+            has_json_header = true;
+            break;
+        }
+    }
+    if (std::string{msg->method.p, msg->method.len} == std::string{"DELETE"}) {
+        std::string headers;
+        std::string response = "Patch success";
+        if (!has_json_header) {
+            headers = "Content-Type: text/html";
+            response = "Delete success";
+        } else {
+            headers = "Content-Type: application/json";
+            response = std::string{msg->body.p, msg->body.len};
+        }
+        mg_send_head(conn, 200, response.length(), headers.c_str());
+        mg_send(conn, response.data(), response.length());
+    } else {
+        mg_http_send_error(conn, 405, "Method Not Allowed");
+    }
 }
 
 void HttpServer::OnRequestDeleteNotAllowed(mg_connection* conn, http_message* msg) {
-    // Temporary:
-    OnRequestHello(conn, msg);
+    if (std::string{msg->method.p, msg->method.len} == std::string{"DELETE"}) {
+        mg_http_send_error(conn, 405, "Method Not Allowed");
+    } else {
+        std::string headers = "Content-Type: text/html";
+        std::string response = "Delete success";
+        mg_send_head(conn, 200, response.length(), headers.c_str());
+        mg_send(conn, response.data(), response.length());
+    }
 }
 
 void HttpServer::OnRequestPut(mg_connection* conn, http_message* msg) {
@@ -373,21 +405,68 @@ void HttpServer::OnRequestPutNotAllowed(mg_connection* conn, http_message* msg) 
     OnRequestHello(conn, msg);
 }
 
+void HttpServer::OnRequestPatch(mg_connection* conn, http_message* msg) {
+    if (std::string{msg->method.p, msg->method.len} == std::string{"PATCH"}) {
+        char x[100];
+        char y[100];
+        mg_get_http_var(&(msg->body), "x", x, sizeof(x));
+        mg_get_http_var(&(msg->body), "y", y, sizeof(y));
+        std::string x_string = std::string{x};
+        std::string y_string = std::string{y};
+        std::string headers = "Content-Type: application/json";
+        std::string response;
+        if (y_string.empty()) {
+            response = std::string{
+                    "{\n"
+                    "  \"x\": " +
+                    x_string +
+                    "\n"
+                    "}"};
+        } else {
+            response = std::string{
+                    "{\n"
+                    "  \"x\": " +
+                    x_string +
+                    ",\n"
+                    "  \"y\": " +
+                    y_string +
+                    ",\n"
+                    "  \"sum\": " +
+                    std::to_string(atoi(x) + atoi(y)) +
+                    "\n"
+                    "}"};
+        }
+        mg_send_head(conn, 200, response.length(), headers.c_str());
+        mg_send(conn, response.data(), response.length());
+    } else {
+        mg_http_send_error(conn, 405, "Method Not Allowed");
+    }
+}
+
 void HttpServer::OnRequestPatchNotAllowed(mg_connection* conn, http_message* msg) {
-    // Temporary:
-    OnRequestHello(conn, msg);
+    if (std::string{msg->method.p, msg->method.len} == std::string{"PATCH"}) {
+        mg_http_send_error(conn, 405, "Method Not Allowed");
+    } else {
+        std::string headers = "Content-Type: text/html";
+        std::string response = "Patch success";
+        mg_send_head(conn, 200, response.length(), headers.c_str());
+        mg_send(conn, response.data(), response.length());
+    }
 }
 
 void HttpServer::OnChunk(mg_connection* conn, http_message* msg) {
     std::string uri = std::string(msg->uri.p, msg->uri.len);
     if (uri == "/form_post_no_body.html") {
         OnRequestFormPost(conn, msg);
+    } else if (uri == "/url_post_no_body.html") {
+        OnRequestUrlPost(conn, msg);
     }
 }
 
 void HttpServer::OnRequest(mg_connection* conn, http_message* msg) {
     std::string uri = std::string(msg->uri.p, msg->uri.len);
     if (uri == "/") {
+        OnRequestRoot(conn, msg);
     } else if (uri == "/hello.html") {
         OnRequestHello(conn, msg);
     } else if (uri == "/timeout.html") {
@@ -427,7 +506,7 @@ void HttpServer::OnRequest(mg_connection* conn, http_message* msg) {
     } else if (uri == "/form_post.html") {
         OnRequestFormPost(conn, msg);
     } else if (uri == "/delete.html") {
-        Delete(conn, msg);
+        OnRequestDelete(conn, msg);
     } else if (uri == "/delete_unallowed.html") {
         OnRequestDeleteNotAllowed(conn, msg);
     } else if (uri == "/put.html") {
@@ -435,7 +514,7 @@ void HttpServer::OnRequest(mg_connection* conn, http_message* msg) {
     } else if (uri == "/put_unallowed.html") {
         OnRequestPutNotAllowed(conn, msg);
     } else if (uri == "/patch.html") {
-        OnRequestPatchNotAllowed(conn, msg);
+        OnRequestPatch(conn, msg);
     } else if (uri == "/patch_unallowed.html") {
         OnRequestPatchNotAllowed(conn, msg);
     } else {

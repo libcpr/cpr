@@ -63,6 +63,7 @@ class HttpServer : public testing::Environment {
     static void OnRequestDeleteNotAllowed(mg_connection* conn, http_message* msg);
     static void OnRequestPut(mg_connection* conn, http_message* msg);
     static void OnRequestPutNotAllowed(mg_connection* conn, http_message* msg);
+    static void OnRequestPatch(mg_connection* conn, http_message* msg);
     static void OnRequestPatchNotAllowed(mg_connection* conn, http_message* msg);
 
     static std::string Base64Decode(const std::string& in);
