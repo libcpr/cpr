@@ -171,7 +171,7 @@ void HttpServer::OnRequestBasicAuth(mg_connection* conn, http_message* msg) {
     mg_str* requested_auth;
     auto auth = std::string{"Basic"};
     if ((requested_auth = mg_get_http_header(msg, "Authorization")) == nullptr ||
-        mg_ncasecmp(requested_auth->p, auth.data(), auth.length()) != 0) {
+        mg_ncasecmp(requested_auth->p, auth.c_str(), auth.length()) != 0) {
         mg_http_send_error(conn, 401, "Unauthorized");
         return;
     }
@@ -227,7 +227,7 @@ void HttpServer::OnRequestHeaderReflect(mg_connection* conn, http_message* msg) 
         }
     }
     mg_send_head(conn, 200, response.length(), headers.c_str());
-    mg_send(conn, response.data(), response.length());
+    mg_send(conn, response.c_str(), response.length());
 }
 
 void HttpServer::OnRequestTempRedirect(mg_connection* conn, http_message* msg) {
@@ -283,7 +283,7 @@ void HttpServer::OnRequestUrlPost(mg_connection* conn, http_message* msg) {
                 "}"};
     }
     mg_send_head(conn, 201, response.length(), headers.c_str());
-    mg_send(conn, response.data(), response.length());
+    mg_send(conn, response.c_str(), response.length());
 }
 
 void HttpServer::OnRequestBodyGet(mg_connection* conn, http_message* msg) {
@@ -345,12 +345,12 @@ void HttpServer::OnRequestFormPost(mg_connection* conn, http_message* msg) {
                 forms["y"] +
                 ",\n"
                 "  \"sum\": " +
-                std::to_string(atoi(forms["x"].data()) + atoi(forms["y"].data())) +
+                std::to_string(atoi(forms["x"].c_str()) + atoi(forms["y"].c_str())) +
                 "\n"
                 "}"};
     }
     mg_send_head(conn, 201, response.length(), headers.c_str());
-    mg_send(conn, response.data(), response.length());
+    mg_send(conn, response.c_str(), response.length());
 } // namespace cpr
 
 void HttpServer::OnRequestDelete(mg_connection* conn, http_message* msg) {
@@ -378,7 +378,7 @@ void HttpServer::OnRequestDelete(mg_connection* conn, http_message* msg) {
             response = std::string{msg->body.p, msg->body.len};
         }
         mg_send_head(conn, 200, response.length(), headers.c_str());
-        mg_send(conn, response.data(), response.length());
+        mg_send(conn, response.c_str(), response.length());
     } else {
         mg_http_send_error(conn, 405, "Method Not Allowed");
     }
@@ -391,7 +391,7 @@ void HttpServer::OnRequestDeleteNotAllowed(mg_connection* conn, http_message* ms
         std::string headers = "Content-Type: text/html";
         std::string response = "Delete success";
         mg_send_head(conn, 200, response.length(), headers.c_str());
-        mg_send(conn, response.data(), response.length());
+        mg_send(conn, response.c_str(), response.length());
     }
 }
 
@@ -437,7 +437,7 @@ void HttpServer::OnRequestPatch(mg_connection* conn, http_message* msg) {
                     "}"};
         }
         mg_send_head(conn, 200, response.length(), headers.c_str());
-        mg_send(conn, response.data(), response.length());
+        mg_send(conn, response.c_str(), response.length());
     } else {
         mg_http_send_error(conn, 405, "Method Not Allowed");
     }
@@ -448,18 +448,9 @@ void HttpServer::OnRequestPatchNotAllowed(mg_connection* conn, http_message* msg
         mg_http_send_error(conn, 405, "Method Not Allowed");
     } else {
         std::string headers = "Content-Type: text/html";
-        std::string response = "Patch success";
+        std::string response = "Delete success";
         mg_send_head(conn, 200, response.length(), headers.c_str());
-        mg_send(conn, response.data(), response.length());
-    }
-}
-
-void HttpServer::OnChunk(mg_connection* conn, http_message* msg) {
-    std::string uri = std::string(msg->uri.p, msg->uri.len);
-    if (uri == "/form_post_no_body.html") {
-        OnRequestFormPost(conn, msg);
-    } else if (uri == "/url_post_no_body.html") {
-        OnRequestUrlPost(conn, msg);
+        mg_send(conn, response.c_str(), response.length());
     }
 }
 
@@ -547,8 +538,7 @@ static void EventHandler(mg_connection* conn, int event, void* event_data) {
             break;
 
         case MG_EV_HTTP_CHUNK: {
-            HttpServer* server = static_cast<HttpServer*>(conn->mgr_data);
-            server->OnChunk(conn, static_cast<http_message*>(event_data));
+            /** Do nothing. Just for housekeeping. **/
         } break;
 
         case MG_EV_HTTP_REQUEST: {

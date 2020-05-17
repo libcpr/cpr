@@ -148,7 +148,7 @@ TEST(UrlEncodedPostTests, FormPostFileTest) {
             content +
             "\n"
             "}"};
-    std::remove(filename.data());
+    std::remove(filename.c_str());
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
@@ -172,7 +172,7 @@ TEST(UrlEncodedPostTests, FormPostFileNoCopyTest) {
             content +
             "\n"
             "}"};
-    std::remove(filename.data());
+    std::remove(filename.c_str());
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
@@ -378,7 +378,7 @@ TEST(UrlEncodedPostTests, UrlReflectTest) {
 }
 
 TEST(UrlEncodedPostTests, PostWithNoBodyTest) {
-    auto url = Url{server->GetBaseUrl() + "/form_post_no_body.html"};
+    auto url = Url{server->GetBaseUrl() + "/form_post.html"};
     auto response = cpr::Post(url);
     auto expected_text = std::string{
             "{\n"
