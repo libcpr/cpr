@@ -26,6 +26,7 @@ class HttpServer : public testing::Environment {
     void Stop();
 
     void OnRequest(mg_connection* conn, http_message* msg);
+    void OnChunk(mg_connection* conn, http_message* msg);
 
   private:
     std::shared_ptr<std::thread> serverThread{nullptr};

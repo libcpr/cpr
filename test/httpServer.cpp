@@ -309,9 +309,49 @@ void HttpServer::OnRequestJsonPost(mg_connection* conn, http_message* msg) {
 }
 
 void HttpServer::OnRequestFormPost(mg_connection* conn, http_message* msg) {
-    // Temporary:
-    OnRequestHello(conn, msg);
-}
+    char var_name[100];
+    char file_name[100];
+    const char* chunk;
+    size_t chunk_len = 0;
+    size_t n1 = 0;
+    size_t n2 = 0;
+    std::map<std::string, std::string> forms;
+
+    while ((n2 = mg_parse_multipart(msg->body.p + n1, msg->body.len - n1, var_name,
+                                    sizeof(var_name), file_name, sizeof(file_name), &chunk,
+                                    &chunk_len)) > 0) {
+        n1 += n2;
+        forms[var_name] = std::string(chunk, chunk_len);
+    }
+
+    std::string x = forms["x"];
+
+    std::string headers = "Content-Type: application/json";
+    std::string response;
+    if (forms.find("y") == forms.end()) {
+        response = std::string{
+                "{\n"
+                "  \"x\": " +
+                forms["x"] +
+                "\n"
+                "}"};
+    } else {
+        response = std::string{
+                "{\n"
+                "  \"x\": " +
+                forms["x"] +
+                ",\n"
+                "  \"y\": " +
+                forms["y"] +
+                ",\n"
+                "  \"sum\": " +
+                std::to_string(atoi(forms["x"].data()) + atoi(forms["y"].data())) +
+                "\n"
+                "}"};
+    }
+    mg_send_head(conn, 201, response.length(), headers.c_str());
+    mg_send(conn, response.data(), response.length());
+} // namespace cpr
 
 void HttpServer::OnRequestDelete(mg_connection* conn, http_message* msg) {
     // Temporary:
@@ -338,6 +378,12 @@ void HttpServer::OnRequestPatchNotAllowed(mg_connection* conn, http_message* msg
     OnRequestHello(conn, msg);
 }
 
+void HttpServer::OnChunk(mg_connection* conn, http_message* msg) {
+    std::string uri = std::string(msg->uri.p, msg->uri.len);
+    if (uri == "/form_post_no_body.html") {
+        OnRequestFormPost(conn, msg);
+    }
+}
 
 void HttpServer::OnRequest(mg_connection* conn, http_message* msg) {
     std::string uri = std::string(msg->uri.p, msg->uri.len);
@@ -421,9 +467,10 @@ static void EventHandler(mg_connection* conn, int event, void* event_data) {
             /** Do nothing. Just for housekeeping. **/
             break;
 
-        case MG_EV_HTTP_CHUNK:
-            /** Do nothing. Just for housekeeping. **/
-            break;
+        case MG_EV_HTTP_CHUNK: {
+            HttpServer* server = static_cast<HttpServer*>(conn->mgr_data);
+            server->OnChunk(conn, static_cast<http_message*>(event_data));
+        } break;
 
         case MG_EV_HTTP_REQUEST: {
             HttpServer* server = static_cast<HttpServer*>(conn->mgr_data);

@@ -378,7 +378,7 @@ TEST(UrlEncodedPostTests, UrlReflectTest) {
 }
 
 TEST(UrlEncodedPostTests, PostWithNoBodyTest) {
-    auto url = Url{server->GetBaseUrl() + "/form_post.html"};
+    auto url = Url{server->GetBaseUrl() + "/form_post_no_body.html"};
     auto response = cpr::Post(url);
     auto expected_text = std::string{
             "{\n"
