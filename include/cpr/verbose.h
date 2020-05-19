@@ -7,9 +7,10 @@ namespace cpr {
 
 class Verbose {
   public:
+    Verbose() {}
     Verbose(const bool verbose) : verbose{verbose} {}
 
-    bool verbose;
+    bool verbose = true;
 };
 
 } // namespace cpr

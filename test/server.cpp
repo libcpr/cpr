@@ -12,21 +12,20 @@
 #include <time.h>
 
 #define SERVER_PORT "8080"
-#define SSL_SERVER_PORT "8443"
 
 std::mutex shutdown_mutex;
 std::mutex server_mutex;
-std::string server_port = SERVER_PORT;
 std::condition_variable server_cv;
 
-static const std::string base64_chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-                                        "abcdefghijklmnopqrstuvwxyz"
-                                        "0123456789+/";
+static const std::string base64_chars =
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        "abcdefghijklmnopqrstuvwxyz"
+        "0123456789+/";
 
 static inline bool is_base64(unsigned char c);
 std::string base64_decode(std::string const& encoded_string);
-static int lowercase(const char *s);
-static int mg_strncasecmp(const char *s1, const char *s2, size_t len);
+static int lowercase(const char* s);
+static int mg_strncasecmp(const char* s1, const char* s2, size_t len);
 
 static int options(struct mg_connection* conn) {
     if (std::string{conn->request_method} == std::string{"OPTIONS"}) {
@@ -35,7 +34,8 @@ static int options(struct mg_connection* conn) {
         mg_send_header(conn, "content-type", "text/html");
         mg_send_header(conn, "Access-Control-Allow-Origin", "*");
         mg_send_header(conn, "Access-Control-Allow-Credentials", "true");
-        mg_send_header(conn, "Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH, OPTIONS");
+        mg_send_header(conn, "Access-Control-Allow-Methods",
+                       "GET, POST, PUT, DELETE, PATCH, OPTIONS");
         mg_send_header(conn, "Access-Control-Max-Age", "3600");
         mg_send_data(conn, response.data(), response.length());
     } else {
@@ -99,7 +99,7 @@ static int basicCookies(struct mg_connection* conn) {
     auto response = std::string{"Hello world!"};
     mg_send_status(conn, 200);
     mg_send_header(conn, "content-type", "text/html");
-    time_t t = time(NULL) + 5;  // Valid for 1 hour
+    time_t t = time(NULL) + 5; // Valid for 1 hour
     char expire[100], expire_epoch[100];
     snprintf(expire_epoch, sizeof(expire_epoch), "%lu", static_cast<unsigned long>(t));
     strftime(expire, sizeof(expire), "%a, %d %b %Y %H:%M:%S GMT", gmtime(&t));
@@ -186,7 +186,7 @@ static int basicAuth(struct mg_connection* conn) {
 static int digestAuth(struct mg_connection* conn) {
     int result = MG_FALSE;
     {
-        FILE *fp;
+        FILE* fp;
         if ((fp = fopen("digest.txt", "w")) != NULL) {
             fprintf(fp, "user:mydomain.com:0cf722ef3dd136b48da83758c5d855f8\n");
             fclose(fp);
@@ -194,7 +194,7 @@ static int digestAuth(struct mg_connection* conn) {
     }
 
     {
-        FILE *fp;
+        FILE* fp;
         if ((fp = fopen("digest.txt", "r")) != NULL) {
             result = mg_authorize_digest(conn, fp);
             fclose(fp);
@@ -205,12 +205,13 @@ static int digestAuth(struct mg_connection* conn) {
 }
 
 static int basicJson(struct mg_connection* conn) {
-    auto response = std::string{"[\n"
-                                "  {\n"
-                                "    \"first_key\": \"first_value\",\n"
-                                "    \"second_key\": \"second_value\"\n"
-                                "  }\n"
-                                "]"};
+    auto response = std::string{
+            "[\n"
+            "  {\n"
+            "    \"first_key\": \"first_value\",\n"
+            "    \"second_key\": \"second_value\"\n"
+            "  }\n"
+            "]"};
     mg_send_status(conn, 200);
     auto raw_header = mg_get_header(conn, "Content-type");
     std::string header;
@@ -227,8 +228,7 @@ static int basicJson(struct mg_connection* conn) {
 }
 
 static int headerReflect(struct mg_connection* conn) {
-    auto response = std::string{"Header reflect "} +
-                    std::string{conn->request_method};
+    auto response = std::string{"Header reflect "} + std::string{conn->request_method};
     mg_send_status(conn, 200);
     mg_send_header(conn, "content-type", "text/html");
     auto num_headers = conn->num_headers;
@@ -287,18 +287,28 @@ static int urlPost(struct mg_connection* conn) {
     auto x_string = std::string{x};
     auto y_string = std::string{y};
     if (y_string.empty()) {
-        auto response = std::string{"{\n"
-                                    "  \"x\": " + x_string + "\n"
-                                    "}"};
+        auto response = std::string{
+                "{\n"
+                "  \"x\": " +
+                x_string +
+                "\n"
+                "}"};
         mg_send_data(conn, response.data(), response.length());
     } else {
         std::ostringstream s;
         s << (atoi(x) + atoi(y));
-        auto response = std::string{"{\n"
-                                    "  \"x\": " + x_string + ",\n"
-                                    "  \"y\": " + y_string + ",\n"
-                                    "  \"sum\": " + s.str() + "\n"
-                                    "}"};
+        auto response = std::string{
+                "{\n"
+                "  \"x\": " +
+                x_string +
+                ",\n"
+                "  \"y\": " +
+                y_string +
+                ",\n"
+                "  \"sum\": " +
+                s.str() +
+                "\n"
+                "}"};
         mg_send_data(conn, response.data(), response.length());
     }
     return MG_TRUE;
@@ -310,7 +320,7 @@ static int jsonPost(struct mg_connection* conn) {
     auto has_json_header = false;
     for (int i = 0; i < num_headers; ++i) {
         if (std::string{"Content-Type"} == headers[i].name &&
-                std::string{"application/json"} == headers[i].value) {
+            std::string{"application/json"} == headers[i].value) {
             has_json_header = true;
         }
     }
@@ -339,10 +349,9 @@ static int formPost(struct mg_connection* conn) {
         int data_len;
         char name[100];
         char filename[100];
-        auto read_len = mg_parse_multipart(content, content_len,
-                                           name, sizeof(name),
-                                           filename, sizeof(filename),
-                                           const_cast<const char**>(&data), &data_len);
+        auto read_len =
+                mg_parse_multipart(content, content_len, name, sizeof(name), filename,
+                                   sizeof(filename), const_cast<const char**>(&data), &data_len);
         if (read_len == 0) {
             delete[] data;
             break;
@@ -362,18 +371,28 @@ static int formPost(struct mg_connection* conn) {
     mg_send_status(conn, 201);
     mg_send_header(conn, "content-type", "application/json");
     if (forms.find("y") == forms.end()) {
-        auto response = std::string{"{\n"
-                                    "  \"x\": " + forms["x"] + "\n"
-                                    "}"};
+        auto response = std::string{
+                "{\n"
+                "  \"x\": " +
+                forms["x"] +
+                "\n"
+                "}"};
         mg_send_data(conn, response.data(), response.length());
     } else {
         std::ostringstream s;
         s << (atoi(forms["x"].data()) + atoi(forms["y"].data()));
-        auto response = std::string{"{\n"
-                                    "  \"x\": " + forms["x"] + ",\n"
-                                    "  \"y\": " + forms["y"] + ",\n"
-                                    "  \"sum\": " + s.str() + "\n"
-                                    "}"};
+        auto response = std::string{
+                "{\n"
+                "  \"x\": " +
+                forms["x"] +
+                ",\n"
+                "  \"y\": " +
+                forms["y"] +
+                ",\n"
+                "  \"sum\": " +
+                s.str() +
+                "\n"
+                "}"};
         mg_send_data(conn, response.data(), response.length());
     }
     return MG_TRUE;
@@ -385,22 +404,22 @@ static int deleteRequest(struct mg_connection* conn) {
     auto has_json_header = false;
     for (int i = 0; i < num_headers; ++i) {
         if (std::string{"Content-Type"} == headers[i].name &&
-                std::string{"application/json"} == headers[i].value) {
+            std::string{"application/json"} == headers[i].value) {
             has_json_header = true;
         }
     }
     if (std::string{conn->request_method} == std::string{"DELETE"}) {
-      if (!has_json_header) {
-          auto response = std::string{"Delete success"};
-          mg_send_status(conn, 200);
-          mg_send_header(conn, "content-type", "text/html");
-          mg_send_data(conn, response.data(), response.length());
-      } else {
-          auto response = std::string{conn->content, conn->content_len};
-          mg_send_status(conn, 200);
-          mg_send_header(conn, "content-type", "application/json");
-          mg_send_data(conn, response.data(), response.length());
-      }
+        if (!has_json_header) {
+            auto response = std::string{"Delete success"};
+            mg_send_status(conn, 200);
+            mg_send_header(conn, "content-type", "text/html");
+            mg_send_data(conn, response.data(), response.length());
+        } else {
+            auto response = std::string{conn->content, conn->content_len};
+            mg_send_status(conn, 200);
+            mg_send_header(conn, "content-type", "application/json");
+            mg_send_data(conn, response.data(), response.length());
+        }
     } else {
         auto response = std::string{"Method unallowed"};
         mg_send_status(conn, 405);
@@ -436,18 +455,28 @@ static int patch(struct mg_connection* conn) {
         auto x_string = std::string{x};
         auto y_string = std::string{y};
         if (y_string.empty()) {
-            auto response = std::string{"{\n"
-                                        "  \"x\": " + x_string + "\n"
-                                        "}"};
+            auto response = std::string{
+                    "{\n"
+                    "  \"x\": " +
+                    x_string +
+                    "\n"
+                    "}"};
             mg_send_data(conn, response.data(), response.length());
         } else {
             std::ostringstream s;
             s << (atoi(x) + atoi(y));
-            auto response = std::string{"{\n"
-                                        "  \"x\": " + x_string + ",\n"
-                                        "  \"y\": " + y_string + ",\n"
-                                        "  \"sum\": " + s.str() + "\n"
-                                        "}"};
+            auto response = std::string{
+                    "{\n"
+                    "  \"x\": " +
+                    x_string +
+                    ",\n"
+                    "  \"y\": " +
+                    y_string +
+                    ",\n"
+                    "  \"sum\": " +
+                    s.str() +
+                    "\n"
+                    "}"};
             mg_send_data(conn, response.data(), response.length());
         }
     } else {
@@ -485,18 +514,28 @@ static int put(struct mg_connection* conn) {
         auto x_string = std::string{x};
         auto y_string = std::string{y};
         if (y_string.empty()) {
-            auto response = std::string{"{\n"
-                                        "  \"x\": " + x_string + "\n"
-                                        "}"};
+            auto response = std::string{
+                    "{\n"
+                    "  \"x\": " +
+                    x_string +
+                    "\n"
+                    "}"};
             mg_send_data(conn, response.data(), response.length());
         } else {
             std::ostringstream s;
             s << (atoi(x) + atoi(y));
-            auto response = std::string{"{\n"
-                                        "  \"x\": " + x_string + ",\n"
-                                        "  \"y\": " + y_string + ",\n"
-                                        "  \"sum\": " + s.str() + "\n"
-                                        "}"};
+            auto response = std::string{
+                    "{\n"
+                    "  \"x\": " +
+                    x_string +
+                    ",\n"
+                    "  \"y\": " +
+                    y_string +
+                    ",\n"
+                    "  \"sum\": " +
+                    s.str() +
+                    "\n"
+                    "}"};
             mg_send_data(conn, response.data(), response.length());
         }
     } else {
@@ -592,10 +631,10 @@ static int evHandler(struct mg_connection* conn, enum mg_event ev) {
     }
 }
 
-void runServer(struct mg_server* server) {
+void runServer(struct mg_server* server, const std::string listening_port) {
     {
         std::lock_guard<std::mutex> server_lock(server_mutex);
-        mg_set_option(server, "listening_port", server_port.c_str());
+        mg_set_option(server, "listening_port", listening_port.c_str());
         server_cv.notify_one();
     }
 
@@ -609,20 +648,19 @@ void runServer(struct mg_server* server) {
     server_cv.notify_one();
 }
 
-Server::Server(const std::string cert_file) {
-    std::stringstream ss;
-
-    ss << "ssl://127.0.0.1:" << SSL_SERVER_PORT << ":" << cert_file;
-
-    server_port = ss.str();
-}
-
 void Server::SetUp() {
     shutdown_mutex.lock();
     struct mg_server* server;
     server = mg_create_server(NULL, evHandler);
+    std::ostringstream listening_port;
+    if (cert_file.empty()) {
+        listening_port << SERVER_PORT;
+    } else {
+        listening_port << "ssl://0.0.0.0:" << SERVER_PORT << ":" << cert_file;
+    }
+
     std::unique_lock<std::mutex> server_lock(server_mutex);
-    std::thread(runServer, server).detach();
+    std::thread(runServer, server, listening_port.str()).detach();
     server_cv.wait(server_lock);
 }
 
@@ -637,7 +675,7 @@ Url Server::GetBaseUrl() {
 }
 
 Url Server::GetBaseUrlSSL() {
-    return Url{"https://127.0.0.1:"}.append(SSL_SERVER_PORT);
+    return Url{"https://127.0.0.1:"}.append(SERVER_PORT);
 }
 
 static inline bool is_base64(unsigned char c) {
@@ -652,10 +690,11 @@ std::string base64_decode(std::string const& encoded_string) {
     unsigned char char_array_4[4], char_array_3[3];
     std::string ret;
 
-    while (in_len-- && ( encoded_string[in_] != '=') && is_base64(encoded_string[in_])) {
-        char_array_4[i++] = encoded_string[in_]; in_++;
-        if (i ==4) {
-            for (i = 0; i <4; i++) {
+    while (in_len-- && (encoded_string[in_] != '=') && is_base64(encoded_string[in_])) {
+        char_array_4[i++] = encoded_string[in_];
+        in_++;
+        if (i == 4) {
+            for (i = 0; i < 4; i++) {
                 char_array_4[i] = base64_chars.find(char_array_4[i]);
             }
 
@@ -672,11 +711,11 @@ std::string base64_decode(std::string const& encoded_string) {
     }
 
     if (i) {
-        for (j = i; j <4; j++) {
+        for (j = i; j < 4; j++) {
             char_array_4[j] = 0;
         }
 
-        for (j = 0; j <4; j++) {
+        for (j = 0; j < 4; j++) {
             char_array_4[j] = base64_chars.find(char_array_4[j]);
         }
 
@@ -692,11 +731,11 @@ std::string base64_decode(std::string const& encoded_string) {
     return ret;
 }
 
-static int lowercase(const char *s) {
-    return tolower(* reinterpret_cast<const unsigned char *>(s));
+static int lowercase(const char* s) {
+    return tolower(*reinterpret_cast<const unsigned char*>(s));
 }
 
-static int mg_strncasecmp(const char *s1, const char *s2, size_t len) {
+static int mg_strncasecmp(const char* s1, const char* s2, size_t len) {
     int diff = 0;
 
     if (len > 0) {
@@ -707,4 +746,3 @@ static int mg_strncasecmp(const char *s1, const char *s2, size_t len) {
 
     return diff;
 }
-

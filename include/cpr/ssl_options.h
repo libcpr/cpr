@@ -66,12 +66,13 @@ namespace cpr {
 class VerifySsl {
   public:
     VerifySsl() {}
-    VerifySsl(bool verify);
+    VerifySsl(bool verify) : verify(verify) {}
 
-    operator bool() const;
+    operator bool() const {
+        return verify;
+    }
 
-  private:
-    bool verify_ = true;
+    bool verify = true;
 };
 
 namespace ssl {
@@ -140,7 +141,12 @@ class DerKey : public KeyFile {
 // use supports it), which can be used to negotiate http2.
 class ALPN {
   public:
-    ALPN(bool p_enabled) : enabled(p_enabled) {}
+    ALPN() {}
+    ALPN(bool enabled) : enabled(enabled) {}
+
+    operator bool() const {
+        return enabled;
+    }
 
     bool enabled = true;
 };
@@ -151,7 +157,12 @@ class ALPN {
 //  use supports it), which can be used to negotiate http2.
 class NPN {
   public:
-    NPN(bool p_enabled) : enabled(p_enabled) {}
+    NPN() {}
+    NPN(bool enabled) : enabled(enabled) {}
+
+    operator bool() const {
+        return enabled;
+    }
 
     bool enabled = true;
 };
@@ -161,7 +172,12 @@ class NPN {
 // known as.
 class VerifyHost {
   public:
-    VerifyHost(bool p_enabled) : enabled(p_enabled) {}
+    VerifyHost() {}
+    VerifyHost(bool enabled) : enabled(enabled) {}
+
+    operator bool() const {
+        return enabled;
+    }
 
     bool enabled = true;
 };
@@ -169,7 +185,12 @@ class VerifyHost {
 // This option determines whether libcurl verifies the authenticity of the peer's certificate.
 class VerifyPeer {
   public:
-    VerifyPeer(bool p_enabled) : enabled(p_enabled) {}
+    VerifyPeer() {}
+    VerifyPeer(bool enabled) : enabled(enabled) {}
+
+    operator bool() const {
+        return enabled;
+    }
 
     bool enabled = true;
 };
@@ -178,7 +199,11 @@ class VerifyPeer {
 // "Certificate Status Request" TLS extension (aka. OCSP stapling).
 class VerifyStatus {
   public:
-    VerifyStatus(bool p_enabled) : enabled(p_enabled) {}
+    VerifyStatus(bool enabled) : enabled(enabled) {}
+
+    operator bool() const {
+        return enabled;
+    }
 
     bool enabled = false;
 };
@@ -282,7 +307,12 @@ class TLS13_Ciphers {
 // enable/disable use of the SSL session-ID cache
 class SessionIdCache {
   public:
+    SessionIdCache() {}
     SessionIdCache(bool enabled) : enabled(enabled) {}
+
+    operator bool() const {
+        return enabled;
+    }
 
     bool enabled = true;
 };
@@ -291,7 +321,12 @@ class SessionIdCache {
 #if SUPPORT_SSL_FALSESTART
 class SslFastStart {
   public:
+    SslFastStart() {}
     SslFastStart(bool enabled) : enabled(enabled) {}
+
+    operator bool() const {
+        return enabled;
+    }
 
     bool enabled = false;
 };

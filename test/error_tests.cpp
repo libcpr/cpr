@@ -11,8 +11,8 @@
 using namespace cpr;
 
 static Server* server = new Server();
-auto base = server->GetBaseUrl();
-auto baseSSL = server->GetBaseUrlSSL();
+auto base = server -> GetBaseUrl();
+auto baseSSL = server -> GetBaseUrlSSL();
 
 TEST(ErrorTests, BasicSSLFailure) {
     auto url = Url{baseSSL + "/hello.html"};
@@ -21,11 +21,10 @@ TEST(ErrorTests, BasicSSLFailure) {
     EXPECT_EQ(0, response.status_code);
     auto curl_version = curl_version_info(CURLVERSION_NOW);
     auto expected = ErrorCode::UNSUPPORTED_PROTOCOL;
-    if(curl_version->features & CURL_VERSION_SSL) {
-        expected = ErrorCode::CONNECTION_FAILURE;
+    if (curl_version->features & CURL_VERSION_SSL) {
+        expected = ErrorCode::SSL_CONNECT_ERROR;
     }
     EXPECT_EQ(expected, response.error.code) << response.error.message;
-
 }
 
 TEST(ErrorTests, UnsupportedProtocolFailure) {

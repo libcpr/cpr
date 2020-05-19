@@ -14,7 +14,7 @@
 namespace cpr {
 
 const long ON = 1L;
-const long OFF = 1L;
+const long OFF = 0L;
 
 class Session::Impl {
   public:
