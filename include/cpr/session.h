@@ -33,6 +33,9 @@ class Session {
     Session();
     ~Session();
 
+    Session(Session&& other);
+    Session& operator=(Session&& other);
+
     void SetUrl(const Url& url);
     void SetParameters(const Parameters& parameters);
     void SetParameters(Parameters&& parameters);
