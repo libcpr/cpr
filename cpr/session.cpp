@@ -549,6 +549,8 @@ Response Session::Impl::makeRequest(CURL* curl) {
 
 // clang-format off
 Session::Session() : pimpl_{ new Impl{} } {}
+Session::Session(Session&& other) : pimpl_{ std::move(other.pimpl_) } {}
+Session& Session::operator=(Session&& other) { pimpl_ = std::move(other.pimpl_); return *this; }
 Session::~Session() {}
 void Session::SetUrl(const Url& url) { pimpl_->SetUrl(url); }
 void Session::SetParameters(const Parameters& parameters) { pimpl_->SetParameters(parameters); }
