@@ -1,3 +1,5 @@
+cmake_minimum_required(VERSION 3.15)
+
 macro(set_cache_variable VAR_NAME VAR_DESCRIPTION)
     set(${VAR_NAME} ${${VAR_NAME}} CACHE INTERNAL ${VAR_DESCRIPTION})
     message(STATUS "Set ${VAR_NAME} to ${${VAR_NAME}}.")
@@ -35,6 +37,7 @@ if(BUILD_CPR_TESTS AND GENERATE_COVERAGE)
         CMAKE_SHARED_LINKER_FLAGS_COVERAGE)
 endif()
 
+include(FetchContent)
 
 # Curl configuration
 
@@ -45,12 +48,16 @@ if(NOT USE_SYSTEM_CURL OR NOT CURL_FOUND)
     message(STATUS "Not using system Curl, using built-in curl project instead.")
     option(BUILD_TESTING "Set to ON to build cURL tests." OFF)
     option(BUILD_CURL_EXE "Set to ON to build cURL executable." OFF)
-    add_subdirectory(curl EXCLUDE_FROM_ALL)
-    set(CURL_FOUND TRUE)
-    set(CURL_LIBRARIES libcurl)
-    set(CURL_INCLUDE_DIRS
-        ${CURL_SOURCE_DIR}/include
-        ${CURL_BINARY_DIR}/include/curl)
+    FetchContent_Declare(curl
+                          GIT_REPOSITORY https://github.com/curl/curl.git
+                          GIT_TAG        curl-7_56_0)
+    FetchContent_MakeAvailable(curl)
+
+    add_library(curl_int INTERFACE)
+    target_link_libraries(curl_int INTERFACE libcurl)
+    target_include_directories(curl_int INTERFACE ${curl_SOURCE_DIR}/include ${curl_BINARY_DIR}/include/curl)
+    add_library(CURL::libcurl ALIAS curl_int)
+
         
     # Group under the "external" project folder in IDEs such as Visual Studio.
     if(BUILD_CURL_EXE)
@@ -59,10 +66,6 @@ if(NOT USE_SYSTEM_CURL OR NOT CURL_FOUND)
         
     set_property(TARGET libcurl PROPERTY FOLDER "external")
 endif()
-
-set_cache_variable(CURL_FOUND "Set if libcurl is found or built")
-set_cache_variable(CURL_LIBRARIES "Location of libcurl")
-set_cache_variable(CURL_INCLUDE_DIRS "Location of curl include files")
 
 
 # SSL configuration
@@ -89,23 +92,20 @@ if(BUILD_CPR_TESTS)
             # does.
             set(gtest_force_shared_crt ON CACHE BOOL "Force gtest to use the shared c runtime")
         endif()
-        add_subdirectory(googletest)
-        set(GTEST_FOUND TRUE)
-        set(GTEST_LIBRARIES gtest)
-        set(GTEST_MAIN_LIBRARIES gtest_main)
-        set(GTEST_BOTH_LIBRARIES gtest gtest_main)
-        set(GTEST_INCLUDE_DIRS ${gtest_SOURCE_DIR}/include)
+        FetchContent_Declare(googletest GIT_REPOSITORY https://github.com/whoshuu/googletest.git)
+        FetchContent_MakeAvailable(googletest)
+
         
+        add_library(gtest_int INTERFACE)
+        target_link_libraries(gtest_int INTERFACE gtest)
+        target_include_directories(gtest_int INTERFACE ${googletest_SOURCE_DIR}/include)
+
+        add_library(GTest::GTest ALIAS gtest_int)
+       
         # Group under the "tests/gtest" project folder in IDEs such as Visual Studio.
     set_property(TARGET gtest PROPERTY FOLDER "tests/gtest")
     set_property(TARGET gtest_main PROPERTY FOLDER "tests/gtest")
     endif()
-
-    set_cache_variable(GTEST_FOUND "Set if libgtest was found or built")
-    set_cache_variable(GTEST_LIBRARIES "Location of libgtest")
-    set_cache_variable(GTEST_MAIN_LIBRARIES "Location of libgtest-main")
-    set_cache_variable(GTEST_BOTH_LIBRARIES "Location of both gtest libraries")
-    set_cache_variable(GTEST_INCLUDE_DIRS "Location of gtest include files")
 endif()
 
 
@@ -113,15 +113,11 @@ endif()
 
 if(BUILD_CPR_TESTS)
     message(STATUS "Building mongoose project for test support.")
-    add_subdirectory(mongoose)
-    set(MONGOOSE_FOUND TRUE)
-    set(MONGOOSE_LIBRARIES mongoose)
-    set(MONGOOSE_INCLUDE_DIRS ${mongoose_SOURCE_DIR})
+    FetchContent_Declare(mongoose GIT_REPOSITORY https://github.com/whoshuu/mongoose.git)
+    FetchContent_MakeAvailable(mongoose)
 
-    set_cache_variable(MONGOOSE_FOUND "Set if libmongoose was found or built")
-    set_cache_variable(MONGOOSE_LIBRARIES "Location of libmongoose")
-    set_cache_variable(MONGOOSE_INCLUDE_DIRS "Location of mongoose include files")
-    
+    target_include_directories(mongoose INTERFACE ${mongoose_SOURCE_DIR})
+
     # Group under the "external" project folder in IDEs such as Visual Studio.
     set_property(TARGET mongoose PROPERTY FOLDER "external")
 endif()

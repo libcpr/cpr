@@ -1,20 +1,20 @@
+cmake_minimum_required(VERSION 3.15)
+
 find_package(Threads)
 set(TEST_SERVER_LIBRARY test_server)
 add_library(${TEST_SERVER_LIBRARY}
     abstractServer.cpp
     httpServer.cpp
     httpsServer.cpp)
-target_link_libraries(${TEST_SERVER_LIBRARY}
-    ${MONGOOSE_LIBRARIES}
-    ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(${TEST_SERVER_LIBRARY} PRIVATE mongoose Threads::Threads ${CPR_LIBRARIES} GTest::GTest)
 
 macro(add_cpr_test _TEST_NAME)
-    add_executable(${_TEST_NAME}_tests
-        ${_TEST_NAME}_tests.cpp)
-    target_link_libraries(${_TEST_NAME}_tests
+    add_executable(${_TEST_NAME}_tests ${_TEST_NAME}_tests.cpp)
+    target_link_libraries(${_TEST_NAME}_tests PRIVATE
         ${TEST_SERVER_LIBRARY}
-        ${GTEST_LIBRARIES}
-        ${CPR_LIBRARIES})
+        GTest::GTest
+        ${CPR_LIBRARIES}
+        CURL::libcurl)
     add_test(NAME cpr_${_TEST_NAME}_tests COMMAND ${_TEST_NAME}_tests)
     # Group under the "tests" project folder in IDEs such as Visual Studio.
     set_property(TARGET ${_TEST_NAME}_tests PROPERTY FOLDER "tests")
@@ -28,13 +28,6 @@ macro(add_cpr_test _TEST_NAME)
                                 $<TARGET_FILE_DIR:libcurl>/${LIBCURL_DLL_NAME} $<TARGET_FILE_DIR:${_TEST_NAME}_tests>)
     endif()
 endmacro()
-
-include_directories(
-    ${CURL_INCLUDE_DIRS}
-    ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CPR_INCLUDE_DIRS}
-    ${GTEST_INCLUDE_DIRS}
-    ${MONGOOSE_INCLUDE_DIRS})
 
 add_cpr_test(get)
 add_cpr_test(post)
@@ -51,10 +44,3 @@ add_cpr_test(patch)
 add_cpr_test(error)
 add_cpr_test(alternating)
 add_cpr_test(util)
-add_cpr_test(ssl)
-
-# Copy all certs reqired for the ssl tests
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/data/server.key" "${CMAKE_BINARY_DIR}/bin/server.key"  COPYONLY)
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/data/server.cer" "${CMAKE_BINARY_DIR}/bin/server.cer"  COPYONLY)
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/data/client.key" "${CMAKE_BINARY_DIR}/bin/client.key"  COPYONLY)
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/data/client.cer" "${CMAKE_BINARY_DIR}/bin/client.cer"  COPYONLY)
