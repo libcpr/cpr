@@ -1,9 +1,0 @@
-[submodule "opt/googletest"]
-	path = opt/googletest
-	url = https://github.com/google/googletest.git
-[submodule "opt/curl"]
-	path = opt/curl
-	url = https://github.com/curl/curl.git
-[submodule "opt/mongoose/mongoose"]
-	path = opt/mongoose/mongoose
-	url = https://github.com/cesanta/mongoose

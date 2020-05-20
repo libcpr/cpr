@@ -1,3 +1,5 @@
+cmake_minimum_required(VERSION 3.15)
+
 message(STATUS "Using CURL_INCLUDE_DIRS: ${CURL_INCLUDE_DIRS}.")
 
 add_library(${CPR_LIBRARIES}
@@ -46,19 +48,10 @@ add_library(${CPR_LIBRARIES}
     "${CPR_INCLUDE_DIRS}/cpr/unix_socket.h")
 
 message(STATUS "Using CURL_LIBRARIES: ${CURL_LIBRARIES}.")
-target_link_libraries(${CPR_LIBRARIES}
-    ${CURL_LIBRARIES})
-
-if(NOT (CMAKE_VERSION VERSION_LESS 3.0))
-    target_include_directories(${CPR_LIBRARIES}
-        PUBLIC
+target_link_libraries(${CPR_LIBRARIES} PRIVATE CURL::libcurl)
+target_include_directories(${CPR_LIBRARIES} PUBLIC
         ${CPR_INCLUDE_DIRS}
-        ${CURL_INCLUDE_DIRS})
-else()
-    include_directories(
-        ${CPR_INCLUDE_DIRS}
-        ${CURL_INCLUDE_DIRS})
-endif()
+        )
 
 # Set version for shared libraries.
 set_target_properties(${CPR_LIBRARIES}
