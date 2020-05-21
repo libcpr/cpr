@@ -1,38 +1,22 @@
 #include "httpServer.hpp"
 
 namespace cpr {
-void HttpServer::SetUp() {
-    Start();
-}
-
-void HttpServer::TearDown() {
-    Stop();
-}
-
-void HttpServer::Start() {
-    should_run = true;
-    serverThread = std::make_shared<std::thread>(&HttpServer::Run, this);
-    serverThread->detach();
-    std::unique_lock<std::mutex> server_lock(server_mutex);
-    server_start_cv.wait(server_lock);
-}
-
-void HttpServer::Stop() {
-    should_run = false;
-    std::unique_lock<std::mutex> server_lock(server_mutex);
-    server_stop_cv.wait(server_lock);
-}
-
 Url HttpServer::GetBaseUrl() {
     return Url{"http://127.0.0.1:"}.append(std::to_string(GetPort()));
 }
 
-Url HttpServer::GetBaseUrlSSL() {
-    return Url{"https://127.0.0.1:"}.append(std::to_string(GetPort()));
-}
-
 uint16_t HttpServer::GetPort() {
     return 8080;
+}
+
+mg_connection* HttpServer::initServer(mg_mgr* mgr,
+                                      MG_CB(mg_event_handler_t event_handler, void* user_data)) {
+    // Based on: https://cesanta.com/docs/http/server-example.html
+    mg_mgr_init(mgr, this);
+    std::string port = std::to_string(GetPort());
+    mg_connection* c = mg_bind(mgr, port.c_str(), event_handler);
+    mg_set_protocol_http_websocket(c);
+    return c;
 }
 
 void HttpServer::OnRequestHello(mg_connection* conn, http_message* msg) {
@@ -187,11 +171,6 @@ void HttpServer::OnRequestBasicAuth(mg_connection* conn, http_message* msg) {
     } else {
         mg_http_send_error(conn, 401, "Unauthorized");
     }
-}
-
-void HttpServer::OnRequestDigestAuth(mg_connection* conn, http_message* msg) {
-    // Temporary:
-    OnRequestHello(conn, msg);
 }
 
 void HttpServer::OnRequestBasicJson(mg_connection* conn, http_message* msg) {
@@ -550,114 +529,6 @@ void HttpServer::OnRequest(mg_connection* conn, http_message* msg) {
     } else {
         OnRequestNotFound(conn, msg);
     }
-}
-
-static void EventHandler(mg_connection* conn, int event, void* event_data) {
-    switch (event) {
-        case MG_EV_RECV:
-            /** Do nothing. Just for housekeeping. **/
-            break;
-        case MG_EV_SEND:
-            /** Do nothing. Just for housekeeping. **/
-            break;
-        case MG_EV_POLL:
-            /** Do nothing. Just for housekeeping. **/
-            break;
-        case MG_EV_CLOSE:
-            /** Do nothing. Just for housekeeping. **/
-            break;
-        case MG_EV_ACCEPT:
-            /** Do nothing. Just for housekeeping. **/
-            break;
-        case MG_EV_CONNECT:
-            /** Do nothing. Just for housekeeping. **/
-            break;
-        case MG_EV_TIMER:
-            /** Do nothing. Just for housekeeping. **/
-            break;
-
-        case MG_EV_HTTP_CHUNK: {
-            /** Do nothing. Just for housekeeping. **/
-        } break;
-
-        case MG_EV_HTTP_REQUEST: {
-            HttpServer* server = static_cast<HttpServer*>(conn->mgr_data);
-            server->OnRequest(conn, static_cast<http_message*>(event_data));
-        } break;
-
-        default:
-            break;
-    }
-}
-
-void HttpServer::Run() {
-    // Setup a new mongoose http server.
-    // Based on: https://cesanta.com/docs/http/server-example.html
-    mg_mgr mgr;
-    mg_connection* c;
-    mg_mgr_init(&mgr, this);
-    std::string port = std::to_string(GetPort());
-    c = mg_bind(&mgr, port.c_str(), EventHandler);
-    mg_set_protocol_http_websocket(c);
-
-    // Notify the main thread that the server is up and runing:
-    server_start_cv.notify_all();
-
-    // Main server loop:
-    while (should_run) {
-        mg_mgr_poll(&mgr, 1000);
-    }
-
-    // Shutdown and cleanup:
-    mg_mgr_free(&mgr);
-
-    // Notify the main thread that we have shut down everything:
-    server_stop_cv.notify_all();
-}
-
-static const std::string base64_chars =
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-        "abcdefghijklmnopqrstuvwxyz"
-        "0123456789+/";
-/**
- * Decodes the given BASE64 string to a normal string.
- * Source: https://gist.github.com/williamdes/308b95ac9ef1ee89ae0143529c361d37
- **/
-std::string HttpServer::Base64Decode(const std::string& in) {
-    std::string out;
-
-    std::vector<int> T(256, -1);
-    for (int i = 0; i < 64; i++)
-        T[base64_chars[i]] = i;
-
-    int val = 0, valb = -8;
-    for (unsigned char c : in) {
-        if (T[c] == -1)
-            break;
-        val = (val << 6) + T[c];
-        valb += 6;
-        if (valb >= 0) {
-            out.push_back(char((val >> valb) & 0xFF));
-            valb -= 8;
-        }
-    }
-    return out;
-}
-
-static int LowerCase(const char* s) {
-    return tolower(*reinterpret_cast<const unsigned char*>(s));
-}
-
-static int StrnCaseCmp(const char* s1, const char* s2, size_t len) {
-    int diff = 0;
-
-    if (len > 0) {
-        do {
-            diff = LowerCase(s1++) - LowerCase(s2++);
-        } while (diff == 0 && s1[-1] != '\0' && --len > 0);
-    }
-
-    return diff;
 }
 
 } // namespace cpr
