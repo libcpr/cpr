@@ -2,6 +2,8 @@ find_package(Threads)
 set(TEST_SERVER_LIBRARY test_server)
 add_library(${TEST_SERVER_LIBRARY}
     server.cpp)
+target_include_directories(${TEST_SERVER_LIBRARY} BEFORE PRIVATE
+    ${MONGOOSE_INCLUDE_DIRS})
 target_link_libraries(${TEST_SERVER_LIBRARY}
     ${MONGOOSE_LIBRARIES}
     ${CMAKE_THREAD_LIBS_INIT})
@@ -13,7 +15,7 @@ macro(add_cpr_test _TEST_NAME)
         ${TEST_SERVER_LIBRARY}
         ${GTEST_LIBRARIES}
         ${CPR_LIBRARIES})
-    add_test(NAME cpr_${_TEST_NAME}_tests COMMAND ${_TEST_NAME}_tests)
+    add_test(NAME cpr_${_TEST_NAME}_tests COMMAND ${_TEST_NAME}_tests ${CMAKE_CURRENT_SOURCE_DIR}/data/)
     # Group under the "tests" project folder in IDEs such as Visual Studio.
     set_property(TARGET ${_TEST_NAME}_tests PROPERTY FOLDER "tests")
     if(WIN32)
@@ -49,3 +51,4 @@ add_cpr_test(patch)
 add_cpr_test(error)
 add_cpr_test(alternating)
 add_cpr_test(util)
+add_cpr_test(ssl)

@@ -13,6 +13,9 @@
 
 namespace cpr {
 
+const long ON = 1L;
+const long OFF = 0L;
+
 class Session::Impl {
   public:
     Impl();
@@ -38,10 +41,11 @@ class Session::Impl {
     void SetBody(Body&& body);
     void SetBody(const Body& body);
     void SetLowSpeed(const LowSpeed& low_speed);
-    void SetVerbose(const Verbose& verbose);
     void SetVerifySsl(const VerifySsl& verify);
     void SetLimitRate(const LimitRate& limit_rate);
     void SetUnixSocket(const UnixSocket& unix_socket);
+    void SetVerbose(const Verbose& verbose);
+    void SetSslOptions(const SslOptions& options);
 
     Response Delete();
     Response Download(std::ofstream& file);
@@ -165,7 +169,7 @@ void Session::Impl::SetConnectTimeout(const ConnectTimeout& timeout) {
 void Session::Impl::SetVerbose(const Verbose& verbose) {
     auto curl = curl_->handle;
     if (curl) {
-        curl_easy_setopt(curl, CURLOPT_VERBOSE, verbose.verbose);
+        curl_easy_setopt(curl, CURLOPT_VERBOSE, verbose.verbose ? ON : OFF);
     }
 }
 
@@ -338,7 +342,7 @@ void Session::Impl::SetLowSpeed(const LowSpeed& low_speed) {
 void Session::Impl::SetVerifySsl(const VerifySsl& verify) {
     auto curl = curl_->handle;
     if (curl) {
-        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, verify ? 1L : 0L);
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, verify ? ON : OFF);
         curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, verify ? 2L : 0L);
     }
 }
@@ -347,6 +351,58 @@ void Session::Impl::SetUnixSocket(const UnixSocket& unix_socket) {
     auto curl = curl_->handle;
     if (curl) {
         curl_easy_setopt(curl, CURLOPT_UNIX_SOCKET_PATH, unix_socket.GetUnixSocketString());
+    }
+}
+
+void Session::Impl::SetSslOptions(const SslOptions& opts) {
+    auto curl = curl_->handle;
+    if (curl) {
+        curl_easy_setopt(curl, CURLOPT_SSLCERT, opts.cert_file.c_str());
+        if (!opts.cert_type.empty()) {
+            curl_easy_setopt(curl, CURLOPT_SSLCERTTYPE, opts.cert_type.c_str());
+        }
+        curl_easy_setopt(curl, CURLOPT_SSLKEY, opts.key_file.c_str());
+        if (!opts.key_type.empty()) {
+            curl_easy_setopt(curl, CURLOPT_SSLKEYTYPE, opts.key_type.c_str());
+        }
+        if (!opts.key_pass.empty()) {
+            curl_easy_setopt(curl, CURLOPT_KEYPASSWD, opts.key_pass.c_str());
+        }
+#if SUPPORT_ALPN
+        curl_easy_setopt(curl, CURLOPT_SSL_ENABLE_ALPN, opts.enable_alpn ? ON : OFF);
+#endif
+#if SUPPORT_NPN
+        curl_easy_setopt(curl, CURLOPT_SSL_ENABLE_NPN, opts.enable_npn ? ON : OFF);
+#endif
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, opts.verify_peer ? ON : OFF);
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, opts.verify_host ? 2L : 0L);
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYSTATUS, opts.verify_status ? ON : OFF);
+        curl_easy_setopt(curl, CURLOPT_SSLVERSION,
+                         opts.ssl_version
+#if SUPPORT_MAX_TLS_VERSION
+                                 | opts.max_version
+#endif
+        );
+        if (!opts.ca_info.empty()) {
+            curl_easy_setopt(curl, CURLOPT_CAINFO, opts.ca_info.c_str());
+        }
+        if (!opts.ca_path.empty()) {
+            curl_easy_setopt(curl, CURLOPT_CAPATH, opts.ca_path.c_str());
+        }
+        if (!opts.crl_file.empty()) {
+            curl_easy_setopt(curl, CURLOPT_CRLFILE, opts.crl_file.c_str());
+        }
+        if (!opts.ciphers.empty()) {
+            curl_easy_setopt(curl, CURLOPT_SSL_CIPHER_LIST, opts.ciphers.c_str());
+        }
+#if SUPPORT_TLSv13_CIPHERS
+        if (!opts.tls13_ciphers.empty()) {
+            curl_easy_setopt(curl, CURLOPT_TLS13_CIPHERS, opts.ciphers.c_str());
+        }
+#endif
+#if SUPPORT_SESSIONID_CACHE
+        curl_easy_setopt(curl, CURLOPT_SSL_SESSIONID_CACHE, opts.session_id_cache ? ON : OFF);
+#endif
     }
 }
 
@@ -478,7 +534,12 @@ Response Session::Impl::makeDownloadRequest(CURL* curl, std::ofstream& file) {
 
     auto header = cpr::util::parseHeader(header_string);
     return Response{static_cast<std::int32_t>(response_code),
-        std::string{}, header, raw_url, elapsed, cookies, error};
+                    std::string{},
+                    header,
+                    raw_url,
+                    elapsed,
+                    cookies,
+                    error};
 }
 
 Response Session::Impl::makeRequest(CURL* curl) {
@@ -498,8 +559,8 @@ Response Session::Impl::makeRequest(CURL* curl) {
 
 #if LIBCURL_VERSION_MAJOR >= 7
 #if LIBCURL_VERSION_MINOR >= 21
-	/* enable all supported built-in compressions */
-	curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, "");
+    /* enable all supported built-in compressions */
+    curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, "");
 #endif
 #endif
 
@@ -598,6 +659,7 @@ void Session::SetOption(const LowSpeed& low_speed) { pimpl_->SetLowSpeed(low_spe
 void Session::SetOption(const VerifySsl& verify) { pimpl_->SetVerifySsl(verify); }
 void Session::SetOption(const Verbose& verbose) { pimpl_->SetVerbose(verbose); }
 void Session::SetOption(const UnixSocket& unix_socket) { pimpl_->SetUnixSocket(unix_socket); }
+void Session::SetOption(const SslOptions& options) { pimpl_->SetSslOptions(options); }
 
 Response Session::Delete() { return pimpl_->Delete(); }
 Response Session::Download(std::ofstream& file) { return pimpl_->Download(file); }

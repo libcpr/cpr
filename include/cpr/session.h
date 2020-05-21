@@ -7,9 +7,11 @@
 
 #include "cpr/auth.h"
 #include "cpr/body.h"
+#include "cpr/connect_timeout.h"
 #include "cpr/cookies.h"
 #include "cpr/cprtypes.h"
 #include "cpr/digest.h"
+#include "cpr/limit_rate.h"
 #include "cpr/low_speed.h"
 #include "cpr/max_redirects.h"
 #include "cpr/multipart.h"
@@ -17,14 +19,11 @@
 #include "cpr/payload.h"
 #include "cpr/proxies.h"
 #include "cpr/response.h"
-#include "cpr/timeout.h"
-#include "cpr/connect_timeout.h"
 #include "cpr/ssl_options.h"
 #include "cpr/timeout.h"
+#include "cpr/unix_socket.h"
 #include "cpr/user_agent.h"
 #include "cpr/verbose.h"
-#include "cpr/limit_rate.h"
-#include "cpr/unix_socket.h"
 
 namespace cpr {
 
@@ -59,6 +58,8 @@ class Session {
     void SetLowSpeed(const LowSpeed& low_speed);
     void SetVerifySsl(const VerifySsl& verify);
     void SetUnixSocket(const UnixSocket& unix_socket);
+    void SetSslOptions(const SslOptions& options);
+    void SetVerbose(const Verbose& verbose);
 
     // Used in templated functions
     void SetOption(const Url& url);
@@ -86,6 +87,7 @@ class Session {
     void SetOption(const VerifySsl& verify);
     void SetOption(const Verbose& verbose);
     void SetOption(const UnixSocket& unix_socket);
+    void SetOption(const SslOptions& options);
 
     Response Delete();
     Response Download(std::ofstream& file);
