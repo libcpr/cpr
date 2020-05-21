@@ -7,23 +7,11 @@
 #include <curl/curl.h>
 
 #include "httpServer.hpp"
+#include "httpsServer.hpp"
 
 using namespace cpr;
 
 static HttpServer* server = new HttpServer();
-
-TEST(ErrorTests, BasicSSLFailure) {
-    auto url = Url{server->GetBaseUrlSSL() + "/hello.html"};
-    auto response = cpr::Get(url);
-    EXPECT_EQ(url, response.url);
-    EXPECT_EQ(0, response.status_code);
-    auto curl_version = curl_version_info(CURLVERSION_NOW);
-    auto expected = ErrorCode::UNSUPPORTED_PROTOCOL;
-    if (curl_version->features & CURL_VERSION_SSL) {
-        expected = ErrorCode::SSL_CONNECT_ERROR;
-    }
-    EXPECT_EQ(expected, response.error.code);
-}
 
 TEST(ErrorTests, UnsupportedProtocolFailure) {
     auto url = Url{"urk://wat.is.this"};
