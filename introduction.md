@@ -254,6 +254,6 @@ std::cout << r.text << std::endl;
  */
 ```
 
-and like a good friend, cpr handles the negotiation for you.
+and like a good friend, cpr handles the negotiation for you.  `cpr::NTLM{"user", "pass"}` is also available for [NTLM authentication](https://en.wikipedia.org/wiki/NTLMSSP).
 
 With these basic operations, modern C++ has access to a significant portion of the world wide web's APIs. For more complex applications, check out the [Advanced Usage guides](/cpr/advanced-usage.html).
