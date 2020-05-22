@@ -43,6 +43,7 @@ C++ Requests currently supports:
 * Timeout specification
 * Asynchronous requests
 * :cookie: support!
+* HTTPS support with OpenSSL
 * Proxy support
 * Callback interface
 * PUT methods
@@ -56,7 +57,6 @@ C++ Requests currently supports:
 Support for the following will be forthcoming (in rough order of implementation priority):
 
 * [Streamed requests](https://github.com/whoshuu/cpr/issues/25)
-* [OpenSSL support](https://github.com/whoshuu/cpr/issues/31)
 
 and much more!
 

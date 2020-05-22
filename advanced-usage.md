@@ -390,3 +390,90 @@ auto cb_options_response = cpr::OptionsCallback([](cpr::Response r) {
 ```
 
 Currently, `"PATCH"` is not an implemented HTTP method. It soon will be, and its mechanics will be identitical to the example above. Stay tuned!
+
+## HTTPS Options
+
+In general, you can use the URL of the `https://` protocol directly in your request.
+
+```c++
+auto r = cpr::Get(cpr::Url{"https://www.httpbin.org/get"});
+```
+
+The underlying implementation automatically switches to SSL/TLS protocol if `libcurl` provides the appropriate support.
+
+You can also further customize the behavior of the SSL/TLS protocol by passing in more configuration items in the request. 
+
+### SSL/TLS Version
+
+The SSL/TLS protocol has evolved in many different versions for security and performance reasons.
+
+Starting with version 7.39, the `libcurl` library will by default use the TLS v1.0 protocol.
+
+If you have security and performance concerns, you can force a newer version of the protocol.
+
+```c++
+auto sslOpts = cpr::Ssl(ssl:TLSv1_2{});
+auto r = cpr::Get(cpr::Url{"https://www.httpbin.org/get"}, sslOpts);
+```
+
+Or a lower but insecure version of the protocol for compatibility reasons.
+
+* `TLSv1`: TLS v1.0 or later 
+* `SSLv2`: SSL v2 (but not SSLv3)
+* `SSLv3`: SSL v3 (but not SSLv2)
+* `TLSv1_0`: TLS v1.0 or later (libcurl 7.34.0)
+* `TLSv1_1`: TLS v1.1 or later (libcurl 7.34.0)
+* `TLSv1_2`: TLS v1.2 or later (libcurl 7.34.0)
+* `TLSv1_3`: TLS v1.3 or later (libcurl 7.52.0)
+* `MaxTLSVersion`: maximum supported TLS version, or the default value from the SSL library is used. (libcurl 7.54.0)
+* `MaxTLSv1_0`: maximum supported TLS version as TLS v1.0. (libcurl 7.54.0)
+* `MaxTLSv1_1`: maximum supported TLS version as TLS v1.1. (libcurl 7.54.0)
+* `MaxTLSv1_2`: maximum supported TLS version as TLS v1.2. (libcurl 7.54.0)
+* `MaxTLSv1_3`: maximum supported TLS version as TLS v1.3. (libcurl 7.54.0)
+
+### ALPN and NPN
+
+Some older HTTPS services do not support ALPN and NPN negotiation, which may result in connections not being established properly. Compatibility issues can be resolved by disabling ALPN/NPN support in the request.
+
+```c++
+auto sslOpts = cpr::Ssl(ssl::ALPN{false}, ssl::NPN{false});
+auto r = cpr::Get(cpr::Url{"https://www.httpbin.org/get"}, sslOpts);
+```
+
+* `ALPN`: ALPN in the SSL handshake. (libcurl 7.36.0)
+
+> ALPN, or Application-Layer Protocol Negotiation, is a TLS extension that includes the protocol negotiation within the exchange of hello messages. ALPN is able to negotiate which protocol should be handled over a secure connection in a way that is more efficient and avoids additional round trips.
+
+* `NPN`: NPN in the SSL handshake. (libcurl 7.36.0)
+
+> NPN, or Next Protocol Negotiation, is the predecessor of ALPN and was widely used in conjunction with SPDY.
+
+### Verify SSL/TLS Certificate and Status
+
+By default, the Libcurl library attempts to verify the SSL/TLS protocol server-side certificate and its status.
+
+If you wish to connect to a server that uses a self-signed certificate, you can turn off the corresponding check with the `VerifyHost`, `VerifyPeer` and `VerifyStatus` option.
+
+* `VerifyHost`: the server cert is for the server it is known as.
+* `VerifyPeer`: the authenticity of the peer's certificate.
+* `VerifyStatus`: the status of the server cert using the "Certificate Status Request" TLS extension (aka. OCSP stapling). (libcurl 7.41.0)
+
+### SSL Client Certificate
+
+Some HTTPS services require client certificates to be given at the time of connection for authentication and authentication.
+
+You can specify filenames for client certificates and private keys using the `CertFile` and `KeyFile` options.
+
+```c++
+auto sslOpts = cpr::Ssl(ssl::CertFile{"cert.pem"}, ssl::KeyFile{"key.pem"});
+auto r = cpr::Get(cpr::Url{"https://www.httpbin.org/get"}, sslOpts);
+```
+
+The default certificate and private key files are in PEM format, and DER format files can also be imported via `DerCert` and `DerKey` if desired.
+
+### Certificate Authority (CA) Bundle
+
+By default, `libcurl` uses the operating system's root certificate chain to authenticate peer certificate.
+
+If you need to verify a self-signed certificate, you can use the `CaInfo` to specify the CA certificate bundle file, or `CaPath` to specify the directory where multiple CA certificate files are located. If `libcurl` is built against OpenSSL, the certificate directory must be prepared using the openssl `c_rehash` utility.
+
