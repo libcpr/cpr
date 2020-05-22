@@ -515,9 +515,14 @@ Response Session::Impl::makeDownloadRequest(CURL* curl, std::ofstream& file) {
     char* raw_url;
     long response_code;
     double elapsed;
+    double uploaded_bytes;
+    double downloaded_bytes;
+
     curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response_code);
     curl_easy_getinfo(curl, CURLINFO_TOTAL_TIME, &elapsed);
     curl_easy_getinfo(curl, CURLINFO_EFFECTIVE_URL, &raw_url);
+    curl_easy_getinfo(curl, CURLINFO_SIZE_DOWNLOAD, &downloaded_bytes);
+    curl_easy_getinfo(curl, CURLINFO_SIZE_UPLOAD, &uploaded_bytes);
 
     Error error(curl_error, curl_->error);
 
@@ -577,9 +582,13 @@ Response Session::Impl::makeRequest(CURL* curl) {
     char* raw_url;
     long response_code;
     double elapsed;
+    double downloaded_bytes;
+    double uploaded_bytes;
     curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response_code);
     curl_easy_getinfo(curl, CURLINFO_TOTAL_TIME, &elapsed);
     curl_easy_getinfo(curl, CURLINFO_EFFECTIVE_URL, &raw_url);
+    curl_easy_getinfo(curl, CURLINFO_SIZE_DOWNLOAD, &downloaded_bytes);
+    curl_easy_getinfo(curl, CURLINFO_SIZE_UPLOAD, &uploaded_bytes);
 
     Cookies cookies;
     struct curl_slist* raw_cookies;
@@ -605,7 +614,9 @@ Response Session::Impl::makeRequest(CURL* curl) {
                     Error(curl_error, curl_->error),
                     std::move(header_string),
                     std::move(status_line),
-                    std::move(reason)};
+                    std::move(reason),
+                    uploaded_bytes,
+                    downloaded_bytes};
 }
 
 // clang-format off
