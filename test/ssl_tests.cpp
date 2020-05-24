@@ -16,10 +16,10 @@ TEST(SslTests, HelloWorldTest) {
 
     std::string url = Url{server->GetBaseUrl() + "/hello.html"};
     std::string baseDirPath = server->getBaseDirPath();
-    SslOptions sslOpts =
-            Ssl(ssl::TLSv1{}, ssl::ALPN{false}, ssl::NPN{false}, ssl::CaPath{baseDirPath},
-                ssl::CertFile{baseDirPath + "/cert.pem"}, ssl::KeyFile{baseDirPath + "/key.pem"},
-                ssl::VerifyPeer{false}, ssl::VerifyHost{false}, ssl::VerifyStatus{false});
+    SslOptions sslOpts = Ssl(
+            ssl::TLSv1{}, ssl::ALPN{false}, ssl::NPN{false}, ssl::CaPath{baseDirPath + "/ca.cer"},
+            ssl::CertFile{baseDirPath + "/client.cer"}, ssl::KeyFile{baseDirPath + "/client.key"},
+            ssl::VerifyPeer{false}, ssl::VerifyHost{false}, ssl::VerifyStatus{false});
     Response response = cpr::Get(url, sslOpts, Timeout{5000}, Verbose{});
     std::string expected_text = "Hello world!";
     EXPECT_EQ(expected_text, response.text);
@@ -33,7 +33,7 @@ int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
 
     std::string baseDirPath = argv[1];
-    server = new HttpsServer(std::move(baseDirPath), "server.pem", "key.pem");
+    server = new HttpsServer(std::move(baseDirPath), "server.cer", "server.key");
     ::testing::AddGlobalTestEnvironment(server);
 
     return RUN_ALL_TESTS();
