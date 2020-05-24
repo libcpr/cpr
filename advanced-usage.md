@@ -393,21 +393,21 @@ Currently, `"PATCH"` is not an implemented HTTP method. It soon will be, and its
 
 ## HTTPS Options
 
-In general, you can use the URL of the `https://` protocol directly in your request.
+CPR verifies SSL certificates for HTTPS requests, just like a web browser. By default, SSL verification is enabled.
 
 ```c++
 auto r = cpr::Get(cpr::Url{"https://www.httpbin.org/get"});
 ```
 
-The underlying implementation automatically switches to SSL/TLS protocol if `libcurl` provides the appropriate support.
+The underlying implementation automatically switches to SSL/TLS if `libcurl` provides the appropriate support.
 
-You can also further customize the behavior of the SSL/TLS protocol by passing in more configuration items in the request. 
+You can also further customize the behaviour of the SSL/TLS protocol by passing more configuration items to the request.
 
 ### SSL/TLS Version
 
 The SSL/TLS protocol has evolved in many different versions for security and performance reasons.
 
-Starting with version 7.39, the `libcurl` library will by default use the TLS v1.0 protocol.
+Starting with version 7.39, `libcurl` uses TLS v1.0 by default.
 
 If you have security and performance concerns, you can force a newer version of the protocol.
 
@@ -433,26 +433,26 @@ Or a lower but insecure version of the protocol for compatibility reasons.
 
 ### ALPN and NPN
 
-Some older HTTPS services do not support ALPN and NPN negotiation, which may result in connections not being established properly. Compatibility issues can be resolved by disabling ALPN/NPN support in the request.
+Some older HTTPS services do not support ALPN and NPN negotiation, which may result in connections not being established properly. Compatibility issues can be resolved by disabling ALPN/NPN support for the request.
 
 ```c++
 auto sslOpts = cpr::Ssl(ssl::ALPN{false}, ssl::NPN{false});
 auto r = cpr::Get(cpr::Url{"https://www.httpbin.org/get"}, sslOpts);
 ```
 
-* `ALPN`: ALPN in the SSL handshake. (libcurl 7.36.0)
+* `ALPN`: [ALPN](https://en.wikipedia.org/wiki/Application-Layer_Protocol_Negotiation) in the SSL handshake. (libcurl 7.36.0)
 
-> ALPN, or Application-Layer Protocol Negotiation, is a TLS extension that includes the protocol negotiation within the exchange of hello messages. ALPN is able to negotiate which protocol should be handled over a secure connection in a way that is more efficient and avoids additional round trips.
+> Application-Layer Protocol Negotiation (ALPN) is a Transport Layer Security (TLS) extension that allows the application layer to negotiate which protocol should be performed over a secure connection in a manner that avoids additional round trips and which is independent of the application-layer protocols. It is needed by secure HTTP/2 connections, which improves the compression of web pages and reduces their latency compared to HTTP/1.x. The ALPN and HTTP/2 standards emerged from development work done by Google on the now withdrawn SPDY protocol.
 
-* `NPN`: NPN in the SSL handshake. (libcurl 7.36.0)
+* `NPN`: [NPN](https://www.imperialviolet.org/2013/03/20/alpn.html) in the SSL handshake. (libcurl 7.36.0)
 
-> NPN, or Next Protocol Negotiation, is the predecessor of ALPN and was widely used in conjunction with SPDY.
+> NPN, or Next Protocol Negotiation, allows a TLS connection to negotiate which application-level protocol will be running across it.
 
 ### Verify SSL/TLS Certificate and Status
 
 By default, the Libcurl library attempts to verify the SSL/TLS protocol server-side certificate and its status.
 
-If you wish to connect to a server that uses a self-signed certificate, you can turn off the corresponding check with the `VerifyHost`, `VerifyPeer` and `VerifyStatus` option.
+If you wish to connect to a server that uses a self-signed certificate, you can turn off the corresponding check with the `VerifyHost`, `VerifyPeer` and `VerifyStatus` options.
 
 * `VerifyHost`: the server cert is for the server it is known as.
 * `VerifyPeer`: the authenticity of the peer's certificate.
