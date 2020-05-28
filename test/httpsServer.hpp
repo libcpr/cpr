@@ -24,6 +24,8 @@ class HttpsServer : public AbstractServer {
     uint16_t GetPort() override;
 
     void OnRequest(mg_connection* conn, http_message* msg) override;
+    void OnRequestHello(mg_connection* conn, http_message* msg);
+    void OnRequestNotFound(mg_connection* conn, http_message* msg);
 
     const std::string& getBaseDirPath() const;
     const std::string& getSslCertFileName() const;

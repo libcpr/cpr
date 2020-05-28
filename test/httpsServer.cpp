@@ -11,7 +11,7 @@ Url HttpsServer::GetBaseUrl() {
 }
 
 uint16_t HttpsServer::GetPort() {
-    return 8080;
+    return 8081;
 }
 
 mg_connection* HttpsServer::initServer(mg_mgr* mgr,
@@ -20,8 +20,8 @@ mg_connection* HttpsServer::initServer(mg_mgr* mgr,
     mg_mgr_init(mgr, this);
 
     mg_bind_opts bind_opts{};
-    bind_opts.ssl_cert = (baseDirPath + "/" + sslCertFileName).c_str();
-    bind_opts.ssl_key = (baseDirPath + "/" + sslKeyFileName).c_str();
+    bind_opts.ssl_cert = sslCertFileName.c_str();
+    bind_opts.ssl_key = sslKeyFileName.c_str();
     std::string port = std::to_string(GetPort());
     mg_connection* c = mg_bind_opt(mgr, port.c_str(), event_handler, bind_opts);
     mg_set_protocol_http_websocket(c);
@@ -30,7 +30,22 @@ mg_connection* HttpsServer::initServer(mg_mgr* mgr,
 
 void HttpsServer::OnRequest(mg_connection* conn, http_message* msg) {
     std::string uri = std::string(msg->uri.p, msg->uri.len);
-    // OnRequestNotFound(conn, msg);
+    if (uri == "/hello.html") {
+        OnRequestHello(conn, msg);
+    } else {
+        OnRequestNotFound(conn, msg);
+    }
+}
+
+void HttpsServer::OnRequestNotFound(mg_connection* conn, http_message* msg) {
+    mg_http_send_error(conn, 404, "Not Found");
+}
+
+void HttpsServer::OnRequestHello(mg_connection* conn, http_message* msg) {
+    std::string response{"Hello world!"};
+    std::string headers = "Content-Type: text/html";
+    mg_send_head(conn, 200, response.length(), headers.c_str());
+    mg_send(conn, response.c_str(), response.length());
 }
 
 const std::string& HttpsServer::getBaseDirPath() const {
