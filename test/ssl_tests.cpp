@@ -32,7 +32,7 @@ TEST(SslTests, HelloWorldTest) {
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
 
-    std::string baseDirPath = argv[1];
+    std::string baseDirPath = ".";
     server = new HttpsServer(std::move(baseDirPath), "server.cer", "server.key");
     ::testing::AddGlobalTestEnvironment(server);
 
