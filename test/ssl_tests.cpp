@@ -29,10 +29,24 @@ TEST(SslTests, HelloWorldTest) {
     EXPECT_EQ(ErrorCode::OK, response.error.code) << response.error.message;
 }
 
+/**
+ * We should replace this with a C++17 filesystem call,
+ * once we have updated to >= C++17.
+ **/
+std::string getBasePath(const std::string& execPath) {
+    std::string result = execPath;
+    // Remove all chars until the last '/':
+    while (result.back() != '/') {
+        result = result.substr(0, result.size() - 1);
+    }
+    // Remove the '/' at the end and return:
+    return result.substr(0, result.size() - 1);
+}
+
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
 
-    std::string baseDirPath = "build/bin";
+    std::string baseDirPath = getBasePath(argv[0]);
     std::string serverCertPath = baseDirPath + "/server.cer";
     std::string serverKeyPath = baseDirPath + "/server.key";
     server = new HttpsServer(std::move(baseDirPath), std::move(serverCertPath),
