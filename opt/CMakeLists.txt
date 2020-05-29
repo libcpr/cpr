@@ -50,7 +50,7 @@ if(NOT USE_SYSTEM_CURL OR NOT CURL_FOUND)
     option(BUILD_CURL_EXE "Set to ON to build cURL executable." OFF)
     FetchContent_Declare(curl
                           GIT_REPOSITORY https://github.com/curl/curl.git
-                          GIT_TAG        curl-7_56_0)
+                          GIT_TAG        curl-7_69_1)
     FetchContent_MakeAvailable(curl)
 
     add_library(curl_int INTERFACE)
@@ -92,7 +92,9 @@ if(BUILD_CPR_TESTS)
             # does.
             set(gtest_force_shared_crt ON CACHE BOOL "Force gtest to use the shared c runtime")
         endif()
-        FetchContent_Declare(googletest GIT_REPOSITORY https://github.com/whoshuu/googletest.git)
+        FetchContent_Declare(googletest
+                                    GIT_REPOSITORY https://github.com/google/googletest.git
+                                    GIT_TAG release-1.10.0)
         FetchContent_MakeAvailable(googletest)
 
         
