@@ -54,7 +54,7 @@ add_cpr_test(util)
 add_cpr_test(ssl)
 
 # Copy all certs reqired for the ssl tests
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/data/server.key" "${CMAKE_BINARY_DIR}/bin/"  COPYONLY)
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/data/server.cer" "${CMAKE_BINARY_DIR}/bin/"  COPYONLY)
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/data/client.key" "${CMAKE_BINARY_DIR}/bin/"  COPYONLY)
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/data/client.cer" "${CMAKE_BINARY_DIR}/bin/"  COPYONLY)
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/data/server.key" "${CMAKE_BINARY_DIR}/bin/server.key"  COPYONLY)
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/data/server.cer" "${CMAKE_BINARY_DIR}/bin/server.cer"  COPYONLY)
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/data/client.key" "${CMAKE_BINARY_DIR}/bin/client.key"  COPYONLY)
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/data/client.cer" "${CMAKE_BINARY_DIR}/bin/client.cer"  COPYONLY)
