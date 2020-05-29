@@ -45,10 +45,11 @@ add_library(${CPR_LIBRARIES}
     "${CPR_INCLUDE_DIRS}/cpr/ssl_options.h"
     "${CPR_INCLUDE_DIRS}/cpr/limit_rate.h"
     "${CPR_INCLUDE_DIRS}/cpr/verbose.h"
-    "${CPR_INCLUDE_DIRS}/cpr/unix_socket.h")
+    "${CPR_INCLUDE_DIRS}/cpr/unix_socket.h"
+    )
 
 message(STATUS "Using CURL_LIBRARIES: ${CURL_LIBRARIES}.")
-target_link_libraries(${CPR_LIBRARIES} PRIVATE CURL::libcurl)
+target_link_libraries(${CPR_LIBRARIES} PUBLIC CURL::libcurl) # todo should be private, but first dependencys in ssl_options need to be removed
 target_include_directories(${CPR_LIBRARIES} PUBLIC
         ${CPR_INCLUDE_DIRS}
         )
