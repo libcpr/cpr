@@ -17,8 +17,8 @@ TEST(SslTests, HelloWorldTest) {
     std::string url = Url{server->GetBaseUrl() + "/hello.html"};
     std::string baseDirPath = server->getBaseDirPath();
     SslOptions sslOpts = Ssl(
-            ssl::TLSv1{}, ssl::ALPN{false}, ssl::NPN{false}, ssl::CaPath{baseDirPath + "/ca.cer"},
-            ssl::CertFile{baseDirPath + "/client.cer"}, ssl::KeyFile{baseDirPath + "/client.key"},
+            ssl::TLSv1{}, ssl::ALPN{false}, ssl::NPN{false}, ssl::CaPath{baseDirPath + "ca.cer"},
+            ssl::CertFile{baseDirPath + "/client.cer"}, ssl::KeyFile{baseDirPath + "client.key"},
             ssl::VerifyPeer{false}, ssl::VerifyHost{false}, ssl::VerifyStatus{false});
     Response response = cpr::Get(url, sslOpts, Timeout{5000}, Verbose{});
     std::string expected_text = "Hello world!";
@@ -34,21 +34,15 @@ TEST(SslTests, HelloWorldTest) {
  * once we have updated to >= C++17.
  **/
 std::string getBasePath(const std::string& execPath) {
-    std::string result = execPath;
-    // Remove all chars until the last '/':
-    while (result.back() != '/') {
-        result = result.substr(0, result.size() - 1);
-    }
-    // Remove the '/' at the end and return:
-    return result.substr(0, result.size() - 1);
+    return execPath.substr(0, execPath.find_last_of("\\/") + 1);
 }
 
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
 
     std::string baseDirPath = getBasePath(argv[0]);
-    std::string serverCertPath = baseDirPath + "/server.cer";
-    std::string serverKeyPath = baseDirPath + "/server.key";
+    std::string serverCertPath = baseDirPath + "server.cer";
+    std::string serverKeyPath = baseDirPath + "server.key";
     server = new HttpsServer(std::move(baseDirPath), std::move(serverCertPath),
                              std::move(serverKeyPath));
     ::testing::AddGlobalTestEnvironment(server);
