@@ -71,11 +71,7 @@ endif()
 # SSL configuration
 if(CMAKE_USE_OPENSSL)
     find_package(OpenSSL REQUIRED)
-
     message(STATUS "using system OpenSSL library.")
-
-    include_directories(${OPENSSL_INCLUDE_DIR})
-    set(SSL_LIBRARIES ${OPENSSL_LIBRARIES})
 endif()
 
 # GTest configuration
