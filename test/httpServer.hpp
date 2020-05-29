@@ -6,7 +6,7 @@
 
 #include "abstractServer.hpp"
 #include "cpr/cpr.h"
-#include "mongoose/mongoose.h"
+#include "mongoose.h"
 
 namespace cpr {
 class HttpServer : public AbstractServer {

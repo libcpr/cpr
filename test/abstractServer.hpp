@@ -8,7 +8,7 @@
 #include <string>
 
 #include "cpr/cpr.h"
-#include "mongoose/mongoose.h"
+#include "mongoose.h"
 
 namespace cpr {
 class AbstractServer : public testing::Environment {

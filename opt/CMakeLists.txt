@@ -115,11 +115,18 @@ endif()
 
 if(BUILD_CPR_TESTS)
     message(STATUS "Building mongoose project for test support.")
-    FetchContent_Declare(mongoose GIT_REPOSITORY https://github.com/whoshuu/mongoose.git)
-    FetchContent_MakeAvailable(mongoose)
+    FetchContent_Declare(mongoose 
+                                GIT_REPOSITORY https://github.com/cesanta/mongoose.git
+                                GIT_TAG 6.18)
+    # We can not use FetchContent_MakeAvailable, since we need to patch mongoose to use CMake
+    if (NOT mongoose_POPULATED)
+        FetchContent_POPULATE(mongoose)
 
-    target_include_directories(mongoose INTERFACE ${mongoose_SOURCE_DIR})
+        file(INSTALL mongoose.CMakeLists.txt DESTINATION ${mongoose_SOURCE_DIR})
+        file(RENAME ${mongoose_SOURCE_DIR}/mongoose.CMakeLists.txt ${mongoose_SOURCE_DIR}/CMakeLists.txt)
+        add_subdirectory(${mongoose_SOURCE_DIR} ${mongoose_BINARY_DIR})
 
+    endif()
     # Group under the "external" project folder in IDEs such as Visual Studio.
     set_property(TARGET mongoose PROPERTY FOLDER "external")
 endif()
