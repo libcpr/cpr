@@ -284,7 +284,35 @@ std::cout << r.text << std::endl;
 ```
 {% endraw %}
 
- Take note of how the cookies were encoded using a url-encoding pattern, as required by [RFC 2965](http://www.ietf.org/rfc/rfc2965.txt). Other than that quirk, using `Cookies` is fairly straightforward and just works.
+By default `Cookies` and their values will be URL-encoded.
+Although this is recommend, it is not mandatory for `Cookies` to be URL-encoded.
+{% raw %}
+```
+[...]
+To maximize compatibility with user agents, servers that wish to
+store arbitrary data in a cookie-value SHOULD encode that data, for
+example, using Base64 [RFC4648].
+[...]
+```
+{% endraw %}
+Source: [RFC6265](https://www.ietf.org/rfc/rfc6265.txt)
+
+URL-encoding for `Cookies` can be disabled by setting `encode = false` in the `Cookie` constructor.
+{% raw %}
+```c++
+cpr::Response r = cpr::Get(cpr::Url{"http://www.httpbin.org/cookies"},
+                  cpr::Cookies{{"ice cream", "is delicious"}}, false);
+std::cout << r.text << std::endl;
+
+/*
+ * {
+ *   "cookies": {
+ *     "ice cream": "is delicious"
+ *   }
+ * }
+ */
+```
+{% endraw %}
 
 ## PUT and PATCH Requests
 
