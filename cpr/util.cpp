@@ -1,6 +1,7 @@
 #include "cpr/util.h"
 
 #include <algorithm>
+#include <cassert>
 #include <cctype>
 #include <cstdint>
 #include <fstream>
@@ -84,23 +85,19 @@ size_t downloadFunction(void* ptr, size_t size, size_t nmemb, std::ofstream* fil
     return size * nmemb;
 }
 
-std::string urlEncode(const std::string& value) {
-    std::ostringstream escaped;
-    escaped.fill('0');
-    escaped << std::hex;
-
-    for (auto i = value.cbegin(), n = value.cend(); i != n; ++i) {
-        std::string::value_type c = (*i);
-        // Keep alphanumeric and other accepted characters intact
-        if (std::isalnum(c) || c == '-' || c == '_' || c == '.' || c == '~') {
-            escaped << c;
-            continue;
-        }
-        // Any other characters are percent-encoded
-        escaped << '%' << std::setw(2) << std::int32_t(static_cast<unsigned char>(c));
-    }
-
-    return escaped.str();
+/**
+ * Creates a temporary CurlHolder object and uses it to escape the given string.
+ * If you plan to use this methode on a regular basis think about creating CurlHolder
+ * object and calling urlEncode(std::string) on it.
+ *
+ * Example:
+ * CurlHolder holder;
+ * std::string input = "Hello World!";
+ * std::string result = holder.urlEncode(input);
+ **/
+std::string urlEncode(const std::string& s) {
+    CurlHolder holder; // Create a temporary new holder for URL encoding
+    return holder.urlEncode(s);
 }
 
 } // namespace util

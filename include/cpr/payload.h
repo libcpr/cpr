@@ -6,6 +6,7 @@
 #include <memory>
 #include <string>
 
+#include "cpr/curlholder.h"
 #include "cpr/defines.h"
 
 namespace cpr {
@@ -13,8 +14,7 @@ namespace cpr {
 struct Pair {
     template <typename KeyType, typename ValueType,
               typename std::enable_if<!std::is_integral<ValueType>::value, bool>::type = true>
-    Pair(KeyType&& p_key, ValueType&& p_value)
-            : key{CPR_FWD(p_key)}, value{CPR_FWD(p_value)} {}
+    Pair(KeyType&& p_key, ValueType&& p_value) : key{CPR_FWD(p_key)}, value{CPR_FWD(p_value)} {}
     template <typename KeyType>
     Pair(KeyType&& p_key, const std::int32_t& p_value)
             : key{CPR_FWD(p_key)}, value{std::to_string(p_value)} {}
@@ -27,13 +27,15 @@ class Payload {
   public:
     template <class It>
     Payload(const It begin, const It end) {
+        // Create a temporary CurlHolder for URL encoding:
+        CurlHolder holder;
         for (It pair = begin; pair != end; ++pair) {
-            AddPair(*pair);
+            AddPair(*pair, holder);
         }
     }
     Payload(const std::initializer_list<Pair>& pairs);
 
-    void AddPair(const Pair& pair);
+    void AddPair(const Pair& pair, const CurlHolder& holder);
 
     std::string content;
 };

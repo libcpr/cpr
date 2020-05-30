@@ -8,10 +8,18 @@
 namespace cpr {
 
 struct CurlHolder {
-    CURL* handle;
-    struct curl_slist* chunk;
-    struct curl_httppost* formpost;
+    CURL* handle{nullptr};
+    struct curl_slist* chunk{nullptr};
+    struct curl_httppost* formpost{nullptr};
     char error[CURL_ERROR_SIZE];
+
+    CurlHolder();
+    ~CurlHolder();
+
+    /**
+     * Uses curl_easy_escape(...) for escaping the given string.
+     **/
+    std::string urlEncode(const std::string& s) const;
 };
 
 } // namespace cpr

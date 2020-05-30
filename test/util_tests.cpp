@@ -102,6 +102,21 @@ TEST(UtilParseHeaderTests, NewlineStatusLineTest) {
     EXPECT_EQ(std::string{"application/json"}, header["Content-Type"]);
 }
 
+TEST(UtilParseHeaderTests, NoReasonSpaceTest) {
+    auto header_string = std::string{
+            "HTTP/1.1 200 \n"
+            "Server: nginx\r\n"
+            "Content-Type: application/json\r\n"
+            "\r\n"};
+    std::string status_line;
+    std::string reason;
+    auto header = util::parseHeader(header_string, &status_line, &reason);
+    EXPECT_EQ(std::string{"HTTP/1.1 200"}, status_line);
+    EXPECT_EQ(std::string{""}, reason);
+    EXPECT_EQ(std::string{"nginx"}, header["Server"]);
+    EXPECT_EQ(std::string{"application/json"}, header["Content-Type"]);
+}
+
 TEST(UtilParseHeaderTests, NoReasonTest) {
     auto header_string = std::string{
             "HTTP/1.1 200\n"
@@ -117,19 +132,18 @@ TEST(UtilParseHeaderTests, NoReasonTest) {
     EXPECT_EQ(std::string{"application/json"}, header["Content-Type"]);
 }
 
-TEST(UtilParseHeaderTests, NoReasonSpaceTest) {
-    auto header_string = std::string{
-            "HTTP/1.1 200 \n"
-            "Server: nginx\r\n"
-            "Content-Type: application/json\r\n"
-            "\r\n"};
-    std::string status_line;
-    std::string reason;
-    auto header = util::parseHeader(header_string, &status_line, &reason);
-    EXPECT_EQ(std::string{"HTTP/1.1 200"}, status_line);
-    EXPECT_EQ(std::string{""}, reason);
-    EXPECT_EQ(std::string{"nginx"}, header["Server"]);
-    EXPECT_EQ(std::string{"application/json"}, header["Content-Type"]);
+TEST(UtilUrlEncodeTests, UnicodeEncoderTest) {
+    std::string input = "一二三";
+    std::string result = util::urlEncode(input);
+    std::string expected = "%E4%B8%80%E4%BA%8C%E4%B8%89";
+    EXPECT_EQ(result, expected);
+}
+
+TEST(UtilUrlEncodeTests, AsciiEncoderTest) {
+    std::string input = "Hello World!";
+    std::string result = util::urlEncode(input);
+    std::string expected = "Hello%20World%21";
+    EXPECT_EQ(result, expected);
 }
 
 int main(int argc, char** argv) {

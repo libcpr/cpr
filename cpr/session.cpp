@@ -60,13 +60,7 @@ class Session::Impl {
   private:
     bool hasBodyOrPayload_{false};
 
-    struct CurlHolderDeleter {
-        void operator()(CurlHolder* holder) {
-            freeHolder(holder);
-        }
-    };
-
-    std::unique_ptr<CurlHolder, CurlHolderDeleter> curl_;
+    std::unique_ptr<CurlHolder> curl_;
     Url url_;
     Parameters parameters_;
     Proxies proxies_;
@@ -74,11 +68,10 @@ class Session::Impl {
     Response makeDownloadRequest(CURL* curl, std::ofstream& file);
     Response makeRequest(CURL* curl);
     static void freeHolder(CurlHolder* holder);
-    static CurlHolder* newHolder();
 };
 
 Session::Impl::Impl() {
-    curl_ = std::unique_ptr<CurlHolder, CurlHolderDeleter>(newHolder());
+    curl_ = std::unique_ptr<CurlHolder>(new CurlHolder());
     auto curl = curl_->handle;
     if (curl) {
         // Set up some sensible defaults
@@ -102,21 +95,6 @@ Session::Impl::Impl() {
 #endif
 #endif
     }
-}
-
-void Session::Impl::freeHolder(CurlHolder* holder) {
-    curl_easy_cleanup(holder->handle);
-    curl_slist_free_all(holder->chunk);
-    curl_formfree(holder->formpost);
-    delete holder;
-}
-
-CurlHolder* Session::Impl::newHolder() {
-    CurlHolder* holder = new CurlHolder();
-    holder->handle = curl_easy_init();
-    holder->chunk = nullptr;
-    holder->formpost = nullptr;
-    return holder;
 }
 
 void Session::Impl::SetUrl(const Url& url) {
@@ -326,7 +304,7 @@ void Session::Impl::SetCookies(const Cookies& cookies) {
     auto curl = curl_->handle;
     if (curl) {
         curl_easy_setopt(curl, CURLOPT_COOKIELIST, "ALL");
-        curl_easy_setopt(curl, CURLOPT_COOKIE, cookies.GetEncoded().c_str());
+        curl_easy_setopt(curl, CURLOPT_COOKIE, cookies.GetEncoded(*curl_).c_str());
     }
 }
 

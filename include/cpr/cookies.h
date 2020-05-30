@@ -1,6 +1,7 @@
 #ifndef CPR_COOKIES_H
 #define CPR_COOKIES_H
 
+#include "cpr/curlholder.h"
 #include <initializer_list>
 #include <map>
 #include <sstream>
@@ -13,7 +14,7 @@ class Cookies {
     /**
      * Should we URL-encode cookies when making a request.
      * Based on RFC6265, it is recommended but not mandatory to encode cookies.
-     * 
+     *
      * -------
      * To maximize compatibility with user agents, servers that wish to
      * store arbitrary data in a cookie-value SHOULD encode that data, for
@@ -24,11 +25,14 @@ class Cookies {
     bool encode{true};
 
     Cookies(bool encode = true) : encode(encode) {}
-    Cookies(const std::initializer_list<std::pair<const std::string, std::string>>& pairs, bool encode = true) : encode(encode), map_{pairs} {}
-    Cookies(const std::map<std::string, std::string>& map, bool encode = true) : encode(encode), map_{map} {}
+    Cookies(const std::initializer_list<std::pair<const std::string, std::string>>& pairs,
+            bool encode = true)
+            : encode(encode), map_{pairs} {}
+    Cookies(const std::map<std::string, std::string>& map, bool encode = true)
+            : encode(encode), map_{map} {}
 
     std::string& operator[](const std::string& key);
-    std::string GetEncoded() const;
+    std::string GetEncoded(const CurlHolder& holder) const;
 
     using iterator = std::map<std::string, std::string>::iterator;
     using const_iterator = std::map<std::string, std::string>::const_iterator;

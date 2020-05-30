@@ -1,13 +1,11 @@
 #include "cpr/cookies.h"
 
-#include "cpr/util.h"
-
 namespace cpr {
-std::string Cookies::GetEncoded() const {
+std::string Cookies::GetEncoded(const CurlHolder& holder) const {
     std::stringstream stream;
     for (const auto& item : map_) {
         // Depending on if encoding is set to "true", we will URL-encode cookies
-        stream << (encode ? cpr::util::urlEncode(item.first) : item.first) << "=";
+        stream << (encode ? holder.urlEncode(item.first) : item.first) << "=";
 
         // special case version 1 cookies, which can be distinguished by
         // beginning and trailing quotes
@@ -15,7 +13,7 @@ std::string Cookies::GetEncoded() const {
             stream << item.second;
         } else {
             // Depending on if encoding is set to "true", we will URL-encode cookies
-            stream << (encode ? cpr::util::urlEncode(item.second) : item.second);
+            stream << (encode ? holder.urlEncode(item.second) : item.second);
         }
         stream << "; ";
     }

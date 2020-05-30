@@ -17,6 +17,7 @@ add_library(${CPR_LIBRARIES}
     timeout.cpp
     util.cpp
     unix_socket.cpp
+    curlholder.cpp
 
     # Header files (useful in IDEs)
     "${CPR_INCLUDE_DIRS}/cpr/api.h"

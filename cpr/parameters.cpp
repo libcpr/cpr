@@ -8,21 +8,23 @@
 namespace cpr {
 
 Parameters::Parameters(const std::initializer_list<Parameter>& parameters) {
+    // Create a temporary CurlHolder for URL encoding:
+    CurlHolder holder;
     for (const auto& parameter : parameters) {
-        AddParameter(parameter);
+        AddParameter(parameter, holder);
     }
 }
 
-void Parameters::AddParameter(const Parameter& parameter) {
+void Parameters::AddParameter(const Parameter& parameter, const CurlHolder& holder) {
     if (!content.empty()) {
         content += "&";
     }
 
-    auto escapedKey = cpr::util::urlEncode(parameter.key);
+    auto escapedKey = holder.urlEncode(parameter.key);
     if (parameter.value.empty()) {
         content += escapedKey;
     } else {
-        auto escapedValue = cpr::util::urlEncode(parameter.value);
+        auto escapedValue = holder.urlEncode(parameter.value);
         content += escapedKey + "=" + escapedValue;
     }
 }
