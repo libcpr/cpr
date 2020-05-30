@@ -391,6 +391,38 @@ TEST(UrlEncodedPostTests, PostWithNoBodyTest) {
     EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
+static std::string getTimestamp() {
+    char buf[1000];
+    time_t now = time(0);
+    struct tm* tm = gmtime(&now);
+    strftime(buf, sizeof buf, "%a, %d %b %Y %H:%M:%S GMT", tm);
+    return buf;
+}
+
+TEST(UrlEncodedPostTests, PostReflectTest) {
+    std::string uri = server->GetBaseUrl() + "/reflect_post.html";
+    std::string body = "{\"property1\": \"value1\"}";
+    std::string contentType = "application/json";
+    std::string signature = "x-ms-date: something";
+    std::string logType = "LoggingTest";
+    std::string date = getTimestamp();
+    auto response = cpr::Post(cpr::Url(uri),
+                              cpr::Header{{"content-type", contentType},
+                                          {"Authorization", signature},
+                                          {"log-type", logType},
+                                          {"x-ms-date", date},
+                                          {"content-length", std::to_string(body.length())}},
+                              cpr::Body(body));
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(body, response.text);
+    EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
+    EXPECT_EQ(signature, response.header["Authorization"]);
+    EXPECT_EQ(logType, response.header["log-type"]);
+    EXPECT_EQ(date, response.header["x-ms-date"]);
+    EXPECT_EQ(std::to_string(body.length()), response.header["content-length"]);
+}
+
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
     ::testing::AddGlobalTestEnvironment(server);

@@ -37,6 +37,7 @@ class HttpServer : public AbstractServer {
     static void OnRequestPermRedirect(mg_connection* conn, http_message* msg);
     static void OnRequestTwoRedirects(mg_connection* conn, http_message* msg);
     static void OnRequestUrlPost(mg_connection* conn, http_message* msg);
+    static void OnRequestReflectPost(mg_connection* conn, http_message* msg);
     static void OnRequestBodyGet(mg_connection* conn, http_message* msg);
     static void OnRequestJsonPost(mg_connection* conn, http_message* msg);
     static void OnRequestFormPost(mg_connection* conn, http_message* msg);

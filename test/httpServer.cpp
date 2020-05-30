@@ -412,6 +412,29 @@ void HttpServer::OnRequestPut(mg_connection* conn, http_message* msg) {
     }
 }
 
+void HttpServer::OnRequestReflectPost(mg_connection* conn, http_message* msg) {
+    std::string response = std::string{msg->body.p, msg->body.len};
+    std::string headers;
+    for (size_t i = 0; i < sizeof(msg->header_names) / sizeof(mg_str); i++) {
+        if (!msg->header_names[i].p) {
+            continue;
+        }
+
+        std::string name = std::string(msg->header_names[i].p, msg->header_names[i].len);
+        if (std::string{"Host"} != name && std::string{"Accept"} != name) {
+            if (!headers.empty()) {
+                headers.append("\r\n");
+            }
+            if (msg->header_values[i].p) {
+                headers.append(name + ": " +
+                               std::string(msg->header_values[i].p, msg->header_values[i].len));
+            }
+        }
+    }
+    mg_send_head(conn, 200, response.length(), headers.c_str());
+    mg_send(conn, response.c_str(), response.length());
+}
+
 void HttpServer::OnRequestPutNotAllowed(mg_connection* conn, http_message* msg) {
     if (std::string{msg->method.p, msg->method.len} == std::string{"PUT"}) {
         mg_http_send_error(conn, 405, "Method Not Allowed");
@@ -514,6 +537,8 @@ void HttpServer::OnRequest(mg_connection* conn, http_message* msg) {
         OnRequestJsonPost(conn, msg);
     } else if (uri == "/form_post.html") {
         OnRequestFormPost(conn, msg);
+    } else if (uri == "/reflect_post.html") {
+        OnRequestReflectPost(conn, msg);
     } else if (uri == "/delete.html") {
         OnRequestDelete(conn, msg);
     } else if (uri == "/delete_unallowed.html") {
