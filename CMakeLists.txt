@@ -11,7 +11,6 @@ set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib)
 
 set(CPR_LIBRARIES cpr CACHE INTERNAL "")
-set(CPR_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/include CACHE INTERNAL "")
 
 macro(cpr_option OPTION_NAME OPTION_TEXT OPTION_DEFAULT)
     option(${OPTION_NAME} ${OPTION_TEXT} ${OPTION_DEFAULT})
@@ -37,11 +36,13 @@ cpr_option(USE_SYSTEM_GTEST
 cpr_option(CMAKE_USE_OPENSSL "Use OpenSSL code. Experimental" ON)
 message(STATUS "=======================================================")
 
+include(GNUInstallDirs)
+
 add_subdirectory(opt)
 add_subdirectory(cpr)
+add_subdirectory(include)
+
 if(BUILD_CPR_TESTS)
     enable_testing()
     add_subdirectory(test)
 endif()
-
-install(DIRECTORY include/cpr DESTINATION include)
