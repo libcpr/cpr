@@ -3,11 +3,10 @@ cmake_minimum_required(VERSION 3.15)
 message(STATUS "Using CURL_INCLUDE_DIRS: ${CURL_INCLUDE_DIRS}.")
 
 add_library(${CPR_LIBRARIES}
-
-    # Source files
     auth.cpp
     cookies.cpp
     cprtypes.cpp
+    curlholder.cpp
     digest.cpp
     error.cpp
     multipart.cpp
@@ -17,42 +16,13 @@ add_library(${CPR_LIBRARIES}
     proxies.cpp
     session.cpp
     timeout.cpp
-    util.cpp
     unix_socket.cpp
-    curlholder.cpp
-
-    # Header files (useful in IDEs)
-    "${CPR_INCLUDE_DIRS}/cpr/api.h"
-    "${CPR_INCLUDE_DIRS}/cpr/auth.h"
-    "${CPR_INCLUDE_DIRS}/cpr/body.h"
-    "${CPR_INCLUDE_DIRS}/cpr/cookies.h"
-    "${CPR_INCLUDE_DIRS}/cpr/cpr.h"
-    "${CPR_INCLUDE_DIRS}/cpr/cprtypes.h"
-    "${CPR_INCLUDE_DIRS}/cpr/curlholder.h"
-    "${CPR_INCLUDE_DIRS}/cpr/defines.h"
-    "${CPR_INCLUDE_DIRS}/cpr/digest.h"
-    "${CPR_INCLUDE_DIRS}/cpr/error.h"
-    "${CPR_INCLUDE_DIRS}/cpr/max_redirects.h"
-    "${CPR_INCLUDE_DIRS}/cpr/multipart.h"
-    "${CPR_INCLUDE_DIRS}/cpr/ntlm.h"
-    "${CPR_INCLUDE_DIRS}/cpr/parameters.h"
-    "${CPR_INCLUDE_DIRS}/cpr/payload.h"
-    "${CPR_INCLUDE_DIRS}/cpr/proxies.h"
-    "${CPR_INCLUDE_DIRS}/cpr/response.h"
-    "${CPR_INCLUDE_DIRS}/cpr/session.h"
-    "${CPR_INCLUDE_DIRS}/cpr/timeout.h"
-    "${CPR_INCLUDE_DIRS}/cpr/util.h"
-    "${CPR_INCLUDE_DIRS}/cpr/ssl_options.h"
-    "${CPR_INCLUDE_DIRS}/cpr/limit_rate.h"
-    "${CPR_INCLUDE_DIRS}/cpr/verbose.h"
-    "${CPR_INCLUDE_DIRS}/cpr/unix_socket.h"
+    util.cpp
     )
 
 message(STATUS "Using CURL_LIBRARIES: ${CURL_LIBRARIES}.")
 target_link_libraries(${CPR_LIBRARIES} PUBLIC CURL::libcurl) # todo should be private, but first dependencys in ssl_options need to be removed
-target_include_directories(${CPR_LIBRARIES} PUBLIC
-        ${CPR_INCLUDE_DIRS}
-        )
+
 
 # Set version for shared libraries.
 set_target_properties(${CPR_LIBRARIES}
@@ -60,7 +30,3 @@ set_target_properties(${CPR_LIBRARIES}
      VERSION ${${PROJECT_NAME}_VERSION}
      SOVERSION ${${PROJECT_NAME}_VERSION_MAJOR})
 
-install(TARGETS ${CPR_LIBRARIES}
-        RUNTIME DESTINATION bin
-        LIBRARY DESTINATION lib
-        ARCHIVE DESTINATION lib)
