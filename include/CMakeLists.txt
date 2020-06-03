@@ -1,10 +1,10 @@
 cmake_minimum_required(VERSION 3.15)
 
-target_include_directories(${CPR_LIBRARIES} PUBLIC  
+target_include_directories(cpr PUBLIC  
     $<INSTALL_INTERFACE:include>    
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
 
-target_sources(${CPR_LIBRARIES} PRIVATE
+target_sources(cpr PRIVATE
      # Header files (useful in IDEs)
     cpr/api.h
     cpr/auth.h
