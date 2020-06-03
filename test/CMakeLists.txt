@@ -6,7 +6,7 @@ add_library(${TEST_SERVER_LIBRARY}
                 abstractServer.cpp
                 httpServer.cpp
                 httpsServer.cpp)
-target_link_libraries(${TEST_SERVER_LIBRARY} PRIVATE Threads::Threads ${CPR_LIBRARIES} GTest::GTest
+target_link_libraries(${TEST_SERVER_LIBRARY} PRIVATE Threads::Threads cpr::cpr GTest::GTest
                                              PUBLIC mongoose)
 
 macro(add_cpr_test _TEST_NAME)
@@ -14,7 +14,7 @@ macro(add_cpr_test _TEST_NAME)
     target_link_libraries(${_TEST_NAME}_tests PRIVATE
         ${TEST_SERVER_LIBRARY}
         GTest::GTest
-        ${CPR_LIBRARIES}
+        cpr::cpr
         CURL::libcurl)
     add_test(NAME cpr_${_TEST_NAME}_tests COMMAND ${_TEST_NAME}_tests)
     # Group under the "tests" project folder in IDEs such as Visual Studio.
