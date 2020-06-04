@@ -1,25 +1,24 @@
 cmake_minimum_required(VERSION 3.15)
 
 find_package(Threads)
-set(TEST_SERVER_LIBRARY test_server)
 
 if (CMAKE_USE_OPENSSL)
-    add_library(${TEST_SERVER_LIBRARY}
+    add_library(test_server
                 abstractServer.cpp
                 httpServer.cpp
                 httpsServer.cpp)
 else ()
-    add_library(${TEST_SERVER_LIBRARY}
+    add_library(test_server
                 abstractServer.cpp
                 httpServer.cpp)
 endif()
-target_link_libraries(${TEST_SERVER_LIBRARY} PRIVATE Threads::Threads cpr::cpr GTest::GTest
+target_link_libraries(test_server PRIVATE Threads::Threads cpr::cpr GTest::GTest
                                              PUBLIC mongoose)
 
 macro(add_cpr_test _TEST_NAME)
     add_executable(${_TEST_NAME}_tests ${_TEST_NAME}_tests.cpp)
     target_link_libraries(${_TEST_NAME}_tests PRIVATE
-        ${TEST_SERVER_LIBRARY}
+        test_server
         GTest::GTest
         cpr::cpr
         CURL::libcurl)
@@ -29,7 +28,16 @@ macro(add_cpr_test _TEST_NAME)
     if(WIN32 AND BUILD_SHARED_LIBS)
         add_custom_command(TARGET ${_TEST_NAME}_tests POST_BUILD
                            COMMAND ${CMAKE_COMMAND} -E copy
-                                $<TARGET_FILE_DIR:libcurl>/$<IF:$<CONFIG:Debug>,libcurl-d.dll,libcurl.dll> $<TARGET_FILE_DIR:${_TEST_NAME}_tests>)
+                                $<TARGET_FILE:libcurl> $<TARGET_FILE_DIR:${_TEST_NAME}_tests>)
+        add_custom_command(TARGET ${_TEST_NAME}_tests POST_BUILD
+                           COMMAND ${CMAKE_COMMAND} -E copy
+                                $<TARGET_FILE:test_server> $<TARGET_FILE_DIR:${_TEST_NAME}_tests>)
+        add_custom_command(TARGET ${_TEST_NAME}_tests POST_BUILD
+                           COMMAND ${CMAKE_COMMAND} -E copy
+                                $<TARGET_FILE:cpr> $<TARGET_FILE_DIR:${_TEST_NAME}_tests>)
+        add_custom_command(TARGET ${_TEST_NAME}_tests POST_BUILD
+                           COMMAND ${CMAKE_COMMAND} -E copy
+                                $<TARGET_FILE:mongoose> $<TARGET_FILE_DIR:${_TEST_NAME}_tests>)
     endif()
 endmacro()
 
