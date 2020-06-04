@@ -46,8 +46,15 @@ if(USE_SYSTEM_CURL)
 endif()
 if(NOT USE_SYSTEM_CURL OR NOT CURL_FOUND)
     message(STATUS "Not using system Curl, using built-in curl project instead.")
-    option(BUILD_TESTING "Set to ON to build cURL tests." OFF)
-    option(BUILD_CURL_EXE "Set to ON to build cURL executable." OFF)
+    
+    set(BUILD_CURL_EXE OFF CACHE INTERNAL "" FORCE)
+    set(BUILD_TESTING OFF CACHE INTERNAL "" FORCE)
+    set(HTTP_ONLY ON CACHE INTERNAL "" FORCE)
+    if(NOT CMAKE_USE_OPENSSL)
+        set(CURL_CA_PATH "none" CACHE INTERNAL "" FORCE)
+    endif()
+    set(SSL_ENABLED ${CMAKE_USE_OPENSSL} CACHE INTERNAL "" FORCE)
+
     FetchContent_Declare(curl
                           GIT_REPOSITORY https://github.com/curl/curl.git
                           GIT_TAG        curl-7_69_1)
@@ -58,7 +65,6 @@ if(NOT USE_SYSTEM_CURL OR NOT CURL_FOUND)
     target_include_directories(curl_int INTERFACE ${curl_SOURCE_DIR}/include ${curl_BINARY_DIR}/include/curl)
     add_library(CURL::libcurl ALIAS curl_int)
 
-        
     # Group under the "external" project folder in IDEs such as Visual Studio.
     if(BUILD_CURL_EXE)
         set_property(TARGET curl PROPERTY FOLDER "external")
@@ -92,7 +98,6 @@ if(BUILD_CPR_TESTS)
                                     GIT_REPOSITORY https://github.com/google/googletest.git
                                     GIT_TAG release-1.10.0)
         FetchContent_MakeAvailable(googletest)
-
         
         add_library(gtest_int INTERFACE)
         target_link_libraries(gtest_int INTERFACE gtest)
