@@ -81,7 +81,7 @@ If you already have a project you need to integrate C++ Requests with, the prima
 
 ```
 
-This will produce the target cpr::cpr which you can link against the typical way:
+This will produce the target `cpr::cpr` which you can link against the typical way:
 
 ```cmake
 target_link_libraries(your_target_name PRIVATE cpr::cpr)
