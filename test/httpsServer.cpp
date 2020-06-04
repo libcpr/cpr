@@ -20,8 +20,10 @@ mg_connection* HttpsServer::initServer(mg_mgr* mgr,
     mg_mgr_init(mgr, this);
 
     mg_bind_opts bind_opts{};
+#ifdef CMAKE_USE_OPENSSL
     bind_opts.ssl_cert = sslCertFileName.c_str();
     bind_opts.ssl_key = sslKeyFileName.c_str();
+#endif
     std::string port = std::to_string(GetPort());
     mg_connection* c = mg_bind_opt(mgr, port.c_str(), event_handler, bind_opts);
     mg_set_protocol_http_websocket(c);
