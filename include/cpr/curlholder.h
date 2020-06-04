@@ -1,7 +1,7 @@
 #ifndef CPR_CURL_HOLDER_H
 #define CPR_CURL_HOLDER_H
 
-#include <memory>
+#include <string>
 
 #include <curl/curl.h>
 
