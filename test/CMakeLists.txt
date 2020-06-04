@@ -2,10 +2,17 @@ cmake_minimum_required(VERSION 3.15)
 
 find_package(Threads)
 set(TEST_SERVER_LIBRARY test_server)
-add_library(${TEST_SERVER_LIBRARY}
+
+if (CMAKE_USE_OPENSSL)
+    add_library(${TEST_SERVER_LIBRARY}
                 abstractServer.cpp
                 httpServer.cpp
                 httpsServer.cpp)
+else ()
+    add_library(${TEST_SERVER_LIBRARY}
+                abstractServer.cpp
+                httpServer.cpp)
+endif()
 target_link_libraries(${TEST_SERVER_LIBRARY} PRIVATE Threads::Threads cpr::cpr GTest::GTest
                                              PUBLIC mongoose)
 
