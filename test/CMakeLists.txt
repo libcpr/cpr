@@ -26,14 +26,10 @@ macro(add_cpr_test _TEST_NAME)
     add_test(NAME cpr_${_TEST_NAME}_tests COMMAND ${_TEST_NAME}_tests)
     # Group under the "tests" project folder in IDEs such as Visual Studio.
     set_property(TARGET ${_TEST_NAME}_tests PROPERTY FOLDER "tests")
-    if(WIN32)
-        set(LIBCURL_DLL_NAME "libcurl.dll")
-        if(CMAKE_BUILD_TYPE STREQUAL "DEBUG")
-            set(LIBCURL_DLL_NAME "libcurl-d.dll")
-        endif()
+    if(WIN32 AND BUILD_SHARED_LIBS)
         add_custom_command(TARGET ${_TEST_NAME}_tests POST_BUILD
                            COMMAND ${CMAKE_COMMAND} -E copy
-                                $<TARGET_FILE_DIR:libcurl>/${LIBCURL_DLL_NAME} $<TARGET_FILE_DIR:${_TEST_NAME}_tests>)
+                                $<TARGET_FILE_DIR:libcurl>/$<IF:$<CONFIG:Debug>,libcurl-d.dll,libcurl.dll> $<TARGET_FILE_DIR:${_TEST_NAME}_tests>)
     endif()
 endmacro()
 
