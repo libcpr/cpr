@@ -28,7 +28,7 @@ Header parseHeader(const std::string& headers, std::string* status_line, std::st
         if (line.substr(0, 5) == "HTTP/") {
             // set the status_line if it was given
             if ((status_line != nullptr) || (reason != nullptr)) {
-                line.resize(std::min(line.size(), line.find_last_not_of("\t\n\r ") + 1));
+                line.resize(std::min<size_t>(line.size(), line.find_last_not_of("\t\n\r ") + 1));
                 if (status_line != nullptr) {
                     *status_line = line;
                 }
@@ -54,7 +54,7 @@ Header parseHeader(const std::string& headers, std::string* status_line, std::st
             if (found != std::string::npos) {
                 auto value = line.substr(found + 1);
                 value.erase(0, value.find_first_not_of("\t "));
-                value.resize(std::min(value.size(), value.find_last_not_of("\t\n\r ") + 1));
+                value.resize(std::min<size_t>(value.size(), value.find_last_not_of("\t\n\r ") + 1));
                 header[line.substr(0, found)] = value;
             }
         }
