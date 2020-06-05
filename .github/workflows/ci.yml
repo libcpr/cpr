@@ -11,7 +11,7 @@ on:
     branches: [ master ]
 
 jobs:
-  ubuntu-build-test:
+  ubuntu-build-test-gcc:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
@@ -30,3 +30,23 @@ jobs:
         build-type: Release
         run-test: true
         ctest-options: -V
+  
+  ubuntu-build-test-clang:
+          runs-on: ubuntu-latest
+          steps:
+          - name: Checkout
+            uses: actions/checkout@v2.2.0
+            with:
+              submodules: true
+          - name: Install libssl-dev
+            run: sudo apt-get install libssl-dev
+          - name: "[Release g++] Build & Test"
+            uses: ashutoshvarma/action-cmake-build@master
+            with:
+              build-dir: ${{ github.workspace }}/build
+              source-dir: ${{ github.workspace }}
+              cc: clang
+              cxx: clang++
+              build-type: Release
+              run-test: true
+              ctest-options: -V
