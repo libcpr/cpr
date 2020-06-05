@@ -17,7 +17,7 @@ jobs:
     - name: Install libssl-dev
       run: sudo apt-get install libssl-dev tree
     - name: Tree
-      run: tree
+      run: tree && pwd && ls -l
     - name: "[Release g++] Build & Test"
       uses: ashutoshvarma/action-cmake-build@master
       with:
