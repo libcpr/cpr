@@ -16,14 +16,12 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Install libssl-dev
-      run: sudo apt-get install libssl-dev tree
-    - name: Tree
-      run: cd ../.. && tree && pwd && ls -l
+      run: sudo apt-get install libssl-dev
     - name: "[Release g++] Build & Test"
       uses: ashutoshvarma/action-cmake-build@master
       with:
-        build-dir: ${{ runner.workspace }}/build
-        source-dir: ${{ runner.workspace }}
+        build-dir: ${{ github.workspace }}/build
+        source-dir: ${{ github.workspace }}
         cc: gcc
         cxx: g++
         build-type: Release
