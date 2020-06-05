@@ -14,7 +14,12 @@ jobs:
   ubuntu-build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - name: Checkout
+      uses: actions/checkout@v2.2.0
+      with:
+        submodules: true
+    #- name: Init submodules
+    #  run: git submodule update --init --recursive
     - name: Install libssl-dev
       run: sudo apt-get install libssl-dev
     - name: "[Release g++] Build & Test"
