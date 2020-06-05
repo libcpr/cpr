@@ -20,6 +20,7 @@ jobs:
       uses: ashutoshvarma/action-cmake-build@master
       with:
         build-dir: ${{ runner.workspace }}/build
+        source-dir: ${{ runner.workspace }}
         cc: gcc
         cxx: g++
         build-type: Release
