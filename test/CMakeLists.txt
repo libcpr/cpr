@@ -3,12 +3,12 @@ cmake_minimum_required(VERSION 3.15)
 find_package(Threads)
 
 if (CMAKE_USE_OPENSSL)
-    add_library(test_server
+    add_library(test_server STATIC
                 abstractServer.cpp
                 httpServer.cpp
                 httpsServer.cpp)
 else ()
-    add_library(test_server
+    add_library(test_server STATIC
                 abstractServer.cpp
                 httpServer.cpp)
 endif()
@@ -31,13 +31,7 @@ macro(add_cpr_test _TEST_NAME)
                                 $<TARGET_FILE:libcurl> $<TARGET_FILE_DIR:${_TEST_NAME}_tests>)
         add_custom_command(TARGET ${_TEST_NAME}_tests POST_BUILD
                            COMMAND ${CMAKE_COMMAND} -E copy
-                                $<TARGET_FILE:test_server> $<TARGET_FILE_DIR:${_TEST_NAME}_tests>)
-        add_custom_command(TARGET ${_TEST_NAME}_tests POST_BUILD
-                           COMMAND ${CMAKE_COMMAND} -E copy
                                 $<TARGET_FILE:cpr> $<TARGET_FILE_DIR:${_TEST_NAME}_tests>)
-        add_custom_command(TARGET ${_TEST_NAME}_tests POST_BUILD
-                           COMMAND ${CMAKE_COMMAND} -E copy
-                                $<TARGET_FILE:mongoose> $<TARGET_FILE_DIR:${_TEST_NAME}_tests>)
     endif()
 endmacro()
 
