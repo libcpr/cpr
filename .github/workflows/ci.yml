@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Install libssl-dev
-      run: sudo apt-get install libssl-dev
+      run: sudo apt-get install libssl-dev tree
     - name: Tree
       run: tree
     - name: "[Release g++] Build & Test"
