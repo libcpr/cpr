@@ -4,6 +4,7 @@ project(cpr VERSION 1.4.0 LANGUAGES CXX)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "CMake")
 
+option(${BUILD_SHARED_LIBS} "Build libraries as shared libraries" ON)
 # Avoid the dll boilerplate code for windows
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ${BUILD_SHARED_LIBS})
 set(CMAKE_CXX_STANDARD 11)
