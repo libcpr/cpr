@@ -45,14 +45,18 @@ TEST(ErrorTests, ConnectTimeoutFailure) {
     auto url = Url{"http://localhost:67"};
     auto response = cpr::Get(url, cpr::ConnectTimeout{1});
     EXPECT_EQ(0, response.status_code);
-    EXPECT_EQ(ErrorCode::OPERATION_TIMEDOUT, response.error.code);
+    // Sometimes a CONNECTION_FAILURE happens before the OPERATION_TIMEDOUT:
+    EXPECT_TRUE(response.error.code == ErrorCode::OPERATION_TIMEDOUT ||
+                response.error.code == ErrorCode::CONNECTION_FAILURE);
 }
 
 TEST(ErrorTests, ChronoConnectTimeoutFailure) {
     auto url = Url{"http://localhost:67"};
     auto response = cpr::Get(url, cpr::ConnectTimeout{std::chrono::milliseconds{1}});
     EXPECT_EQ(0, response.status_code);
-    EXPECT_EQ(ErrorCode::OPERATION_TIMEDOUT, response.error.code);
+    // Sometimes a CONNECTION_FAILURE happens before the OPERATION_TIMEDOUT:
+    EXPECT_TRUE(response.error.code == ErrorCode::OPERATION_TIMEDOUT ||
+                response.error.code == ErrorCode::CONNECTION_FAILURE);
 }
 
 TEST(ErrorTests, LowSpeedTimeFailure) {
