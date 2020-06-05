@@ -14,8 +14,10 @@ jobs:
   ubuntu-build:
     runs-on: ubuntu-latest
     steps:
-    - name: Install xmllint
+    - name: Install libssl-dev
       run: sudo apt-get install libssl-dev
+    - name: Tree
+      run: tree
     - name: "[Release g++] Build & Test"
       uses: ashutoshvarma/action-cmake-build@master
       with:
