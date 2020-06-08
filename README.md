@@ -1,7 +1,7 @@
 # C++ Requests: Curl for People <img align="right" height="40" src="http://i.imgur.com/d9Xtyts.png">
 
 [![gitter](https://badges.gitter.im/cpp-pm/community.svg)](https://gitter.im/whoshuu/cpr) [![Documentation](https://img.shields.io/badge/documentation-master-brightgreen.svg)](https://whoshuu.github.io/cpr/)
-[![Build Status](https://travis-ci.org/whoshuu/cpr.svg?branch=master)](https://travis-ci.org/whoshuu/cpr) [![Build status](https://ci.appveyor.com/api/projects/status/imalkp3a6hblpj5y/branch/master?svg=true)](https://ci.appveyor.com/project/whoshuu/cpr/branch/master) [![Coverage Status](https://coveralls.io/repos/whoshuu/cpr/badge.svg?branch=master&service=github)](https://coveralls.io/github/whoshuu/cpr)
+![CI](https://github.com/whoshuu/cpr/workflows/CI/badge.svg) [![Coverage Status](https://coveralls.io/repos/whoshuu/cpr/badge.svg?branch=master&service=github)](https://coveralls.io/github/whoshuu/cpr)
 
 ## Announcements
 
