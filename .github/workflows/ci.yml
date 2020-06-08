@@ -79,7 +79,10 @@ jobs:
       with:
         submodules: true
     - name: Install openssl
-      run: brew install openssl
+      run: |
+        brew install openssl
+        echo 'export PATH="/usr/local/opt/openssl/bin:$PATH"' >> ~/.bash_profile
+        source ~/.bash_profile
     - name: "[Release clang++] Build & Test"
       uses: ashutoshvarma/action-cmake-build@master
       with:
