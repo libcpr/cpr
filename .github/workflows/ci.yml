@@ -23,8 +23,8 @@ jobs:
     - name: "[Release g++] Build & Test"
       uses: ashutoshvarma/action-cmake-build@master
       with:
-        build-dir: ${{ github.workspace }}/build
-        source-dir: ${{ github.workspace }}
+        build-dir: ${{github.workspace}}/build
+        source-dir: ${{github.workspace}}
         cc: gcc
         cxx: g++
         build-type: Release
@@ -43,8 +43,8 @@ jobs:
     - name: "[Release g++] Build & Test"
       uses: ashutoshvarma/action-cmake-build@master
       with:
-        build-dir: ${{ github.workspace }}/build
-        source-dir: ${{ github.workspace }}
+        build-dir: ${{github.workspace}}/build
+        source-dir: ${{github.workspace}}
         cc: clang
         cxx: clang++
         build-type: Release
@@ -61,11 +61,11 @@ jobs:
     - name: "[Release msvc] Build & Test"
       env:
         CMAKE_GENERATOR: "Visual Studio 16 2019"
+        CMAKE_USE_OPENSSL: OFF
       uses: ashutoshvarma/action-cmake-build@master
       with:
-        build-dir: ${{ github.workspace }}/build
-        source-dir: ${{ github.workspace }}
-        configure-options: -DCMAKE_USE_OPENSSL=OFF
+        build-dir: ${{github.workspace}}/build
+        source-dir: ${{github.workspace}}
         build-type: Release
         target: ALL_BUILD
         run-test: true
