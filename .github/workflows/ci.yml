@@ -81,7 +81,12 @@ jobs:
     - name: Install openssl
       run: |
         brew install libssh2 openssl
+        echo 'export PATH="/usr/local/opt/openssl/bin:$PATH"' >> ~/.bash_profile
+        source ~/.bash_profile
     - name: "[Release clang++] Build & Test"
+      env:
+        OPENSSL_ROOT_DIR: "/usr/local/opt/openssl"
+        OPENSSL_LIBRARIES: "/usr/local/opt/openssl/lib"
       uses: ashutoshvarma/action-cmake-build@master
       with:
         build-dir: ${{github.workspace}}/build
