@@ -79,7 +79,7 @@ jobs:
       with:
         submodules: true
     - name: Install libssl-dev
-        run: sudo apt install libssl-dev
+      run: brew install libssl-dev
     - name: "[Release clang++] Build & Test"
       uses: ashutoshvarma/action-cmake-build@master
       with:
