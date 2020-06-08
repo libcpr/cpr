@@ -78,9 +78,9 @@ jobs:
       uses: actions/checkout@v2.2.0
       with:
         submodules: true
-    - name: "[Release msvc] Build & Test"
-      env:
-        CMAKE_USE_OPENSSL: OFF
+    - name: Install libssl-dev
+        run: sudo apt install libssl-dev
+    - name: "[Release clang++] Build & Test"
       uses: ashutoshvarma/action-cmake-build@master
       with:
         build-dir: ${{github.workspace}}/build
