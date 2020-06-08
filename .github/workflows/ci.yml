@@ -78,8 +78,8 @@ jobs:
       uses: actions/checkout@v2.2.0
       with:
         submodules: true
-    - name: Install libssl-dev
-      run: brew install libssl-dev
+    - name: Install openssl
+      run: brew install openssl
     - name: "[Release clang++] Build & Test"
       uses: ashutoshvarma/action-cmake-build@master
       with:
