@@ -79,6 +79,8 @@ jobs:
       with:
         submodules: true
     - name: "[Release msvc] Build & Test"
+      env:
+        CMAKE_USE_OPENSSL: OFF
       uses: ashutoshvarma/action-cmake-build@master
       with:
         build-dir: ${{github.workspace}}/build
