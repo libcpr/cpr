@@ -4,9 +4,8 @@ project(cpr VERSION 1.5.0 LANGUAGES CXX)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "CMake")
 
-option(${BUILD_SHARED_LIBS} "Build libraries as shared libraries" ON)
 # Avoid the dll boilerplate code for windows
-set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ${BUILD_SHARED_LIBS})
+set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
@@ -26,6 +25,7 @@ macro(cpr_option OPTION_NAME OPTION_TEXT OPTION_DEFAULT)
     message(STATUS "  ${OPTION_NAME}: ${${OPTION_NAME}}")
 endmacro()
 
+option(${BUILD_SHARED_LIBS} "Build libraries as shared libraries" ON)
 message(STATUS "C++ Requests CMake Options")
 message(STATUS "=======================================================")
 cpr_option(USE_SYSTEM_CURL
