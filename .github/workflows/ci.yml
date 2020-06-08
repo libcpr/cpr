@@ -63,7 +63,7 @@ jobs:
       with:
         build-dir: ${{ github.workspace }}/build
         source-dir: ${{ github.workspace }}
-        configure-options: -G 'Visual Studio 16 2019' -DCMAKE_USE_OPENSSL=OFF
+        configure-options: -G "Visual Studio 16 2019" -DCMAKE_USE_OPENSSL=OFF
         build-type: Release
         target: ALL_BUILD
         run-test: true
