@@ -5,7 +5,7 @@
 
 ## Announcements
 
-The cpr project will have a new maintainer: [Tim Stack](https://github.com/tstack). He has graciously agreed to donate his time to keep the project healthy and grow it. For those waiting on their PRs and issues to be resolved, I appreciate your patience and know that you will be in good hands moving forward.
+The cpr project will have a new maintainer: [Fabian Sauter](https://github.com/com8) and [Tim Stack](https://github.com/tstack). He has graciously agreed to donate his time to keep the project healthy and grow it. For those waiting on their PRs and issues to be resolved, I appreciate your patience and know that you will be in good hands moving forward.
 
 ## TLDR
 
@@ -63,22 +63,19 @@ C++ Requests currently supports:
 Support for the following will be forthcoming (in rough order of implementation priority):
 
 * [Streamed requests](https://github.com/whoshuu/cpr/issues/25)
-* [OpenSSL support](https://github.com/whoshuu/cpr/issues/31)
 
 and much more!
 
 ## Usage
 
-For just getting this library up and running, I highly recommend forking the [example project](https://github.com/whoshuu/cpr-example). It's configured with the minimum CMake magic and boilerplate needed to start playing around with networked applications.
-
-If you already have a project you need to integrate C++ Requests with, the primary way is to use cmake fetch_content. Just add this code to you CMakeLists.txt.
+If you already have a project you need to integrate C++ Requests with, the primary way is to use CMake `fetch_content`.
+Add the following to your `CMakeLists.txt`.
 
 
 ```cmake
-    include(FetchContent)
-    FetchContent_Declare(cpr GIT_REPOSITORY https://github.com/whoshuu/cpr.git)
-    FetchContent_MakeAvailable(cpr)
-
+include(FetchContent)
+FetchContent_Declare(cpr GIT_REPOSITORY https://github.com/whoshuu/cpr.git)
+FetchContent_MakeAvailable(cpr)
 ```
 
 This will produce the target `cpr::cpr` which you can link against the typical way:
@@ -87,23 +84,24 @@ This will produce the target `cpr::cpr` which you can link against the typical w
 target_link_libraries(your_target_name PRIVATE cpr::cpr)
 ```
 
-and that should do it! Using the submodule method of integrating C++ Requests, there's no need to handle libcurl yourself, all of those dependencies are taken care of for you.
+That should do it!
+There's no need to handle `libcurl` yourself. All dependencies are taken care of for you.
 
 ## Requirements
 
 The only explicit requirements are:
 
-* a C++11 compatible compiler such as Clang or GCC. The minimum required version of GCC is unknown, so if anyone has trouble building this library with a specific version of GCC, do let me know
-* curl and its development libraries
+* a `C++11` compatible compiler such as Clang or GCC. The minimum required version of GCC is unknown, so if anyone has trouble building this library with a specific version of GCC, do let me know
+* If you would like to perform https requests `OpenSSL` and its development libraries are required.
 
 ## Building cpr - Using vcpkg
 
 You can download and install cpr using the [vcpkg](https://github.com/Microsoft/vcpkg) dependency manager:
-
-    git clone https://github.com/Microsoft/vcpkg.git
-    cd vcpkg
-    ./bootstrap-vcpkg.sh
-    ./vcpkg integrate install
-    ./vcpkg install cpr
-
+```Bash
+git clone https://github.com/Microsoft/vcpkg.git
+cd vcpkg
+./bootstrap-vcpkg.sh
+./vcpkg integrate install
+./vcpkg install cpr
+```
 The cpr port in vcpkg is kept up to date by Microsoft team members and community contributors. If the version is out of date, please [create an issue or pull request](https://github.com/Microsoft/vcpkg) on the vcpkg repository.
