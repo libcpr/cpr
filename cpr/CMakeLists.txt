@@ -23,6 +23,9 @@ add_library(cpr
 add_library(cpr::cpr ALIAS cpr)
 
 message(STATUS "Using CURL_LIBRARIES: ${CURL_LIBRARIES}.")
+if(USE_SYSTEM_CURL)
+    find_package(CURL)
+endif()
 target_link_libraries(cpr PUBLIC CURL::libcurl) # todo should be private, but first dependencys in ssl_options need to be removed
 
 
