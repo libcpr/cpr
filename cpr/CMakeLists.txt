@@ -32,4 +32,4 @@ set_target_properties(cpr
      VERSION ${${PROJECT_NAME}_VERSION}
      SOVERSION ${${PROJECT_NAME}_VERSION_MAJOR})
 
-
+install(TARGETS cpr)
