@@ -61,30 +61,23 @@ Support for the following will be forthcoming (in rough order of implementation 
 and much more!
 
 ## Usage
+If you already have a project you need to integrate C++ Requests with, the primary way is to use CMake `fetch_content`.
+Add the following to your `CMakeLists.txt`.
 
-For just getting this library up and running, I highly recommend forking the [example project](https://github.com/whoshuu/cpr-example). It's configured with the minimum CMake magic and boilerplate needed to start playing around with networked applications.
 
-If you already have a project you need to integrate C++ Requests with, the primary way is to use git submodules. Add this repository as a submodule of your root repository:
-
-```
-git submodule add git@github.com:whoshuu/cpr.git
-git submodule update --init --recursive
-```
-
-Next, add this subdirectory to your CMakeLists.txt before declaring any targets that might use it:
-
-```
-add_subdirectory(cpr)
+```cmake
+include(FetchContent)
+FetchContent_Declare(cpr GIT_REPOSITORY https://github.com/whoshuu/cpr.git)
+FetchContent_MakeAvailable(cpr)
 ```
 
-This will produce two important CMake variables, `CPR_INCLUDE_DIRS` and `CPR_LIBRARIES`, which you'll use in the typical way:
+This will produce the target `cpr::cpr` which you can link against the typical way:
 
-```
-include_directories(${CPR_INCLUDE_DIRS})
-target_link_libraries(your_target_name ${CPR_LIBRARIES})
+```cmake
+target_link_libraries(your_target_name PRIVATE cpr::cpr)
 ```
 
-and that should do it! Using the submodule method of integrating C++ Requests, there's no need to handle libcurl yourself, all of those dependencies are taken care of for you.
+That should do it! Using the `fetch_content` method of integrating C++ Requests, there's no need to handle `libcurl` yourself, all of those dependencies are taken care of for you.
 
 ## Requirements
 
