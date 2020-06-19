@@ -13,6 +13,7 @@ class Proxies {
     Proxies() {}
     Proxies(const std::initializer_list<std::pair<const std::string, std::string>>& hosts);
 
+    void add(const std::string& protocol, std::string proxy_url);
     bool has(const std::string& protocol) const;
     const std::string& operator[](const std::string& protocol);
 
