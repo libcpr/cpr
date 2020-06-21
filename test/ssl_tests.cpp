@@ -14,7 +14,7 @@ static HttpsServer* server;
 TEST(SslTests, HelloWorldTest) {
     std::this_thread::sleep_for(std::chrono::seconds(1));
 
-    std::string url = Url{server->GetBaseUrl() + "/hello.html"};
+    Url url{server->GetBaseUrl() + "/hello.html"};
     std::string baseDirPath = server->getBaseDirPath();
     SslOptions sslOpts = Ssl(
             ssl::TLSv1{}, ssl::ALPN{false}, ssl::NPN{false}, ssl::CaPath{baseDirPath + "ca.cer"},

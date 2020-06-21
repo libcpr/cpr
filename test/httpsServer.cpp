@@ -6,8 +6,8 @@ HttpsServer::HttpsServer(const std::string&& baseDirPath, const std::string&& ss
         : baseDirPath(std::move(baseDirPath)), sslCertFileName(std::move(sslCertFileName)),
           sslKeyFileName(std::move(sslKeyFileName)) {}
 
-Url HttpsServer::GetBaseUrl() {
-    return Url{"https://127.0.0.1:"}.append(std::to_string(GetPort()));
+std::string HttpsServer::GetBaseUrl() {
+    return "https://127.0.0.1:" + std::to_string(GetPort());
 }
 
 uint16_t HttpsServer::GetPort() {

@@ -1,8 +1,8 @@
 #include "httpServer.hpp"
 
 namespace cpr {
-Url HttpServer::GetBaseUrl() {
-    return Url{"http://127.0.0.1:"}.append(std::to_string(GetPort()));
+std::string HttpServer::GetBaseUrl() {
+    return "http://127.0.0.1:" + std::to_string(GetPort());
 }
 
 uint16_t HttpServer::GetPort() {

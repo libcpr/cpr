@@ -312,7 +312,7 @@ void Session::Impl::SetBody(Body&& body) {
     hasBodyOrPayload_ = true;
     auto curl = curl_->handle;
     if (curl) {
-        curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE_LARGE, body.length());
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE_LARGE, body.str().length());
         curl_easy_setopt(curl, CURLOPT_COPYPOSTFIELDS, body.c_str());
     }
 }
@@ -321,7 +321,7 @@ void Session::Impl::SetBody(const Body& body) {
     hasBodyOrPayload_ = true;
     auto curl = curl_->handle;
     if (curl) {
-        curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE_LARGE, body.length());
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE_LARGE, body.str().length());
         curl_easy_setopt(curl, CURLOPT_POSTFIELDS, body.c_str());
     }
 }
@@ -495,7 +495,7 @@ Response Session::Impl::makeDownloadRequest(CURL* curl, std::ofstream& file) {
         curl_easy_setopt(curl, CURLOPT_URL, url_.c_str());
     }
 
-    auto protocol = url_.substr(0, url_.find(':'));
+    auto protocol = url_.str().substr(0, url_.str().find(':'));
     if (proxies_.has(protocol)) {
         curl_easy_setopt(curl, CURLOPT_PROXY, proxies_[protocol].c_str());
     } else {
@@ -555,7 +555,7 @@ Response Session::Impl::makeRequest(CURL* curl) {
         curl_easy_setopt(curl, CURLOPT_URL, url_.c_str());
     }
 
-    auto protocol = url_.substr(0, url_.find(':'));
+    auto protocol = url_.str().substr(0, url_.str().find(':'));
     if (proxies_.has(protocol)) {
         curl_easy_setopt(curl, CURLOPT_PROXY, proxies_[protocol].c_str());
     } else {

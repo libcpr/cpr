@@ -20,7 +20,7 @@ class HttpsServer : public AbstractServer {
                          const std::string&& sslKeyFileName);
     ~HttpsServer() = default;
 
-    Url GetBaseUrl() override;
+    std::string GetBaseUrl() override;
     uint16_t GetPort() override;
 
     void OnRequest(mg_connection* conn, http_message* msg) override;

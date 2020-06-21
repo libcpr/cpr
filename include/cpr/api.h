@@ -46,16 +46,16 @@ Response Get(Ts&&... ts) {
 // Get async methods
 template <typename... Ts>
 AsyncResponse GetAsync(Ts... ts) {
-    return std::async(std::launch::async, [](Ts... ts) { return Get(std::move(ts)...); },
-                      std::move(ts)...);
+    return std::async(
+            std::launch::async, [](Ts... ts) { return Get(std::move(ts)...); }, std::move(ts)...);
 }
 
 // Get callback methods
 template <typename Then, typename... Ts>
 auto GetCallback(Then then, Ts... ts) -> std::future<decltype(then(Get(std::move(ts)...)))> {
-    return std::async(std::launch::async, [](Then then, Ts... ts) {
-        return then(Get(std::move(ts)...));
-    }, std::move(then), std::move(ts)...);
+    return std::async(
+            std::launch::async, [](Then then, Ts... ts) { return then(Get(std::move(ts)...)); },
+            std::move(then), std::move(ts)...);
 }
 
 // Post methods
@@ -69,16 +69,16 @@ Response Post(Ts&&... ts) {
 // Post async methods
 template <typename... Ts>
 AsyncResponse PostAsync(Ts... ts) {
-    return std::async(std::launch::async, [](Ts... ts) { return Post(std::move(ts)...); },
-                      std::move(ts)...);
+    return std::async(
+            std::launch::async, [](Ts... ts) { return Post(std::move(ts)...); }, std::move(ts)...);
 }
 
 // Post callback methods
 template <typename Then, typename... Ts>
 auto PostCallback(Then then, Ts... ts) -> std::future<decltype(then(Post(std::move(ts)...)))> {
-    return std::async(std::launch::async, [](Then then, Ts... ts) {
-        return then(Post(std::move(ts)...));
-    }, std::move(then), std::move(ts)...);
+    return std::async(
+            std::launch::async, [](Then then, Ts... ts) { return then(Post(std::move(ts)...)); },
+            std::move(then), std::move(ts)...);
 }
 
 // Put methods
@@ -92,16 +92,16 @@ Response Put(Ts&&... ts) {
 // Put async methods
 template <typename... Ts>
 AsyncResponse PutAsync(Ts... ts) {
-    return std::async(std::launch::async, [](Ts... ts) { return Put(std::move(ts)...); },
-                      std::move(ts)...);
+    return std::async(
+            std::launch::async, [](Ts... ts) { return Put(std::move(ts)...); }, std::move(ts)...);
 }
 
 // Put callback methods
 template <typename Then, typename... Ts>
 auto PutCallback(Then then, Ts... ts) -> std::future<decltype(then(Put(std::move(ts)...)))> {
-    return std::async(std::launch::async, [](Then then, Ts... ts) {
-        return then(Put(std::move(ts)...));
-    }, std::move(then), std::move(ts)...);
+    return std::async(
+            std::launch::async, [](Then then, Ts... ts) { return then(Put(std::move(ts)...)); },
+            std::move(then), std::move(ts)...);
 }
 
 // Head methods
@@ -115,16 +115,16 @@ Response Head(Ts&&... ts) {
 // Head async methods
 template <typename... Ts>
 AsyncResponse HeadAsync(Ts... ts) {
-    return std::async(std::launch::async, [](Ts... ts) { return Head(std::move(ts)...); },
-                      std::move(ts)...);
+    return std::async(
+            std::launch::async, [](Ts... ts) { return Head(std::move(ts)...); }, std::move(ts)...);
 }
 
 // Head callback methods
 template <typename Then, typename... Ts>
 auto HeadCallback(Then then, Ts... ts) -> std::future<decltype(then(Head(std::move(ts)...)))> {
-    return std::async(std::launch::async, [](Then then, Ts... ts) {
-        return then(Head(std::move(ts)...));
-    }, std::move(then), std::move(ts)...);
+    return std::async(
+            std::launch::async, [](Then then, Ts... ts) { return then(Head(std::move(ts)...)); },
+            std::move(then), std::move(ts)...);
 }
 
 // Delete methods
@@ -138,16 +138,17 @@ Response Delete(Ts&&... ts) {
 // Delete async methods
 template <typename... Ts>
 AsyncResponse DeleteAsync(Ts... ts) {
-    return std::async(std::launch::async, [](Ts... ts) { return Delete(std::move(ts)...); },
-                      std::move(ts)...);
+    return std::async(
+            std::launch::async, [](Ts... ts) { return Delete(std::move(ts)...); },
+            std::move(ts)...);
 }
 
 // Delete callback methods
 template <typename Then, typename... Ts>
 auto DeleteCallback(Then then, Ts... ts) -> std::future<decltype(then(Delete(std::move(ts)...)))> {
-    return std::async(std::launch::async, [](Then then, Ts... ts) {
-        return then(Delete(std::move(ts)...));
-    }, std::move(then), std::move(ts)...);
+    return std::async(
+            std::launch::async, [](Then then, Ts... ts) { return then(Delete(std::move(ts)...)); },
+            std::move(then), std::move(ts)...);
 }
 
 // Options methods
@@ -161,17 +162,18 @@ Response Options(Ts&&... ts) {
 // Options async methods
 template <typename... Ts>
 AsyncResponse OptionsAsync(Ts... ts) {
-    return std::async(std::launch::async, [](Ts... ts) { return Options(std::move(ts)...); },
-                      std::move(ts)...);
+    return std::async(
+            std::launch::async, [](Ts... ts) { return Options(std::move(ts)...); },
+            std::move(ts)...);
 }
 
 // Options callback methods
 template <typename Then, typename... Ts>
 auto OptionsCallback(Then then, Ts... ts)
         -> std::future<decltype(then(Options(std::move(ts)...)))> {
-    return std::async(std::launch::async, [](Then then, Ts... ts) {
-        return then(Options(std::move(ts)...));
-    }, std::move(then), std::move(ts)...);
+    return std::async(
+            std::launch::async, [](Then then, Ts... ts) { return then(Options(std::move(ts)...)); },
+            std::move(then), std::move(ts)...);
 }
 
 // Patch methods
@@ -185,16 +187,16 @@ Response Patch(Ts&&... ts) {
 // Patch async methods
 template <typename... Ts>
 AsyncResponse PatchAsync(Ts... ts) {
-    return std::async(std::launch::async, [](Ts... ts) { return Patch(std::move(ts)...); },
-                      std::move(ts)...);
+    return std::async(
+            std::launch::async, [](Ts... ts) { return Patch(std::move(ts)...); }, std::move(ts)...);
 }
 
 // Patch callback methods
 template <typename Then, typename... Ts>
 auto PatchCallback(Then then, Ts... ts) -> std::future<decltype(then(Patch(std::move(ts)...)))> {
-    return std::async(std::launch::async, [](Then then, Ts... ts) {
-        return then(Patch(std::move(ts)...));
-    }, std::move(then), std::move(ts)...);
+    return std::async(
+            std::launch::async, [](Then then, Ts... ts) { return then(Patch(std::move(ts)...)); },
+            std::move(then), std::move(ts)...);
 }
 
 // Download methods

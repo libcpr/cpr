@@ -21,7 +21,7 @@ class AbstractServer : public testing::Environment {
     void Start();
     void Stop();
 
-    virtual Url GetBaseUrl() = 0;
+    virtual std::string GetBaseUrl() = 0;
     virtual uint16_t GetPort() = 0;
 
     virtual void OnRequest(mg_connection* conn, http_message* msg) = 0;

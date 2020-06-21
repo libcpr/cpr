@@ -13,7 +13,7 @@ class HttpServer : public AbstractServer {
   public:
     ~HttpServer() = default;
 
-    Url GetBaseUrl() override;
+    std::string GetBaseUrl() override;
     uint16_t GetPort() override;
 
     void OnRequest(mg_connection* conn, http_message* msg) override;
