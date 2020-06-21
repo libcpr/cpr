@@ -3,20 +3,16 @@
 
 #include <string>
 
-#include "cpr/defines.h"
-
 namespace cpr {
 
 class UnixSocket {
   public:
-    template <typename UnixSocketType>
-    UnixSocket(UnixSocketType&& unix_socket)
-            : unix_socket_{CPR_FWD(unix_socket)} {}
+    UnixSocket(const std::string&& unix_socket) : unix_socket_(std::move(unix_socket)) {}
 
     const char* GetUnixSocketString() const noexcept;
 
   private:
-    std::string unix_socket_;
+    const std::string unix_socket_;
 };
 
 } // namespace cpr

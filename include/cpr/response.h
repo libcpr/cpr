@@ -6,8 +6,8 @@
 
 #include "cpr/cookies.h"
 #include "cpr/cprtypes.h"
-#include "cpr/defines.h"
 #include "cpr/error.h"
+#include <utility>
 
 namespace cpr {
 
@@ -15,18 +15,16 @@ class Response {
   public:
     Response() = default;
 
-    template <typename TextType, typename HeaderType, typename UrlType, typename CookiesType,
-              typename ErrorType>
-    Response(const std::int32_t& p_status_code, TextType&& p_text, HeaderType&& p_header,
-             UrlType&& p_url, const double& p_elapsed, CookiesType&& p_cookies = Cookies{},
-             ErrorType&& p_error = Error{}, TextType&& p_raw_header = "",
-             TextType&& p_status_line = "", TextType&& p_reason = "", 
+    Response(const std::int32_t& p_status_code, std::string&& p_text, Header&& p_header,
+             Url&& p_url, const double& p_elapsed, Cookies&& p_cookies = Cookies{},
+             Error&& p_error = Error{}, std::string&& p_raw_header = "",
+             std::string&& p_status_line = "", std::string&& p_reason = "",
              const double& p_uploaded_bytes = 0, const double& p_downloaded_bytes = 0)
-            : status_code{p_status_code}, text{CPR_FWD(p_text)}, header{CPR_FWD(p_header)},
-              url{CPR_FWD(p_url)}, elapsed{p_elapsed}, cookies{CPR_FWD(p_cookies)},
-              error{CPR_FWD(p_error)}, raw_header{CPR_FWD(p_raw_header)}, reason{CPR_FWD(p_reason)},
-              status_line{CPR_FWD(p_status_line)}, uploaded_bytes{p_uploaded_bytes}, 
-              downloaded_bytes{p_downloaded_bytes} {}
+            : status_code{p_status_code}, text(std::move(p_text)), header(std::move(p_header)),
+              url(std::move(p_url)), elapsed{p_elapsed}, cookies(std::move(p_cookies)),
+              error(std::move(p_error)), raw_header(std::move(p_raw_header)),
+              reason(std::move(p_reason)), status_line(std::move(p_status_line)),
+              uploaded_bytes{p_uploaded_bytes}, downloaded_bytes{p_downloaded_bytes} {}
 
     std::int32_t status_code;
     std::string text;

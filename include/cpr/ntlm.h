@@ -2,7 +2,7 @@
 #define CPR_NTLM_H
 
 #include "auth.h"
-#include "defines.h"
+#include <utility>
 
 namespace cpr {
 
@@ -10,7 +10,7 @@ class NTLM : public Authentication {
   public:
     template <typename UserType, typename PassType>
     NTLM(UserType&& username, PassType&& password)
-            : Authentication{CPR_FWD(username), CPR_FWD(password)} {}
+            : Authentication{std::move(username), std::move(password)} {}
 
     const char* GetAuthString() const noexcept;
 };

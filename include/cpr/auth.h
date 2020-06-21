@@ -3,23 +3,24 @@
 
 #include <string>
 
-#include "cpr/defines.h"
+#include <utility>
 
 namespace cpr {
 
 class Authentication {
   public:
-    template <typename UserType, typename PassType>
-    Authentication(UserType&& username, PassType&& password)
-            : username_{CPR_FWD(username)}, password_{CPR_FWD(password)},
-              auth_string_{username_ + ":" + password_} {}
+    Authentication(const std::string&& username, const std::string&& password)
+            : username_(std::move(username)),
+              password_(std::move(password)), auth_string_{this->username_ + ":" +
+                                                           this->password_} {}
+    virtual ~Authentication() = default;
 
     const char* GetAuthString() const noexcept;
 
   private:
-    std::string username_;
-    std::string password_;
-    std::string auth_string_;
+    const std::string username_;
+    const std::string password_;
+    const std::string auth_string_;
 };
 
 } // namespace cpr

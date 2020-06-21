@@ -5,7 +5,7 @@
 
 #include <curl/curl.h>
 
-#include "defines.h"
+#include <utility>
 
 #define __LIBCURL_VERSION_GTE(major, minor) \
     ((LIBCURL_VERSION_MAJOR > (major)) ||   \
@@ -80,10 +80,9 @@ namespace ssl {
 // set SSL client certificate
 class CertFile {
   public:
-    template <typename FileType>
-    CertFile(FileType&& p_filename) : filename(CPR_FWD(p_filename)) {}
+    CertFile(const std::string&& p_filename) : filename(std::move(p_filename)) {}
 
-    std::string filename;
+    const std::string filename;
 
     virtual const char* GetCertType(void) const {
         return "PEM";
@@ -94,8 +93,7 @@ typedef CertFile PemCert;
 
 class DerCert : public CertFile {
   public:
-    template <typename FileType>
-    DerCert(FileType&& p_filename) : CertFile(CPR_FWD(p_filename)) {}
+    DerCert(const std::string&& p_filename) : CertFile(std::move(p_filename)) {}
 
     virtual const char* GetCertType(void) const {
         return "DER";
@@ -105,12 +103,11 @@ class DerCert : public CertFile {
 // specify private keyfile for TLS and SSL client cert
 class KeyFile {
   public:
-    template <typename FileType>
-    KeyFile(FileType&& p_filename) : filename(CPR_FWD(p_filename)) {}
+    KeyFile(const std::string&& p_filename) : filename(std::move(p_filename)) {}
 
     template <typename FileType, typename PassType>
     KeyFile(FileType&& p_filename, PassType p_password)
-            : filename(CPR_FWD(p_filename)), password(CPR_FWD(p_password)) {}
+            : filename(std::move(p_filename)), password(std::move(p_password)) {}
 
     std::string filename;
     std::string password;
@@ -124,12 +121,11 @@ typedef KeyFile PemKey;
 
 class DerKey : public KeyFile {
   public:
-    template <typename FileType>
-    DerKey(FileType&& p_filename) : KeyFile(CPR_FWD(p_filename)) {}
+    DerKey(const std::string&& p_filename) : KeyFile(std::move(p_filename)) {}
 
     template <typename FileType, typename PassType>
     DerKey(FileType&& p_filename, PassType p_password)
-            : KeyFile(CPR_FWD(p_filename), CPR_FWD(p_password)) {}
+            : KeyFile(std::move(p_filename), std::move(p_password)) {}
 
     virtual const char* GetKeyType(void) const {
         return "DER";
@@ -259,8 +255,7 @@ struct MaxTLSv1_3 {};
 // path to Certificate Authority (CA) bundle
 class CaInfo {
   public:
-    template <typename FileType>
-    CaInfo(FileType&& p_filename) : filename(CPR_FWD(p_filename)) {}
+    CaInfo(const std::string&& p_filename) : filename(std::move(p_filename)) {}
 
     std::string filename;
 };
@@ -268,8 +263,7 @@ class CaInfo {
 // specify directory holding CA certificates
 class CaPath {
   public:
-    template <typename FileType>
-    CaPath(FileType&& p_filename) : filename(CPR_FWD(p_filename)) {}
+    CaPath(const std::string&& p_filename) : filename(std::move(p_filename)) {}
 
     std::string filename;
 };
@@ -277,8 +271,7 @@ class CaPath {
 // specify a Certificate Revocation List file
 class Crl {
   public:
-    template <typename FileType>
-    Crl(FileType&& p_filename) : filename(CPR_FWD(p_filename)) {}
+    Crl(const std::string&& p_filename) : filename(std::move(p_filename)) {}
 
     std::string filename;
 };
@@ -287,7 +280,7 @@ class Crl {
 class Ciphers {
   public:
     template <typename T>
-    Ciphers(T&& p_ciphers) : ciphers(CPR_FWD(p_ciphers)) {}
+    Ciphers(T&& p_ciphers) : ciphers(std::move(p_ciphers)) {}
 
     std::string ciphers;
 };
@@ -297,7 +290,7 @@ class Ciphers {
 class TLS13_Ciphers {
   public:
     template <typename T>
-    TLS13_Ciphers(T&& p_ciphers) : ciphers(CPR_FWD(p_ciphers)) {}
+    TLS13_Ciphers(T&& p_ciphers) : ciphers(std::move(p_ciphers)) {}
 
     std::string ciphers;
 };
@@ -478,13 +471,13 @@ namespace priv {
 
 template <typename T>
 void set_ssl_option(SslOptions& opts, T&& t) {
-    opts.SetOption(CPR_FWD(t));
+    opts.SetOption(std::move(t));
 }
 
 template <typename T, typename... Ts>
 void set_ssl_option(SslOptions& opts, T&& t, Ts&&... ts) {
-    set_ssl_option(opts, CPR_FWD(t));
-    set_ssl_option(opts, CPR_FWD(ts)...);
+    set_ssl_option(opts, std::move(t));
+    set_ssl_option(opts, std::move(ts)...);
 }
 
 } // namespace priv
@@ -492,7 +485,7 @@ void set_ssl_option(SslOptions& opts, T&& t, Ts&&... ts) {
 template <typename... Ts>
 SslOptions Ssl(Ts&&... ts) {
     SslOptions opts;
-    priv::set_ssl_option(opts, CPR_FWD(ts)...);
+    priv::set_ssl_option(opts, std::move(ts)...);
     return opts;
 }
 

@@ -5,16 +5,17 @@
 #include <functional>
 #include <future>
 #include <string>
+#include <utility>
 
 #include "cpr/auth.h"
 #include "cpr/cprtypes.h"
-#include "cpr/defines.h"
 #include "cpr/digest.h"
 #include "cpr/multipart.h"
 #include "cpr/ntlm.h"
 #include "cpr/payload.h"
 #include "cpr/response.h"
 #include "cpr/session.h"
+#include <utility>
 
 namespace cpr {
 
@@ -24,13 +25,13 @@ namespace priv {
 
 template <typename T>
 void set_option(Session& session, T&& t) {
-    session.SetOption(CPR_FWD(t));
+    session.SetOption(std::forward<T>(t));
 }
 
 template <typename T, typename... Ts>
 void set_option(Session& session, T&& t, Ts&&... ts) {
-    set_option(session, CPR_FWD(t));
-    set_option(session, CPR_FWD(ts)...);
+    set_option(session, std::forward<T>(t));
+    set_option(session, std::forward<Ts>(ts)...);
 }
 
 } // namespace priv
@@ -39,7 +40,7 @@ void set_option(Session& session, T&& t, Ts&&... ts) {
 template <typename... Ts>
 Response Get(Ts&&... ts) {
     Session session;
-    priv::set_option(session, CPR_FWD(ts)...);
+    priv::set_option(session, std::forward<Ts>(ts)...);
     return session.Get();
 }
 
@@ -62,7 +63,7 @@ auto GetCallback(Then then, Ts... ts) -> std::future<decltype(then(Get(std::move
 template <typename... Ts>
 Response Post(Ts&&... ts) {
     Session session;
-    priv::set_option(session, CPR_FWD(ts)...);
+    priv::set_option(session, std::forward<Ts>(ts)...);
     return session.Post();
 }
 
@@ -85,7 +86,7 @@ auto PostCallback(Then then, Ts... ts) -> std::future<decltype(then(Post(std::mo
 template <typename... Ts>
 Response Put(Ts&&... ts) {
     Session session;
-    priv::set_option(session, CPR_FWD(ts)...);
+    priv::set_option(session, std::forward<Ts>(ts)...);
     return session.Put();
 }
 
@@ -108,7 +109,7 @@ auto PutCallback(Then then, Ts... ts) -> std::future<decltype(then(Put(std::move
 template <typename... Ts>
 Response Head(Ts&&... ts) {
     Session session;
-    priv::set_option(session, CPR_FWD(ts)...);
+    priv::set_option(session, std::forward<Ts>(ts)...);
     return session.Head();
 }
 
@@ -131,7 +132,7 @@ auto HeadCallback(Then then, Ts... ts) -> std::future<decltype(then(Head(std::mo
 template <typename... Ts>
 Response Delete(Ts&&... ts) {
     Session session;
-    priv::set_option(session, CPR_FWD(ts)...);
+    priv::set_option(session, std::forward<Ts>(ts)...);
     return session.Delete();
 }
 
@@ -155,7 +156,7 @@ auto DeleteCallback(Then then, Ts... ts) -> std::future<decltype(then(Delete(std
 template <typename... Ts>
 Response Options(Ts&&... ts) {
     Session session;
-    priv::set_option(session, CPR_FWD(ts)...);
+    priv::set_option(session, std::forward<Ts>(ts)...);
     return session.Options();
 }
 
@@ -180,7 +181,7 @@ auto OptionsCallback(Then then, Ts... ts)
 template <typename... Ts>
 Response Patch(Ts&&... ts) {
     Session session;
-    priv::set_option(session, CPR_FWD(ts)...);
+    priv::set_option(session, std::forward<Ts>(ts)...);
     return session.Patch();
 }
 
@@ -203,7 +204,7 @@ auto PatchCallback(Then then, Ts... ts) -> std::future<decltype(then(Patch(std::
 template <typename... Ts>
 Response Download(std::ofstream& file, Ts&&... ts) {
     Session session;
-    priv::set_option(session, CPR_FWD(ts)...);
+    priv::set_option(session, std::forward<Ts>(ts)...);
     return session.Download(file);
 }
 

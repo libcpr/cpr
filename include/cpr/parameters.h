@@ -6,13 +6,12 @@
 #include <string>
 
 #include "cpr/curlholder.h"
-#include "cpr/defines.h"
 
 namespace cpr {
 
 struct Parameter {
-    template <typename KeyType, typename ValueType>
-    Parameter(KeyType&& key, ValueType&& value) : key{CPR_FWD(key)}, value{CPR_FWD(value)} {}
+    Parameter(std::string&& key, std::string&& value)
+            : key{std::move(key)}, value{std::move(value)} {}
 
     std::string key;
     std::string value;
