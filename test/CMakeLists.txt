@@ -50,3 +50,12 @@ add_cpr_test(patch)
 add_cpr_test(error)
 add_cpr_test(alternating)
 add_cpr_test(util)
+
+if (CMAKE_USE_OPENSSL)
+    add_cpr_test(ssl)
+    # Install all ssl keys and certs:
+    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/data/server.key" "${CMAKE_BINARY_DIR}/bin/server.key"  COPYONLY)
+    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/data/server.cer" "${CMAKE_BINARY_DIR}/bin/server.cer"  COPYONLY)
+    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/data/client.key" "${CMAKE_BINARY_DIR}/bin/client.key"  COPYONLY)
+    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/data/client.cer" "${CMAKE_BINARY_DIR}/bin/client.cer"  COPYONLY)
+endif()
