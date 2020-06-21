@@ -14,7 +14,6 @@ target_sources(cpr PRIVATE
     cpr/cprtypes.h
     cpr/curlholder.h
     cpr/curlholder.h
-    cpr/defines.h
     cpr/digest.h
     cpr/error.h
     cpr/limit_rate.h
