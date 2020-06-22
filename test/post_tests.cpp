@@ -425,6 +425,15 @@ TEST(UrlEncodedPostTests, PostReflectTest) {
     EXPECT_EQ(std::to_string(body.length()), response.header["content-length"]);
 }
 
+TEST(UrlEncodedPostTests, PostReflectPayloadTest) {
+    std::string uri = server->GetBaseUrl() + "/header_reflect.html";
+    cpr::Payload payload = cpr::Payload{{"email", ""}, {"password", ""}, {"devicetoken", ""}};
+    cpr::Response response = cpr::Post(cpr::Url(uri), cpr::Timeout{10000}, payload);
+
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+    EXPECT_EQ(200, response.status_code);
+}
+
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
     ::testing::AddGlobalTestEnvironment(server);
