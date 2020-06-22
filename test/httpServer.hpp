@@ -27,6 +27,7 @@ class HttpServer : public AbstractServer {
     static void OnRequestLowSpeed(mg_connection* conn, http_message* msg);
     static void OnRequestLowSpeedBytes(mg_connection* conn, http_message* msg);
     static void OnRequestBasicCookies(mg_connection* conn, http_message* msg);
+    static void OnRequestEmptyCookies(mg_connection* conn, http_message* msg);
     static void OnRequestCheckCookies(mg_connection* conn, http_message* msg);
     static void OnRequestV1Cookies(mg_connection* conn, http_message* msg);
     static void OnRequestCheckV1Cookies(mg_connection* conn, http_message* msg);

@@ -102,6 +102,25 @@ void HttpServer::OnRequestBasicCookies(mg_connection* conn, http_message* msg) {
     mg_send(conn, response.c_str(), response.length());
 }
 
+void HttpServer::OnRequestEmptyCookies(mg_connection* conn, http_message* msg) {
+    time_t t = time(nullptr) + 5; // Valid for 1 hour
+    char expire[100], expire_epoch[100];
+    snprintf(expire_epoch, sizeof(expire_epoch), "%lu", static_cast<unsigned long>(t));
+    strftime(expire, sizeof(expire), "%a, %d %b %Y %H:%M:%S GMT", gmtime(&t));
+    std::string cookie{"cookie=; expires=\"" + std::string{expire} + "\"; http-only;"};
+    std::string cookie2{"icecream=; expires=\"" + std::string{expire} + "\"; http-only;"};
+    std::string headers =
+            "Content-Type: text/html\r\n"
+            "Set-Cookie: " +
+            cookie +
+            "\r\n"
+            "Set-Cookie: " +
+            cookie2;
+    std::string response{"Hello world!"};
+    mg_send_head(conn, 200, response.length(), headers.c_str());
+    mg_send(conn, response.c_str(), response.length());
+}
+
 void HttpServer::OnRequestCheckCookies(mg_connection* conn, http_message* msg) {
     mg_str* request_cookies;
     if ((request_cookies = mg_get_http_header(msg, "Cookie")) == nullptr) {
@@ -509,6 +528,8 @@ void HttpServer::OnRequest(mg_connection* conn, http_message* msg) {
         OnRequestLowSpeedBytes(conn, msg);
     } else if (uri == "/basic_cookies.html") {
         OnRequestBasicCookies(conn, msg);
+    } else if (uri == "/empty_cookies.html") {
+        OnRequestEmptyCookies(conn, msg);
     } else if (uri == "/check_cookies.html") {
         OnRequestCheckCookies(conn, msg);
     } else if (uri == "/v1_cookies.html") {

@@ -84,6 +84,16 @@ TEST(CookiesTests, SingleCookieTest) {
     EXPECT_EQ(cookies["expires"], response.cookies["expires"]);
 }
 
+TEST(CookiesTests, EmptyCookieTest) {
+    auto url = Url{server->GetBaseUrl() + "/empty_cookies.html"};
+    auto response = cpr::Get(url);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+    EXPECT_EQ("", response.cookies["cookie"]);
+    EXPECT_EQ("", response.cookies["icecream"]);
+}
+
 TEST(CookiesTests, CheckBasicCookieTest) {
     // server validates whether the cookies are indeed present
     auto url = Url{server->GetBaseUrl() + "/check_cookies.html"};
