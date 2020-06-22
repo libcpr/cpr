@@ -105,7 +105,7 @@ TEST(HeadTests, AuthenticationFailureHeadTest) {
     EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
-TEST(HeadTests, DISABLED_DigestSuccessHeadTest) { // Is nondeterministic using embedded mongoose
+TEST(HeadTests, DigestSuccessHeadTest) {
     auto url = Url{server->GetBaseUrl() + "/digest_auth.html"};
     auto response = cpr::Head(url, Digest{"user", "password"});
     EXPECT_EQ(std::string{}, response.text);
