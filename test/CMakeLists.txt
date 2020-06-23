@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.15)
 
 find_package(Threads)
 
-if (CMAKE_USE_OPENSSL)
+if (ENABLE_SSL_TESTS)
     add_library(test_server STATIC
                 abstractServer.cpp
                 httpServer.cpp
@@ -52,7 +52,7 @@ add_cpr_test(alternating)
 add_cpr_test(util)
 add_cpr_test(structures)
 
-if (CMAKE_USE_OPENSSL)
+if (ENABLE_SSL_TESTS)
     add_cpr_test(ssl)
     # Install all ssl keys and certs:
     configure_file("${CMAKE_CURRENT_SOURCE_DIR}/data/server.key" "${CMAKE_BINARY_DIR}/bin/server.key"  COPYONLY)
