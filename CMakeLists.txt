@@ -137,12 +137,16 @@ endif()
 # Mongoose configuration
 if(BUILD_CPR_TESTS)
     message(STATUS "Building mongoose project for test support.")
-    
-    find_package(OpenSSL)
-    if (OPENSSL_FOUND)
-        set(ENABLE_SSL_TESTS ON CACHE INTERNAL "")
+    if (SSL_ENABLED)
+        find_package(OpenSSL)
+        if (OPENSSL_FOUND)
+            set(ENABLE_SSL_TESTS ON CACHE INTERNAL "")
+        else()
+            set(ENABLE_SSL_TESTS OFF CACHE INTERNAL "")
+        endif()
     else()
-        set(ENABLE_SSL_TESTS OFF CACHE INTERNAL "")
+            set(ENABLE_SSL_TESTS OFF CACHE INTERNAL "")
+        
     endif()
 
     FetchContent_Declare(mongoose 
