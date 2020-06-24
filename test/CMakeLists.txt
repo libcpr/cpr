@@ -26,12 +26,8 @@ macro(add_cpr_test _TEST_NAME)
     # Group under the "tests" project folder in IDEs such as Visual Studio.
     set_property(TARGET ${_TEST_NAME}_tests PROPERTY FOLDER "tests")
     if(WIN32 AND BUILD_SHARED_LIBS)
-        add_custom_command(TARGET ${_TEST_NAME}_tests POST_BUILD
-                           COMMAND ${CMAKE_COMMAND} -E copy
-                                $<TARGET_FILE:libcurl> $<TARGET_FILE_DIR:${_TEST_NAME}_tests>)
-        add_custom_command(TARGET ${_TEST_NAME}_tests POST_BUILD
-                           COMMAND ${CMAKE_COMMAND} -E copy
-                                $<TARGET_FILE:cpr> $<TARGET_FILE_DIR:${_TEST_NAME}_tests>)
+        add_custom_command(TARGET ${_TEST_NAME}_tests POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:libcurl> $<TARGET_FILE_DIR:${_TEST_NAME}_tests>)
+        add_custom_command(TARGET ${_TEST_NAME}_tests POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:cpr> $<TARGET_FILE_DIR:${_TEST_NAME}_tests>)
     endif()
 endmacro()
 
@@ -55,8 +51,10 @@ add_cpr_test(structures)
 if (ENABLE_SSL_TESTS)
     add_cpr_test(ssl)
     # Install all ssl keys and certs:
-    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/data/server.key" "${CMAKE_BINARY_DIR}/bin/server.key"  COPYONLY)
-    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/data/server.cer" "${CMAKE_BINARY_DIR}/bin/server.cer"  COPYONLY)
-    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/data/client.key" "${CMAKE_BINARY_DIR}/bin/client.key"  COPYONLY)
-    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/data/client.cer" "${CMAKE_BINARY_DIR}/bin/client.cer"  COPYONLY)
+
+    add_custom_command(TARGET ssl_tests POST_BUILD COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:ssl_tests>/data)
+    add_custom_command(TARGET ssl_tests POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/data/server.key $<TARGET_FILE_DIR:ssl_tests>)
+    add_custom_command(TARGET ssl_tests POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/data/server.cer $<TARGET_FILE_DIR:ssl_tests>)
+    add_custom_command(TARGET ssl_tests POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/data/client.key $<TARGET_FILE_DIR:ssl_tests>)
+    add_custom_command(TARGET ssl_tests POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/data/client.cer $<TARGET_FILE_DIR:ssl_tests>)
 endif()
