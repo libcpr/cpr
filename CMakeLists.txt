@@ -54,7 +54,15 @@ include(cmake/code_coverage.cmake)
 
 # Curl configuration
 if(USE_SYSTEM_CURL)
-    find_package(CURL)
+    find_package(CURL COMPONENTS PROTOCOLS HTTP HTTPS FEATURES SSL)
+    if (CURL_FOUND)
+        set(SSL_ENABLED ON CACHE INTERNAL "" FORCE)
+    else()
+        find_package(CURL COMPONENTS PROTOCOLS HTTP)
+        if(CURL_FOUND)
+            set(SSL_ENABLED OFF CACHE INTERNAL "" FORCE)
+        endif()
+    endif()
 endif()
 if(NOT USE_SYSTEM_CURL OR NOT CURL_FOUND)
     message(STATUS "Not using system Curl, using built-in curl project instead.")
@@ -146,7 +154,6 @@ if(BUILD_CPR_TESTS)
         endif()
     else()
             set(ENABLE_SSL_TESTS OFF CACHE INTERNAL "")
-        
     endif()
 
     FetchContent_Declare(mongoose 
