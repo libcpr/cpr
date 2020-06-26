@@ -16,7 +16,8 @@ struct Pair {
             : key(p_key), value(p_value) {}
     Pair(std::string&& p_key, std::string&& p_value)
             : key(std::move(p_key)), value(std::move(p_value)) {}
-    Pair(std::string&& p_key, const std::int32_t& p_value)
+    template<typename ValueType, typename std::enable_if<std::is_integral<ValueType>::value, bool>::type = true>
+    Pair(std::string&& p_key, ValueType p_value)
             : key(std::move(p_key)), value{std::to_string(p_value)} {}
 
     std::string key;
