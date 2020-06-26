@@ -23,7 +23,7 @@ class Response {
             : status_code{p_status_code}, text(std::move(p_text)), header(std::move(p_header)),
               url(std::move(p_url)), elapsed{p_elapsed}, cookies(std::move(p_cookies)),
               error(std::move(p_error)), raw_header(std::move(p_raw_header)),
-              reason(std::move(p_reason)), status_line(std::move(p_status_line)),
+              status_line(std::move(p_status_line)), reason(std::move(p_reason)),
               uploaded_bytes{p_uploaded_bytes}, downloaded_bytes{p_downloaded_bytes} {}
 
     std::int32_t status_code;
