@@ -385,41 +385,41 @@ struct SslOptions {
     void SetOption(const ssl::VerifyStatus& opt) {
         verify_status = opt.enabled;
     }
-    void SetOption(const ssl::TLSv1& opt) {
+    void SetOption(const ssl::TLSv1& /*opt*/) {
         ssl_version = CURL_SSLVERSION_TLSv1;
     }
 #if SUPPORT_SSLv2
-    void SetOption(const ssl::SSLv2& opt) {
+    void SetOption(const ssl::SSLv2& /*opt*/) {
         ssl_version = CURL_SSLVERSION_SSLv2;
     }
 #endif
 #if SUPPORT_SSLv3
-    void SetOption(const ssl::SSLv3& opt) {
+    void SetOption(const ssl::SSLv3& /*opt*/) {
         ssl_version = CURL_SSLVERSION_SSLv3;
     }
 #endif
 #if SUPPORT_TLSv1_0
-    void SetOption(const ssl::TLSv1_0& opt) {
+    void SetOption(const ssl::TLSv1_0& /*opt*/) {
         ssl_version = CURL_SSLVERSION_TLSv1_0;
     }
 #endif
 #if SUPPORT_TLSv1_1
-    void SetOption(const ssl::TLSv1_1& opt) {
+    void SetOption(const ssl::TLSv1_1& /*opt*/) {
         ssl_version = CURL_SSLVERSION_TLSv1_1;
     }
 #endif
 #if SUPPORT_TLSv1_2
-    void SetOption(const ssl::TLSv1_2& opt) {
+    void SetOption(const ssl::TLSv1_2& /*opt*/) {
         ssl_version = CURL_SSLVERSION_TLSv1_2;
     }
 #endif
 #if SUPPORT_TLSv1_3
-    void SetOption(const ssl::TLSv1_3& opt) {
+    void SetOption(const ssl::TLSv1_3& /*opt*/) {
         ssl_version = CURL_SSLVERSION_TLSv1_3;
     }
 #endif
 #if SUPPORT_MAX_TLS_VERSION
-    void SetOption(const ssl::MaxTLSVersion& opt) {
+    void SetOption(const ssl::MaxTLSVersion& /*opt*/) {
         max_version = CURL_SSLVERSION_DEFAULT;
     }
 #endif
@@ -429,17 +429,17 @@ struct SslOptions {
     }
 #endif
 #if SUPPORT_MAX_TLSv1_1
-    void SetOption(const ssl::MaxTLSv1_1& opt) {
+    void SetOption(const ssl::MaxTLSv1_1& /*opt*/) {
         max_version = CURL_SSLVERSION_MAX_TLSv1_1;
     }
 #endif
 #if SUPPORT_MAX_TLSv1_2
-    void SetOption(const ssl::MaxTLSv1_2& opt) {
+    void SetOption(const ssl::MaxTLSv1_2& /*opt*/) {
         max_version = CURL_SSLVERSION_MAX_TLSv1_2;
     }
 #endif
 #if SUPPORT_MAX_TLSv1_3
-    void SetOption(const ssl::MaxTLSv1_3& opt) {
+    void SetOption(const ssl::MaxTLSv1_3& /*opt*/) {
         max_version = CURL_SSLVERSION_MAX_TLSv1_3;
     }
 #endif
