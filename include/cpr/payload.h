@@ -35,7 +35,7 @@ class Payload {
     }
     Payload(const std::initializer_list<Pair>& pairs);
 
-    void AddPair(const Pair& pair, const CurlHolder& holder = CurlHolder());
+    void AddPair(const Pair& pair, const CurlHolder& holder);
 
     std::string content;
 };
