@@ -22,7 +22,7 @@ class Parameters {
     Parameters() = default;
     Parameters(const std::initializer_list<Parameter>& parameters);
 
-    void AddParameter(const Parameter& parameter, const CurlHolder& holder);
+    void AddParameter(const Parameter& parameter, const CurlHolder& holder = CurlHolder());
 
     std::string content;
 };
