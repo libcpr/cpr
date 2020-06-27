@@ -66,9 +66,6 @@ jobs:
         target: ALL_BUILD
         run-test: true
         ctest-options: -V
-    - name: Tree
-      if: ${{ always() }}
-      run: tree /f ${{github.workspace}}/build
 
   macos-clang-ssl:
     runs-on: macos-latest
