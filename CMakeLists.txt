@@ -63,8 +63,8 @@ if(NOT USE_SYSTEM_CURL OR NOT CURL_FOUND)
                          GIT_REPOSITORY         https://github.com/curl/curl.git
                          GIT_TAG                curl-7_69_1
                          GIT_PROGRESS           TRUE
-                         USES_TERMINAL_DOWNLOAD TRUE   # <---- This is needed only for Ninja to show download progress
-)
+                         USES_TERMINAL_DOWNLOAD TRUE)   # <---- This is needed only for Ninja to show download progress
+
     FetchContent_MakeAvailable(curl)
 
     add_library(curl_int INTERFACE)
@@ -104,7 +104,7 @@ if(BUILD_CPR_TESTS)
                              GIT_REPOSITORY         https://github.com/google/googletest.git
                              GIT_TAG                release-1.10.0
                              GIT_PROGRESS           TRUE
-                             USES_TERMINAL_DOWNLOAD TRUE   # <---- This is needed only for Ninja to show download progress)
+                             USES_TERMINAL_DOWNLOAD TRUE)   # <---- This is needed only for Ninja to show download progress
         FetchContent_MakeAvailable(googletest)
         
         add_library(gtest_int INTERFACE)
@@ -127,7 +127,7 @@ if(BUILD_CPR_TESTS)
                          GIT_REPOSITORY         https://github.com/cesanta/mongoose.git
                          GIT_TAG                6.18
                          GIT_PROGRESS           TRUE
-                         USES_TERMINAL_DOWNLOAD TRUE   # <---- This is needed only for Ninja to show download progress)
+                         USES_TERMINAL_DOWNLOAD TRUE)   # <---- This is needed only for Ninja to show download progress
     # We can not use FetchContent_MakeAvailable, since we need to patch mongoose to use CMake
     if (NOT mongoose_POPULATED)
         FetchContent_POPULATE(mongoose)
