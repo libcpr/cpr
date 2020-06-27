@@ -50,6 +50,7 @@ add_cpr_test(patch)
 add_cpr_test(error)
 add_cpr_test(alternating)
 add_cpr_test(util)
+add_cpr_test(structures)
 
 if (CMAKE_USE_OPENSSL)
     add_cpr_test(ssl)
