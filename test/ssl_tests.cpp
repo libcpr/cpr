@@ -41,6 +41,7 @@ std::string getBasePath(const std::string& execPath) {
 #ifdef _WIN32
     std::cout << "Converting Unix path to Windows path...\n";
     std::replace(path.begin(), path.end(), '\\', '/');
+    std::cout << "Result path: " << path << '\n';
 #endif
     return path;
 }
