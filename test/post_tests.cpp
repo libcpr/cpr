@@ -97,7 +97,7 @@ TEST(UrlEncodedPostTests, UrlPostEncodeNoCopyTest) {
 
 TEST(UrlEncodedPostTests, UrlPostManyTest) {
     auto url = Url{server->GetBaseUrl() + "/url_post.html"};
-    auto response = cpr::Post(url, Payload{{"x", 5}, {"y", 13}});
+    auto response = cpr::Post(url, Payload{{"x", "5"}, {"y", "13"}});
     auto expected_text = std::string{
             "{\n"
             "  \"x\": 5,\n"
