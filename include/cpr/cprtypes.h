@@ -92,9 +92,9 @@ std::ostream& operator<<(std::ostream& os, const StringHolder<T>& s) {
 class Url : public StringHolder<Url> {
   public:
     Url() : StringHolder<Url>() {}
-    explicit Url(const std::string& url) : StringHolder<Url>(url) {}
-    explicit Url(const std::string&& url) : StringHolder<Url>(std::move(url)) {}
-    explicit Url(const char* url) : StringHolder<Url>(url) {}
+    Url(const std::string& url) : StringHolder<Url>(url) {}
+    Url(const std::string&& url) : StringHolder<Url>(std::move(url)) {}
+    Url(const char* url) : StringHolder<Url>(url) {}
     Url(const char* str, size_t len) : StringHolder<Url>(std::string(str, len)) {}
     Url(const std::initializer_list<std::string> args) : StringHolder<Url>(args) {}
     ~Url() override = default;
