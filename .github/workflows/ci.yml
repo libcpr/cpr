@@ -67,6 +67,28 @@ jobs:
         target: ALL_BUILD
         run-test: true
         ctest-options: -V
+  
+  windows-msvc-openssl:
+    runs-on: windows-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2.2.0
+      with:
+        submodules: true
+    - name: "[Release msvc] Build & Test"
+      env:
+        CMAKE_GENERATOR: "Visual Studio 16 2019"
+        USE_WINSSL: OFF
+        USE_OPENSSL: ON
+        BUILD_CPR_TESTS_SSL: ON
+      uses: ashutoshvarma/action-cmake-build@master
+      with:
+        build-dir: ${{github.workspace}}/build
+        source-dir: ${{github.workspace}}
+        build-type: Release
+        target: ALL_BUILD
+        run-test: true
+        ctest-options: -V
 
   macos-clang-ssl:
     runs-on: macos-latest
