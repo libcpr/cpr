@@ -58,6 +58,7 @@ jobs:
         CMAKE_GENERATOR: "Visual Studio 16 2019"
         USE_WINSSL: ON
         USE_OPENSSL: OFF
+        BUILD_CPR_TESTS_SSL: OFF
       uses: ashutoshvarma/action-cmake-build@master
       with:
         build-dir: ${{github.workspace}}/build
