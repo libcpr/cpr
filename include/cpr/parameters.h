@@ -10,6 +10,8 @@
 namespace cpr {
 
 struct Parameter {
+    Parameter(const std::string& key, const std::string& value)
+            : key{key}, value{value} {}
     Parameter(std::string&& key, std::string&& value)
             : key{std::move(key)}, value{std::move(value)} {}
 
