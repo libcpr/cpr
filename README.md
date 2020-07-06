@@ -105,3 +105,37 @@ cd vcpkg
 ./vcpkg install cpr
 ```
 The cpr port in vcpkg is kept up to date by Microsoft team members and community contributors. If the version is out of date, please [create an issue or pull request](https://github.com/Microsoft/vcpkg) on the vcpkg repository.
+
+## Building cpr - Using Conan
+
+You can download and install `cpr` using the [Conan](https://conan.io/) package manager. Setup your CMakeLists.txt (see [Conan documentation](https://docs.conan.io/en/latest/integrations/build_system.html) on how to use MSBuild, Meson and others) like this:
+
+```CMake
+project(myproject CXX)
+
+add_executable(${PROJECT_NAME} main.cpp)
+
+include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake) # Include Conan-generated file
+conan_basic_setup(TARGETS) # Introduce Conan-generated targets
+
+target_link_libraries(${PROJECT_NAME} CONAN_PKG::cpr)
+```
+Create `conanfile.txt` in your source dir:
+```
+[requires]
+cpr/1.5.0
+
+[generators]
+cmake
+```
+Install and run Conan, then build your project as always:
+
+```Bash
+pip install conan
+mkdir build
+cd build
+conan install ../ --build=missing
+cmake ../
+cmake --build .
+```
+The `cpr` package in Conan is kept up to date by Conan contributors. If the version is out of date, please [create an issue or pull request](https://github.com/conan-io/conan-center-index) on the `conan-center-index` repository.
