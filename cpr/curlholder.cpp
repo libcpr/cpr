@@ -2,7 +2,21 @@
 #include <cassert>
 
 namespace cpr {
-CurlHolder::CurlHolder() : handle(curl_easy_init()) {
+// NOLINTNEXTLINE (cert-err58-cpp)
+std::mutex curl_easy_init_mutex_;
+
+CurlHolder::CurlHolder() {
+    /**
+     * Allow multithreaded access to CPR by locking curl_easy_init().
+     * curl_easy_init() is not thread save.
+     * References:
+     * https://curl.haxx.se/libcurl/c/curl_easy_init.html
+     * https://curl.haxx.se/libcurl/c/threadsafe.html
+     **/
+    curl_easy_init_mutex_.lock();
+    handle = curl_easy_init();
+    curl_easy_init_mutex_.unlock();
+
     assert(handle);
 }
 
