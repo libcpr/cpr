@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 
 #include <string>
+#include <iostream>
 
 #include <cpr/cprtypes.h>
 #include <cpr/ssl_options.h>
@@ -18,7 +19,7 @@ TEST(SslTests, HelloWorldTest) {
     std::string baseDirPath = server->getBaseDirPath();
     SslOptions sslOpts = Ssl(
             ssl::TLSv1{}, ssl::ALPN{false}, ssl::NPN{false}, ssl::CaPath{baseDirPath + "ca.cer"},
-            ssl::CertFile{baseDirPath + "/client.cer"}, ssl::KeyFile{baseDirPath + "client.key"},
+            ssl::CertFile{baseDirPath + "client.cer"}, ssl::KeyFile{baseDirPath + "client.key"},
             ssl::VerifyPeer{false}, ssl::VerifyHost{false}, ssl::VerifyStatus{false});
     Response response = cpr::Get(url, sslOpts, Timeout{5000}, Verbose{});
     std::string expected_text = "Hello world!";
@@ -34,7 +35,15 @@ TEST(SslTests, HelloWorldTest) {
  * once we have updated to >= C++17.
  **/
 std::string getBasePath(const std::string& execPath) {
-    return execPath.substr(0, execPath.find_last_of("\\/") + 1);
+    std::string path = execPath.substr(0, execPath.find_last_of("\\/") + 1);
+    
+    // If Windows convert paths from "D:/cpr/build/bin/Release/client.cer" to "D:\cpr\build\bin\Release\client.cer":
+#ifdef _WIN32
+    std::cout << "Converting Unix path to Windows path...\n";
+    std::replace(path.begin(), path.end(), '\\', '/');
+    std::cout << "Result path: " << path << '\n';
+#endif
+    return path;
 }
 
 int main(int argc, char** argv) {

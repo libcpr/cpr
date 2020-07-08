@@ -31,12 +31,23 @@ message(STATUS "=======================================================")
 cpr_option(USE_SYSTEM_CURL
     "If ON, this project will look in the system paths for an installed curl library" OFF)
 cpr_option(BUILD_CPR_TESTS "Set to ON to build cpr tests." ON)
+cpr_option(BUILD_CPR_TESTS_SSL "Set to ON to build cpr ssl tests" ${BUILD_CPR_TESTS})
 cpr_option(GENERATE_COVERAGE "Set to ON to generate coverage reports." OFF)
 cpr_option(CPR_CURL_NOSIGNAL "Set to ON to disable use of signals in libcurl." OFF)
 cpr_option(USE_SYSTEM_GTEST
     "If ON, this project will look in the system paths for an installed gtest library" OFF)
-cpr_option(CMAKE_USE_OPENSSL "Use OpenSSL code. Experimental" ON)
+cpr_option(USE_OPENSSL "Use OpenSSL code. Experimental" ON)
+cpr_option(USE_WINSSL "Use WIN_SSL backend. Experimental" OFF)
 message(STATUS "=======================================================")
+
+if (USE_OPENSSL AND USE_WINSSL)
+    message(FATAL_ERROR "It's only possible to use one SSL backend")
+endif()
+
+if ((NOT WIN32) AND USE_WINSSL)
+    message(FATAL_ERROR "Only use WINSSL with windows")
+endif()
+
 
 include(GNUInstallDirs)
 include(FetchContent)
@@ -44,7 +55,15 @@ include(cmake/code_coverage.cmake)
 
 # Curl configuration
 if(USE_SYSTEM_CURL)
-    find_package(CURL)
+    find_package(CURL COMPONENTS PROTOCOLS HTTP HTTPS FEATURES SSL)
+    if (CURL_FOUND)
+        set(SSL_ENABLED ON CACHE INTERNAL "" FORCE)
+    else()
+        find_package(CURL COMPONENTS PROTOCOLS HTTP)
+        if(CURL_FOUND)
+            set(SSL_ENABLED OFF CACHE INTERNAL "" FORCE)
+        endif()
+    endif()
 endif()
 if(NOT USE_SYSTEM_CURL OR NOT CURL_FOUND)
     message(STATUS "Not using system Curl, using built-in curl project instead.")
@@ -52,10 +71,21 @@ if(NOT USE_SYSTEM_CURL OR NOT CURL_FOUND)
     set(BUILD_CURL_EXE OFF CACHE INTERNAL "" FORCE)
     set(BUILD_TESTING OFF CACHE INTERNAL "" FORCE)
     set(HTTP_ONLY ON CACHE INTERNAL "" FORCE)
-    if(NOT CMAKE_USE_OPENSSL)
+
+    if (USE_WINSSL OR USE_OPENSSL)
+        set(SSL_ENABLED ON CACHE INTERNAL "" FORCE)
+    else()
         set(CURL_CA_PATH "none" CACHE INTERNAL "" FORCE)
     endif()
-    set(SSL_ENABLED ${CMAKE_USE_OPENSSL} CACHE INTERNAL "" FORCE)
+
+    if(USE_WINSSL)
+        set(CMAKE_USE_WINSSL ON CACHE INTERNAL "" FORCE)
+        set(CURL_CA_PATH "none" CACHE INTERNAL "" FORCE)
+    endif()
+
+    if(USE_OPENSSL) 
+        set(CMAKE_USE_OPENSSL ON CACHE INTERNAL "" FORCE)
+    endif()
 
     # Show progress of FetchContent:
     set(FETCHCONTENT_QUIET OFF CACHE INTERNAL "" FORCE)
@@ -78,13 +108,6 @@ if(NOT USE_SYSTEM_CURL OR NOT CURL_FOUND)
     endif()
         
     set_property(TARGET libcurl PROPERTY FOLDER "external")
-endif()
-
-
-# SSL configuration
-if(CMAKE_USE_OPENSSL)
-    find_package(OpenSSL REQUIRED)
-    message(STATUS "using system OpenSSL library.")
 endif()
 
 # GTest configuration
@@ -123,6 +146,17 @@ endif()
 # Mongoose configuration
 if(BUILD_CPR_TESTS)
     message(STATUS "Building mongoose project for test support.")
+    if (SSL_ENABLED)
+        find_package(OpenSSL)
+        if (OPENSSL_FOUND)
+            set(ENABLE_SSL_TESTS ${BUILD_CPR_TESTS_SSL} CACHE INTERNAL "")
+        else()
+            set(ENABLE_SSL_TESTS OFF CACHE INTERNAL "")
+        endif()
+    else()
+            set(ENABLE_SSL_TESTS OFF CACHE INTERNAL "")
+    endif()
+
     FetchContent_Declare(mongoose 
                          GIT_REPOSITORY         https://github.com/cesanta/mongoose.git
                          GIT_TAG                80d74e9e341d541f71c0fa587d22cec89be32dd5 # the hash for 6.18
