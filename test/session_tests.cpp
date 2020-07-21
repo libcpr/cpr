@@ -16,7 +16,7 @@ TEST(RedirectTests, TemporaryDefaultRedirectTest) {
     Session session;
     session.SetUrl(url);
     auto response = session.Get();
-    auto expected_text = std::string{"Hello world!"};
+    std::string expected_text{"Hello world!"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(Url{server->GetBaseUrl() + "/hello.html"}, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
@@ -30,7 +30,7 @@ TEST(RedirectTests, NoTemporaryRedirectTest) {
     session.SetUrl(url);
     session.SetRedirect(false);
     auto response = session.Get();
-    auto expected_text = std::string{"Moved Temporarily"};
+    std::string expected_text{"Moved Temporarily"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{}, response.header["content-type"]);
@@ -43,7 +43,7 @@ TEST(RedirectTests, PermanentDefaultRedirectTest) {
     Session session;
     session.SetUrl(url);
     auto response = session.Get();
-    auto expected_text = std::string{"Hello world!"};
+    std::string expected_text{"Hello world!"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(Url{server->GetBaseUrl() + "/hello.html"}, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
@@ -57,7 +57,7 @@ TEST(RedirectTests, NoPermanentRedirectTest) {
     session.SetUrl(url);
     session.SetRedirect(false);
     auto response = session.Get();
-    auto expected_text = std::string{"Moved Permanently"};
+    std::string expected_text{"Moved Permanently"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{}, response.header["content-type"]);
@@ -71,7 +71,7 @@ TEST(MaxRedirectsTests, ZeroMaxRedirectsSuccessTest) {
     session.SetUrl(url);
     session.SetMaxRedirects(MaxRedirects(0));
     auto response = session.Get();
-    auto expected_text = std::string{"Hello world!"};
+    std::string expected_text{"Hello world!"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
@@ -98,7 +98,7 @@ TEST(MaxRedirectsTests, OneMaxRedirectsSuccessTest) {
     session.SetUrl(url);
     session.SetMaxRedirects(MaxRedirects(1));
     auto response = session.Get();
-    auto expected_text = std::string{"Hello world!"};
+    std::string expected_text{"Hello world!"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(Url{server->GetBaseUrl() + "/hello.html"}, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
@@ -125,7 +125,7 @@ TEST(MaxRedirectsTests, TwoMaxRedirectsSuccessTest) {
     session.SetUrl(url);
     session.SetMaxRedirects(MaxRedirects(2));
     auto response = session.Get();
-    auto expected_text = std::string{"Hello world!"};
+    std::string expected_text{"Hello world!"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(Url{server->GetBaseUrl() + "/hello.html"}, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
@@ -139,7 +139,7 @@ TEST(MultipleGetTests, BasicMultipleGetTest) {
     session.SetUrl(url);
     for (int i = 0; i < 100; ++i) {
         auto response = session.Get();
-        auto expected_text = std::string{"Hello world!"};
+        std::string expected_text{"Hello world!"};
         EXPECT_EQ(expected_text, response.text);
         EXPECT_EQ(url, response.url);
         EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
@@ -154,7 +154,7 @@ TEST(MultipleGetTests, UrlChangeMultipleGetTest) {
         Url url{server->GetBaseUrl() + "/hello.html"};
         session.SetUrl(url);
         auto response = session.Get();
-        auto expected_text = std::string{"Hello world!"};
+        std::string expected_text{"Hello world!"};
         EXPECT_EQ(expected_text, response.text);
         EXPECT_EQ(url, response.url);
         EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
@@ -165,7 +165,7 @@ TEST(MultipleGetTests, UrlChangeMultipleGetTest) {
         Url url{server->GetBaseUrl() + "/basic.json"};
         session.SetUrl(url);
         auto response = session.Get();
-        auto expected_text = std::string{
+        std::string expected_text{
                 "[\n"
                 "  {\n"
                 "    \"first_key\": \"first_value\",\n"
@@ -187,7 +187,7 @@ TEST(MultipleGetTests, HeaderMultipleGetTest) {
     session.SetHeader(Header{{"hello", "world"}});
     for (int i = 0; i < 100; ++i) {
         auto response = session.Get();
-        auto expected_text = std::string{"Header reflect GET"};
+        std::string expected_text{"Header reflect GET"};
         EXPECT_EQ(expected_text, response.text);
         EXPECT_EQ(url, response.url);
         EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
@@ -204,7 +204,7 @@ TEST(MultipleGetTests, HeaderChangeMultipleGetTest) {
     session.SetHeader(Header{{"hello", "world"}});
     {
         auto response = session.Get();
-        auto expected_text = std::string{"Header reflect GET"};
+        std::string expected_text{"Header reflect GET"};
         EXPECT_EQ(expected_text, response.text);
         EXPECT_EQ(url, response.url);
         EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
@@ -215,7 +215,7 @@ TEST(MultipleGetTests, HeaderChangeMultipleGetTest) {
     session.SetHeader(Header{{"key", "value"}});
     {
         auto response = session.Get();
-        auto expected_text = std::string{"Header reflect GET"};
+        std::string expected_text{"Header reflect GET"};
         EXPECT_EQ(expected_text, response.text);
         EXPECT_EQ(url, response.url);
         EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
@@ -232,7 +232,7 @@ TEST(MultipleGetTests, ParameterMultipleGetTest) {
     session.SetParameters({{"hello", "world"}});
     for (int i = 0; i < 100; ++i) {
         auto response = session.Get();
-        auto expected_text = std::string{"Hello world!"};
+        std::string expected_text{"Hello world!"};
         EXPECT_EQ(expected_text, response.text);
         EXPECT_EQ(Url{url + "?hello=world"}, response.url);
         EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
@@ -248,7 +248,7 @@ TEST(MultipleGetTests, ParameterChangeMultipleGetTest) {
     session.SetParameters({{"hello", "world"}});
     {
         auto response = session.Get();
-        auto expected_text = std::string{"Hello world!"};
+        std::string expected_text{"Hello world!"};
         EXPECT_EQ(expected_text, response.text);
         EXPECT_EQ(Url{url + "?hello=world"}, response.url);
         EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
@@ -259,7 +259,7 @@ TEST(MultipleGetTests, ParameterChangeMultipleGetTest) {
     session.SetParameters({{"key", "value"}});
     {
         auto response = session.Get();
-        auto expected_text = std::string{"Hello world!"};
+        std::string expected_text{"Hello world!"};
         EXPECT_EQ(expected_text, response.text);
         EXPECT_EQ(Url{url + "?key=value"}, response.url);
         EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
@@ -275,7 +275,7 @@ TEST(MultipleGetTests, BasicAuthenticationMultipleGetTest) {
     session.SetAuth(Authentication{"user", "password"});
     for (int i = 0; i < 100; ++i) {
         auto response = session.Get();
-        auto expected_text = std::string{"Header reflect GET"};
+        std::string expected_text{"Header reflect GET"};
         EXPECT_EQ(expected_text, response.text);
         EXPECT_EQ(url, response.url);
         EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
@@ -291,7 +291,7 @@ TEST(MultipleGetTests, BasicAuthenticationChangeMultipleGetTest) {
     session.SetAuth(Authentication{"user", "password"});
     {
         auto response = session.Get();
-        auto expected_text = std::string{"Header reflect GET"};
+        std::string expected_text{"Header reflect GET"};
         EXPECT_EQ(expected_text, response.text);
         EXPECT_EQ(url, response.url);
         EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
@@ -325,7 +325,7 @@ TEST(ParameterTests, ParameterSingleTest) {
     Parameters parameters{{"hello", "world"}};
     session.SetParameters(parameters);
     auto response = session.Get();
-    auto expected_text = std::string{"Hello world!"};
+    std::string expected_text{"Hello world!"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(Url{url + "?hello=world"}, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
@@ -340,7 +340,7 @@ TEST(ParameterTests, ParameterMultipleTest) {
     Parameters parameters{{"hello", "world"}, {"key", "value"}};
     session.SetParameters(parameters);
     auto response = session.Get();
-    auto expected_text = std::string{"Hello world!"};
+    std::string expected_text{"Hello world!"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(Url{url + "?hello=world&key=value"}, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
@@ -354,7 +354,7 @@ TEST(TimeoutTests, SetTimeoutTest) {
     session.SetUrl(url);
     session.SetTimeout(0L);
     auto response = session.Get();
-    auto expected_text = std::string{"Hello world!"};
+    std::string expected_text{"Hello world!"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
@@ -368,7 +368,7 @@ TEST(TimeoutTests, SetTimeoutLongTest) {
     session.SetUrl(url);
     session.SetTimeout(10000L);
     auto response = session.Get();
-    auto expected_text = std::string{"Hello world!"};
+    std::string expected_text{"Hello world!"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
@@ -382,7 +382,7 @@ TEST(TimeoutTests, SetChronoTimeoutTest) {
     session.SetUrl(url);
     session.SetTimeout(std::chrono::milliseconds{0});
     auto response = session.Get();
-    auto expected_text = std::string{"Hello world!"};
+    std::string expected_text{"Hello world!"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
@@ -396,7 +396,7 @@ TEST(TimeoutTests, SetChronoTimeoutLongTest) {
     session.SetUrl(url);
     session.SetTimeout(std::chrono::milliseconds{10000});
     auto response = session.Get();
-    auto expected_text = std::string{"Hello world!"};
+    std::string expected_text{"Hello world!"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
@@ -410,7 +410,7 @@ TEST(ConnectTimeoutTests, SetConnectTimeoutTest) {
     session.SetUrl(url);
     session.SetConnectTimeout(0L);
     auto response = session.Get();
-    auto expected_text = std::string{"Hello world!"};
+    std::string expected_text{"Hello world!"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
@@ -424,7 +424,7 @@ TEST(ConnectTimeoutTests, SetConnectTimeoutLongTest) {
     session.SetUrl(url);
     session.SetConnectTimeout(10000L);
     auto response = session.Get();
-    auto expected_text = std::string{"Hello world!"};
+    std::string expected_text{"Hello world!"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
@@ -438,7 +438,7 @@ TEST(ConnectTimeoutTests, SetChronoConnectTimeoutTest) {
     session.SetUrl(url);
     session.SetConnectTimeout(std::chrono::milliseconds{0});
     auto response = session.Get();
-    auto expected_text = std::string{"Hello world!"};
+    std::string expected_text{"Hello world!"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
@@ -452,7 +452,7 @@ TEST(ConnectTimeoutTests, SetChronoConnectTimeoutLongTest) {
     session.SetUrl(url);
     session.SetConnectTimeout(std::chrono::milliseconds{10000});
     auto response = session.Get();
-    auto expected_text = std::string{"Hello world!"};
+    std::string expected_text{"Hello world!"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
@@ -466,7 +466,7 @@ TEST(LowSpeedTests, SetLowSpeedTest) {
     session.SetUrl(url);
     session.SetLowSpeed({1, 1});
     auto response = session.Get();
-    auto expected_text = std::string{"Hello world!"};
+    std::string expected_text{"Hello world!"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
@@ -480,7 +480,7 @@ TEST(PayloadTests, SetPayloadTest) {
     session.SetUrl(url);
     session.SetPayload({{"x", "5"}});
     auto response = session.Post();
-    auto expected_text = std::string{
+    std::string expected_text{
             "{\n"
             "  \"x\": 5\n"
             "}"};
@@ -498,7 +498,7 @@ TEST(PayloadTests, SetPayloadLValueTest) {
     auto payload = Payload{{"x", "5"}};
     session.SetPayload(payload);
     auto response = session.Post();
-    auto expected_text = std::string{
+    std::string expected_text{
             "{\n"
             "  \"x\": 5\n"
             "}"};
@@ -515,7 +515,7 @@ TEST(MultipartTests, SetMultipartTest) {
     session.SetUrl(url);
     session.SetMultipart({{"x", "5"}});
     auto response = session.Post();
-    auto expected_text = std::string{
+    std::string expected_text{
             "{\n"
             "  \"x\": 5\n"
             "}"};
@@ -533,7 +533,7 @@ TEST(MultipartTests, SetMultipartValueTest) {
     auto multipart = Multipart{{"x", "5"}};
     session.SetMultipart(multipart);
     auto response = session.Post();
-    auto expected_text = std::string{
+    std::string expected_text{
             "{\n"
             "  \"x\": 5\n"
             "}"};
@@ -550,7 +550,7 @@ TEST(BodyTests, SetBodyTest) {
     session.SetUrl(url);
     session.SetBody(Body{"x=5"});
     auto response = session.Post();
-    auto expected_text = std::string{
+    std::string expected_text{
             "{\n"
             "  \"x\": 5\n"
             "}"};
@@ -568,7 +568,7 @@ TEST(BodyTests, SetBodyValueTest) {
     auto body = Body{"x=5"};
     session.SetBody(body);
     auto response = session.Post();
-    auto expected_text = std::string{
+    std::string expected_text{
             "{\n"
             "  \"x\": 5\n"
             "}"};
@@ -585,7 +585,7 @@ TEST(DigestTests, SetDigestTest) {
     session.SetUrl(url);
     session.SetDigest({"user", "password"});
     auto response = session.Get();
-    auto expected_text = std::string{"Header reflect GET"};
+    std::string expected_text{"Header reflect GET"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
@@ -600,7 +600,7 @@ TEST(UserAgentTests, SetUserAgentTest) {
     session.SetUrl(url);
     session.SetUserAgent(userAgent);
     auto response = session.Get();
-    auto expected_text = std::string{"Header reflect GET"};
+    std::string expected_text{"Header reflect GET"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
@@ -617,7 +617,7 @@ TEST(CookiesTests, BasicCookiesTest) {
 
     {
         auto response = session.Get();
-        auto expected_text = std::string{"Hello world!"};
+        std::string expected_text{"Hello world!"};
         EXPECT_EQ(expected_text, response.text);
         EXPECT_EQ(url, response.url);
         EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
@@ -630,7 +630,7 @@ TEST(CookiesTests, BasicCookiesTest) {
         cookies["my"] = "another; fake=cookie;"; // This is url encoded
         session.SetCookies(cookies);
         auto response = session.Get();
-        auto expected_text = std::string{"Hello world!"};
+        std::string expected_text{"Hello world!"};
         EXPECT_EQ(expected_text, response.text);
         EXPECT_EQ(url, response.url);
         EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
@@ -650,7 +650,7 @@ TEST(CookiesTests, CookiesConstructorTest) {
 
     {
         auto response = session.Get();
-        auto expected_text = std::string{"Hello world!"};
+        std::string expected_text{"Hello world!"};
         EXPECT_EQ(expected_text, response.text);
         EXPECT_EQ(url, response.url);
         EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
@@ -662,7 +662,7 @@ TEST(CookiesTests, CookiesConstructorTest) {
         cookies = Cookies{{"hello", "world"}, {"my", "another; fake=cookie;"}};
         session.SetCookies(cookies);
         auto response = session.Get();
-        auto expected_text = std::string{"Hello world!"};
+        std::string expected_text{"Hello world!"};
         EXPECT_EQ(expected_text, response.text);
         EXPECT_EQ(url, response.url);
         EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
@@ -681,7 +681,7 @@ TEST(DifferentMethodTests, GetPostTest) {
         Url url{server->GetBaseUrl() + "/hello.html"};
         session.SetUrl(url);
         auto response = session.Get();
-        auto expected_text = std::string{"Hello world!"};
+        std::string expected_text{"Hello world!"};
         EXPECT_EQ(expected_text, response.text);
         EXPECT_EQ(url, response.url);
         EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
@@ -693,7 +693,7 @@ TEST(DifferentMethodTests, GetPostTest) {
         session.SetUrl(url);
         session.SetPayload({{"x", "5"}});
         auto response = session.Post();
-        auto expected_text = std::string{
+        std::string expected_text{
                 "{\n"
                 "  \"x\": 5\n"
                 "}"};
@@ -712,7 +712,7 @@ TEST(DifferentMethodTests, PostGetTest) {
         session.SetUrl(url);
         session.SetPayload({{"x", "5"}});
         auto response = session.Post();
-        auto expected_text = std::string{
+        std::string expected_text{
                 "{\n"
                 "  \"x\": 5\n"
                 "}"};
@@ -726,7 +726,7 @@ TEST(DifferentMethodTests, PostGetTest) {
         Url url{server->GetBaseUrl() + "/hello.html"};
         session.SetUrl(url);
         auto response = session.Get();
-        auto expected_text = std::string{"Hello world!"};
+        std::string expected_text{"Hello world!"};
         EXPECT_EQ(expected_text, response.text);
         EXPECT_EQ(url, response.url);
         EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
@@ -741,7 +741,7 @@ TEST(DifferentMethodTests, GetPostGetTest) {
         Url url{server->GetBaseUrl() + "/hello.html"};
         session.SetUrl(url);
         auto response = session.Get();
-        auto expected_text = std::string{"Hello world!"};
+        std::string expected_text{"Hello world!"};
         EXPECT_EQ(expected_text, response.text);
         EXPECT_EQ(url, response.url);
         EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
@@ -753,7 +753,7 @@ TEST(DifferentMethodTests, GetPostGetTest) {
         session.SetUrl(url);
         session.SetPayload({{"x", "5"}});
         auto response = session.Post();
-        auto expected_text = std::string{
+        std::string expected_text{
                 "{\n"
                 "  \"x\": 5\n"
                 "}"};
@@ -767,7 +767,7 @@ TEST(DifferentMethodTests, GetPostGetTest) {
         Url url{server->GetBaseUrl() + "/hello.html"};
         session.SetUrl(url);
         auto response = session.Get();
-        auto expected_text = std::string{"Hello world!"};
+        std::string expected_text{"Hello world!"};
         EXPECT_EQ(expected_text, response.text);
         EXPECT_EQ(url, response.url);
         EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
@@ -783,7 +783,7 @@ TEST(DifferentMethodTests, PostGetPostTest) {
         session.SetUrl(url);
         session.SetPayload({{"x", "5"}});
         auto response = session.Post();
-        auto expected_text = std::string{
+        std::string expected_text{
                 "{\n"
                 "  \"x\": 5\n"
                 "}"};
@@ -797,7 +797,7 @@ TEST(DifferentMethodTests, PostGetPostTest) {
         Url url{server->GetBaseUrl() + "/hello.html"};
         session.SetUrl(url);
         auto response = session.Get();
-        auto expected_text = std::string{"Hello world!"};
+        std::string expected_text{"Hello world!"};
         EXPECT_EQ(expected_text, response.text);
         EXPECT_EQ(url, response.url);
         EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
@@ -809,7 +809,7 @@ TEST(DifferentMethodTests, PostGetPostTest) {
         session.SetUrl(url);
         session.SetPayload({{"x", "5"}});
         auto response = session.Post();
-        auto expected_text = std::string{
+        std::string expected_text{
                 "{\n"
                 "  \"x\": 5\n"
                 "}"};
@@ -828,7 +828,7 @@ TEST(DifferentMethodTests, MultipleGetPostTest) {
             Url url{server->GetBaseUrl() + "/hello.html"};
             session.SetUrl(url);
             auto response = session.Get();
-            auto expected_text = std::string{"Hello world!"};
+            std::string expected_text{"Hello world!"};
             EXPECT_EQ(expected_text, response.text);
             EXPECT_EQ(url, response.url);
             EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
@@ -840,7 +840,7 @@ TEST(DifferentMethodTests, MultipleGetPostTest) {
             session.SetUrl(url);
             session.SetPayload({{"x", "5"}});
             auto response = session.Post();
-            auto expected_text = std::string{
+            std::string expected_text{
                     "{\n"
                     "  \"x\": 5\n"
                     "}"};

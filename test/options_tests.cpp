@@ -13,7 +13,7 @@ static HttpServer* server = new HttpServer();
 TEST(OptionsTests, BaseUrlTest) {
     Url url{server->GetBaseUrl() + "/"};
     auto response = cpr::Options(url);
-    auto expected_text = std::string{""};
+    std::string expected_text{""};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"GET, POST, PUT, DELETE, PATCH, OPTIONS"},
@@ -25,7 +25,7 @@ TEST(OptionsTests, BaseUrlTest) {
 TEST(OptionsTests, SpecificUrlTest) {
     Url url{server->GetBaseUrl() + "/hello.html"};
     auto response = cpr::Options(url);
-    auto expected_text = std::string{""};
+    std::string expected_text{""};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"GET, POST, PUT, DELETE, PATCH, OPTIONS"},
@@ -42,7 +42,7 @@ TEST(OptionsTests, AsyncBaseUrlTest) {
     }
     for (auto& future_response : responses) {
         auto response = future_response.get();
-        auto expected_text = std::string{""};
+        std::string expected_text{""};
         EXPECT_EQ(expected_text, response.text);
         EXPECT_EQ(url, response.url);
         EXPECT_EQ(std::string{"GET, POST, PUT, DELETE, PATCH, OPTIONS"},
@@ -60,7 +60,7 @@ TEST(OptionsTests, AsyncSpecificUrlTest) {
     }
     for (auto& future_response : responses) {
         auto response = future_response.get();
-        auto expected_text = std::string{""};
+        std::string expected_text{""};
         EXPECT_EQ(expected_text, response.text);
         EXPECT_EQ(url, response.url);
         EXPECT_EQ(std::string{"GET, POST, PUT, DELETE, PATCH, OPTIONS"},

@@ -14,7 +14,7 @@ TEST(PutTests, PutTest) {
     Url url{server->GetBaseUrl() + "/put.html"};
     auto payload = Payload{{"x", "5"}};
     auto response = cpr::Put(url, payload);
-    auto expected_text = std::string{
+    std::string expected_text{
             "{\n"
             "  \"x\": 5\n"
             "}"};
@@ -29,7 +29,7 @@ TEST(PutTests, PutUnallowedTest) {
     Url url{server->GetBaseUrl() + "/put_unallowed.html"};
     auto payload = Payload{{"x", "5"}};
     auto response = cpr::Put(url, payload);
-    auto expected_text = std::string{"Method Not Allowed"};
+    std::string expected_text{"Method Not Allowed"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/plain"}, response.header["content-type"]);
@@ -44,7 +44,7 @@ TEST(PutTests, SessionPutTest) {
     session.SetUrl(url);
     session.SetPayload(payload);
     auto response = session.Put();
-    auto expected_text = std::string{
+    std::string expected_text{
             "{\n"
             "  \"x\": 5\n"
             "}"};
@@ -62,7 +62,7 @@ TEST(PutTests, SessionPutUnallowedTest) {
     session.SetUrl(url);
     session.SetPayload(payload);
     auto response = session.Put();
-    auto expected_text = std::string{"Method Not Allowed"};
+    std::string expected_text{"Method Not Allowed"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/plain"}, response.header["content-type"]);
@@ -82,7 +82,7 @@ TEST(PutTests, SessionPutAfterGetTest) {
     session.SetUrl(url);
     session.SetPayload(payload);
     auto response = session.Put();
-    auto expected_text = std::string{
+    std::string expected_text{
             "{\n"
             "  \"x\": 5\n"
             "}"};
@@ -105,7 +105,7 @@ TEST(PutTests, SessionPutUnallowedAfterGetTest) {
     session.SetUrl(url);
     session.SetPayload(payload);
     auto response = session.Put();
-    auto expected_text = std::string{"Method Not Allowed"};
+    std::string expected_text{"Method Not Allowed"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/plain"}, response.header["content-type"]);
@@ -125,7 +125,7 @@ TEST(PutTests, SessionPutAfterHeadTest) {
     session.SetUrl(url);
     session.SetPayload(payload);
     auto response = session.Put();
-    auto expected_text = std::string{
+    std::string expected_text{
             "{\n"
             "  \"x\": 5\n"
             "}"};
@@ -148,7 +148,7 @@ TEST(PutTests, SessionPutUnallowedAfterHeadTest) {
     session.SetUrl(url);
     session.SetPayload(payload);
     auto response = session.Put();
-    auto expected_text = std::string{"Method Not Allowed"};
+    std::string expected_text{"Method Not Allowed"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/plain"}, response.header["content-type"]);
@@ -169,7 +169,7 @@ TEST(PutTests, SessionPutAfterPostTest) {
     session.SetUrl(url);
     session.SetPayload(payload);
     auto response = session.Put();
-    auto expected_text = std::string{
+    std::string expected_text{
             "{\n"
             "  \"x\": 5\n"
             "}"};
@@ -193,7 +193,7 @@ TEST(PutTests, SessionPutUnallowedAfterPostTest) {
     session.SetUrl(url);
     session.SetPayload(payload);
     auto response = session.Put();
-    auto expected_text = std::string{"Method Not Allowed"};
+    std::string expected_text{"Method Not Allowed"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/plain"}, response.header["content-type"]);
@@ -206,7 +206,7 @@ TEST(PutTests, AsyncPutTest) {
     auto payload = Payload{{"x", "5"}};
     auto future_response = cpr::PutAsync(url, payload);
     auto response = future_response.get();
-    auto expected_text = std::string{
+    std::string expected_text{
             "{\n"
             "  \"x\": 5\n"
             "}"};
@@ -222,7 +222,7 @@ TEST(PutTests, AsyncPutUnallowedTest) {
     auto payload = Payload{{"x", "5"}};
     auto future_response = cpr::PutAsync(url, payload);
     auto response = future_response.get();
-    auto expected_text = std::string{"Method Not Allowed"};
+    std::string expected_text{"Method Not Allowed"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/plain"}, response.header["content-type"]);
@@ -239,7 +239,7 @@ TEST(PutTests, AsyncMultiplePutTest) {
     }
     for (auto& future_response : responses) {
         auto response = future_response.get();
-        auto expected_text = std::string{
+        std::string expected_text{
                 "{\n"
                 "  \"x\": 5\n"
                 "}"};
@@ -260,7 +260,7 @@ TEST(PutTests, AsyncMultiplePutUnallowedTest) {
     }
     for (auto& future_response : responses) {
         auto response = future_response.get();
-        auto expected_text = std::string{"Method Not Allowed"};
+        std::string expected_text{"Method Not Allowed"};
         EXPECT_EQ(expected_text, response.text);
         EXPECT_EQ(url, response.url);
         EXPECT_EQ(std::string{"text/plain"}, response.header["content-type"]);

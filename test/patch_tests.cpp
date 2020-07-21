@@ -14,7 +14,7 @@ TEST(PatchTests, PatchTest) {
     Url url{server->GetBaseUrl() + "/patch.html"};
     auto payload = Payload{{"x", "5"}};
     auto response = cpr::Patch(url, payload);
-    auto expected_text = std::string{
+    std::string expected_text{
             "{\n"
             "  \"x\": 5\n"
             "}"};
@@ -29,7 +29,7 @@ TEST(PatchTests, PatchUnallowedTest) {
     Url url{server->GetBaseUrl() + "/patch_unallowed.html"};
     auto payload = Payload{{"x", "5"}};
     auto response = cpr::Patch(url, payload);
-    auto expected_text = std::string{"Method Not Allowed"};
+    std::string expected_text{"Method Not Allowed"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/plain"}, response.header["content-type"]);
@@ -44,7 +44,7 @@ TEST(PatchTests, SessionPatchTest) {
     session.SetUrl(url);
     session.SetPayload(payload);
     auto response = session.Patch();
-    auto expected_text = std::string{
+    std::string expected_text{
             "{\n"
             "  \"x\": 5\n"
             "}"};
@@ -62,7 +62,7 @@ TEST(PatchTests, SessionPatchUnallowedTest) {
     session.SetUrl(url);
     session.SetPayload(payload);
     auto response = session.Patch();
-    auto expected_text = std::string{"Method Not Allowed"};
+    std::string expected_text{"Method Not Allowed"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/plain"}, response.header["content-type"]);
@@ -82,7 +82,7 @@ TEST(PatchTests, SessionPatchAfterGetTest) {
     session.SetUrl(url);
     session.SetPayload(payload);
     auto response = session.Patch();
-    auto expected_text = std::string{
+    std::string expected_text{
             "{\n"
             "  \"x\": 5\n"
             "}"};
@@ -105,7 +105,7 @@ TEST(PatchTests, SessionPatchUnallowedAfterGetTest) {
     session.SetUrl(url);
     session.SetPayload(payload);
     auto response = session.Patch();
-    auto expected_text = std::string{"Method Not Allowed"};
+    std::string expected_text{"Method Not Allowed"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/plain"}, response.header["content-type"]);
@@ -125,7 +125,7 @@ TEST(PatchTests, SessionPatchAfterHeadTest) {
     session.SetUrl(url);
     session.SetPayload(payload);
     auto response = session.Patch();
-    auto expected_text = std::string{
+    std::string expected_text{
             "{\n"
             "  \"x\": 5\n"
             "}"};
@@ -148,7 +148,7 @@ TEST(PatchTests, SessionPatchUnallowedAfterHeadTest) {
     session.SetUrl(url);
     session.SetPayload(payload);
     auto response = session.Patch();
-    auto expected_text = std::string{"Method Not Allowed"};
+    std::string expected_text{"Method Not Allowed"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/plain"}, response.header["content-type"]);
@@ -169,7 +169,7 @@ TEST(PatchTests, SessionPatchAfterPostTest) {
     session.SetUrl(url);
     session.SetPayload(payload);
     auto response = session.Patch();
-    auto expected_text = std::string{
+    std::string expected_text{
             "{\n"
             "  \"x\": 5\n"
             "}"};
@@ -193,7 +193,7 @@ TEST(PatchTests, SessionPatchUnallowedAfterPostTest) {
     session.SetUrl(url);
     session.SetPayload(payload);
     auto response = session.Patch();
-    auto expected_text = std::string{"Method Not Allowed"};
+    std::string expected_text{"Method Not Allowed"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/plain"}, response.header["content-type"]);
@@ -206,7 +206,7 @@ TEST(PatchTests, AsyncPatchTest) {
     auto payload = Payload{{"x", "5"}};
     auto future_response = cpr::PatchAsync(url, payload);
     auto response = future_response.get();
-    auto expected_text = std::string{
+    std::string expected_text{
             "{\n"
             "  \"x\": 5\n"
             "}"};
@@ -222,7 +222,7 @@ TEST(PatchTests, AsyncPatchUnallowedTest) {
     auto payload = Payload{{"x", "5"}};
     auto future_response = cpr::PatchAsync(url, payload);
     auto response = future_response.get();
-    auto expected_text = std::string{"Method Not Allowed"};
+    std::string expected_text{"Method Not Allowed"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/plain"}, response.header["content-type"]);
@@ -239,7 +239,7 @@ TEST(PatchTests, AsyncMultiplePatchTest) {
     }
     for (auto& future_response : responses) {
         auto response = future_response.get();
-        auto expected_text = std::string{
+        std::string expected_text{
                 "{\n"
                 "  \"x\": 5\n"
                 "}"};
@@ -260,7 +260,7 @@ TEST(PatchTests, AsyncMultiplePatchUnallowedTest) {
     }
     for (auto& future_response : responses) {
         auto response = future_response.get();
-        auto expected_text = std::string{"Method Not Allowed"};
+        std::string expected_text{"Method Not Allowed"};
         EXPECT_EQ(expected_text, response.text);
         EXPECT_EQ(url, response.url);
         EXPECT_EQ(std::string{"text/plain"}, response.header["content-type"]);
