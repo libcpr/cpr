@@ -12,7 +12,7 @@ using namespace cpr;
 static HttpServer* server = new HttpServer();
 
 TEST(UrlEncodedPostTests, AsyncGetTest) {
-    auto url = Url{server->GetBaseUrl() + "/hello.html"};
+    Url url{server->GetBaseUrl() + "/hello.html"};
     auto future = cpr::GetAsync(url);
     auto expected_text = std::string{"Hello world!"};
     auto response = future.get();
@@ -23,7 +23,7 @@ TEST(UrlEncodedPostTests, AsyncGetTest) {
 }
 
 TEST(UrlEncodedPostTests, AsyncGetMultipleTest) {
-    auto url = Url{server->GetBaseUrl() + "/hello.html"};
+    Url url{server->GetBaseUrl() + "/hello.html"};
     std::vector<AsyncResponse> responses;
     for (int i = 0; i < 10; ++i) {
         responses.emplace_back(cpr::GetAsync(url));
@@ -39,7 +39,7 @@ TEST(UrlEncodedPostTests, AsyncGetMultipleTest) {
 }
 
 TEST(UrlEncodedPostTests, AsyncGetMultipleReflectTest) {
-    auto url = Url{server->GetBaseUrl() + "/hello.html"};
+    Url url{server->GetBaseUrl() + "/hello.html"};
     std::vector<AsyncResponse> responses;
     for (int i = 0; i < 100; ++i) {
         auto p = Parameters{{"key", std::to_string(i)}};

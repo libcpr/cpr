@@ -11,7 +11,7 @@ using namespace cpr;
 static HttpServer* server = new HttpServer();
 
 TEST(OptionsTests, BaseUrlTest) {
-    auto url = Url{server->GetBaseUrl() + "/"};
+    Url url{server->GetBaseUrl() + "/"};
     auto response = cpr::Options(url);
     auto expected_text = std::string{""};
     EXPECT_EQ(expected_text, response.text);
@@ -23,7 +23,7 @@ TEST(OptionsTests, BaseUrlTest) {
 }
 
 TEST(OptionsTests, SpecificUrlTest) {
-    auto url = Url{server->GetBaseUrl() + "/hello.html"};
+    Url url{server->GetBaseUrl() + "/hello.html"};
     auto response = cpr::Options(url);
     auto expected_text = std::string{""};
     EXPECT_EQ(expected_text, response.text);
@@ -35,7 +35,7 @@ TEST(OptionsTests, SpecificUrlTest) {
 }
 
 TEST(OptionsTests, AsyncBaseUrlTest) {
-    auto url = Url{server->GetBaseUrl() + "/"};
+    Url url{server->GetBaseUrl() + "/"};
     std::vector<AsyncResponse> responses;
     for (int i = 0; i < 10; ++i) {
         responses.emplace_back(cpr::OptionsAsync(url));
@@ -53,7 +53,7 @@ TEST(OptionsTests, AsyncBaseUrlTest) {
 }
 
 TEST(OptionsTests, AsyncSpecificUrlTest) {
-    auto url = Url{server->GetBaseUrl() + "/hello.html"};
+    Url url{server->GetBaseUrl() + "/hello.html"};
     std::vector<AsyncResponse> responses;
     for (int i = 0; i < 10; ++i) {
         responses.emplace_back(cpr::OptionsAsync(url));

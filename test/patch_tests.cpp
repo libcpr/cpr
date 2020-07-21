@@ -11,7 +11,7 @@ using namespace cpr;
 static HttpServer* server = new HttpServer();
 
 TEST(PatchTests, PatchTest) {
-    auto url = Url{server->GetBaseUrl() + "/patch.html"};
+    Url url{server->GetBaseUrl() + "/patch.html"};
     auto payload = Payload{{"x", "5"}};
     auto response = cpr::Patch(url, payload);
     auto expected_text = std::string{
@@ -26,7 +26,7 @@ TEST(PatchTests, PatchTest) {
 }
 
 TEST(PatchTests, PatchUnallowedTest) {
-    auto url = Url{server->GetBaseUrl() + "/patch_unallowed.html"};
+    Url url{server->GetBaseUrl() + "/patch_unallowed.html"};
     auto payload = Payload{{"x", "5"}};
     auto response = cpr::Patch(url, payload);
     auto expected_text = std::string{"Method Not Allowed"};
@@ -38,7 +38,7 @@ TEST(PatchTests, PatchUnallowedTest) {
 }
 
 TEST(PatchTests, SessionPatchTest) {
-    auto url = Url{server->GetBaseUrl() + "/patch.html"};
+    Url url{server->GetBaseUrl() + "/patch.html"};
     auto payload = Payload{{"x", "5"}};
     Session session;
     session.SetUrl(url);
@@ -56,7 +56,7 @@ TEST(PatchTests, SessionPatchTest) {
 }
 
 TEST(PatchTests, SessionPatchUnallowedTest) {
-    auto url = Url{server->GetBaseUrl() + "/patch_unallowed.html"};
+    Url url{server->GetBaseUrl() + "/patch_unallowed.html"};
     auto payload = Payload{{"x", "5"}};
     Session session;
     session.SetUrl(url);
@@ -73,11 +73,11 @@ TEST(PatchTests, SessionPatchUnallowedTest) {
 TEST(PatchTests, SessionPatchAfterGetTest) {
     Session session;
     {
-        auto url = Url{server->GetBaseUrl() + "/get.html"};
+        Url url{server->GetBaseUrl() + "/get.html"};
         session.SetUrl(url);
         auto response = session.Get();
     }
-    auto url = Url{server->GetBaseUrl() + "/patch.html"};
+    Url url{server->GetBaseUrl() + "/patch.html"};
     auto payload = Payload{{"x", "5"}};
     session.SetUrl(url);
     session.SetPayload(payload);
@@ -96,11 +96,11 @@ TEST(PatchTests, SessionPatchAfterGetTest) {
 TEST(PatchTests, SessionPatchUnallowedAfterGetTest) {
     Session session;
     {
-        auto url = Url{server->GetBaseUrl() + "/get.html"};
+        Url url{server->GetBaseUrl() + "/get.html"};
         session.SetUrl(url);
         auto response = session.Get();
     }
-    auto url = Url{server->GetBaseUrl() + "/patch_unallowed.html"};
+    Url url{server->GetBaseUrl() + "/patch_unallowed.html"};
     auto payload = Payload{{"x", "5"}};
     session.SetUrl(url);
     session.SetPayload(payload);
@@ -116,11 +116,11 @@ TEST(PatchTests, SessionPatchUnallowedAfterGetTest) {
 TEST(PatchTests, SessionPatchAfterHeadTest) {
     Session session;
     {
-        auto url = Url{server->GetBaseUrl() + "/get.html"};
+        Url url{server->GetBaseUrl() + "/get.html"};
         session.SetUrl(url);
         auto response = session.Head();
     }
-    auto url = Url{server->GetBaseUrl() + "/patch.html"};
+    Url url{server->GetBaseUrl() + "/patch.html"};
     auto payload = Payload{{"x", "5"}};
     session.SetUrl(url);
     session.SetPayload(payload);
@@ -139,11 +139,11 @@ TEST(PatchTests, SessionPatchAfterHeadTest) {
 TEST(PatchTests, SessionPatchUnallowedAfterHeadTest) {
     Session session;
     {
-        auto url = Url{server->GetBaseUrl() + "/get.html"};
+        Url url{server->GetBaseUrl() + "/get.html"};
         session.SetUrl(url);
         auto response = session.Head();
     }
-    auto url = Url{server->GetBaseUrl() + "/patch_unallowed.html"};
+    Url url{server->GetBaseUrl() + "/patch_unallowed.html"};
     auto payload = Payload{{"x", "5"}};
     session.SetUrl(url);
     session.SetPayload(payload);
@@ -159,12 +159,12 @@ TEST(PatchTests, SessionPatchUnallowedAfterHeadTest) {
 TEST(PatchTests, SessionPatchAfterPostTest) {
     Session session;
     {
-        auto url = Url{server->GetBaseUrl() + "/url_post.html"};
+        Url url{server->GetBaseUrl() + "/url_post.html"};
         auto payload = Payload{{"x", "5"}};
         session.SetUrl(url);
         auto response = session.Post();
     }
-    auto url = Url{server->GetBaseUrl() + "/patch.html"};
+    Url url{server->GetBaseUrl() + "/patch.html"};
     auto payload = Payload{{"x", "5"}};
     session.SetUrl(url);
     session.SetPayload(payload);
@@ -183,12 +183,12 @@ TEST(PatchTests, SessionPatchAfterPostTest) {
 TEST(PatchTests, SessionPatchUnallowedAfterPostTest) {
     Session session;
     {
-        auto url = Url{server->GetBaseUrl() + "/url_post.html"};
+        Url url{server->GetBaseUrl() + "/url_post.html"};
         auto payload = Payload{{"x", "5"}};
         session.SetUrl(url);
         auto response = session.Post();
     }
-    auto url = Url{server->GetBaseUrl() + "/patch_unallowed.html"};
+    Url url{server->GetBaseUrl() + "/patch_unallowed.html"};
     auto payload = Payload{{"x", "5"}};
     session.SetUrl(url);
     session.SetPayload(payload);
@@ -202,7 +202,7 @@ TEST(PatchTests, SessionPatchUnallowedAfterPostTest) {
 }
 
 TEST(PatchTests, AsyncPatchTest) {
-    auto url = Url{server->GetBaseUrl() + "/patch.html"};
+    Url url{server->GetBaseUrl() + "/patch.html"};
     auto payload = Payload{{"x", "5"}};
     auto future_response = cpr::PatchAsync(url, payload);
     auto response = future_response.get();
@@ -218,7 +218,7 @@ TEST(PatchTests, AsyncPatchTest) {
 }
 
 TEST(PatchTests, AsyncPatchUnallowedTest) {
-    auto url = Url{server->GetBaseUrl() + "/patch_unallowed.html"};
+    Url url{server->GetBaseUrl() + "/patch_unallowed.html"};
     auto payload = Payload{{"x", "5"}};
     auto future_response = cpr::PatchAsync(url, payload);
     auto response = future_response.get();
@@ -231,7 +231,7 @@ TEST(PatchTests, AsyncPatchUnallowedTest) {
 }
 
 TEST(PatchTests, AsyncMultiplePatchTest) {
-    auto url = Url{server->GetBaseUrl() + "/patch.html"};
+    Url url{server->GetBaseUrl() + "/patch.html"};
     auto payload = Payload{{"x", "5"}};
     std::vector<AsyncResponse> responses;
     for (int i = 0; i < 10; ++i) {
@@ -252,7 +252,7 @@ TEST(PatchTests, AsyncMultiplePatchTest) {
 }
 
 TEST(PatchTests, AsyncMultiplePatchUnallowedTest) {
-    auto url = Url{server->GetBaseUrl() + "/patch_unallowed.html"};
+    Url url{server->GetBaseUrl() + "/patch_unallowed.html"};
     auto payload = Payload{{"x", "5"}};
     std::vector<AsyncResponse> responses;
     for (int i = 0; i < 10; ++i) {

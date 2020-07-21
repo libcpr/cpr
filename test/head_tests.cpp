@@ -11,7 +11,7 @@ using namespace cpr;
 static HttpServer* server = new HttpServer();
 
 TEST(HeadTests, BasicHeadTest) {
-    auto url = Url{server->GetBaseUrl() + "/hello.html"};
+    Url url{server->GetBaseUrl() + "/hello.html"};
     auto response = cpr::Head(url);
     EXPECT_EQ(std::string{}, response.text);
     EXPECT_EQ(url, response.url);
@@ -21,7 +21,7 @@ TEST(HeadTests, BasicHeadTest) {
 }
 
 TEST(HeadTests, ComplexHeadTest) {
-    auto url = Url{server->GetBaseUrl() + "/basic.json"};
+    Url url{server->GetBaseUrl() + "/basic.json"};
     auto response = cpr::Head(url);
     EXPECT_EQ(std::string{}, response.text);
     EXPECT_EQ(url, response.url);
@@ -31,7 +31,7 @@ TEST(HeadTests, ComplexHeadTest) {
 }
 
 TEST(HeadTests, ResourceNotFoundHeadTest) {
-    auto url = Url{server->GetBaseUrl() + "/error.html"};
+    Url url{server->GetBaseUrl() + "/error.html"};
     auto response = cpr::Head(url);
     EXPECT_EQ(std::string{}, response.text);
     EXPECT_EQ(url, response.url);
@@ -41,7 +41,7 @@ TEST(HeadTests, ResourceNotFoundHeadTest) {
 }
 
 TEST(HeadTests, BadHostHeadTest) {
-    auto url = Url{"http://bad_host/"};
+    Url url{"http://bad_host/"};
     auto response = cpr::Head(url);
     EXPECT_EQ(std::string{}, response.text);
     EXPECT_EQ(url, response.url);
@@ -50,7 +50,7 @@ TEST(HeadTests, BadHostHeadTest) {
 }
 
 TEST(HeadTests, CookieHeadTest) {
-    auto url = Url{server->GetBaseUrl() + "/basic_cookies.html"};
+    Url url{server->GetBaseUrl() + "/basic_cookies.html"};
     auto cookies = Cookies{{"hello", "world"}, {"my", "another; fake=cookie;"}};
     auto response = cpr::Head(url, cookies);
     EXPECT_EQ(std::string{}, response.text);
@@ -65,7 +65,7 @@ TEST(HeadTests, CookieHeadTest) {
 }
 
 TEST(HeadTests, ParameterHeadTest) {
-    auto url = Url{server->GetBaseUrl() + "/hello.html"};
+    Url url{server->GetBaseUrl() + "/hello.html"};
     auto parameters = Parameters{{"key", "value"}};
     auto response = cpr::Head(url, parameters);
     EXPECT_EQ(std::string{}, response.text);
@@ -76,7 +76,7 @@ TEST(HeadTests, ParameterHeadTest) {
 }
 
 TEST(HeadTests, AuthenticationSuccessHeadTest) {
-    auto url = Url{server->GetBaseUrl() + "/basic_auth.html"};
+    Url url{server->GetBaseUrl() + "/basic_auth.html"};
     auto response = cpr::Head(url, Authentication{"user", "password"});
     EXPECT_EQ(std::string{}, response.text);
     EXPECT_EQ(url, response.url);
@@ -86,7 +86,7 @@ TEST(HeadTests, AuthenticationSuccessHeadTest) {
 }
 
 TEST(HeadTests, AuthenticationNullFailureHeadTest) {
-    auto url = Url{server->GetBaseUrl() + "/basic_auth.html"};
+    Url url{server->GetBaseUrl() + "/basic_auth.html"};
     auto response = cpr::Head(url);
     EXPECT_EQ(std::string{}, response.text);
     EXPECT_EQ(url, response.url);
@@ -96,7 +96,7 @@ TEST(HeadTests, AuthenticationNullFailureHeadTest) {
 }
 
 TEST(HeadTests, AuthenticationFailureHeadTest) {
-    auto url = Url{server->GetBaseUrl() + "/basic_auth.html"};
+    Url url{server->GetBaseUrl() + "/basic_auth.html"};
     auto response = cpr::Head(url, Authentication{"user", "bad_password"});
     EXPECT_EQ(std::string{}, response.text);
     EXPECT_EQ(url, response.url);
@@ -106,7 +106,7 @@ TEST(HeadTests, AuthenticationFailureHeadTest) {
 }
 
 TEST(HeadTests, DigestSuccessHeadTest) {
-    auto url = Url{server->GetBaseUrl() + "/digest_auth.html"};
+    Url url{server->GetBaseUrl() + "/digest_auth.html"};
     auto response = cpr::Head(url, Digest{"user", "password"});
     EXPECT_EQ(std::string{}, response.text);
     EXPECT_EQ(url, response.url);
@@ -116,7 +116,7 @@ TEST(HeadTests, DigestSuccessHeadTest) {
 }
 
 TEST(HeadTests, HeaderReflectNoneHeadTest) {
-    auto url = Url{server->GetBaseUrl() + "/header_reflect.html"};
+    Url url{server->GetBaseUrl() + "/header_reflect.html"};
     auto response = cpr::Head(url);
     EXPECT_EQ(std::string{}, response.text);
     EXPECT_EQ(url, response.url);
@@ -127,7 +127,7 @@ TEST(HeadTests, HeaderReflectNoneHeadTest) {
 }
 
 TEST(HeadTests, HeaderReflectEmptyHeadTest) {
-    auto url = Url{server->GetBaseUrl() + "/header_reflect.html"};
+    Url url{server->GetBaseUrl() + "/header_reflect.html"};
     auto response = cpr::Head(url, Header{});
     EXPECT_EQ(std::string{}, response.text);
     EXPECT_EQ(url, response.url);
@@ -138,7 +138,7 @@ TEST(HeadTests, HeaderReflectEmptyHeadTest) {
 }
 
 TEST(HeadTests, HeaderReflectHeadTest) {
-    auto url = Url{server->GetBaseUrl() + "/header_reflect.html"};
+    Url url{server->GetBaseUrl() + "/header_reflect.html"};
     auto response = cpr::Head(url, Header{{"hello", "world"}});
     EXPECT_EQ(std::string{}, response.text);
     EXPECT_EQ(url, response.url);
@@ -149,7 +149,7 @@ TEST(HeadTests, HeaderReflectHeadTest) {
 }
 
 TEST(HeadTests, SetEmptyHeaderHeadTest) {
-    auto url = Url{server->GetBaseUrl() + "/header_reflect.html"};
+    Url url{server->GetBaseUrl() + "/header_reflect.html"};
     auto response = cpr::Head(url, Header{{"hello", ""}});
     EXPECT_EQ(std::string{}, response.text);
     EXPECT_EQ(url, response.url);
@@ -160,7 +160,7 @@ TEST(HeadTests, SetEmptyHeaderHeadTest) {
 }
 
 TEST(HeadTests, RedirectHeadTest) {
-    auto url = Url{server->GetBaseUrl() + "/temporary_redirect.html"};
+    Url url{server->GetBaseUrl() + "/temporary_redirect.html"};
     auto response = cpr::Head(url, false);
     EXPECT_EQ(std::string{}, response.text);
     EXPECT_EQ(url, response.url);
@@ -170,7 +170,7 @@ TEST(HeadTests, RedirectHeadTest) {
 }
 
 TEST(HeadTests, ZeroMaxRedirectsHeadTest) {
-    auto url = Url{server->GetBaseUrl() + "/hello.html"};
+    Url url{server->GetBaseUrl() + "/hello.html"};
     auto response = cpr::Head(url, 0L);
     EXPECT_EQ(std::string{}, response.text);
     EXPECT_EQ(url, response.url);
@@ -180,7 +180,7 @@ TEST(HeadTests, ZeroMaxRedirectsHeadTest) {
 }
 
 TEST(HeadTests, BasicHeadAsyncTest) {
-    auto url = Url{server->GetBaseUrl() + "/hello.html"};
+    Url url{server->GetBaseUrl() + "/hello.html"};
     std::vector<AsyncResponse> responses;
     for (int i = 0; i < 10; ++i) {
         responses.emplace_back(cpr::HeadAsync(url));
