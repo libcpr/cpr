@@ -13,7 +13,7 @@ static HttpServer* server = new HttpServer();
 TEST(PatchTests, PatchTest) {
     Url url{server->GetBaseUrl() + "/patch.html"};
     auto payload = Payload{{"x", "5"}};
-    auto response = cpr::Patch(url, payload);
+    Response response = cpr::Patch(url, payload);
     std::string expected_text{
             "{\n"
             "  \"x\": 5\n"
@@ -28,7 +28,7 @@ TEST(PatchTests, PatchTest) {
 TEST(PatchTests, PatchUnallowedTest) {
     Url url{server->GetBaseUrl() + "/patch_unallowed.html"};
     auto payload = Payload{{"x", "5"}};
-    auto response = cpr::Patch(url, payload);
+    Response response = cpr::Patch(url, payload);
     std::string expected_text{"Method Not Allowed"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
@@ -43,7 +43,7 @@ TEST(PatchTests, SessionPatchTest) {
     Session session;
     session.SetUrl(url);
     session.SetPayload(payload);
-    auto response = session.Patch();
+    Response response = session.Patch();
     std::string expected_text{
             "{\n"
             "  \"x\": 5\n"
@@ -61,7 +61,7 @@ TEST(PatchTests, SessionPatchUnallowedTest) {
     Session session;
     session.SetUrl(url);
     session.SetPayload(payload);
-    auto response = session.Patch();
+    Response response = session.Patch();
     std::string expected_text{"Method Not Allowed"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
@@ -75,13 +75,13 @@ TEST(PatchTests, SessionPatchAfterGetTest) {
     {
         Url url{server->GetBaseUrl() + "/get.html"};
         session.SetUrl(url);
-        auto response = session.Get();
+        Response response = session.Get();
     }
     Url url{server->GetBaseUrl() + "/patch.html"};
     auto payload = Payload{{"x", "5"}};
     session.SetUrl(url);
     session.SetPayload(payload);
-    auto response = session.Patch();
+    Response response = session.Patch();
     std::string expected_text{
             "{\n"
             "  \"x\": 5\n"
@@ -98,13 +98,13 @@ TEST(PatchTests, SessionPatchUnallowedAfterGetTest) {
     {
         Url url{server->GetBaseUrl() + "/get.html"};
         session.SetUrl(url);
-        auto response = session.Get();
+        Response response = session.Get();
     }
     Url url{server->GetBaseUrl() + "/patch_unallowed.html"};
     auto payload = Payload{{"x", "5"}};
     session.SetUrl(url);
     session.SetPayload(payload);
-    auto response = session.Patch();
+    Response response = session.Patch();
     std::string expected_text{"Method Not Allowed"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
@@ -118,13 +118,13 @@ TEST(PatchTests, SessionPatchAfterHeadTest) {
     {
         Url url{server->GetBaseUrl() + "/get.html"};
         session.SetUrl(url);
-        auto response = session.Head();
+        Response response = session.Head();
     }
     Url url{server->GetBaseUrl() + "/patch.html"};
     auto payload = Payload{{"x", "5"}};
     session.SetUrl(url);
     session.SetPayload(payload);
-    auto response = session.Patch();
+    Response response = session.Patch();
     std::string expected_text{
             "{\n"
             "  \"x\": 5\n"
@@ -141,13 +141,13 @@ TEST(PatchTests, SessionPatchUnallowedAfterHeadTest) {
     {
         Url url{server->GetBaseUrl() + "/get.html"};
         session.SetUrl(url);
-        auto response = session.Head();
+        Response response = session.Head();
     }
     Url url{server->GetBaseUrl() + "/patch_unallowed.html"};
     auto payload = Payload{{"x", "5"}};
     session.SetUrl(url);
     session.SetPayload(payload);
-    auto response = session.Patch();
+    Response response = session.Patch();
     std::string expected_text{"Method Not Allowed"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
@@ -162,13 +162,13 @@ TEST(PatchTests, SessionPatchAfterPostTest) {
         Url url{server->GetBaseUrl() + "/url_post.html"};
         auto payload = Payload{{"x", "5"}};
         session.SetUrl(url);
-        auto response = session.Post();
+        Response response = session.Post();
     }
     Url url{server->GetBaseUrl() + "/patch.html"};
     auto payload = Payload{{"x", "5"}};
     session.SetUrl(url);
     session.SetPayload(payload);
-    auto response = session.Patch();
+    Response response = session.Patch();
     std::string expected_text{
             "{\n"
             "  \"x\": 5\n"
@@ -186,13 +186,13 @@ TEST(PatchTests, SessionPatchUnallowedAfterPostTest) {
         Url url{server->GetBaseUrl() + "/url_post.html"};
         auto payload = Payload{{"x", "5"}};
         session.SetUrl(url);
-        auto response = session.Post();
+        Response response = session.Post();
     }
     Url url{server->GetBaseUrl() + "/patch_unallowed.html"};
     auto payload = Payload{{"x", "5"}};
     session.SetUrl(url);
     session.SetPayload(payload);
-    auto response = session.Patch();
+    Response response = session.Patch();
     std::string expected_text{"Method Not Allowed"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);

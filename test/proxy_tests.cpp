@@ -14,7 +14,7 @@ using namespace cpr;
 
 TEST(ProxyTests, SingleProxyTest) {
     Url url{"http://www.httpbin.org/get"};
-    auto response = cpr::Get(url, Proxies{{"http", HTTP_PROXY}});
+    Response response = cpr::Get(url, Proxies{{"http", HTTP_PROXY}});
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
@@ -23,7 +23,7 @@ TEST(ProxyTests, SingleProxyTest) {
 
 TEST(ProxyTests, MultipleProxyHttpTest) {
     Url url{"http://www.httpbin.org/get"};
-    auto response = cpr::Get(url, Proxies{{"http", HTTP_PROXY}, {"https", HTTPS_PROXY}});
+    Response response = cpr::Get(url, Proxies{{"http", HTTP_PROXY}, {"https", HTTPS_PROXY}});
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
@@ -34,7 +34,7 @@ TEST(ProxyTests, MultipleProxyHttpTest) {
 #if defined(false)
 TEST(ProxyTests, ProxyHttpsTest) {
     Url url{"https://www.httpbin.org/get"};
-    auto response = cpr::Get(url, Proxies{{"https", HTTPS_PROXY}});
+    Response response = cpr::Get(url, Proxies{{"https", HTTPS_PROXY}});
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
@@ -43,7 +43,7 @@ TEST(ProxyTests, ProxyHttpsTest) {
 
 TEST(ProxyTests, MultipleProxyHttpsTest) {
     Url url{"https://www.httpbin.org/get"};
-    auto response = cpr::Get(url, Proxies{{"http", HTTP_PROXY}, {"https", HTTPS_PROXY}});
+    Response response = cpr::Get(url, Proxies{{"http", HTTP_PROXY}, {"https", HTTPS_PROXY}});
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
@@ -54,7 +54,7 @@ TEST(ProxyTests, MultipleProxyHttpsTest) {
 TEST(ProxyTests, CopyProxyTest) {
     Url url{"http://www.httpbin.org/get"};
     auto proxies = Proxies{{"http", HTTP_PROXY}};
-    auto response = cpr::Get(url, proxies);
+    Response response = cpr::Get(url, proxies);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
@@ -66,7 +66,7 @@ TEST(ProxyTests, ProxySessionTest) {
     Session session;
     session.SetUrl(url);
     session.SetProxies(Proxies{{"http", HTTP_PROXY}});
-    auto response = session.Get();
+    Response response = session.Get();
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
@@ -79,7 +79,7 @@ TEST(ProxyTests, ReferenceProxySessionTest) {
     Session session;
     session.SetUrl(url);
     session.SetProxies(proxies);
-    auto response = session.Get();
+    Response response = session.Get();
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);

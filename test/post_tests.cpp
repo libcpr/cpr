@@ -16,7 +16,7 @@ static HttpServer* server = new HttpServer();
 
 TEST(UrlEncodedPostTests, UrlPostSingleTest) {
     Url url{server->GetBaseUrl() + "/url_post.html"};
-    auto response = cpr::Post(url, Payload{{"x", "5"}});
+    Response response = cpr::Post(url, Payload{{"x", "5"}});
     std::string expected_text{
             "{\n"
             "  \"x\": 5\n"
@@ -34,7 +34,7 @@ TEST(UrlEncodedPostTests, UrlPostAddPayloadPair) {
     // Create a temporary CurlHolder for URL encoding:
     CurlHolder holder;
     payload.AddPair({"y", "2"}, holder);
-    auto response = cpr::Post(url, payload);
+    Response response = cpr::Post(url, payload);
     std::string expected_text{
             "{\n"
             "  \"x\": 1,\n"
@@ -52,7 +52,7 @@ TEST(UrlEncodedPostTests, UrlPostPayloadIteratorTest) {
     std::vector<Pair> payloadData;
     payloadData.push_back({"x", "1"});
     payloadData.push_back({"y", "2"});
-    auto response = cpr::Post(url, Payload(payloadData.begin(), payloadData.end()));
+    Response response = cpr::Post(url, Payload(payloadData.begin(), payloadData.end()));
     std::string expected_text{
             "{\n"
             "  \"x\": 1,\n"
@@ -67,7 +67,7 @@ TEST(UrlEncodedPostTests, UrlPostPayloadIteratorTest) {
 
 TEST(UrlEncodedPostTests, UrlPostEncodeTest) {
     Url url{server->GetBaseUrl() + "/url_post.html"};
-    auto response = cpr::Post(url, Payload{{"x", "hello world!!~"}});
+    Response response = cpr::Post(url, Payload{{"x", "hello world!!~"}});
     std::string expected_text{
             "{\n"
             "  \"x\": hello world!!~\n"
@@ -83,7 +83,7 @@ TEST(UrlEncodedPostTests, UrlPostEncodeNoCopyTest) {
     Url url{server->GetBaseUrl() + "/url_post.html"};
     auto payload = Payload{{"x", "hello world!!~"}};
     // payload lives through the lifetime of Post, so it doesn't need to be copied
-    auto response = cpr::Post(url, payload);
+    Response response = cpr::Post(url, payload);
     std::string expected_text{
             "{\n"
             "  \"x\": hello world!!~\n"
@@ -97,7 +97,7 @@ TEST(UrlEncodedPostTests, UrlPostEncodeNoCopyTest) {
 
 TEST(UrlEncodedPostTests, UrlPostManyTest) {
     Url url{server->GetBaseUrl() + "/url_post.html"};
-    auto response = cpr::Post(url, Payload{{"x", "5"}, {"y", "13"}});
+    Response response = cpr::Post(url, Payload{{"x", "5"}, {"y", "13"}});
     std::string expected_text{
             "{\n"
             "  \"x\": 5,\n"
@@ -113,7 +113,7 @@ TEST(UrlEncodedPostTests, UrlPostManyTest) {
 
 TEST(UrlEncodedPostTests, UrlPostBadHostTest) {
     Url url{"http://bad_host/"};
-    auto response = cpr::Post(url, Payload{{"hello", "world"}});
+    Response response = cpr::Post(url, Payload{{"hello", "world"}});
     EXPECT_EQ(std::string{}, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{}, response.header["content-type"]);
@@ -123,7 +123,7 @@ TEST(UrlEncodedPostTests, UrlPostBadHostTest) {
 
 TEST(UrlEncodedPostTests, FormPostSingleTest) {
     Url url{server->GetBaseUrl() + "/form_post.html"};
-    auto response = cpr::Post(url, Multipart{{"x", 5}});
+    Response response = cpr::Post(url, Multipart{{"x", 5}});
     std::string expected_text{
             "{\n"
             "  \"x\": 5\n"
@@ -143,7 +143,7 @@ TEST(UrlEncodedPostTests, FormPostFileTest) {
     test_file << content;
     test_file.close();
     Url url{server->GetBaseUrl() + "/form_post.html"};
-    auto response = cpr::Post(url, Multipart{{"x", File{filename}}});
+    Response response = cpr::Post(url, Multipart{{"x", File{filename}}});
     std::string expected_text{
             "{\n"
             "  \"x\": " +
@@ -167,7 +167,7 @@ TEST(UrlEncodedPostTests, FormPostFileNoCopyTest) {
     test_file.close();
     Url url{server->GetBaseUrl() + "/form_post.html"};
     auto multipart = Multipart{{"x", File{filename}}};
-    auto response = cpr::Post(url, multipart);
+    Response response = cpr::Post(url, multipart);
     std::string expected_text{
             "{\n"
             "  \"x\": " +
@@ -204,7 +204,7 @@ TEST(UrlEncodedPostTests, FormPostFileBufferNoCopyTest) {
     auto content = std::string{"hello world"};
     Url url{server->GetBaseUrl() + "/form_post.html"};
     auto multipart = Multipart{{"x", Buffer{content.begin(), content.end(), "test_file"}}};
-    auto response = cpr::Post(url, multipart);
+    Response response = cpr::Post(url, multipart);
     std::string expected_text{
             "{\n"
             "  \"x\": " +
@@ -221,7 +221,8 @@ TEST(UrlEncodedPostTests, FormPostFileBufferNoCopyTest) {
 TEST(UrlEncodedPostTests, FormPostFileBufferPointerTest) {
     const char* content = "hello world";
     Url url{server->GetBaseUrl() + "/form_post.html"};
-    auto response = cpr::Post(url, Multipart{{"x", Buffer{content, 11 + content, "test_file"}}});
+    Response response =
+            cpr::Post(url, Multipart{{"x", Buffer{content, 11 + content, "test_file"}}});
     std::string expected_text{
             "{\n"
             "  \"x\": " +
@@ -239,7 +240,7 @@ TEST(UrlEncodedPostTests, FormPostFileBufferArrayTest) {
     const char content[] = "hello world";
     Url url{server->GetBaseUrl() + "/form_post.html"};
     // We subtract 1 from std::end() because we don't want to include the terminating null
-    auto response = cpr::Post(
+    Response response = cpr::Post(
             url, Multipart{{"x", Buffer{std::begin(content), std::end(content) - 1, "test_file"}}});
     std::string expected_text{
             "{\n"
@@ -288,7 +289,7 @@ TEST(UrlEncodedPostTests, FormPostFileBufferStdArrayTest) {
 
 TEST(UrlEncodedPostTests, FormPostManyTest) {
     Url url{server->GetBaseUrl() + "/form_post.html"};
-    auto response = cpr::Post(url, Multipart{{"x", 5}, {"y", 13}});
+    Response response = cpr::Post(url, Multipart{{"x", 5}, {"y", 13}});
     std::string expected_text{
             "{\n"
             "  \"x\": 5,\n"
@@ -305,7 +306,7 @@ TEST(UrlEncodedPostTests, FormPostManyTest) {
 TEST(UrlEncodedPostTests, FormPostManyNoCopyTest) {
     Url url{server->GetBaseUrl() + "/form_post.html"};
     auto multipart = Multipart{{"x", 5}, {"y", 13}};
-    auto response = cpr::Post(url, multipart);
+    Response response = cpr::Post(url, multipart);
     std::string expected_text{
             "{\n"
             "  \"x\": 5,\n"
@@ -321,7 +322,7 @@ TEST(UrlEncodedPostTests, FormPostManyNoCopyTest) {
 
 TEST(UrlEncodedPostTests, FormPostContentTypeTest) {
     Url url{server->GetBaseUrl() + "/form_post.html"};
-    auto response = cpr::Post(url, Multipart{{"x", 5, "application/number"}});
+    Response response = cpr::Post(url, Multipart{{"x", 5, "application/number"}});
     std::string expected_text{
             "{\n"
             "  \"x\": 5\n"
@@ -336,7 +337,7 @@ TEST(UrlEncodedPostTests, FormPostContentTypeTest) {
 TEST(UrlEncodedPostTests, FormPostContentTypeLValueTest) {
     Url url{server->GetBaseUrl() + "/form_post.html"};
     auto multipart = Multipart{{"x", 5, "application/number"}};
-    auto response = cpr::Post(url, multipart);
+    Response response = cpr::Post(url, multipart);
     std::string expected_text{
             "{\n"
             "  \"x\": 5\n"
@@ -371,7 +372,7 @@ TEST(UrlEncodedPostTests, UrlPostAsyncSingleTest) {
 
 TEST(UrlEncodedPostTests, UrlReflectTest) {
     Url url{server->GetBaseUrl() + "/header_reflect.html"};
-    auto response = cpr::Post(url, Payload{{"x", "5"}});
+    Response response = cpr::Post(url, Payload{{"x", "5"}});
     std::string expected_text{"Header reflect POST"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
@@ -381,7 +382,7 @@ TEST(UrlEncodedPostTests, UrlReflectTest) {
 
 TEST(UrlEncodedPostTests, PostWithNoBodyTest) {
     Url url{server->GetBaseUrl() + "/form_post.html"};
-    auto response = cpr::Post(url);
+    Response response = cpr::Post(url);
     std::string expected_text{
             "{\n"
             "  \"x\": \n"
@@ -408,13 +409,13 @@ TEST(UrlEncodedPostTests, PostReflectTest) {
     std::string signature = "x-ms-date: something";
     std::string logType = "LoggingTest";
     std::string date = getTimestamp();
-    auto response = cpr::Post(cpr::Url(uri),
-                              cpr::Header{{"content-type", contentType},
-                                          {"Authorization", signature},
-                                          {"log-type", logType},
-                                          {"x-ms-date", date},
-                                          {"content-length", std::to_string(body.length())}},
-                              cpr::Body(body));
+    Response response = cpr::Post(cpr::Url(uri),
+                                  cpr::Header{{"content-type", contentType},
+                                              {"Authorization", signature},
+                                              {"log-type", logType},
+                                              {"x-ms-date", date},
+                                              {"content-length", std::to_string(body.length())}},
+                                  cpr::Body(body));
     EXPECT_EQ(ErrorCode::OK, response.error.code);
     EXPECT_EQ(200, response.status_code);
     EXPECT_EQ(body, response.text);

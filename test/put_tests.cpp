@@ -13,7 +13,7 @@ static HttpServer* server = new HttpServer();
 TEST(PutTests, PutTest) {
     Url url{server->GetBaseUrl() + "/put.html"};
     auto payload = Payload{{"x", "5"}};
-    auto response = cpr::Put(url, payload);
+    Response response = cpr::Put(url, payload);
     std::string expected_text{
             "{\n"
             "  \"x\": 5\n"
@@ -28,7 +28,7 @@ TEST(PutTests, PutTest) {
 TEST(PutTests, PutUnallowedTest) {
     Url url{server->GetBaseUrl() + "/put_unallowed.html"};
     auto payload = Payload{{"x", "5"}};
-    auto response = cpr::Put(url, payload);
+    Response response = cpr::Put(url, payload);
     std::string expected_text{"Method Not Allowed"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
@@ -43,7 +43,7 @@ TEST(PutTests, SessionPutTest) {
     Session session;
     session.SetUrl(url);
     session.SetPayload(payload);
-    auto response = session.Put();
+    Response response = session.Put();
     std::string expected_text{
             "{\n"
             "  \"x\": 5\n"
@@ -61,7 +61,7 @@ TEST(PutTests, SessionPutUnallowedTest) {
     Session session;
     session.SetUrl(url);
     session.SetPayload(payload);
-    auto response = session.Put();
+    Response response = session.Put();
     std::string expected_text{"Method Not Allowed"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
@@ -75,13 +75,13 @@ TEST(PutTests, SessionPutAfterGetTest) {
     {
         Url url{server->GetBaseUrl() + "/get.html"};
         session.SetUrl(url);
-        auto response = session.Get();
+        Response response = session.Get();
     }
     Url url{server->GetBaseUrl() + "/put.html"};
     auto payload = Payload{{"x", "5"}};
     session.SetUrl(url);
     session.SetPayload(payload);
-    auto response = session.Put();
+    Response response = session.Put();
     std::string expected_text{
             "{\n"
             "  \"x\": 5\n"
@@ -98,13 +98,13 @@ TEST(PutTests, SessionPutUnallowedAfterGetTest) {
     {
         Url url{server->GetBaseUrl() + "/get.html"};
         session.SetUrl(url);
-        auto response = session.Get();
+        Response response = session.Get();
     }
     Url url{server->GetBaseUrl() + "/put_unallowed.html"};
     auto payload = Payload{{"x", "5"}};
     session.SetUrl(url);
     session.SetPayload(payload);
-    auto response = session.Put();
+    Response response = session.Put();
     std::string expected_text{"Method Not Allowed"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
@@ -118,13 +118,13 @@ TEST(PutTests, SessionPutAfterHeadTest) {
     {
         Url url{server->GetBaseUrl() + "/get.html"};
         session.SetUrl(url);
-        auto response = session.Head();
+        Response response = session.Head();
     }
     Url url{server->GetBaseUrl() + "/put.html"};
     auto payload = Payload{{"x", "5"}};
     session.SetUrl(url);
     session.SetPayload(payload);
-    auto response = session.Put();
+    Response response = session.Put();
     std::string expected_text{
             "{\n"
             "  \"x\": 5\n"
@@ -141,13 +141,13 @@ TEST(PutTests, SessionPutUnallowedAfterHeadTest) {
     {
         Url url{server->GetBaseUrl() + "/get.html"};
         session.SetUrl(url);
-        auto response = session.Head();
+        Response response = session.Head();
     }
     Url url{server->GetBaseUrl() + "/put_unallowed.html"};
     auto payload = Payload{{"x", "5"}};
     session.SetUrl(url);
     session.SetPayload(payload);
-    auto response = session.Put();
+    Response response = session.Put();
     std::string expected_text{"Method Not Allowed"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
@@ -162,13 +162,13 @@ TEST(PutTests, SessionPutAfterPostTest) {
         Url url{server->GetBaseUrl() + "/url_post.html"};
         auto payload = Payload{{"x", "5"}};
         session.SetUrl(url);
-        auto response = session.Post();
+        Response response = session.Post();
     }
     Url url{server->GetBaseUrl() + "/put.html"};
     auto payload = Payload{{"x", "5"}};
     session.SetUrl(url);
     session.SetPayload(payload);
-    auto response = session.Put();
+    Response response = session.Put();
     std::string expected_text{
             "{\n"
             "  \"x\": 5\n"
@@ -186,13 +186,13 @@ TEST(PutTests, SessionPutUnallowedAfterPostTest) {
         Url url{server->GetBaseUrl() + "/url_post.html"};
         auto payload = Payload{{"x", "5"}};
         session.SetUrl(url);
-        auto response = session.Post();
+        Response response = session.Post();
     }
     Url url{server->GetBaseUrl() + "/put_unallowed.html"};
     auto payload = Payload{{"x", "5"}};
     session.SetUrl(url);
     session.SetPayload(payload);
-    auto response = session.Put();
+    Response response = session.Put();
     std::string expected_text{"Method Not Allowed"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);

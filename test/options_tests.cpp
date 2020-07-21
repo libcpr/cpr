@@ -12,7 +12,7 @@ static HttpServer* server = new HttpServer();
 
 TEST(OptionsTests, BaseUrlTest) {
     Url url{server->GetBaseUrl() + "/"};
-    auto response = cpr::Options(url);
+    Response response = cpr::Options(url);
     std::string expected_text{""};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
@@ -24,7 +24,7 @@ TEST(OptionsTests, BaseUrlTest) {
 
 TEST(OptionsTests, SpecificUrlTest) {
     Url url{server->GetBaseUrl() + "/hello.html"};
-    auto response = cpr::Options(url);
+    Response response = cpr::Options(url);
     std::string expected_text{""};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);

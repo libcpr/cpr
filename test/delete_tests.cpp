@@ -12,7 +12,7 @@ static HttpServer* server = new HttpServer();
 
 TEST(DeleteTests, DeleteTest) {
     Url url{server->GetBaseUrl() + "/delete.html"};
-    auto response = cpr::Delete(url);
+    Response response = cpr::Delete(url);
     std::string expected_text{"Delete success"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
@@ -23,7 +23,7 @@ TEST(DeleteTests, DeleteTest) {
 
 TEST(DeleteTests, DeleteUnallowedTest) {
     Url url{server->GetBaseUrl() + "/delete_unallowed.html"};
-    auto response = cpr::Delete(url);
+    Response response = cpr::Delete(url);
     std::string expected_text{"Method Not Allowed"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
@@ -34,8 +34,8 @@ TEST(DeleteTests, DeleteUnallowedTest) {
 
 TEST(DeleteTests, DeleteJsonBodyTest) {
     Url url{server->GetBaseUrl() + "/delete.html"};
-    auto response = cpr::Delete(url, cpr::Body{"'foo': 'bar'"},
-                                cpr::Header{{"Content-Type", "application/json"}});
+    Response response = cpr::Delete(url, cpr::Body{"'foo': 'bar'"},
+                                    cpr::Header{{"Content-Type", "application/json"}});
     std::string expected_text{"'foo': 'bar'"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
@@ -48,7 +48,7 @@ TEST(DeleteTests, SessionDeleteTest) {
     Url url{server->GetBaseUrl() + "/delete.html"};
     Session session;
     session.SetUrl(url);
-    auto response = session.Delete();
+    Response response = session.Delete();
     std::string expected_text{"Delete success"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
@@ -61,7 +61,7 @@ TEST(DeleteTests, SessionDeleteUnallowedTest) {
     Url url{server->GetBaseUrl() + "/delete_unallowed.html"};
     Session session;
     session.SetUrl(url);
-    auto response = session.Delete();
+    Response response = session.Delete();
     std::string expected_text{"Method Not Allowed"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
@@ -76,7 +76,7 @@ TEST(DeleteTests, SessionDeleteJsonBodyTest) {
     session.SetUrl(url);
     session.SetHeader(cpr::Header{{"Content-Type", "application/json"}});
     session.SetBody(cpr::Body{"{'foo': 'bar'}"});
-    auto response = session.Delete();
+    Response response = session.Delete();
     std::string expected_text{"{'foo': 'bar'}"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
@@ -90,11 +90,11 @@ TEST(DeleteTests, SessionDeleteAfterGetTest) {
     {
         Url url{server->GetBaseUrl() + "/get.html"};
         session.SetUrl(url);
-        auto response = session.Get();
+        Response response = session.Get();
     }
     Url url{server->GetBaseUrl() + "/delete.html"};
     session.SetUrl(url);
-    auto response = session.Delete();
+    Response response = session.Delete();
     std::string expected_text{"Delete success"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
@@ -108,11 +108,11 @@ TEST(DeleteTests, SessionDeleteUnallowedAfterGetTest) {
     {
         Url url{server->GetBaseUrl() + "/get.html"};
         session.SetUrl(url);
-        auto response = session.Get();
+        Response response = session.Get();
     }
     Url url{server->GetBaseUrl() + "/delete_unallowed.html"};
     session.SetUrl(url);
-    auto response = session.Delete();
+    Response response = session.Delete();
     std::string expected_text{"Method Not Allowed"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
@@ -126,11 +126,11 @@ TEST(DeleteTests, SessionDeleteAfterHeadTest) {
     {
         Url url{server->GetBaseUrl() + "/get.html"};
         session.SetUrl(url);
-        auto response = session.Head();
+        Response response = session.Head();
     }
     Url url{server->GetBaseUrl() + "/delete.html"};
     session.SetUrl(url);
-    auto response = session.Delete();
+    Response response = session.Delete();
     std::string expected_text{"Delete success"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
@@ -144,11 +144,11 @@ TEST(DeleteTests, SessionDeleteUnallowedAfterHeadTest) {
     {
         Url url{server->GetBaseUrl() + "/get.html"};
         session.SetUrl(url);
-        auto response = session.Head();
+        Response response = session.Head();
     }
     Url url{server->GetBaseUrl() + "/delete_unallowed.html"};
     session.SetUrl(url);
-    auto response = session.Delete();
+    Response response = session.Delete();
     std::string expected_text{"Method Not Allowed"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
@@ -163,11 +163,11 @@ TEST(DeleteTests, SessionDeleteAfterPostTest) {
         Url url{server->GetBaseUrl() + "/url_post.html"};
         auto payload = Payload{{"x", "5"}};
         session.SetUrl(url);
-        auto response = session.Post();
+        Response response = session.Post();
     }
     Url url{server->GetBaseUrl() + "/patch_unallowed.html"};
     session.SetUrl(url);
-    auto response = session.Delete();
+    Response response = session.Delete();
     std::string expected_text{"Delete success"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
@@ -182,11 +182,11 @@ TEST(DeleteTests, SessionDeleteUnallowedAfterPostTest) {
         Url url{server->GetBaseUrl() + "/url_post.html"};
         auto payload = Payload{{"x", "5"}};
         session.SetUrl(url);
-        auto response = session.Post();
+        Response response = session.Post();
     }
     Url url{server->GetBaseUrl() + "/delete_unallowed.html"};
     session.SetUrl(url);
-    auto response = session.Delete();
+    Response response = session.Delete();
     std::string expected_text{"Method Not Allowed"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);

@@ -12,7 +12,7 @@ static HttpServer* server = new HttpServer();
 
 TEST(HeadTests, BasicHeadTest) {
     Url url{server->GetBaseUrl() + "/hello.html"};
-    auto response = cpr::Head(url);
+    Response response = cpr::Head(url);
     EXPECT_EQ(std::string{}, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
@@ -22,7 +22,7 @@ TEST(HeadTests, BasicHeadTest) {
 
 TEST(HeadTests, ComplexHeadTest) {
     Url url{server->GetBaseUrl() + "/basic.json"};
-    auto response = cpr::Head(url);
+    Response response = cpr::Head(url);
     EXPECT_EQ(std::string{}, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
@@ -32,7 +32,7 @@ TEST(HeadTests, ComplexHeadTest) {
 
 TEST(HeadTests, ResourceNotFoundHeadTest) {
     Url url{server->GetBaseUrl() + "/error.html"};
-    auto response = cpr::Head(url);
+    Response response = cpr::Head(url);
     EXPECT_EQ(std::string{}, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/plain"}, response.header["content-type"]);
@@ -42,7 +42,7 @@ TEST(HeadTests, ResourceNotFoundHeadTest) {
 
 TEST(HeadTests, BadHostHeadTest) {
     Url url{"http://bad_host/"};
-    auto response = cpr::Head(url);
+    Response response = cpr::Head(url);
     EXPECT_EQ(std::string{}, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(0, response.status_code);
@@ -52,7 +52,7 @@ TEST(HeadTests, BadHostHeadTest) {
 TEST(HeadTests, CookieHeadTest) {
     Url url{server->GetBaseUrl() + "/basic_cookies.html"};
     auto cookies = Cookies{{"hello", "world"}, {"my", "another; fake=cookie;"}};
-    auto response = cpr::Head(url, cookies);
+    Response response = cpr::Head(url, cookies);
     EXPECT_EQ(std::string{}, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
@@ -67,7 +67,7 @@ TEST(HeadTests, CookieHeadTest) {
 TEST(HeadTests, ParameterHeadTest) {
     Url url{server->GetBaseUrl() + "/hello.html"};
     auto parameters = Parameters{{"key", "value"}};
-    auto response = cpr::Head(url, parameters);
+    Response response = cpr::Head(url, parameters);
     EXPECT_EQ(std::string{}, response.text);
     EXPECT_EQ(Url{url + "?key=value"}, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
@@ -77,7 +77,7 @@ TEST(HeadTests, ParameterHeadTest) {
 
 TEST(HeadTests, AuthenticationSuccessHeadTest) {
     Url url{server->GetBaseUrl() + "/basic_auth.html"};
-    auto response = cpr::Head(url, Authentication{"user", "password"});
+    Response response = cpr::Head(url, Authentication{"user", "password"});
     EXPECT_EQ(std::string{}, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
@@ -87,7 +87,7 @@ TEST(HeadTests, AuthenticationSuccessHeadTest) {
 
 TEST(HeadTests, AuthenticationNullFailureHeadTest) {
     Url url{server->GetBaseUrl() + "/basic_auth.html"};
-    auto response = cpr::Head(url);
+    Response response = cpr::Head(url);
     EXPECT_EQ(std::string{}, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ("text/plain", response.header["content-type"]);
@@ -97,7 +97,7 @@ TEST(HeadTests, AuthenticationNullFailureHeadTest) {
 
 TEST(HeadTests, AuthenticationFailureHeadTest) {
     Url url{server->GetBaseUrl() + "/basic_auth.html"};
-    auto response = cpr::Head(url, Authentication{"user", "bad_password"});
+    Response response = cpr::Head(url, Authentication{"user", "bad_password"});
     EXPECT_EQ(std::string{}, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ("text/plain", response.header["content-type"]);
@@ -107,7 +107,7 @@ TEST(HeadTests, AuthenticationFailureHeadTest) {
 
 TEST(HeadTests, DigestSuccessHeadTest) {
     Url url{server->GetBaseUrl() + "/digest_auth.html"};
-    auto response = cpr::Head(url, Digest{"user", "password"});
+    Response response = cpr::Head(url, Digest{"user", "password"});
     EXPECT_EQ(std::string{}, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
@@ -117,7 +117,7 @@ TEST(HeadTests, DigestSuccessHeadTest) {
 
 TEST(HeadTests, HeaderReflectNoneHeadTest) {
     Url url{server->GetBaseUrl() + "/header_reflect.html"};
-    auto response = cpr::Head(url);
+    Response response = cpr::Head(url);
     EXPECT_EQ(std::string{}, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
@@ -128,7 +128,7 @@ TEST(HeadTests, HeaderReflectNoneHeadTest) {
 
 TEST(HeadTests, HeaderReflectEmptyHeadTest) {
     Url url{server->GetBaseUrl() + "/header_reflect.html"};
-    auto response = cpr::Head(url, Header{});
+    Response response = cpr::Head(url, Header{});
     EXPECT_EQ(std::string{}, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
@@ -139,7 +139,7 @@ TEST(HeadTests, HeaderReflectEmptyHeadTest) {
 
 TEST(HeadTests, HeaderReflectHeadTest) {
     Url url{server->GetBaseUrl() + "/header_reflect.html"};
-    auto response = cpr::Head(url, Header{{"hello", "world"}});
+    Response response = cpr::Head(url, Header{{"hello", "world"}});
     EXPECT_EQ(std::string{}, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
@@ -150,7 +150,7 @@ TEST(HeadTests, HeaderReflectHeadTest) {
 
 TEST(HeadTests, SetEmptyHeaderHeadTest) {
     Url url{server->GetBaseUrl() + "/header_reflect.html"};
-    auto response = cpr::Head(url, Header{{"hello", ""}});
+    Response response = cpr::Head(url, Header{{"hello", ""}});
     EXPECT_EQ(std::string{}, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
@@ -161,7 +161,7 @@ TEST(HeadTests, SetEmptyHeaderHeadTest) {
 
 TEST(HeadTests, RedirectHeadTest) {
     Url url{server->GetBaseUrl() + "/temporary_redirect.html"};
-    auto response = cpr::Head(url, false);
+    Response response = cpr::Head(url, false);
     EXPECT_EQ(std::string{}, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{}, response.header["content-type"]);
@@ -171,7 +171,7 @@ TEST(HeadTests, RedirectHeadTest) {
 
 TEST(HeadTests, ZeroMaxRedirectsHeadTest) {
     Url url{server->GetBaseUrl() + "/hello.html"};
-    auto response = cpr::Head(url, 0L);
+    Response response = cpr::Head(url, 0L);
     EXPECT_EQ(std::string{}, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);

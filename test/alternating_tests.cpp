@@ -17,7 +17,7 @@ TEST(AlternatingTests, PutGetTest) {
 
     {
         auto payload = Payload{{"x", "5"}};
-        auto response = cpr::Put(url, payload);
+        Response response = cpr::Put(url, payload);
         std::string expected_text{"Header reflect PUT"};
         EXPECT_EQ(expected_text, response.text);
         EXPECT_EQ(url, response.url);
@@ -26,7 +26,7 @@ TEST(AlternatingTests, PutGetTest) {
     }
 
     {
-        auto response = cpr::Get(url);
+        Response response = cpr::Get(url);
         std::string expected_text{"Header reflect GET"};
         EXPECT_EQ(expected_text, response.text);
         EXPECT_EQ(url, response.url);
@@ -42,7 +42,7 @@ TEST(AlternatingTests, PutGetPutGetTest) {
 
     {
         auto payload = Payload{{"x", "5"}};
-        auto response = cpr::Put(url, payload);
+        Response response = cpr::Put(url, payload);
         std::string expected_text{"Header reflect PUT"};
         EXPECT_EQ(expected_text, response.text);
         EXPECT_EQ(url, response.url);
@@ -51,7 +51,7 @@ TEST(AlternatingTests, PutGetPutGetTest) {
     }
 
     {
-        auto response = cpr::Get(url);
+        Response response = cpr::Get(url);
         std::string expected_text{"Header reflect GET"};
         EXPECT_EQ(expected_text, response.text);
         EXPECT_EQ(url, response.url);
@@ -61,7 +61,7 @@ TEST(AlternatingTests, PutGetPutGetTest) {
 
     {
         auto payload = Payload{{"x", "5"}};
-        auto response = cpr::Put(url, payload);
+        Response response = cpr::Put(url, payload);
         std::string expected_text{"Header reflect PUT"};
         EXPECT_EQ(expected_text, response.text);
         EXPECT_EQ(url, response.url);
@@ -70,7 +70,7 @@ TEST(AlternatingTests, PutGetPutGetTest) {
     }
 
     {
-        auto response = cpr::Get(url);
+        Response response = cpr::Get(url);
         std::string expected_text{"Header reflect GET"};
         EXPECT_EQ(expected_text, response.text);
         EXPECT_EQ(url, response.url);
@@ -86,7 +86,7 @@ TEST(AlternatingTests, HeadGetTest) {
 
     {
         // Head shouldn't return a body
-        auto response = cpr::Head(url);
+        Response response = cpr::Head(url);
         std::string expected_text{""};
         EXPECT_EQ(expected_text, response.text);
         EXPECT_EQ(url, response.url);
@@ -95,7 +95,7 @@ TEST(AlternatingTests, HeadGetTest) {
     }
 
     {
-        auto response = cpr::Get(url);
+        Response response = cpr::Get(url);
         std::string expected_text{"Header reflect GET"};
         EXPECT_EQ(expected_text, response.text);
         EXPECT_EQ(url, response.url);
@@ -111,7 +111,7 @@ TEST(AlternatingTests, PutHeadTest) {
 
     {
         auto payload = Payload{{"x", "5"}};
-        auto response = cpr::Put(url, payload);
+        Response response = cpr::Put(url, payload);
         std::string expected_text{"Header reflect PUT"};
         EXPECT_EQ(expected_text, response.text);
         EXPECT_EQ(url, response.url);
@@ -121,7 +121,7 @@ TEST(AlternatingTests, PutHeadTest) {
 
     {
         // Head shouldn't return a body
-        auto response = cpr::Head(url);
+        Response response = cpr::Head(url);
         std::string expected_text{""};
         EXPECT_EQ(expected_text, response.text);
         EXPECT_EQ(url, response.url);
@@ -137,7 +137,7 @@ TEST(AlternatingTests, PutPostTest) {
 
     {
         auto payload = Payload{{"x", "5"}};
-        auto response = cpr::Put(url, payload);
+        Response response = cpr::Put(url, payload);
         std::string expected_text{"Header reflect PUT"};
         EXPECT_EQ(expected_text, response.text);
         EXPECT_EQ(url, response.url);
@@ -147,7 +147,7 @@ TEST(AlternatingTests, PutPostTest) {
 
     {
         auto payload = Payload{{"x", "5"}};
-        auto response = cpr::Post(url, payload);
+        Response response = cpr::Post(url, payload);
         std::string expected_text{"Header reflect POST"};
         EXPECT_EQ(expected_text, response.text);
         EXPECT_EQ(url, response.url);
