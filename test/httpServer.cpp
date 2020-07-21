@@ -1,4 +1,5 @@
 #include "httpServer.hpp"
+#include <string>
 
 namespace cpr {
 std::string HttpServer::GetBaseUrl() {
@@ -172,19 +173,19 @@ void HttpServer::OnRequestCheckV1Cookies(mg_connection* conn, http_message* msg)
 
 void HttpServer::OnRequestBasicAuth(mg_connection* conn, http_message* msg) {
     mg_str* requested_auth;
-    auto auth = std::string{"Basic"};
+    std::string auth{"Basic"};
     if ((requested_auth = mg_get_http_header(msg, "Authorization")) == nullptr ||
         mg_ncasecmp(requested_auth->p, auth.c_str(), auth.length()) != 0) {
         mg_http_send_error(conn, 401, "Unauthorized");
         return;
     }
-    auto auth_string = std::string{requested_auth->p, requested_auth->len};
-    auto basic_token = auth_string.find(' ') + 1;
+    std::string auth_string{requested_auth->p, requested_auth->len};
+    size_t basic_token = auth_string.find(' ') + 1;
     auth_string = auth_string.substr(basic_token, auth_string.length() - basic_token);
     auth_string = Base64Decode(auth_string);
-    auto colon = auth_string.find(':');
-    auto username = auth_string.substr(0, colon);
-    auto password = auth_string.substr(colon + 1, auth_string.length() - colon - 1);
+    size_t colon = auth_string.find(':');
+    std::string username = auth_string.substr(0, colon);
+    std::string password = auth_string.substr(colon + 1, auth_string.length() - colon - 1);
     if (username == "user" && password == "password") {
         OnRequestHeaderReflect(conn, msg);
     } else {
@@ -256,8 +257,8 @@ void HttpServer::OnRequestUrlPost(mg_connection* conn, http_message* msg) {
     char y[100];
     mg_get_http_var(&(msg->body), "x", x, sizeof(x));
     mg_get_http_var(&(msg->body), "y", y, sizeof(y));
-    auto x_string = std::string{x};
-    auto y_string = std::string{y};
+    std::string x_string{x};
+    std::string y_string{y};
     std::string response;
     if (y_string.empty()) {
         response = std::string{
@@ -352,7 +353,7 @@ void HttpServer::OnRequestFormPost(mg_connection* conn, http_message* msg) {
 }
 
 void HttpServer::OnRequestDelete(mg_connection* conn, http_message* msg) {
-    auto has_json_header = false;
+    bool has_json_header = false;
     for (size_t i = 0; i < sizeof(msg->header_names) / sizeof(mg_str); i++) {
         if (!msg->header_names[i].p) {
             continue;

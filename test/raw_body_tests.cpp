@@ -16,7 +16,7 @@ static HttpServer* server = new HttpServer();
 TEST(BodyPostTests, DefaultUrlEncodedPostTest) {
     Url url{server->GetBaseUrl() + "/url_post.html"};
     Response response = cpr::Post(url, Body{"x=5"});
-    auto expected_text = "{\n  \"x\": 5\n}";
+    std::string expected_text = "{\n  \"x\": 5\n}";
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
@@ -40,7 +40,7 @@ TEST(BodyPostTests, TextUrlEncodedPostTest) {
 
 TEST(BodyPostTests, TextUrlEncodedNoCopyPostTest) {
     Url url{server->GetBaseUrl() + "/url_post.html"};
-    auto body = Body{"x=hello world!!~"};
+    Body body{"x=hello world!!~"};
     // body lives through the lifetime of Post, so it doesn't need to be copied
     Response response = cpr::Post(url, body);
     std::string expected_text{

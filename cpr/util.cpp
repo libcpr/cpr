@@ -35,7 +35,7 @@ Header parseHeader(const std::string& headers, std::string* status_line, std::st
 
                 // set the reason if it was given
                 if (reason != nullptr) {
-                    auto pos1 = line.find_first_of("\t ");
+                    size_t pos1 = line.find_first_of("\t ");
                     size_t pos2 = std::string::npos;
                     if (pos1 != std::string::npos) {
                         pos2 = line.find_first_of("\t ", pos1 + 1);
@@ -50,9 +50,9 @@ Header parseHeader(const std::string& headers, std::string* status_line, std::st
         }
 
         if (line.length() > 0) {
-            auto found = line.find(":");
+            size_t found = line.find(":");
             if (found != std::string::npos) {
-                auto value = line.substr(found + 1);
+                std::string value = line.substr(found + 1);
                 value.erase(0, value.find_first_not_of("\t "));
                 value.resize(std::min<size_t>(value.size(), value.find_last_not_of("\t\n\r ") + 1));
                 header[line.substr(0, found)] = value;

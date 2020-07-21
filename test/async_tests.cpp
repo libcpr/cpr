@@ -13,9 +13,9 @@ static HttpServer* server = new HttpServer();
 
 TEST(UrlEncodedPostTests, AsyncGetTest) {
     Url url{server->GetBaseUrl() + "/hello.html"};
-    auto future = cpr::GetAsync(url);
+    cpr::AsyncResponse future = cpr::GetAsync(url);
     std::string expected_text{"Hello world!"};
-    auto response = future.get();
+    cpr::Response response = future.get();
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
@@ -30,7 +30,7 @@ TEST(UrlEncodedPostTests, AsyncGetMultipleTest) {
     }
     for (auto& future : responses) {
         std::string expected_text{"Hello world!"};
-        auto response = future.get();
+        cpr::Response response = future.get();
         EXPECT_EQ(expected_text, response.text);
         EXPECT_EQ(url, response.url);
         EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
@@ -42,15 +42,15 @@ TEST(UrlEncodedPostTests, AsyncGetMultipleReflectTest) {
     Url url{server->GetBaseUrl() + "/hello.html"};
     std::vector<AsyncResponse> responses;
     for (int i = 0; i < 100; ++i) {
-        auto p = Parameters{{"key", std::to_string(i)}};
+        Parameters p{{"key", std::to_string(i)}};
         responses.emplace_back(cpr::GetAsync(url, p));
     }
     int i = 0;
     for (auto& future : responses) {
         std::string expected_text{"Hello world!"};
-        auto response = future.get();
+        cpr::Response response = future.get();
         EXPECT_EQ(expected_text, response.text);
-        auto expected_url = Url{url + "?key=" + std::to_string(i)};
+        Url expected_url{url + "?key=" + std::to_string(i)};
         EXPECT_EQ(expected_url, response.url);
         EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
         EXPECT_EQ(200, response.status_code);

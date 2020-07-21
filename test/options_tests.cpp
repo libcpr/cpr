@@ -41,7 +41,7 @@ TEST(OptionsTests, AsyncBaseUrlTest) {
         responses.emplace_back(cpr::OptionsAsync(url));
     }
     for (auto& future_response : responses) {
-        auto response = future_response.get();
+        cpr::Response response = future_response.get();
         std::string expected_text{""};
         EXPECT_EQ(expected_text, response.text);
         EXPECT_EQ(url, response.url);
@@ -59,7 +59,7 @@ TEST(OptionsTests, AsyncSpecificUrlTest) {
         responses.emplace_back(cpr::OptionsAsync(url));
     }
     for (auto& future_response : responses) {
-        auto response = future_response.get();
+        cpr::Response response = future_response.get();
         std::string expected_text{""};
         EXPECT_EQ(expected_text, response.text);
         EXPECT_EQ(url, response.url);

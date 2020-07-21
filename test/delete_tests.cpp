@@ -161,7 +161,7 @@ TEST(DeleteTests, SessionDeleteAfterPostTest) {
     Session session;
     {
         Url url{server->GetBaseUrl() + "/url_post.html"};
-        auto payload = Payload{{"x", "5"}};
+        Payload payload{{"x", "5"}};
         session.SetUrl(url);
         Response response = session.Post();
     }
@@ -180,7 +180,7 @@ TEST(DeleteTests, SessionDeleteUnallowedAfterPostTest) {
     Session session;
     {
         Url url{server->GetBaseUrl() + "/url_post.html"};
-        auto payload = Payload{{"x", "5"}};
+        Payload payload{{"x", "5"}};
         session.SetUrl(url);
         Response response = session.Post();
     }
@@ -197,8 +197,8 @@ TEST(DeleteTests, SessionDeleteUnallowedAfterPostTest) {
 
 TEST(DeleteTests, AsyncDeleteTest) {
     Url url{server->GetBaseUrl() + "/delete.html"};
-    auto future_response = cpr::DeleteAsync(url);
-    auto response = future_response.get();
+    cpr::AsyncResponse future_response = cpr::DeleteAsync(url);
+    cpr::Response response = future_response.get();
     std::string expected_text{"Delete success"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
@@ -209,8 +209,8 @@ TEST(DeleteTests, AsyncDeleteTest) {
 
 TEST(DeleteTests, AsyncDeleteUnallowedTest) {
     Url url{server->GetBaseUrl() + "/delete_unallowed.html"};
-    auto future_response = cpr::DeleteAsync(url);
-    auto response = future_response.get();
+    cpr::AsyncResponse future_response = cpr::DeleteAsync(url);
+    cpr::Response response = future_response.get();
     std::string expected_text{"Method Not Allowed"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
@@ -226,7 +226,7 @@ TEST(DeleteTests, AsyncMultipleDeleteTest) {
         responses.emplace_back(cpr::DeleteAsync(url));
     }
     for (auto& future_response : responses) {
-        auto response = future_response.get();
+        cpr::Response response = future_response.get();
         std::string expected_text{"Delete success"};
         EXPECT_EQ(expected_text, response.text);
         EXPECT_EQ(url, response.url);
@@ -243,7 +243,7 @@ TEST(DeleteTests, AsyncMultipleDeleteUnallowedTest) {
         responses.emplace_back(cpr::DeleteAsync(url));
     }
     for (auto& future_response : responses) {
-        auto response = future_response.get();
+        cpr::Response response = future_response.get();
         std::string expected_text{"Method Not Allowed"};
         EXPECT_EQ(expected_text, response.text);
         EXPECT_EQ(url, response.url);

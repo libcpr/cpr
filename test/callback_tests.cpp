@@ -10,8 +10,8 @@
 using namespace cpr;
 
 static HttpServer* server = new HttpServer();
-auto sleep_time = std::chrono::milliseconds(50);
-auto zero = std::chrono::seconds(0);
+std::chrono::milliseconds sleep_time{50};
+std::chrono::seconds zero{0};
 
 int status_callback(int& status_code, Response r) {
     status_code = r.status_code;
@@ -35,7 +35,7 @@ std::string text_callback_ref(std::string& expected_text, const Response& r) {
 
 TEST(CallbackGetTests, CallbackGetLambdaStatusTest) {
     Url url{server->GetBaseUrl() + "/hello.html"};
-    auto status_code = 0;
+    int status_code = 0;
     auto future = cpr::GetCallback(
             [&status_code](Response r) {
                 status_code = r.status_code;
@@ -63,7 +63,7 @@ TEST(CallbackGetTests, CallbackGetLambdaTextTest) {
 
 TEST(CallbackGetTests, CallbackGetLambdaStatusReferenceTest) {
     Url url{server->GetBaseUrl() + "/hello.html"};
-    auto status_code = 0;
+    int status_code = 0;
     auto future = cpr::GetCallback(
             [&status_code](const Response& r) {
                 status_code = r.status_code;
@@ -91,7 +91,7 @@ TEST(CallbackGetTests, CallbackGetLambdaTextReferenceTest) {
 
 TEST(CallbackGetTests, CallbackGetFunctionStatusTest) {
     Url url{server->GetBaseUrl() + "/hello.html"};
-    auto status_code = 0;
+    int status_code = 0;
     auto callback = std::function<int(Response)>(
             std::bind(status_callback, std::ref(status_code), std::placeholders::_1));
     auto future = cpr::GetCallback(callback, url);
@@ -113,7 +113,7 @@ TEST(CallbackGetTests, CallbackGetFunctionTextTest) {
 
 TEST(CallbackGetTests, CallbackGetFunctionStatusReferenceTest) {
     Url url{server->GetBaseUrl() + "/hello.html"};
-    auto status_code = 0;
+    int status_code = 0;
     auto callback = std::function<int(Response)>(
             std::bind(status_callback_ref, std::ref(status_code), std::placeholders::_1));
     auto future = cpr::GetCallback(callback, url);
@@ -135,7 +135,7 @@ TEST(CallbackGetTests, CallbackGetFunctionTextReferenceTest) {
 
 TEST(CallbackDeleteTests, CallbackDeleteLambdaStatusTest) {
     Url url{server->GetBaseUrl() + "/delete.html"};
-    auto status_code = 0;
+    int status_code = 0;
     auto future = cpr::DeleteCallback(
             [&status_code](Response r) {
                 status_code = r.status_code;
@@ -163,7 +163,7 @@ TEST(CallbackDeleteTests, CallbackDeleteLambdaTextTest) {
 
 TEST(CallbackDeleteTests, CallbackDeleteLambdaStatusReferenceTest) {
     Url url{server->GetBaseUrl() + "/delete.html"};
-    auto status_code = 0;
+    int status_code = 0;
     auto future = cpr::DeleteCallback(
             [&status_code](const Response& r) {
                 status_code = r.status_code;
@@ -191,7 +191,7 @@ TEST(CallbackDeleteTests, CallbackDeleteLambdaTextReferenceTest) {
 
 TEST(CallbackDeleteTests, CallbackDeleteFunctionStatusTest) {
     Url url{server->GetBaseUrl() + "/delete.html"};
-    auto status_code = 0;
+    int status_code = 0;
     auto callback = std::function<int(Response)>(
             std::bind(status_callback, std::ref(status_code), std::placeholders::_1));
     auto future = cpr::DeleteCallback(callback, url);
@@ -213,7 +213,7 @@ TEST(CallbackDeleteTests, CallbackDeleteFunctionTextTest) {
 
 TEST(CallbackDeleteTests, CallbackDeleteFunctionStatusReferenceTest) {
     Url url{server->GetBaseUrl() + "/delete.html"};
-    auto status_code = 0;
+    int status_code = 0;
     auto callback = std::function<int(Response)>(
             std::bind(status_callback_ref, std::ref(status_code), std::placeholders::_1));
     auto future = cpr::DeleteCallback(callback, url);
@@ -235,7 +235,7 @@ TEST(CallbackDeleteTests, CallbackDeleteFunctionTextReferenceTest) {
 
 TEST(CallbackHeadTests, CallbackHeadLambdaStatusTest) {
     Url url{server->GetBaseUrl() + "/hello.html"};
-    auto status_code = 0;
+    int status_code = 0;
     auto future = cpr::HeadCallback(
             [&status_code](Response r) {
                 status_code = r.status_code;
@@ -263,7 +263,7 @@ TEST(CallbackHeadTests, CallbackHeadLambdaTextTest) {
 
 TEST(CallbackHeadTests, CallbackHeadLambdaStatusReferenceTest) {
     Url url{server->GetBaseUrl() + "/hello.html"};
-    auto status_code = 0;
+    int status_code = 0;
     auto future = cpr::HeadCallback(
             [&status_code](const Response& r) {
                 status_code = r.status_code;
@@ -291,7 +291,7 @@ TEST(CallbackHeadTests, CallbackHeadLambdaTextReferenceTest) {
 
 TEST(CallbackHeadTests, CallbackHeadFunctionStatusTest) {
     Url url{server->GetBaseUrl() + "/hello.html"};
-    auto status_code = 0;
+    int status_code = 0;
     auto callback = std::function<int(Response)>(
             std::bind(status_callback, std::ref(status_code), std::placeholders::_1));
     auto future = cpr::HeadCallback(callback, url);
@@ -313,7 +313,7 @@ TEST(CallbackHeadTests, CallbackHeadFunctionTextTest) {
 
 TEST(CallbackHeadTests, CallbackHeadFunctionStatusReferenceTest) {
     Url url{server->GetBaseUrl() + "/hello.html"};
-    auto status_code = 0;
+    int status_code = 0;
     auto callback = std::function<int(Response)>(
             std::bind(status_callback_ref, std::ref(status_code), std::placeholders::_1));
     auto future = cpr::HeadCallback(callback, url);
@@ -335,8 +335,8 @@ TEST(CallbackHeadTests, CallbackHeadFunctionTextReferenceTest) {
 
 TEST(CallbackPostTests, CallbackPostLambdaStatusTest) {
     Url url{server->GetBaseUrl() + "/url_post.html"};
-    auto payload = Payload{{"x", "5"}};
-    auto status_code = 0;
+    Payload payload{{"x", "5"}};
+    int status_code = 0;
     auto future = cpr::PostCallback(
             [&status_code](Response r) {
                 status_code = r.status_code;
@@ -350,7 +350,7 @@ TEST(CallbackPostTests, CallbackPostLambdaStatusTest) {
 
 TEST(CallbackPostTests, CallbackPostLambdaTextTest) {
     Url url{server->GetBaseUrl() + "/url_post.html"};
-    auto payload = Payload{{"x", "5"}};
+    Payload payload{{"x", "5"}};
     std::string expected_text{};
     auto future = cpr::PostCallback(
             [&expected_text](Response r) {
@@ -365,8 +365,8 @@ TEST(CallbackPostTests, CallbackPostLambdaTextTest) {
 
 TEST(CallbackPostTests, CallbackPostLambdaStatusReferenceTest) {
     Url url{server->GetBaseUrl() + "/url_post.html"};
-    auto payload = Payload{{"x", "5"}};
-    auto status_code = 0;
+    Payload payload{{"x", "5"}};
+    int status_code = 0;
     auto future = cpr::PostCallback(
             [&status_code](const Response& r) {
                 status_code = r.status_code;
@@ -380,7 +380,7 @@ TEST(CallbackPostTests, CallbackPostLambdaStatusReferenceTest) {
 
 TEST(CallbackPostTests, CallbackPostLambdaTextReferenceTest) {
     Url url{server->GetBaseUrl() + "/url_post.html"};
-    auto payload = Payload{{"x", "5"}};
+    Payload payload{{"x", "5"}};
     std::string expected_text{};
     auto future = cpr::PostCallback(
             [&expected_text](const Response& r) {
@@ -395,8 +395,8 @@ TEST(CallbackPostTests, CallbackPostLambdaTextReferenceTest) {
 
 TEST(CallbackPostTests, CallbackPostFunctionStatusTest) {
     Url url{server->GetBaseUrl() + "/url_post.html"};
-    auto payload = Payload{{"x", "5"}};
-    auto status_code = 0;
+    Payload payload{{"x", "5"}};
+    int status_code = 0;
     auto callback = std::function<int(Response)>(
             std::bind(status_callback, std::ref(status_code), std::placeholders::_1));
     auto future = cpr::PostCallback(callback, url, payload);
@@ -407,7 +407,7 @@ TEST(CallbackPostTests, CallbackPostFunctionStatusTest) {
 
 TEST(CallbackPostTests, CallbackPostFunctionTextTest) {
     Url url{server->GetBaseUrl() + "/url_post.html"};
-    auto payload = Payload{{"x", "5"}};
+    Payload payload{{"x", "5"}};
     std::string expected_text{};
     auto callback = std::function<std::string(Response)>(
             std::bind(text_callback, std::ref(expected_text), std::placeholders::_1));
@@ -419,8 +419,8 @@ TEST(CallbackPostTests, CallbackPostFunctionTextTest) {
 
 TEST(CallbackPostTests, CallbackPostFunctionStatusReferenceTest) {
     Url url{server->GetBaseUrl() + "/url_post.html"};
-    auto payload = Payload{{"x", "5"}};
-    auto status_code = 0;
+    Payload payload{{"x", "5"}};
+    int status_code = 0;
     auto callback = std::function<int(Response)>(
             std::bind(status_callback_ref, std::ref(status_code), std::placeholders::_1));
     auto future = cpr::PostCallback(callback, url, payload);
@@ -431,7 +431,7 @@ TEST(CallbackPostTests, CallbackPostFunctionStatusReferenceTest) {
 
 TEST(CallbackPostTests, CallbackPostFunctionTextReferenceTest) {
     Url url{server->GetBaseUrl() + "/url_post.html"};
-    auto payload = Payload{{"x", "5"}};
+    Payload payload{{"x", "5"}};
     std::string expected_text{};
     auto callback = std::function<std::string(Response)>(
             std::bind(text_callback_ref, std::ref(expected_text), std::placeholders::_1));
@@ -443,8 +443,8 @@ TEST(CallbackPostTests, CallbackPostFunctionTextReferenceTest) {
 
 TEST(CallbackPutTests, CallbackPutLambdaStatusTest) {
     Url url{server->GetBaseUrl() + "/url_post.html"};
-    auto payload = Payload{{"x", "5"}};
-    auto status_code = 0;
+    Payload payload{{"x", "5"}};
+    int status_code = 0;
     auto future = cpr::PutCallback(
             [&status_code](Response r) {
                 status_code = r.status_code;
@@ -458,7 +458,7 @@ TEST(CallbackPutTests, CallbackPutLambdaStatusTest) {
 
 TEST(CallbackPutTests, CallbackPutLambdaTextTest) {
     Url url{server->GetBaseUrl() + "/url_post.html"};
-    auto payload = Payload{{"x", "5"}};
+    Payload payload{{"x", "5"}};
     std::string expected_text{};
     auto future = cpr::PutCallback(
             [&expected_text](Response r) {
@@ -473,8 +473,8 @@ TEST(CallbackPutTests, CallbackPutLambdaTextTest) {
 
 TEST(CallbackPutTests, CallbackPutLambdaStatusReferenceTest) {
     Url url{server->GetBaseUrl() + "/url_post.html"};
-    auto payload = Payload{{"x", "5"}};
-    auto status_code = 0;
+    Payload payload{{"x", "5"}};
+    int status_code = 0;
     auto future = cpr::PutCallback(
             [&status_code](const Response& r) {
                 status_code = r.status_code;
@@ -488,7 +488,7 @@ TEST(CallbackPutTests, CallbackPutLambdaStatusReferenceTest) {
 
 TEST(CallbackPutTests, CallbackPutLambdaTextReferenceTest) {
     Url url{server->GetBaseUrl() + "/url_post.html"};
-    auto payload = Payload{{"x", "5"}};
+    Payload payload{{"x", "5"}};
     std::string expected_text{};
     auto future = cpr::PutCallback(
             [&expected_text](const Response& r) {
@@ -503,8 +503,8 @@ TEST(CallbackPutTests, CallbackPutLambdaTextReferenceTest) {
 
 TEST(CallbackPutTests, CallbackPutFunctionStatusTest) {
     Url url{server->GetBaseUrl() + "/url_post.html"};
-    auto payload = Payload{{"x", "5"}};
-    auto status_code = 0;
+    Payload payload{{"x", "5"}};
+    int status_code = 0;
     auto callback = std::function<int(Response)>(
             std::bind(status_callback, std::ref(status_code), std::placeholders::_1));
     auto future = cpr::PutCallback(callback, url, payload);
@@ -515,7 +515,7 @@ TEST(CallbackPutTests, CallbackPutFunctionStatusTest) {
 
 TEST(CallbackPutTests, CallbackPutFunctionTextTest) {
     Url url{server->GetBaseUrl() + "/url_post.html"};
-    auto payload = Payload{{"x", "5"}};
+    Payload payload{{"x", "5"}};
     std::string expected_text{};
     auto callback = std::function<std::string(Response)>(
             std::bind(text_callback, std::ref(expected_text), std::placeholders::_1));
@@ -527,8 +527,8 @@ TEST(CallbackPutTests, CallbackPutFunctionTextTest) {
 
 TEST(CallbackPutTests, CallbackPutFunctionStatusReferenceTest) {
     Url url{server->GetBaseUrl() + "/url_post.html"};
-    auto payload = Payload{{"x", "5"}};
-    auto status_code = 0;
+    Payload payload{{"x", "5"}};
+    int status_code = 0;
     auto callback = std::function<int(Response)>(
             std::bind(status_callback_ref, std::ref(status_code), std::placeholders::_1));
     auto future = cpr::PutCallback(callback, url, payload);
@@ -539,7 +539,7 @@ TEST(CallbackPutTests, CallbackPutFunctionStatusReferenceTest) {
 
 TEST(CallbackPutTests, CallbackPutFunctionTextReferenceTest) {
     Url url{server->GetBaseUrl() + "/url_post.html"};
-    auto payload = Payload{{"x", "5"}};
+    Payload payload{{"x", "5"}};
     std::string expected_text{};
     auto callback = std::function<std::string(Response)>(
             std::bind(text_callback_ref, std::ref(expected_text), std::placeholders::_1));
@@ -551,7 +551,7 @@ TEST(CallbackPutTests, CallbackPutFunctionTextReferenceTest) {
 
 TEST(CallbackOptionsTests, CallbackOptionsLambdaStatusTest) {
     Url url{server->GetBaseUrl() + "/hello.html"};
-    auto status_code = 0;
+    int status_code = 0;
     auto future = cpr::OptionsCallback(
             [&status_code](Response r) {
                 status_code = r.status_code;
@@ -579,7 +579,7 @@ TEST(CallbackOptionsTests, CallbackOptionsLambdaTextTest) {
 
 TEST(CallbackOptionsTests, CallbackOptionsLambdaStatusReferenceTest) {
     Url url{server->GetBaseUrl() + "/hello.html"};
-    auto status_code = 0;
+    int status_code = 0;
     auto future = cpr::OptionsCallback(
             [&status_code](const Response& r) {
                 status_code = r.status_code;
@@ -607,7 +607,7 @@ TEST(CallbackOptionsTests, CallbackOptionsLambdaTextReferenceTest) {
 
 TEST(CallbackOptionsTests, CallbackOptionsFunctionStatusTest) {
     Url url{server->GetBaseUrl() + "/hello.html"};
-    auto status_code = 0;
+    int status_code = 0;
     auto callback = std::function<int(Response)>(
             std::bind(status_callback, std::ref(status_code), std::placeholders::_1));
     auto future = cpr::OptionsCallback(callback, url);
@@ -629,7 +629,7 @@ TEST(CallbackOptionsTests, CallbackOptionsFunctionTextTest) {
 
 TEST(CallbackOptionsTests, CallbackOptionsFunctionStatusReferenceTest) {
     Url url{server->GetBaseUrl() + "/hello.html"};
-    auto status_code = 0;
+    int status_code = 0;
     auto callback = std::function<int(Response)>(
             std::bind(status_callback_ref, std::ref(status_code), std::placeholders::_1));
     auto future = cpr::OptionsCallback(callback, url);
@@ -651,8 +651,8 @@ TEST(CallbackOptionsTests, CallbackOptionsFunctionTextReferenceTest) {
 
 TEST(CallbackPatchTests, CallbackPatchLambdaStatusTest) {
     Url url{server->GetBaseUrl() + "/url_post.html"};
-    auto payload = Payload{{"x", "5"}};
-    auto status_code = 0;
+    Payload payload{{"x", "5"}};
+    int status_code = 0;
     auto future = cpr::PatchCallback(
             [&status_code](Response r) {
                 status_code = r.status_code;
@@ -666,7 +666,7 @@ TEST(CallbackPatchTests, CallbackPatchLambdaStatusTest) {
 
 TEST(CallbackPatchTests, CallbackPatchLambdaTextTest) {
     Url url{server->GetBaseUrl() + "/url_post.html"};
-    auto payload = Payload{{"x", "5"}};
+    Payload payload{{"x", "5"}};
     std::string expected_text{};
     auto future = cpr::PatchCallback(
             [&expected_text](Response r) {
@@ -681,8 +681,8 @@ TEST(CallbackPatchTests, CallbackPatchLambdaTextTest) {
 
 TEST(CallbackPatchTests, CallbackPatchLambdaStatusReferenceTest) {
     Url url{server->GetBaseUrl() + "/url_post.html"};
-    auto payload = Payload{{"x", "5"}};
-    auto status_code = 0;
+    Payload payload{{"x", "5"}};
+    int status_code = 0;
     auto future = cpr::PatchCallback(
             [&status_code](const Response& r) {
                 status_code = r.status_code;
@@ -696,7 +696,7 @@ TEST(CallbackPatchTests, CallbackPatchLambdaStatusReferenceTest) {
 
 TEST(CallbackPatchTests, CallbackPatchLambdaTextReferenceTest) {
     Url url{server->GetBaseUrl() + "/url_post.html"};
-    auto payload = Payload{{"x", "5"}};
+    Payload payload{{"x", "5"}};
     std::string expected_text{};
     auto future = cpr::PatchCallback(
             [&expected_text](const Response& r) {
@@ -711,8 +711,8 @@ TEST(CallbackPatchTests, CallbackPatchLambdaTextReferenceTest) {
 
 TEST(CallbackPatchTests, CallbackPatchFunctionStatusTest) {
     Url url{server->GetBaseUrl() + "/url_post.html"};
-    auto payload = Payload{{"x", "5"}};
-    auto status_code = 0;
+    Payload payload{{"x", "5"}};
+    int status_code = 0;
     auto callback = std::function<int(Response)>(
             std::bind(status_callback, std::ref(status_code), std::placeholders::_1));
     auto future = cpr::PatchCallback(callback, url, payload);
@@ -723,7 +723,7 @@ TEST(CallbackPatchTests, CallbackPatchFunctionStatusTest) {
 
 TEST(CallbackPatchTests, CallbackPatchFunctionTextTest) {
     Url url{server->GetBaseUrl() + "/url_post.html"};
-    auto payload = Payload{{"x", "5"}};
+    Payload payload{{"x", "5"}};
     std::string expected_text{};
     auto callback = std::function<std::string(Response)>(
             std::bind(text_callback, std::ref(expected_text), std::placeholders::_1));
@@ -735,8 +735,8 @@ TEST(CallbackPatchTests, CallbackPatchFunctionTextTest) {
 
 TEST(CallbackPatchTests, CallbackPatchFunctionStatusReferenceTest) {
     Url url{server->GetBaseUrl() + "/url_post.html"};
-    auto payload = Payload{{"x", "5"}};
-    auto status_code = 0;
+    Payload payload{{"x", "5"}};
+    int status_code = 0;
     auto callback = std::function<int(Response)>(
             std::bind(status_callback_ref, std::ref(status_code), std::placeholders::_1));
     auto future = cpr::PatchCallback(callback, url, payload);
@@ -747,7 +747,7 @@ TEST(CallbackPatchTests, CallbackPatchFunctionStatusReferenceTest) {
 
 TEST(CallbackPatchTests, CallbackPatchFunctionTextReferenceTest) {
     Url url{server->GetBaseUrl() + "/url_post.html"};
-    auto payload = Payload{{"x", "5"}};
+    Payload payload{{"x", "5"}};
     std::string expected_text{};
     auto callback = std::function<std::string(Response)>(
             std::bind(text_callback_ref, std::ref(expected_text), std::placeholders::_1));

@@ -53,7 +53,7 @@ TEST(ProxyTests, MultipleProxyHttpsTest) {
 
 TEST(ProxyTests, CopyProxyTest) {
     Url url{"http://www.httpbin.org/get"};
-    auto proxies = Proxies{{"http", HTTP_PROXY}};
+    Proxies proxies{{"http", HTTP_PROXY}};
     Response response = cpr::Get(url, proxies);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
@@ -75,7 +75,7 @@ TEST(ProxyTests, ProxySessionTest) {
 
 TEST(ProxyTests, ReferenceProxySessionTest) {
     Url url{"http://www.httpbin.org/get"};
-    auto proxies = Proxies{{"http", HTTP_PROXY}};
+    Proxies proxies{{"http", HTTP_PROXY}};
     Session session;
     session.SetUrl(url);
     session.SetProxies(proxies);

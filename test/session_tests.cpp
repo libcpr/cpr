@@ -495,7 +495,7 @@ TEST(PayloadTests, SetPayloadLValueTest) {
     Url url{server->GetBaseUrl() + "/url_post.html"};
     Session session;
     session.SetUrl(url);
-    auto payload = Payload{{"x", "5"}};
+    Payload payload{{"x", "5"}};
     session.SetPayload(payload);
     Response response = session.Post();
     std::string expected_text{
@@ -530,7 +530,7 @@ TEST(MultipartTests, SetMultipartValueTest) {
     Url url{server->GetBaseUrl() + "/form_post.html"};
     Session session;
     session.SetUrl(url);
-    auto multipart = Multipart{{"x", "5"}};
+    Multipart multipart{{"x", "5"}};
     session.SetMultipart(multipart);
     Response response = session.Post();
     std::string expected_text{
@@ -565,7 +565,7 @@ TEST(BodyTests, SetBodyValueTest) {
     Url url{server->GetBaseUrl() + "/url_post.html"};
     Session session;
     session.SetUrl(url);
-    auto body = Body{"x=5"};
+    Body body{"x=5"};
     session.SetBody(body);
     Response response = session.Post();
     std::string expected_text{
@@ -595,7 +595,7 @@ TEST(DigestTests, SetDigestTest) {
 
 TEST(UserAgentTests, SetUserAgentTest) {
     Url url{server->GetBaseUrl() + "/header_reflect.html"};
-    auto userAgent = UserAgent{"Test User Agent"};
+    UserAgent userAgent{"Test User Agent"};
     Session session;
     session.SetUrl(url);
     session.SetUserAgent(userAgent);

@@ -20,11 +20,11 @@ void Parameters::AddParameter(const Parameter& parameter, const CurlHolder& hold
         content += "&";
     }
 
-    auto escapedKey = holder.urlEncode(parameter.key);
+    std::string escapedKey = holder.urlEncode(parameter.key);
     if (parameter.value.empty()) {
         content += escapedKey;
     } else {
-        auto escapedValue = holder.urlEncode(parameter.value);
+        std::string escapedValue = holder.urlEncode(parameter.value);
         content += escapedKey + "=" + escapedValue;
     }
 }

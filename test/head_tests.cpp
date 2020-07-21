@@ -51,7 +51,7 @@ TEST(HeadTests, BadHostHeadTest) {
 
 TEST(HeadTests, CookieHeadTest) {
     Url url{server->GetBaseUrl() + "/basic_cookies.html"};
-    auto cookies = Cookies{{"hello", "world"}, {"my", "another; fake=cookie;"}};
+    Cookies cookies{{"hello", "world"}, {"my", "another; fake=cookie;"}};
     Response response = cpr::Head(url, cookies);
     EXPECT_EQ(std::string{}, response.text);
     EXPECT_EQ(url, response.url);
@@ -66,7 +66,7 @@ TEST(HeadTests, CookieHeadTest) {
 
 TEST(HeadTests, ParameterHeadTest) {
     Url url{server->GetBaseUrl() + "/hello.html"};
-    auto parameters = Parameters{{"key", "value"}};
+    Parameters parameters{{"key", "value"}};
     Response response = cpr::Head(url, parameters);
     EXPECT_EQ(std::string{}, response.text);
     EXPECT_EQ(Url{url + "?key=value"}, response.url);
@@ -186,7 +186,7 @@ TEST(HeadTests, BasicHeadAsyncTest) {
         responses.emplace_back(cpr::HeadAsync(url));
     }
     for (auto& future_response : responses) {
-        auto response = future_response.get();
+        cpr::Response response = future_response.get();
         EXPECT_EQ(std::string{}, response.text);
         EXPECT_EQ(url, response.url);
         EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);

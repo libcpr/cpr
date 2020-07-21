@@ -12,7 +12,7 @@ static HttpServer* server = new HttpServer();
 
 TEST(PutTests, PutTest) {
     Url url{server->GetBaseUrl() + "/put.html"};
-    auto payload = Payload{{"x", "5"}};
+    Payload payload{{"x", "5"}};
     Response response = cpr::Put(url, payload);
     std::string expected_text{
             "{\n"
@@ -27,7 +27,7 @@ TEST(PutTests, PutTest) {
 
 TEST(PutTests, PutUnallowedTest) {
     Url url{server->GetBaseUrl() + "/put_unallowed.html"};
-    auto payload = Payload{{"x", "5"}};
+    Payload payload{{"x", "5"}};
     Response response = cpr::Put(url, payload);
     std::string expected_text{"Method Not Allowed"};
     EXPECT_EQ(expected_text, response.text);
@@ -39,7 +39,7 @@ TEST(PutTests, PutUnallowedTest) {
 
 TEST(PutTests, SessionPutTest) {
     Url url{server->GetBaseUrl() + "/put.html"};
-    auto payload = Payload{{"x", "5"}};
+    Payload payload{{"x", "5"}};
     Session session;
     session.SetUrl(url);
     session.SetPayload(payload);
@@ -57,7 +57,7 @@ TEST(PutTests, SessionPutTest) {
 
 TEST(PutTests, SessionPutUnallowedTest) {
     Url url{server->GetBaseUrl() + "/put_unallowed.html"};
-    auto payload = Payload{{"x", "5"}};
+    Payload payload{{"x", "5"}};
     Session session;
     session.SetUrl(url);
     session.SetPayload(payload);
@@ -78,7 +78,7 @@ TEST(PutTests, SessionPutAfterGetTest) {
         Response response = session.Get();
     }
     Url url{server->GetBaseUrl() + "/put.html"};
-    auto payload = Payload{{"x", "5"}};
+    Payload payload{{"x", "5"}};
     session.SetUrl(url);
     session.SetPayload(payload);
     Response response = session.Put();
@@ -101,7 +101,7 @@ TEST(PutTests, SessionPutUnallowedAfterGetTest) {
         Response response = session.Get();
     }
     Url url{server->GetBaseUrl() + "/put_unallowed.html"};
-    auto payload = Payload{{"x", "5"}};
+    Payload payload{{"x", "5"}};
     session.SetUrl(url);
     session.SetPayload(payload);
     Response response = session.Put();
@@ -121,7 +121,7 @@ TEST(PutTests, SessionPutAfterHeadTest) {
         Response response = session.Head();
     }
     Url url{server->GetBaseUrl() + "/put.html"};
-    auto payload = Payload{{"x", "5"}};
+    Payload payload{{"x", "5"}};
     session.SetUrl(url);
     session.SetPayload(payload);
     Response response = session.Put();
@@ -144,7 +144,7 @@ TEST(PutTests, SessionPutUnallowedAfterHeadTest) {
         Response response = session.Head();
     }
     Url url{server->GetBaseUrl() + "/put_unallowed.html"};
-    auto payload = Payload{{"x", "5"}};
+    Payload payload{{"x", "5"}};
     session.SetUrl(url);
     session.SetPayload(payload);
     Response response = session.Put();
@@ -160,12 +160,12 @@ TEST(PutTests, SessionPutAfterPostTest) {
     Session session;
     {
         Url url{server->GetBaseUrl() + "/url_post.html"};
-        auto payload = Payload{{"x", "5"}};
+        Payload payload{{"x", "5"}};
         session.SetUrl(url);
         Response response = session.Post();
     }
     Url url{server->GetBaseUrl() + "/put.html"};
-    auto payload = Payload{{"x", "5"}};
+    Payload payload{{"x", "5"}};
     session.SetUrl(url);
     session.SetPayload(payload);
     Response response = session.Put();
@@ -184,12 +184,12 @@ TEST(PutTests, SessionPutUnallowedAfterPostTest) {
     Session session;
     {
         Url url{server->GetBaseUrl() + "/url_post.html"};
-        auto payload = Payload{{"x", "5"}};
+        Payload payload{{"x", "5"}};
         session.SetUrl(url);
         Response response = session.Post();
     }
     Url url{server->GetBaseUrl() + "/put_unallowed.html"};
-    auto payload = Payload{{"x", "5"}};
+    Payload payload{{"x", "5"}};
     session.SetUrl(url);
     session.SetPayload(payload);
     Response response = session.Put();
@@ -203,9 +203,9 @@ TEST(PutTests, SessionPutUnallowedAfterPostTest) {
 
 TEST(PutTests, AsyncPutTest) {
     Url url{server->GetBaseUrl() + "/put.html"};
-    auto payload = Payload{{"x", "5"}};
-    auto future_response = cpr::PutAsync(url, payload);
-    auto response = future_response.get();
+    Payload payload{{"x", "5"}};
+    cpr::AsyncResponse future_response = cpr::PutAsync(url, payload);
+    cpr::Response response = future_response.get();
     std::string expected_text{
             "{\n"
             "  \"x\": 5\n"
@@ -219,9 +219,9 @@ TEST(PutTests, AsyncPutTest) {
 
 TEST(PutTests, AsyncPutUnallowedTest) {
     Url url{server->GetBaseUrl() + "/put_unallowed.html"};
-    auto payload = Payload{{"x", "5"}};
-    auto future_response = cpr::PutAsync(url, payload);
-    auto response = future_response.get();
+    Payload payload{{"x", "5"}};
+    cpr::AsyncResponse future_response = cpr::PutAsync(url, payload);
+    cpr::Response response = future_response.get();
     std::string expected_text{"Method Not Allowed"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
@@ -232,13 +232,13 @@ TEST(PutTests, AsyncPutUnallowedTest) {
 
 TEST(PutTests, AsyncMultiplePutTest) {
     Url url{server->GetBaseUrl() + "/put.html"};
-    auto payload = Payload{{"x", "5"}};
+    Payload payload{{"x", "5"}};
     std::vector<AsyncResponse> responses;
     for (int i = 0; i < 10; ++i) {
         responses.emplace_back(cpr::PutAsync(url, payload));
     }
     for (auto& future_response : responses) {
-        auto response = future_response.get();
+        cpr::Response response = future_response.get();
         std::string expected_text{
                 "{\n"
                 "  \"x\": 5\n"
@@ -253,13 +253,13 @@ TEST(PutTests, AsyncMultiplePutTest) {
 
 TEST(PutTests, AsyncMultiplePutUnallowedTest) {
     Url url{server->GetBaseUrl() + "/put_unallowed.html"};
-    auto payload = Payload{{"x", "5"}};
+    Payload payload{{"x", "5"}};
     std::vector<AsyncResponse> responses;
     for (int i = 0; i < 10; ++i) {
         responses.emplace_back(cpr::PutAsync(url, payload));
     }
     for (auto& future_response : responses) {
-        auto response = future_response.get();
+        cpr::Response response = future_response.get();
         std::string expected_text{"Method Not Allowed"};
         EXPECT_EQ(expected_text, response.text);
         EXPECT_EQ(url, response.url);
