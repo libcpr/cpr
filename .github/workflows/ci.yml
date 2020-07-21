@@ -25,16 +25,6 @@ jobs:
         build-type: Release
         run-test: true
         ctest-options: -V
-    - name: "[Debug g++] Build & Test"
-      uses: ashutoshvarma/action-cmake-build@master
-      with:
-        build-dir: ${{github.workspace}}/build
-        source-dir: ${{github.workspace}}
-        cc: gcc
-        cxx: g++
-        build-type: Debug
-        run-test: true
-        ctest-options: -V
   
   ubuntu-clang-ssl:
     runs-on: ubuntu-latest
@@ -55,18 +45,8 @@ jobs:
         build-type: Release
         run-test: true
         ctest-options: -V
-    - name: "[Debug g++] Build & Test"
-      uses: ashutoshvarma/action-cmake-build@master
-      with:
-        build-dir: ${{github.workspace}}/build
-        source-dir: ${{github.workspace}}
-        cc: clang
-        cxx: clang++
-        build-type: Debug
-        run-test: true
-        ctest-options: -V
     
-  windows-msvc-ssl:
+  windows-msvc-winssl:
     runs-on: windows-latest
     steps:
     - name: Checkout
@@ -76,7 +56,9 @@ jobs:
     - name: "[Release msvc] Build & Test"
       env:
         CMAKE_GENERATOR: "Visual Studio 16 2019"
-        CMAKE_USE_OPENSSL: OFF
+        USE_WINSSL: ON
+        USE_OPENSSL: OFF
+        BUILD_CPR_TESTS_SSL: OFF
       uses: ashutoshvarma/action-cmake-build@master
       with:
         build-dir: ${{github.workspace}}/build
@@ -85,15 +67,25 @@ jobs:
         target: ALL_BUILD
         run-test: true
         ctest-options: -V
-    - name: "[Debug msvc] Build & Test"
+  
+  windows-msvc-openssl:
+    runs-on: windows-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2.2.0
+      with:
+        submodules: true
+    - name: "[Release msvc] Build & Test"
       env:
         CMAKE_GENERATOR: "Visual Studio 16 2019"
-        CMAKE_USE_OPENSSL: OFF
+        USE_WINSSL: OFF
+        USE_OPENSSL: ON
+        BUILD_CPR_TESTS_SSL: ON
       uses: ashutoshvarma/action-cmake-build@master
       with:
         build-dir: ${{github.workspace}}/build
         source-dir: ${{github.workspace}}
-        build-type: Debug
+        build-type: Release
         target: ALL_BUILD
         run-test: true
         ctest-options: -V
@@ -119,19 +111,6 @@ jobs:
         build-dir: ${{github.workspace}}/build
         source-dir: ${{github.workspace}}
         build-type: Release
-        cc: clang
-        cxx: clang++
-        run-test: true
-        ctest-options: -V
-    - name: "[Debug clang++] Build & Test"
-      env:
-        OPENSSL_ROOT_DIR: "/usr/local/opt/openssl"
-        OPENSSL_LIBRARIES: "/usr/local/opt/openssl/lib"
-      uses: ashutoshvarma/action-cmake-build@master
-      with:
-        build-dir: ${{github.workspace}}/build
-        source-dir: ${{github.workspace}}
-        build-type: Debug
         cc: clang
         cxx: clang++
         run-test: true
