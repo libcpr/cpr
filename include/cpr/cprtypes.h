@@ -14,7 +14,7 @@ class StringHolder {
   public:
     StringHolder() {}
     explicit StringHolder(const std::string& str) : str_(str) {}
-    explicit StringHolder(const std::string&& str) : str_(std::move(str)) {}
+    explicit StringHolder(std::string&& str) : str_(std::move(str)) {}
     explicit StringHolder(const char* str) : str_(str) {}
     StringHolder(const char* str, size_t len) : str_(str, len) {}
     StringHolder(const std::initializer_list<std::string> args) {
@@ -93,7 +93,7 @@ class Url : public StringHolder<Url> {
   public:
     Url() : StringHolder<Url>() {}
     Url(const std::string& url) : StringHolder<Url>(url) {}
-    Url(const std::string&& url) : StringHolder<Url>(std::move(url)) {}
+    Url(std::string&& url) : StringHolder<Url>(std::move(url)) {}
     Url(const char* url) : StringHolder<Url>(url) {}
     Url(const char* str, size_t len) : StringHolder<Url>(std::string(str, len)) {}
     Url(const std::initializer_list<std::string> args) : StringHolder<Url>(args) {}

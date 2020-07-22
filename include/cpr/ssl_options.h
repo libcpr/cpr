@@ -80,7 +80,7 @@ namespace ssl {
 // set SSL client certificate
 class CertFile {
   public:
-    CertFile(const std::string&& p_filename) : filename(std::move(p_filename)) {}
+    CertFile(std::string&& p_filename) : filename(std::move(p_filename)) {}
 
     const std::string filename;
 
@@ -93,7 +93,7 @@ typedef CertFile PemCert;
 
 class DerCert : public CertFile {
   public:
-    DerCert(const std::string&& p_filename) : CertFile(std::move(p_filename)) {}
+    DerCert(std::string&& p_filename) : CertFile(std::move(p_filename)) {}
 
     virtual const char* GetCertType(void) const {
         return "DER";
@@ -103,7 +103,7 @@ class DerCert : public CertFile {
 // specify private keyfile for TLS and SSL client cert
 class KeyFile {
   public:
-    KeyFile(const std::string&& p_filename) : filename(std::move(p_filename)) {}
+    KeyFile(std::string&& p_filename) : filename(std::move(p_filename)) {}
 
     template <typename FileType, typename PassType>
     KeyFile(FileType&& p_filename, PassType p_password)
@@ -121,7 +121,7 @@ typedef KeyFile PemKey;
 
 class DerKey : public KeyFile {
   public:
-    DerKey(const std::string&& p_filename) : KeyFile(std::move(p_filename)) {}
+    DerKey(std::string&& p_filename) : KeyFile(std::move(p_filename)) {}
 
     template <typename FileType, typename PassType>
     DerKey(FileType&& p_filename, PassType p_password)
@@ -255,7 +255,7 @@ struct MaxTLSv1_3 {};
 // path to Certificate Authority (CA) bundle
 class CaInfo {
   public:
-    CaInfo(const std::string&& p_filename) : filename(std::move(p_filename)) {}
+    CaInfo(std::string&& p_filename) : filename(std::move(p_filename)) {}
 
     std::string filename;
 };
@@ -263,7 +263,7 @@ class CaInfo {
 // specify directory holding CA certificates
 class CaPath {
   public:
-    CaPath(const std::string&& p_filename) : filename(std::move(p_filename)) {}
+    CaPath(std::string&& p_filename) : filename(std::move(p_filename)) {}
 
     std::string filename;
 };
@@ -271,7 +271,7 @@ class CaPath {
 // specify a Certificate Revocation List file
 class Crl {
   public:
-    Crl(const std::string&& p_filename) : filename(std::move(p_filename)) {}
+    Crl(std::string&& p_filename) : filename(std::move(p_filename)) {}
 
     std::string filename;
 };

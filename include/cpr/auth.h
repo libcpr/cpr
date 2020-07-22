@@ -9,7 +9,7 @@ namespace cpr {
 
 class Authentication {
   public:
-    Authentication(const std::string&& username, const std::string&& password)
+    Authentication(std::string&& username, std::string&& password)
             : username_(std::move(username)),
               password_(std::move(password)), auth_string_{this->username_ + ":" +
                                                            this->password_} {}

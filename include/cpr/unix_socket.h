@@ -7,7 +7,7 @@ namespace cpr {
 
 class UnixSocket {
   public:
-    UnixSocket(const std::string&& unix_socket) : unix_socket_(std::move(unix_socket)) {}
+    UnixSocket(std::string&& unix_socket) : unix_socket_(std::move(unix_socket)) {}
 
     const char* GetUnixSocketString() const noexcept;
 

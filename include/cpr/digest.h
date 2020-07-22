@@ -7,7 +7,7 @@ namespace cpr {
 
 class Digest : public Authentication {
   public:
-    Digest(const std::string&& username, const std::string&& password)
+    Digest(std::string&& username, std::string&& password)
             : Authentication{std::move(username), std::move(password)} {}
 
     ~Digest() override = default;

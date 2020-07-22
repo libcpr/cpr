@@ -16,8 +16,8 @@ class HttpsServer : public AbstractServer {
     const std::string sslKeyFileName;
 
   public:
-    explicit HttpsServer(const std::string&& baseDirPath, const std::string&& sslCertFileName,
-                         const std::string&& sslKeyFileName);
+    explicit HttpsServer(std::string&& baseDirPath, std::string&& sslCertFileName,
+                         std::string&& sslKeyFileName);
     ~HttpsServer() = default;
 
     std::string GetBaseUrl() override;
