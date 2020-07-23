@@ -16,7 +16,7 @@ class Authentication {
     const char* GetAuthString() const noexcept;
 
   private:
-    const std::string auth_string_;
+    std::string auth_string_;
 };
 
 } // namespace cpr
