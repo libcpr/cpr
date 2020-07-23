@@ -5,10 +5,8 @@ add_library(cpr
     cookies.cpp
     cprtypes.cpp
     curlholder.cpp
-    digest.cpp
     error.cpp
     multipart.cpp
-    ntlm.cpp
     parameters.cpp
     payload.cpp
     proxies.cpp

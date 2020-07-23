@@ -7,12 +7,7 @@ namespace cpr {
 
 class Digest : public Authentication {
   public:
-    Digest(std::string&& username, std::string&& password)
-            : Authentication{std::move(username), std::move(password)} {}
-
-    ~Digest() override = default;
-
-    const char* GetAuthString() const noexcept;
+    using Authentication::Authentication;
 };
 
 } // namespace cpr

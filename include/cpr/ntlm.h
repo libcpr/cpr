@@ -8,11 +8,7 @@ namespace cpr {
 
 class NTLM : public Authentication {
   public:
-    template <typename UserType, typename PassType>
-    NTLM(UserType&& username, PassType&& password)
-            : Authentication{std::move(username), std::move(password)} {}
-
-    const char* GetAuthString() const noexcept;
+    using Authentication::Authentication;
 };
 
 } // namespace cpr
