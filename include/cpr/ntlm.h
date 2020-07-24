@@ -8,7 +8,8 @@ namespace cpr {
 
 class NTLM : public Authentication {
   public:
-    using Authentication::Authentication;
+    NTLM(const std::string& username, const std::string& password)
+            : Authentication{username, password} {}
 };
 
 } // namespace cpr

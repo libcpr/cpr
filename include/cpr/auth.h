@@ -15,7 +15,7 @@ class Authentication {
 
     const char* GetAuthString() const noexcept;
 
-  private:
+  protected:
     std::string auth_string_;
 };
 
