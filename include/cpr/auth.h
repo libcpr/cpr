@@ -18,7 +18,7 @@ class Authentication {
     }
     virtual ~Authentication() = default;
 
-    const char* GetAuthString() const noexcept;
+    virtual const char* GetAuthString() const noexcept;
 
   protected:
     std::string auth_string_;
