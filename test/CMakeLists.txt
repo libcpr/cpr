@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.15)
 
-find_package(Threads)
+find_package(Threads REQUIRED)
 
 if (ENABLE_SSL_TESTS)
     add_library(test_server STATIC
