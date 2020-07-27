@@ -70,6 +70,7 @@ jobs:
   
   windows-msvc-openssl:
     runs-on: windows-latest
+    if: ${{ false }} # Disabled for now until we find a way to install OpenSSL from the terminal (#418)
     steps:
     - name: Checkout
       uses: actions/checkout@v2.2.0
