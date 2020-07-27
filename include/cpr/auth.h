@@ -12,10 +12,7 @@ class Authentication {
     Authentication(const std::string& username, const std::string& password)
             : auth_string_{username + ":" + password} {}
     Authentication(std::string&& username, std::string&& password)
-            : auth_string_{std::move(username)} {
-        auth_string_ += ':';
-        auth_string_ += std::move(password);
-    }
+            : auth_string_{std::move(username) + ":" + std::move(password)} {}
     virtual ~Authentication() = default;
 
     virtual const char* GetAuthString() const noexcept;
