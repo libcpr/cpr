@@ -55,11 +55,11 @@ include(cmake/code_coverage.cmake)
 
 # Curl configuration
 if(USE_SYSTEM_CURL)
-    find_package(CURL COMPONENTS PROTOCOLS HTTP HTTPS FEATURES SSL)
+    find_package(CURL COMPONENTS HTTP HTTPS SSL)
     if (CURL_FOUND)
         set(SSL_ENABLED ON CACHE INTERNAL "" FORCE)
     else()
-        find_package(CURL COMPONENTS PROTOCOLS HTTP)
+        find_package(CURL COMPONENTS HTTP)
         if(CURL_FOUND)
             set(SSL_ENABLED OFF CACHE INTERNAL "" FORCE)
         endif()
