@@ -40,7 +40,7 @@ endif()
 set(CMAKE_C_FLAGS_LEAKSAN "${CMAKE_C_FLAGS_DEBUG} ${LEAK_SAN_FLAGS} -fno-omit-frame-pointer" CACHE INTERNAL "Flags used by the C compiler during leak sanitizer builds." FORCE)
 set(CMAKE_CXX_FLAGS_LEAKSAN "${CMAKE_CXX_FLAGS_DEBUG} ${LEAK_SAN_FLAGS} -fno-omit-frame-pointer" CACHE INTERNAL "Flags used by the C++ compiler during leak sanitizer builds." FORCE)
 
-# Undefined behaviour sanitizer
+# Undefined behavior sanitizer
 set(UDEF_SAN_FLAGS "-fsanitize=undefined")
 check_cxx_compiler_flag(${UDEF_SAN_FLAGS} UNDEFINED_BEHAVIOUR_SANITIZER_AVAILABLE)
 if(UNDEFINED_BEHAVIOUR_SANITIZER_AVAILABLE)
@@ -50,7 +50,7 @@ endif()
 set(CMAKE_C_FLAGS_UDEFSAN "${CMAKE_C_FLAGS_DEBUG} ${UDEF_SAN_FLAGS}" CACHE INTERNAL "Flags used by the C compiler during undefined behaviour sanitizer builds." FORCE)
 set(CMAKE_CXX_FLAGS_UDEFSAN "${CMAKE_CXX_FLAGS_DEBUG} ${UDEF_SAN_FLAGS}" CACHE INTERNAL "Flags used by the C++ compiler during undefined behaviour sanitizer builds." FORCE)
 
-# AllSanetizer
+# All sanitizer
 if(NOT ALL_SAN_FLAGS STREQUAL "")
     set(PREV_FLAG ${CMAKE_REQUIRED_FLAGS})
     set(CMAKE_REQUIRED_FLAGS "${ALL_SAN_FLAGS}")
