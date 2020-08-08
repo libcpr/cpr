@@ -30,8 +30,6 @@
 namespace cpr {
 
 class Session {
-  typedef int(*ProgressCallback)(void*, int64_t, int64_t, int64_t, int64_t);
-
   public:
     Session();
     ~Session();
