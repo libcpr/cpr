@@ -101,11 +101,18 @@ Session::Impl::Impl() {
 void Session::Impl::SetProgressCallback(const ProgressCallback& progress) {
     CURL* curl = curl_->handle;
     if (curl) {
+        #if LIBCURL_VERSION_NUM < 0x072000
+        curl_easy_setopt(curl, CURLOPT_PROGRESSFUNCTION, progress.cb);
+        if (progress.userpt) {
+            curl_easy_setopt(curl, CURLOPT_PROGRESSDATA, progress.userpt);
+        }
+        #else
         curl_easy_setopt(curl, CURLOPT_XFERINFOFUNCTION, progress.cb);
-        curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0);
         if (progress.userpt) {
             curl_easy_setopt(curl, CURLOPT_XFERINFODATA, progress.userpt);
         }
+        #endif
+        curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0L);
     }
 }
 
