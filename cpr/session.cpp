@@ -20,7 +20,7 @@ class Session::Impl {
   public:
     Impl();
 
-    void SetProgressCallback(ProgressCallback cb);
+    void SetProgressCallback(const ProgressCallback& parameters);
     void SetUrl(const Url& url);
     void SetParameters(const Parameters& parameters);
     void SetParameters(Parameters&& parameters);
@@ -98,10 +98,11 @@ Session::Impl::Impl() {
     }
 }
 
-void Session::Impl::SetProgressCallback(const ProgressCallback cb) {
+void Session::Impl::SetProgressCallback(const ProgressCallback& progress) {
     CURL* curl = curl_->handle;
     if (curl) {
-        curl_easy_setopt(curl, CURLOPT_XFERINFOFUNCTION, cb);
+        curl_easy_setopt(curl, CURLOPT_XFERINFOFUNCTION, progress.cb);
+        curl_easy_setopt(curl, CURLOPT_XFERINFODATA, progress.userpt);
         curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0);
     }
 }
@@ -581,6 +582,7 @@ Session::Session() : pimpl_{ new Impl{} } {}
 Session::Session(Session&& other) : pimpl_{ std::move(other.pimpl_) } {}
 Session& Session::operator=(Session&& other) { pimpl_ = std::move(other.pimpl_); return *this; }
 Session::~Session() {}
+void Session::SetProgressCallback(const ProgressCallback& progress) { pimpl_->SetProgressCallback(progress); }
 void Session::SetUrl(const Url& url) { pimpl_->SetUrl(url); }
 void Session::SetParameters(const Parameters& parameters) { pimpl_->SetParameters(parameters); }
 void Session::SetParameters(Parameters&& parameters) { pimpl_->SetParameters(std::move(parameters)); }
@@ -607,7 +609,7 @@ void Session::SetVerifySsl(const VerifySsl& verify) { pimpl_->SetVerifySsl(verif
 void Session::SetUnixSocket(const UnixSocket& unix_socket) { pimpl_->SetUnixSocket(unix_socket); }
 void Session::SetSslOptions(const SslOptions& options) { pimpl_->SetSslOptions(options); }
 void Session::SetVerbose(const Verbose& verbose) { pimpl_->SetVerbose(verbose); }
-void Session::SetOption(const ProgressCallback cb) { pimpl_->SetProgressCallback(cb); }
+void Session::SetOption(const ProgressCallback& progress) { pimpl_->SetProgressCallback(progress); }
 void Session::SetOption(const Url& url) { pimpl_->SetUrl(url); }
 void Session::SetOption(const Parameters& parameters) { pimpl_->SetParameters(parameters); }
 void Session::SetOption(Parameters&& parameters) { pimpl_->SetParameters(std::move(parameters)); }

@@ -25,12 +25,11 @@
 #include "cpr/unix_socket.h"
 #include "cpr/user_agent.h"
 #include "cpr/verbose.h"
+#include "cpr/progresscb.h"
 
 namespace cpr {
 
 class Session {
-  typedef int(*ProgressCallback)(void*, int64_t, int64_t, int64_t, int64_t);
-
   public:
     Session();
     ~Session();
@@ -38,6 +37,7 @@ class Session {
     Session(Session&& other);
     Session& operator=(Session&& other);
 
+    void SetProgressCallback(const ProgressCallback& progress);
     void SetUrl(const Url& url);
     void SetParameters(const Parameters& parameters);
     void SetParameters(Parameters&& parameters);
@@ -66,7 +66,7 @@ class Session {
     void SetVerbose(const Verbose& verbose);
 
     // Used in templated functions
-    void SetOption(const ProgressCallback cb);
+    void SetOption(const ProgressCallback& progress);
     void SetOption(const Url& url);
     void SetOption(const Parameters& parameters);
     void SetOption(Parameters&& parameters);
