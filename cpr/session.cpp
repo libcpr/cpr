@@ -13,8 +13,8 @@
 
 namespace cpr {
 
-const long ON = 1L;
-const long OFF = 0L;
+constexpr long ON = 1L;
+constexpr long OFF = 0L;
 
 class Session::Impl {
   public:

@@ -16,6 +16,9 @@ class ProgressCallback {
     ProgressCallback(const progress_cb_t cb, void * userpt)
           : cb{cb}, userpt{userpt} {}
 
+    void AddCallback(const progress_cb_t callback) { cb = callback; }
+    void AddUserData(void *userData) { userpt = userData; }
+
     progress_cb_t cb;
     void *userpt = nullptr;
 };
