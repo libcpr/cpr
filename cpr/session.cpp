@@ -102,8 +102,10 @@ void Session::Impl::SetProgressCallback(const ProgressCallback& progress) {
     CURL* curl = curl_->handle;
     if (curl) {
         curl_easy_setopt(curl, CURLOPT_XFERINFOFUNCTION, progress.cb);
-        curl_easy_setopt(curl, CURLOPT_XFERINFODATA, progress.userpt);
         curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0);
+        if (progress.userpt) {
+            curl_easy_setopt(curl, CURLOPT_XFERINFODATA, progress.userpt);
+        }
     }
 }
 

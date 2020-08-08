@@ -8,6 +8,7 @@ class ProgressCallback {
 
   public:
     ProgressCallback() = default;
+    ProgressCallback(const progress_cb_t cb) : cb{cb} {}
     ProgressCallback(const progress_cb_t cb, void * userpt)
           : cb{cb}, userpt{userpt} {}
 
