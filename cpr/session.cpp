@@ -20,6 +20,7 @@ class Session::Impl {
   public:
     Impl();
 
+    void SetProgressCallback(ProgressCallback cb);
     void SetUrl(const Url& url);
     void SetParameters(const Parameters& parameters);
     void SetParameters(Parameters&& parameters);
@@ -94,6 +95,14 @@ Session::Impl::Impl() {
 #endif
 #endif
 #endif
+    }
+}
+
+void Session::Impl::SetProgressCallback(const ProgressCallback cb) {
+    CURL* curl = curl_->handle;
+    if (curl) {
+        curl_easy_setopt(curl, CURLOPT_XFERINFOFUNCTION, cb);
+        curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0);
     }
 }
 
@@ -598,6 +607,7 @@ void Session::SetVerifySsl(const VerifySsl& verify) { pimpl_->SetVerifySsl(verif
 void Session::SetUnixSocket(const UnixSocket& unix_socket) { pimpl_->SetUnixSocket(unix_socket); }
 void Session::SetSslOptions(const SslOptions& options) { pimpl_->SetSslOptions(options); }
 void Session::SetVerbose(const Verbose& verbose) { pimpl_->SetVerbose(verbose); }
+void Session::SetOption(const ProgressCallback cb) { pimpl_->SetProgressCallback(cb); }
 void Session::SetOption(const Url& url) { pimpl_->SetUrl(url); }
 void Session::SetOption(const Parameters& parameters) { pimpl_->SetParameters(parameters); }
 void Session::SetOption(Parameters&& parameters) { pimpl_->SetParameters(std::move(parameters)); }

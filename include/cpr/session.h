@@ -29,6 +29,8 @@
 namespace cpr {
 
 class Session {
+  typedef int(*ProgressCallback)(void*, int64_t, int64_t, int64_t, int64_t);
+
   public:
     Session();
     ~Session();
@@ -64,6 +66,7 @@ class Session {
     void SetVerbose(const Verbose& verbose);
 
     // Used in templated functions
+    void SetOption(const ProgressCallback cb);
     void SetOption(const Url& url);
     void SetOption(const Parameters& parameters);
     void SetOption(Parameters&& parameters);
