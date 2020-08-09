@@ -16,6 +16,7 @@ namespace cpr {
 
 class Response {
   public:
+    Response() = default;
     Response(CURL* curl, std::string&& p_text, std::string&& p_header_string,
              Cookies&& p_cookies = Cookies{}, Error&& p_error = Error{})
             : text(std::move(p_text)), cookies(std::move(p_cookies)), error(std::move(p_error)) {
