@@ -1,6 +1,7 @@
 #ifndef CPR_CPR_TYPES_H
 #define CPR_CPR_TYPES_H
 
+#include <curl/curl.h>
 #include <initializer_list>
 #include <map>
 #include <memory>
@@ -8,6 +9,11 @@
 #include <string>
 
 namespace cpr {
+
+/**
+ * Wrapper around "curl_off_t" to prevent applications from having to link against libcurl.
+ **/
+using cpr_off_t = curl_off_t;
 
 template <class T>
 class StringHolder {
