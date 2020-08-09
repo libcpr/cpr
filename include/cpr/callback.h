@@ -76,14 +76,14 @@ class ProgressCallback {
   } ProgressCallbackData;
 
   #if LIBCURL_VERSION_NUM < 0x072000
-  int ProgressCallbackFunction(ProgressCallbackData* data, double dlnow, double dltotal, double ulnow, double ultotal) {
+  int ProgressCallbackFunction(ProgressCallbackData* data, double downloadNow, double downloadTotal, double uploadNow, double uploadTotal) {
   #else
-  int ProgressCallbackFunction(ProgressCallbackData* data, cpr_off_t dlnow, cpr_off_t dltotal, cpr_off_t ulnow, cpr_off_t ultotal) {
+  int ProgressCallbackFunction(ProgressCallbackData* data, cpr_off_t downloadNow, cpr_off_t downloadTotal, cpr_off_t uploadNow, cpr_off_t uploadTotal) {
   #endif
-    data->data.downloadNow = dlnow;
-    data->data.downloadTotal = dltotal;
-    data->data.uploadNow = ulnow;
-    data->data.uploadTotal = ultotal;
+    data->data.downloadNow = downloadNow;
+    data->data.downloadTotal = downloadTotal;
+    data->data.uploadNow = uploadNow;
+    data->data.uploadTotal = uploadTotal;
     return data->cb(&data->data);
   }
 
