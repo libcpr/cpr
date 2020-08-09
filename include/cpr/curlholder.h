@@ -7,17 +7,18 @@
 #include <curl/curl.h>
 
 namespace cpr {
-
-/**
- * Mutex for curl_easy_init().
- * curl_easy_init() is not thread save.
- * References:
- * https://curl.haxx.se/libcurl/c/curl_easy_init.html
- * https://curl.haxx.se/libcurl/c/threadsafe.html
- **/
-extern std::mutex curl_easy_init_mutex_;
-
 struct CurlHolder {
+  private:
+    /**
+     * Mutex for curl_easy_init().
+     * curl_easy_init() is not thread save.
+     * References:
+     * https://curl.haxx.se/libcurl/c/curl_easy_init.html
+     * https://curl.haxx.se/libcurl/c/threadsafe.html
+     **/
+    static std::mutex curl_easy_init_mutex_;
+
+  public:
     CURL* handle{nullptr};
     struct curl_slist* chunk{nullptr};
     struct curl_httppost* formpost{nullptr};
