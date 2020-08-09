@@ -204,6 +204,32 @@ assert(r.elapsed <= 1); // Less than one second should have elapsed
 
 Setting the `Timeout` option sets the maximum allowed time the transfer operation can take. Since C++ Requests is built on top of libcurl, it's important to know what setting this `Timeout` does to the request. You can find more information about the specific libcurl option [here](http://curl.haxx.se/libcurl/c/CURLOPT_TIMEOUT_MS.html).
 
+## Setting a Progress Callback
+
+You can optionally set a progress callback. This will be called as often as libcurl can (often many times a second!).
+
+```c++
+typedef struct {
+    std::string message = "Hello World";
+    int returnValue = 0;
+} MyData;
+
+int myCallback(void *clientp, cpr_off_t dltotal, cpr_off_t dlnow, cpr_off_t ultotal, cpr_off_t ulnow) {
+    MyData *data = (MyData*)clientp;
+    std::cout << data->message << std::endl;
+    return data->returnValue; // returing non-zero will end the transfer.
+}
+
+int main(int argc, char **argv) {
+    MyData myData;
+    cpr::Response r = cpr::Get(cpr::Url{"http://www.httpbin.org/get"},
+                      cpr::ProgressCallback(myCallback, &myData));
+    return 0;
+}
+```
+
+Setting a `ProgressCallback` requires a function as one of the paramater passed. This function must be in the format of `int func(void*, cpr_off_t, cpr_off_t, cpr_off_t, cpr_off_t)`. Another optional paramater is to pass any data in which you want to be passed into the callback. An important use for this callback is the value that gets returned. By returning a non-zero value, this will cause libcurl to cancel the current request, which is very useful for async requests. Otherwise, returning zero will continue the request. More information of this libcurl callback can be found [here](https://curl.haxx.se/libcurl/c/CURLOPT_XFERINFOFUNCTION.html).
+
 ## Using Proxies
 
 `Proxies`, like `Parameters`, are map-like objects. It's easy to set one:

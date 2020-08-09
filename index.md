@@ -51,6 +51,7 @@ C++ Requests currently supports:
 * HEAD methods
 * OPTIONS methods
 * PATCH methods
+* Progress callback support
 
 ## Planned
 
