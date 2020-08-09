@@ -204,9 +204,59 @@ assert(r.elapsed <= 1); // Less than one second should have elapsed
 
 Setting the `Timeout` option sets the maximum allowed time the transfer operation can take. Since C++ Requests is built on top of libcurl, it's important to know what setting this `Timeout` does to the request. You can find more information about the specific libcurl option [here](http://curl.haxx.se/libcurl/c/CURLOPT_TIMEOUT_MS.html).
 
-## Setting a Progress Callback
+## Setting Callbacks
 
-You can optionally set a progress callback. This will be called as often as libcurl can (often many times a second!).
+You can optionally set a callbacks for a request. Current there is support for read, write and progress callbacks.
+
+### ReadCallback
+
+This will be called every time curl is ready for data to be sent to the server.
+
+The layout of the read struct looks like this.
+
+```c++
+typedef struct {
+  void* userData = nullptr; // user data ptr.
+  void* buffer; // buffer to read into.
+  size_t realsize, size, nmeb; // actual size, chunk size, number of chunks.
+} ReadCallbackUser;
+```
+
+More information of this libcurl callback can be found [here](https://curl.haxx.se/libcurl/c/CURLOPT_READFUNCTION.html).
+
+### WriteCallback
+
+This will be called every time curl is ready to with a buffer to write. You can either choose to write directly to file, append the data to a buffer or save the data in a buffer until X size then write that chunk of memory to file.
+
+The layout of the write struct looks like this.
+
+```c++
+typedef struct {
+  void* userData = nullptr; // user data ptr.
+  void* buffer; // buffer containing downloaded data.
+  size_t realsize, size, nmeb; // actual size, chunk size, number of chunks.
+} WriteCallbackUser;
+```
+
+More information of this libcurl callback can be found [here](https://curl.haxx.se/libcurl/c/CURLOPT_WRITEFUNCTION.html).
+
+### ProgressCallback
+
+The progress callback will be called as often as libcurl can (often many times a second!).
+
+The layout of the progress struct looks like this.
+
+```c++
+typedef struct {
+  void* userData = nullptr; // pointer to your userdata
+  cpr_off_t downloadNow; // how much data has been downloaded.
+  cpr_off_t downloadTotal; // how much data to download in total.
+  cpr_off_t uploadNow; // how much data has been uploaded.
+  cpr_off_t uploadTotal; // how much data to upload in total.
+} ProgressCallbackUser;
+```
+
+Here is an example of using the callback.
 
 ```c++
 typedef struct {
@@ -214,10 +264,10 @@ typedef struct {
     int returnValue = 0;
 } MyData;
 
-int myCallback(void *clientp, cpr::cpr_off_t dltotal, cpr::cpr_off_t dlnow, cpr::cpr_off_t ultotal, cpr::cpr_off_t ulnow) {
-    MyData *data = (MyData*)clientp;
-    std::cout << data->message << std::endl;
-    return data->returnValue; // returing non-zero will end the transfer.
+int myCallback(cpr::ProgressCallbackUser *data) {
+    MyData *myData = (MyData*)data->userData;
+    std::cout << myData->message << std::endl;
+    return myData->returnValue; // returing non-zero will end the transfer.
 }
 
 int main(int argc, char **argv) {
@@ -228,7 +278,7 @@ int main(int argc, char **argv) {
 }
 ```
 
-Setting a `ProgressCallback` requires a function as one of the paramater passed. This function must be in the format of `int func(void*, cpr_off_t, cpr_off_t, cpr_off_t, cpr_off_t)`. Another optional paramater is to pass any data in which you want to be passed into the callback. An important use for this callback is the value that gets returned. By returning a non-zero value, this will cause libcurl to cancel the current request, which is very useful for async requests. Otherwise, returning zero will continue the request. More information of this libcurl callback can be found [here](https://curl.haxx.se/libcurl/c/CURLOPT_XFERINFOFUNCTION.html).
+The value returned is in this callback is important. By returning a non-zero value, this will cause libcurl to cancel the current request, which is very useful for async requests. Otherwise, returning zero will continue the request. More information of this libcurl callback can be found [here](https://curl.haxx.se/libcurl/c/CURLOPT_XFERINFOFUNCTION.html).
 
 ## Using Proxies
 
