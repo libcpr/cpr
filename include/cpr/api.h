@@ -213,7 +213,7 @@ template <typename... Ts>
 Response Download(const WriteCallback& write, Ts&&... ts) {
     Session session;
     priv::set_option(session, std::forward<Ts>(ts)...);
-    return session.Download(file);
+    return session.Download(write);
 }
 
 } // namespace cpr
