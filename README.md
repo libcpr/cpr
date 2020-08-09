@@ -59,6 +59,7 @@ C++ Requests currently supports:
 * PATCH methods
 * Thread Safe access to [libCurl](https://curl.haxx.se/libcurl/c/threadsafe.html)
 * OpenSSL and WinSSL support for HTTPS requests
+* Progress callback support
 
 ## Planned
 
