@@ -20,6 +20,8 @@ class Session::Impl {
   public:
     Impl();
 
+    void SetReadCallback(const ReadCallback& read);
+    void SetWriteCallback(const WriteCallback& write);
     void SetProgressCallback(const ProgressCallback& parameters);
     void SetUrl(const Url& url);
     void SetParameters(const Parameters& parameters);
@@ -60,6 +62,9 @@ class Session::Impl {
 
   private:
     bool hasBodyOrPayload_{false};
+    bool userRead_{false};
+    bool userWrite_{false};
+    bool userHeader_{false};
 
     std::unique_ptr<CurlHolder> curl_;
     Url url_;
@@ -95,6 +100,24 @@ Session::Impl::Impl() {
 #endif
 #endif
 #endif
+    }
+}
+
+void Session::Impl::SetReadCallback(const ReadCallback& read) {
+    CURL* curl = curl_->handle;
+    if (curl) {
+        curl_easy_setopt(curl, CURLOPT_READFUNCTION , read.callback.cb);
+        curl_easy_setopt(curl, CURLOPT_READDATA, &read.callback.data);
+        this->userRead_ = true;
+    }
+}
+
+void Session::Impl::SetWriteCallback(const WriteCallback& write) {
+    CURL* curl = curl_->handle;
+    if (curl) {
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write.callback.cb);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &write.callback.data);
+        this->userWrite_ = true;
     }
 }
 
@@ -522,10 +545,14 @@ Response Session::Impl::makeDownloadRequest(CURL* curl, std::ofstream& file) {
     curl_->error[0] = '\0';
 
     std::string header_string;
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, cpr::util::downloadFunction);
-    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &file);
-    curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, cpr::util::writeFunction);
-    curl_easy_setopt(curl, CURLOPT_HEADERDATA, &header_string);
+    if (!this->userWrite_) {
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, cpr::util::downloadFunction);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &file);
+    }
+    if (!this->userHeader_) {
+        curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, cpr::util::writeFunction);
+        curl_easy_setopt(curl, CURLOPT_HEADERDATA, &header_string);
+    }
 
     CURLcode curl_error = curl_easy_perform(curl);
 
@@ -564,9 +591,13 @@ Response Session::Impl::makeRequest(CURL* curl) {
 
     std::string response_string;
     std::string header_string;
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, cpr::util::writeFunction);
-    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response_string);
-    curl_easy_setopt(curl, CURLOPT_HEADERDATA, &header_string);
+    if (!this->userWrite_) {
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, cpr::util::writeFunction);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response_string);
+    }
+    if (!this->userHeader_) {
+        curl_easy_setopt(curl, CURLOPT_HEADERDATA, &header_string);
+    }
 
     CURLcode curl_error = curl_easy_perform(curl);
 
@@ -587,6 +618,8 @@ Session::Session() : pimpl_{ new Impl{} } {}
 Session::Session(Session&& other) : pimpl_{ std::move(other.pimpl_) } {}
 Session& Session::operator=(Session&& other) { pimpl_ = std::move(other.pimpl_); return *this; }
 Session::~Session() {}
+void Session::SetReadCallback(const ReadCallback& read) { pimpl_->SetReadCallback(read); }
+void Session::SetWriteCallback(const WriteCallback& write) { pimpl_->SetWriteCallback(write); }
 void Session::SetProgressCallback(const ProgressCallback& progress) { pimpl_->SetProgressCallback(progress); }
 void Session::SetUrl(const Url& url) { pimpl_->SetUrl(url); }
 void Session::SetParameters(const Parameters& parameters) { pimpl_->SetParameters(parameters); }

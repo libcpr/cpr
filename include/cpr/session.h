@@ -25,7 +25,7 @@
 #include "cpr/unix_socket.h"
 #include "cpr/user_agent.h"
 #include "cpr/verbose.h"
-#include "cpr/progresscb.h"
+#include "cpr/callback.h"
 
 namespace cpr {
 
@@ -37,6 +37,8 @@ class Session {
     Session(Session&& other);
     Session& operator=(Session&& other);
 
+    void SetReadCallback(const ReadCallback& read);
+    void SetWriteCallback(const WriteCallback& write);
     void SetProgressCallback(const ProgressCallback& progress);
     void SetUrl(const Url& url);
     void SetParameters(const Parameters& parameters);
@@ -66,6 +68,8 @@ class Session {
     void SetVerbose(const Verbose& verbose);
 
     // Used in templated functions
+    void SetOption(const ReadCallback& read);
+    void SetOption(const WriteCallback& write);
     void SetOption(const ProgressCallback& progress);
     void SetOption(const Url& url);
     void SetOption(const Parameters& parameters);
