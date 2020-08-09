@@ -112,7 +112,7 @@ void Session::Impl::SetParameters(Parameters&& parameters) {
 void Session::Impl::SetHeader(const Header& header) {
     CURL* curl = curl_->handle;
     if (curl) {
-        struct curl_slist* chunk = nullptr;
+        curl_slist* chunk = nullptr;
         for (auto item = header.cbegin(); item != header.cend(); ++item) {
             std::string header_string = item->first;
             if (item->second.empty()) {
@@ -121,7 +121,7 @@ void Session::Impl::SetHeader(const Header& header) {
                 header_string += ": " + item->second;
             }
 
-            struct curl_slist* temp = curl_slist_append(chunk, header_string.c_str());
+            curl_slist* temp = curl_slist_append(chunk, header_string.c_str());
             if (temp) {
                 chunk = temp;
             }
@@ -208,11 +208,11 @@ void Session::Impl::SetProxies(Proxies&& proxies) {
 void Session::Impl::SetMultipart(Multipart&& multipart) {
     CURL* curl = curl_->handle;
     if (curl) {
-        struct curl_httppost* formpost = nullptr;
-        struct curl_httppost* lastptr = nullptr;
+        curl_httppost* formpost = nullptr;
+        curl_httppost* lastptr = nullptr;
 
         for (auto& part : multipart.parts) {
-            std::vector<struct curl_forms> formdata;
+            std::vector<curl_forms> formdata;
             formdata.push_back({CURLFORM_COPYNAME, part.name.c_str()});
             if (part.is_buffer) {
                 formdata.push_back({CURLFORM_BUFFER, part.value.c_str()});
@@ -242,11 +242,11 @@ void Session::Impl::SetMultipart(Multipart&& multipart) {
 void Session::Impl::SetMultipart(const Multipart& multipart) {
     CURL* curl = curl_->handle;
     if (curl) {
-        struct curl_httppost* formpost = nullptr;
-        struct curl_httppost* lastptr = nullptr;
+        curl_httppost* formpost = nullptr;
+        curl_httppost* lastptr = nullptr;
 
         for (auto& part : multipart.parts) {
-            std::vector<struct curl_forms> formdata;
+            std::vector<curl_forms> formdata;
             formdata.push_back({CURLFORM_PTRNAME, part.name.c_str()});
             if (part.is_buffer) {
                 formdata.push_back({CURLFORM_BUFFER, part.value.c_str()});
@@ -514,39 +514,13 @@ Response Session::Impl::makeDownloadRequest(CURL* curl, std::ofstream& file) {
 
     CURLcode curl_error = curl_easy_perform(curl);
 
-    char* raw_url;
-    long response_code;
-    double elapsed;
-    double uploaded_bytes;
-    double downloaded_bytes;
-
-    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response_code);
-    curl_easy_getinfo(curl, CURLINFO_TOTAL_TIME, &elapsed);
-    curl_easy_getinfo(curl, CURLINFO_EFFECTIVE_URL, &raw_url);
-    curl_easy_getinfo(curl, CURLINFO_SIZE_DOWNLOAD, &downloaded_bytes);
-    curl_easy_getinfo(curl, CURLINFO_SIZE_UPLOAD, &uploaded_bytes);
-
-    Error error(curl_error, curl_->error);
-
-    Cookies cookies;
-    struct curl_slist* raw_cookies;
+    curl_slist* raw_cookies;
     curl_easy_getinfo(curl, CURLINFO_COOKIELIST, &raw_cookies);
-    for (struct curl_slist* nc = raw_cookies; nc; nc = nc->next) {
-        std::vector<std::string> tokens = cpr::util::split(nc->data, '\t');
-        std::string value = tokens.back();
-        tokens.pop_back();
-        cookies[tokens.back()] = value;
-    }
+    Cookies cookies = util::parseCookies(raw_cookies);
     curl_slist_free_all(raw_cookies);
 
-    cpr::Header header = cpr::util::parseHeader(header_string);
-    return Response{static_cast<std::int32_t>(response_code),
-                    "",
-                    std::move(header),
-                    Url(raw_url),
-                    elapsed,
-                    std::move(cookies),
-                    std::move(error)};
+    return Response(curl, "", std::move(header_string), std::move(cookies),
+                    Error(curl_error, curl_->error));
 }
 
 Response Session::Impl::makeRequest(CURL* curl) {
@@ -581,47 +555,16 @@ Response Session::Impl::makeRequest(CURL* curl) {
 
     CURLcode curl_error = curl_easy_perform(curl);
 
-    char* raw_url;
-    long response_code;
-    double elapsed;
-    double downloaded_bytes;
-    double uploaded_bytes;
-    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response_code);
-    curl_easy_getinfo(curl, CURLINFO_TOTAL_TIME, &elapsed);
-    curl_easy_getinfo(curl, CURLINFO_EFFECTIVE_URL, &raw_url);
-    curl_easy_getinfo(curl, CURLINFO_SIZE_DOWNLOAD, &downloaded_bytes);
-    curl_easy_getinfo(curl, CURLINFO_SIZE_UPLOAD, &uploaded_bytes);
-
-    Cookies cookies;
-    struct curl_slist* raw_cookies;
+    curl_slist* raw_cookies;
     curl_easy_getinfo(curl, CURLINFO_COOKIELIST, &raw_cookies);
-    for (struct curl_slist* nc = raw_cookies; nc; nc = nc->next) {
-        std::vector<std::string> tokens = cpr::util::split(nc->data, '\t');
-        std::string value = tokens.back();
-        tokens.pop_back();
-        cookies[tokens.back()] = value;
-    }
+    Cookies cookies = util::parseCookies(raw_cookies);
     curl_slist_free_all(raw_cookies);
-
-    std::string status_line;
-    std::string reason;
-    Header header = cpr::util::parseHeader(header_string, &status_line, &reason);
 
     // Reset the has no body property:
     hasBodyOrPayload_ = false;
 
-    return Response{static_cast<std::int32_t>(response_code),
-                    std::move(response_string),
-                    std::move(header),
-                    std::move(Url(raw_url)),
-                    elapsed,
-                    std::move(cookies),
-                    Error(curl_error, curl_->error),
-                    std::move(header_string),
-                    std::move(status_line),
-                    std::move(reason),
-                    uploaded_bytes,
-                    downloaded_bytes};
+    return Response(curl, std::move(response_string), std::move(header_string), std::move(cookies),
+                    Error(curl_error, curl_->error));
 }
 
 // clang-format off

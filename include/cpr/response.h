@@ -1,32 +1,37 @@
 #ifndef CPR_RESPONSE_H
 #define CPR_RESPONSE_H
 
+#include <cassert>
 #include <cstdint>
+#include <curl/curl.h>
 #include <string>
 
 #include "cpr/cookies.h"
 #include "cpr/cprtypes.h"
 #include "cpr/error.h"
+#include "cpr/util.h"
 #include <utility>
 
 namespace cpr {
 
 class Response {
   public:
-    Response() = default;
+    Response(CURL* curl, std::string&& p_text, std::string&& p_header_string,
+             Cookies&& p_cookies = Cookies{}, Error&& p_error = Error{})
+            : text(std::move(p_text)), cookies(std::move(p_cookies)), error(std::move(p_error)) {
+        header = cpr::util::parseHeader(p_header_string, &status_line, &reason);
+        assert(curl);
+        curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &status_code);
+        curl_easy_getinfo(curl, CURLINFO_TOTAL_TIME, &elapsed);
+        char* url_string{nullptr};
+        curl_easy_getinfo(curl, CURLINFO_EFFECTIVE_URL, &url_string);
+        url = Url(url_string);
+        curl_easy_getinfo(curl, CURLINFO_SIZE_DOWNLOAD_T, &downloaded_bytes);
+        curl_easy_getinfo(curl, CURLINFO_SIZE_UPLOAD_T, &uploaded_bytes);
+        curl_easy_getinfo(curl, CURLINFO_REDIRECT_COUNT, &redirect_count);
+    }
 
-    Response(const std::int32_t& p_status_code, std::string&& p_text, Header&& p_header,
-             Url&& p_url, const double& p_elapsed, Cookies&& p_cookies = Cookies{},
-             Error&& p_error = Error{}, std::string&& p_raw_header = "",
-             std::string&& p_status_line = "", std::string&& p_reason = "",
-             const double& p_uploaded_bytes = 0, const double& p_downloaded_bytes = 0)
-            : status_code{p_status_code}, text(std::move(p_text)), header(std::move(p_header)),
-              url(std::move(p_url)), elapsed{p_elapsed}, cookies(std::move(p_cookies)),
-              error(std::move(p_error)), raw_header(std::move(p_raw_header)),
-              status_line(std::move(p_status_line)), reason(std::move(p_reason)),
-              uploaded_bytes{p_uploaded_bytes}, downloaded_bytes{p_downloaded_bytes} {}
-
-    std::int32_t status_code;
+    long status_code;
     std::string text;
     Header header;
     Url url;
@@ -36,8 +41,9 @@ class Response {
     std::string raw_header;
     std::string status_line;
     std::string reason;
-    double uploaded_bytes;
-    double downloaded_bytes;
+    cpr_off_t uploaded_bytes;
+    cpr_off_t downloaded_bytes;
+    long redirect_count;
 };
 
 } // namespace cpr

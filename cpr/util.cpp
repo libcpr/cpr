@@ -13,6 +13,17 @@
 namespace cpr {
 namespace util {
 
+Cookies parseCookies(curl_slist* raw_cookies) {
+    Cookies cookies;
+    for (curl_slist* nc = raw_cookies; nc; nc = nc->next) {
+        std::vector<std::string> tokens = cpr::util::split(nc->data, '\t');
+        std::string value = tokens.back();
+        tokens.pop_back();
+        cookies[tokens.back()] = value;
+    }
+    return cookies;
+}
+
 Header parseHeader(const std::string& headers, std::string* status_line, std::string* reason) {
     Header header;
     std::vector<std::string> lines;
