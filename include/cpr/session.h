@@ -100,6 +100,7 @@ class Session {
     void SetOption(const SslOptions& options);
 
     Response Delete();
+    Response Download(const WriteCallback& write);
     Response Download(std::ofstream& file);
     Response Get();
     Response Head();

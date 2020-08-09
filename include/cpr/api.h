@@ -208,6 +208,14 @@ Response Download(std::ofstream& file, Ts&&... ts) {
     return session.Download(file);
 }
 
+// Download with user callback
+template <typename... Ts>
+Response Download(const WriteCallback& write, Ts&&... ts) {
+    Session session;
+    priv::set_option(session, std::forward<Ts>(ts)...);
+    return session.Download(file);
+}
+
 } // namespace cpr
 
 #endif

@@ -52,6 +52,7 @@ class Session::Impl {
     void SetSslOptions(const SslOptions& options);
 
     Response Delete();
+    Response Download(const WriteCallback& write);
     Response Download(std::ofstream& file);
     Response Get();
     Response Head();
@@ -71,7 +72,7 @@ class Session::Impl {
     Parameters parameters_;
     Proxies proxies_;
 
-    Response makeDownloadRequest(CURL* curl, std::ofstream& file);
+    Response makeDownloadRequest(CURL* curl);
     Response makeRequest(CURL* curl);
     static void freeHolder(CurlHolder* holder);
 };
@@ -452,14 +453,29 @@ Response Session::Impl::Delete() {
     return makeRequest(curl);
 }
 
+Response Session::Impl::Download(const WriteCallback& write) {
+    CURL* curl = curl_->handle;
+    if (curl) {
+        curl_easy_setopt(curl, CURLOPT_NOBODY, 0L);
+        curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "GET");
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write.callback.cb);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &write.callback.data);
+        this->userWrite_ = true;
+    }
+
+    return makeDownloadRequest(curl);
+}
+
 Response Session::Impl::Download(std::ofstream& file) {
     CURL* curl = curl_->handle;
     if (curl) {
         curl_easy_setopt(curl, CURLOPT_NOBODY, 0L);
         curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "GET");
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, cpr::util::downloadFunction);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &file);
     }
 
-    return makeDownloadRequest(curl, file);
+    return makeDownloadRequest(curl);
 }
 
 Response Session::Impl::Get() {
@@ -527,7 +543,7 @@ Response Session::Impl::Put() {
     return makeRequest(curl);
 }
 
-Response Session::Impl::makeDownloadRequest(CURL* curl, std::ofstream& file) {
+Response Session::Impl::makeDownloadRequest(CURL* curl) {
     if (!parameters_.content.empty()) {
         Url new_url{url_ + "?" + parameters_.content};
         curl_easy_setopt(curl, CURLOPT_URL, new_url.c_str());
@@ -545,10 +561,6 @@ Response Session::Impl::makeDownloadRequest(CURL* curl, std::ofstream& file) {
     curl_->error[0] = '\0';
 
     std::string header_string;
-    if (!this->userWrite_) {
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, cpr::util::downloadFunction);
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &file);
-    }
     if (!this->userHeader_) {
         curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, cpr::util::writeFunction);
         curl_easy_setopt(curl, CURLOPT_HEADERDATA, &header_string);
@@ -676,6 +688,7 @@ void Session::SetOption(const UnixSocket& unix_socket) { pimpl_->SetUnixSocket(u
 void Session::SetOption(const SslOptions& options) { pimpl_->SetSslOptions(options); }
 
 Response Session::Delete() { return pimpl_->Delete(); }
+Response Session::Download(const WriteCallback& write) { return pimpl_->Download(write); }
 Response Session::Download(std::ofstream& file) { return pimpl_->Download(file); }
 Response Session::Get() { return pimpl_->Get(); }
 Response Session::Head() { return pimpl_->Head(); }
