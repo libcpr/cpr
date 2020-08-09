@@ -5,24 +5,48 @@
 
 namespace cpr {
 
-class ProgressCallback {
-  #if LIBCURL_VERSION_NUM < 0x072000 // older than 7.32.0 uses the older callback.
-  typedef int(*progress_cb_t)(void*, double, double, double, double);
+typedef struct {
+  void* userData = nullptr;
+  #if LIBCURL_VERSION_NUM < 0x072000
+  double downloadNow, downloadTotal, uploadNow, uploadTotal;
   #else
-  typedef int(*progress_cb_t)(void*, cpr_off_t, cpr_off_t, cpr_off_t, cpr_off_t);
+  cpr_off_t downloadNow, downloadTotal, uploadNow, uploadTotal;
   #endif
+} ProgressCallbackUser;
+
+typedef int(*progress_cb_t)(ProgressCallbackUser*);
+
+class ProgressCallback {
+  private:
+    typedef struct {
+    progress_cb_t cb;
+    ProgressCallbackUser data;
+  } ProgressCallbackData;
+
+  #if LIBCURL_VERSION_NUM < 0x072000
+  int ProgressCallbackFunction(ProgressCallbackData* data, double dlnow, double dltotal, double ulnow, double ultotal) {
+  #else
+  int ProgressCallbackFunction(ProgressCallbackData* data, cpr_off_t dlnow, cpr_off_t dltotal, cpr_off_t ulnow, cpr_off_t ultotal) {
+  #endif
+    data->data.downloadNow = dlnow;
+    data->data.downloadTotal = dltotal;
+    data->data.uploadNow = ulnow;
+    data->data.uploadTotal = ultotal;
+    return data->cb(&data->data);
+  }
 
   public:
     ProgressCallback() = default;
-    ProgressCallback(const progress_cb_t cb) : cb{cb} {}
-    ProgressCallback(const progress_cb_t cb, void* userpt)
-          : cb{cb}, userpt{userpt} {}
+    ProgressCallback(const progress_cb_t cb) { callback.cb = cb; }
+    ProgressCallback(const progress_cb_t cb, void* userData) {
+      callback.cb = cb;
+      callback.data.userData = userData;
+    }
 
-    void AddCallback(const progress_cb_t callback) { cb = callback; }
-    void AddUserData(void* userData) { userpt = userData; }
+    void AddCallback(const progress_cb_t cb) { callback.cb = cb; }
+    void AddUserData(void* userData) { callback.data.userData = userData; }
 
-    progress_cb_t cb;
-    void* userpt = nullptr;
+    ProgressCallbackData callback;
 };
 
 } // namespace cpr
