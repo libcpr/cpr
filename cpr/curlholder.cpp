@@ -2,8 +2,7 @@
 #include <cassert>
 
 namespace cpr {
-// NOLINTNEXTLINE (cert-err58-cpp)
-std::mutex curl_easy_init_mutex_;
+std::mutex CurlHolder::curl_easy_init_mutex_{};
 
 CurlHolder::CurlHolder() {
     /**
