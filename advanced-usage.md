@@ -214,7 +214,7 @@ typedef struct {
     int returnValue = 0;
 } MyData;
 
-int myCallback(void *clientp, cpr_off_t dltotal, cpr_off_t dlnow, cpr_off_t ultotal, cpr_off_t ulnow) {
+int myCallback(void *clientp, cpr::cpr_off_t dltotal, cpr::cpr_off_t dlnow, cpr::cpr_off_t ultotal, cpr::cpr_off_t ulnow) {
     MyData *data = (MyData*)clientp;
     std::cout << data->message << std::endl;
     return data->returnValue; // returing non-zero will end the transfer.
