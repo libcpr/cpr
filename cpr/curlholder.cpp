@@ -4,7 +4,7 @@
 namespace cpr {
 std::mutex CurlHolder::curl_easy_init_mutex_{};
 
-CurlHolder::CurlHolder() {
+__attribute__((no_sanitize("thread"))) CurlHolder::CurlHolder() {
     /**
      * Allow multithreaded access to CPR by locking curl_easy_init().
      * curl_easy_init() is not thread save.
