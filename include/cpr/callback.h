@@ -16,13 +16,13 @@ typedef struct {
 
 typedef struct {
   void* userData = nullptr;
-  char* buffer;
+  void* buffer;
   size_t realsize, size, nmeb;
 } WriteCallbackUser;
 
 typedef struct {
   void* userData = nullptr;
-  char* buffer;
+  void* buffer;
   size_t realsize, size, nmeb;
 } ReadCallbackUser;
 
@@ -37,7 +37,7 @@ class ReadCallback {
     ReadCallbackUser data;
   } ReadCallbackData;
   
-  size_t ReadCallbackFunction(char* ptr, size_t size, size_t nmemb, ReadCallbackData* data) {
+  size_t ReadCallbackFunction(void* ptr, size_t size, size_t nmemb, ReadCallbackData* data) {
     data->data.buffer = ptr;
     data->data.size = size;
     data->data.nmeb = nmemb;
@@ -56,7 +56,7 @@ class WriteCallback {
     WriteCallbackUser data;
   } WriteCallbackData;
 
-  size_t WriteCallbackFunction(char* ptr, size_t size, size_t nmemb, WriteCallbackData* data) {
+  size_t WriteCallbackFunction(void* ptr, size_t size, size_t nmemb, WriteCallbackData* data) {
     data->data.buffer = ptr;
     data->data.size = size;
     data->data.nmeb = nmemb;
