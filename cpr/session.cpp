@@ -354,16 +354,20 @@ void Session::Impl::SetUnixSocket(const UnixSocket& unix_socket) {
 void Session::Impl::SetSslOptions(const SslOptions& opts) {
     CURL* curl = curl_->handle;
     if (curl) {
-        curl_easy_setopt(curl, CURLOPT_SSLCERT, opts.cert_file.c_str());
-        if (!opts.cert_type.empty()) {
-            curl_easy_setopt(curl, CURLOPT_SSLCERTTYPE, opts.cert_type.c_str());
+        if (!opts.cert_file.empty()) {
+            curl_easy_setopt(curl, CURLOPT_SSLCERT, opts.cert_file.c_str());
+            if (!opts.cert_type.empty()) {
+                curl_easy_setopt(curl, CURLOPT_SSLCERTTYPE, opts.cert_type.c_str());
+            }
         }
-        curl_easy_setopt(curl, CURLOPT_SSLKEY, opts.key_file.c_str());
-        if (!opts.key_type.empty()) {
-            curl_easy_setopt(curl, CURLOPT_SSLKEYTYPE, opts.key_type.c_str());
-        }
-        if (!opts.key_pass.empty()) {
-            curl_easy_setopt(curl, CURLOPT_KEYPASSWD, opts.key_pass.c_str());
+        if (!opts.key_file.empty()) {
+            curl_easy_setopt(curl, CURLOPT_SSLKEY, opts.key_file.c_str());
+            if (!opts.key_type.empty()) {
+                curl_easy_setopt(curl, CURLOPT_SSLKEYTYPE, opts.key_type.c_str());
+            }
+            if (!opts.key_pass.empty()) {
+                curl_easy_setopt(curl, CURLOPT_KEYPASSWD, opts.key_pass.c_str());
+            }
         }
 #if SUPPORT_ALPN
         curl_easy_setopt(curl, CURLOPT_SSL_ENABLE_ALPN, opts.enable_alpn ? ON : OFF);
