@@ -206,53 +206,53 @@ Setting the `Timeout` option sets the maximum allowed time the transfer operatio
 
 ## Setting Callbacks
 
-You can optionally set a callbacks for a request. Current there is support for read, write and progress callbacks.
+You can optionally set a callbacks for a request. Currently there is support for read, write and progress callbacks.
 
 ### ReadCallback
 
-This will be called every time curl is ready for data to be sent to the server.
+This one will be called every time curl is ready for data to be sent to the server.
 
 The layout of the read struct looks like this.
 
 ```c++
 typedef struct {
-  void* userData = nullptr; // user data ptr.
-  void* buffer; // buffer to read into.
-  size_t realsize, size, nmeb; // actual size, chunk size, number of chunks.
+  void* userData = nullptr; // user data ptr
+  void* buffer; // buffer to read into
+  size_t realsize, size, nmeb; // actual size, chunk size, number of chunks
 } ReadCallbackUser;
 ```
 
-More information of this libcurl callback can be found [here](https://curl.haxx.se/libcurl/c/CURLOPT_READFUNCTION.html).
+More information of this `libcurl` callback can be found [here](https://curl.haxx.se/libcurl/c/CURLOPT_READFUNCTION.html).
 
 ### WriteCallback
 
-This will be called every time curl is ready to with a buffer to write. You can either choose to write directly to file, append the data to a buffer or save the data in a buffer until X size then write that chunk of memory to file.
+This callback function gets called by `libcurl` as soon as there is data received that needs to be saved. You can either choose to write directly to a file, append the data to a buffer or save the data in a buffer until an arbitrary number of bytes arrived and then write that chunk of memory to a file.
 
 The layout of the write struct looks like this.
 
 ```c++
 typedef struct {
-  void* userData = nullptr; // user data ptr.
-  void* buffer; // buffer containing downloaded data.
-  size_t realsize, size, nmeb; // actual size, chunk size, number of chunks.
+  void* userData = nullptr; // user data ptr
+  void* buffer; // buffer containing downloaded data
+  size_t realsize, size, nmeb; // actual size, chunk size, number of chunks
 } WriteCallbackUser;
 ```
 
-More information of this libcurl callback can be found [here](https://curl.haxx.se/libcurl/c/CURLOPT_WRITEFUNCTION.html).
+More information of this `libcurl` callback can be found [here](https://curl.haxx.se/libcurl/c/CURLOPT_WRITEFUNCTION.html).
 
 ### ProgressCallback
 
-The progress callback will be called as often as libcurl can (often many times a second!).
+While data is being transferred it will be called very frequently, and during slow periods like when nothing is being transferred it can slow down to about one call per second. The callback gets told how much data `libcurl` will transfer and has transferred, in number of bytes.
 
 The layout of the progress struct looks like this.
 
 ```c++
 typedef struct {
   void* userData = nullptr; // pointer to your userdata
-  cpr_off_t downloadNow; // how much data has been downloaded.
-  cpr_off_t downloadTotal; // how much data to download in total.
-  cpr_off_t uploadNow; // how much data has been uploaded.
-  cpr_off_t uploadTotal; // how much data to upload in total.
+  cpr_off_t downloadNow; // how much data has been downloaded
+  cpr_off_t downloadTotal; // how much data to download in total
+  cpr_off_t uploadNow; // how much data has been uploaded
+  cpr_off_t uploadTotal; // how much data to upload in total
 } ProgressCallbackUser;
 ```
 
@@ -265,8 +265,8 @@ typedef struct {
 } MyData;
 
 int myCallback(cpr::ProgressCallbackUser *data) {
-    MyData *myData = (MyData*)data->userData;
-    std::cout << myData->message << std::endl;
+    MyData* myData = dynamic_cast<MyData*>(data->userData);
+    std::cout << myData->message << '\n';
     return myData->returnValue; // returing non-zero will end the transfer.
 }
 
