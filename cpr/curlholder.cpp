@@ -7,7 +7,7 @@ std::mutex CurlHolder::curl_easy_init_mutex_{};
 CurlHolder::CurlHolder() {
     /**
      * Allow multithreaded access to CPR by locking curl_easy_init().
-     * curl_easy_init() is not thread save.
+     * curl_easy_init() is not thread safe.
      * References:
      * https://curl.haxx.se/libcurl/c/curl_easy_init.html
      * https://curl.haxx.se/libcurl/c/threadsafe.html
