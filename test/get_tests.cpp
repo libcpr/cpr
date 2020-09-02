@@ -174,7 +174,7 @@ TEST(ParameterTests, MultipleDynamicParametersTest) {
     // Create a temporary CurlHolder for URL encoding:
     CurlHolder holder;
     parameters.AddParameter({"hello", "world"}, holder);
-    parameters.AddParameter({"test", "case"}, holder);
+    parameters.AddParameter({"test", "case"});
     Response response = cpr::Get(url, parameters);
     std::string expected_text{"Hello world!"};
     EXPECT_EQ(expected_text, response.text);

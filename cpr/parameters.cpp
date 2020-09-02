@@ -15,6 +15,12 @@ Parameters::Parameters(const std::initializer_list<Parameter>& parameters) {
     }
 }
 
+void Parameters::AddParameter(const Parameter& parameter) {
+    // Create a temporary CurlHolder for URL encoding:
+    CurlHolder holder;
+    AddParameter(parameter, holder);
+}
+
 void Parameters::AddParameter(const Parameter& parameter, const CurlHolder& holder) {
     if (!content.empty()) {
         content += "&";
