@@ -13,7 +13,7 @@ TEST(PayloadTests, UseStringVariableTest) {
     Payload payload {{"key1", value1}, {key2, "world"}};
 
     std::string expected = "key1=hello&key2=world";
-    EXPECT_EQ(payload.content, expected);
+    EXPECT_EQ(payload.GetContent(CurlHolder()), expected);
 }
 
 TEST(ParametersTests, UseStringVariableTest) {
@@ -22,7 +22,7 @@ TEST(ParametersTests, UseStringVariableTest) {
     Parameters parameters {{"key1", value1}, {key2, "world"}};
 
     std::string expected = "key1=hello&key2=world";
-    EXPECT_EQ(parameters.content, expected);
+    EXPECT_EQ(parameters.GetContent(CurlHolder()), expected);
 }
 
 int main(int argc, char** argv) {
