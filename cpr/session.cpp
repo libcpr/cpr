@@ -180,20 +180,22 @@ void Session::Impl::SetUserAgent(const UserAgent& ua) {
 void Session::Impl::SetPayload(Payload&& payload) {
     hasBodyOrPayload_ = true;
     CURL* curl = curl_->handle;
+    const std::string content = payload.GetContent(*curl_);
     if (curl) {
         curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE_LARGE,
-                         static_cast<curl_off_t>(payload.content.length()));
-        curl_easy_setopt(curl, CURLOPT_COPYPOSTFIELDS, payload.content.c_str());
+                         static_cast<curl_off_t>(content.length()));
+        curl_easy_setopt(curl, CURLOPT_COPYPOSTFIELDS, content.c_str());
     }
 }
 
 void Session::Impl::SetPayload(const Payload& payload) {
     hasBodyOrPayload_ = true;
     CURL* curl = curl_->handle;
+    const std::string content = payload.GetContent(*curl_);
     if (curl) {
         curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE_LARGE,
-                         static_cast<curl_off_t>(payload.content.length()));
-        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, payload.content.c_str());
+                         static_cast<curl_off_t>(content.length()));
+        curl_easy_setopt(curl, CURLOPT_COPYPOSTFIELDS, std::move(content.c_str()));
     }
 }
 
@@ -494,8 +496,9 @@ Response Session::Impl::Put() {
 }
 
 Response Session::Impl::makeDownloadRequest(CURL* curl, std::ofstream& file) {
-    if (!parameters_.content.empty()) {
-        Url new_url{url_ + "?" + parameters_.content};
+    const std::string parametersContent = parameters_.GetContent(*curl_);
+    if (!parametersContent.empty()) {
+        Url new_url{url_ + "?" + parametersContent};
         curl_easy_setopt(curl, CURLOPT_URL, new_url.c_str());
     } else {
         curl_easy_setopt(curl, CURLOPT_URL, url_.c_str());
@@ -528,8 +531,9 @@ Response Session::Impl::makeDownloadRequest(CURL* curl, std::ofstream& file) {
 }
 
 Response Session::Impl::makeRequest(CURL* curl) {
-    if (!parameters_.content.empty()) {
-        Url new_url{url_ + "?" + parameters_.content};
+    const std::string parametersContent = parameters_.GetContent(*curl_);
+    if (!parametersContent.empty()) {
+        Url new_url{url_ + "?" + parametersContent};
         curl_easy_setopt(curl, CURLOPT_URL, new_url.c_str());
     } else {
         curl_easy_setopt(curl, CURLOPT_URL, url_.c_str());

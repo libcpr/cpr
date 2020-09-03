@@ -7,14 +7,8 @@
 
 namespace cpr {
 
-Payload::Payload(const std::initializer_list<Pair>& pairs) : Payload(begin(pairs), end(pairs)) {}
+Payload::Payload(const std::initializer_list<Pair>& pairs) : CurlContainer<Pair>(pairs) {
 
-void Payload::AddPair(const Pair& pair, const CurlHolder& holder) {
-    if (!content.empty()) {
-        content += "&";
-    }
-    std::string escaped = holder.urlEncode(pair.value);
-    content += pair.key + "=" + escaped;
 }
 
 } // namespace cpr
