@@ -31,9 +31,7 @@ TEST(UrlEncodedPostTests, UrlPostSingleTest) {
 TEST(UrlEncodedPostTests, UrlPostAddPayloadPair) {
     Url url{server->GetBaseUrl() + "/url_post.html"};
     Payload payload{{"x", "1"}};
-    // Create a temporary CurlHolder for URL encoding:
-    CurlHolder holder;
-    payload.AddPair({"y", "2"}, holder);
+    payload.Add({"y", "2"});
     Response response = cpr::Post(url, payload);
     std::string expected_text{
             "{\n"

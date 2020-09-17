@@ -4,6 +4,7 @@ add_library(cpr
     auth.cpp
     cookies.cpp
     cprtypes.cpp
+    curl_container.cpp
     curlholder.cpp
     error.cpp
     multipart.cpp

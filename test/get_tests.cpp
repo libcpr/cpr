@@ -171,10 +171,8 @@ TEST(ParameterTests, MultipleParametersTest) {
 TEST(ParameterTests, MultipleDynamicParametersTest) {
     Url url{server->GetBaseUrl() + "/hello.html"};
     Parameters parameters{{"key", "value"}};
-    // Create a temporary CurlHolder for URL encoding:
-    CurlHolder holder;
-    parameters.AddParameter({"hello", "world"}, holder);
-    parameters.AddParameter({"test", "case"}, holder);
+    parameters.Add({"hello", "world"});
+    parameters.Add({"test", "case"});
     Response response = cpr::Get(url, parameters);
     std::string expected_text{"Hello world!"};
     EXPECT_EQ(expected_text, response.text);
