@@ -10,8 +10,8 @@ namespace cpr {
 class ReadCallback {
   public:
     ReadCallback() {}
-    ReadCallback(std::function<size_t(char* buffer, size_t & size)> callback) : size{-1}, callback{callback} {}
-    ReadCallback(ssize_t size, std::function<size_t(char* buffer, size_t & size)> callback) : size{size}, callback{callback} {}
+    ReadCallback(std::function<bool(char* buffer, size_t & size)> callback) : size{-1}, callback{callback} {}
+    ReadCallback(ssize_t size, std::function<bool(char* buffer, size_t & size)> callback) : size{size}, callback{callback} {}
 
     ssize_t size;
     std::function<bool(char* buffer, size_t & size)> callback;
