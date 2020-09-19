@@ -278,6 +278,28 @@ int main(int argc, char **argv) {
 }
 ```
 
+### DebugCallback
+
+This is called by `libcurl` for verbose debugging information, including all data transferred.
+
+The callback signature looks like this.
+
+```c++
+  enum class DebugCallback::InfoType {
+    TEXT = 0,
+    HEADER_IN = 1,
+    HEADER_OUT = 2,
+    DATA_IN = 3,
+    DATA_OUT = 4,
+    SSL_DATA_IN = 5,
+    SSL_DATA_OUT = 6,
+  };
+  void debugCallback(DebugCallback::InfoType type, std::string data);
+```
+
+`type` represents the type of the content, whereas `data` contains the content itself.  Debug messages have type `TEXT`.
+
+
 ## Using Proxies
 
 `Proxies`, like `Parameters`, are map-like objects. It's easy to set one:
