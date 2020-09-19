@@ -3,102 +3,59 @@
 
 #include "cprtypes.h"
 
+#include <functional>
+
 namespace cpr {
 
-typedef struct {
-  void* userData = nullptr;
-  #if LIBCURL_VERSION_NUM < 0x072000
-  double downloadNow, downloadTotal, uploadNow, uploadTotal;
-  #else
-  cpr_off_t downloadNow, downloadTotal, uploadNow, uploadTotal;
-  #endif
-} ProgressCallbackUser;
-
-typedef struct {
-  void* userData = nullptr;
-  void* buffer;
-  size_t realsize, size, nmeb;
-} WriteCallbackUser;
-
-typedef struct {
-  void* userData = nullptr;
-  void* buffer;
-  size_t realsize, size, nmeb;
-} ReadCallbackUser;
-
-typedef int(*progress_cb_t)(ProgressCallbackUser*);
-typedef int(*write_cb_t)(WriteCallbackUser*);
-typedef int(*read_cb_t)(ReadCallbackUser*);
-
 class ReadCallback {
-  private:
-    typedef struct {
-    read_cb_t cb;
-    ReadCallbackUser data;
-  } ReadCallbackData;
-  
-  size_t ReadCallbackFunction(void* ptr, size_t size, size_t nmemb, ReadCallbackData* data) {
-    data->data.buffer = ptr;
-    data->data.size = size;
-    data->data.nmeb = nmemb;
-    data->data.realsize = size * nmemb;
-    return data->cb(&data->data);
-  }
-
   public:
-    ReadCallbackData callback;
+    ReadCallback() {}
+    ReadCallback(std::function<size_t(char* buffer, size_t & size)> callback) : size{-1}, callback{callback} {}
+    ReadCallback(ssize_t size, std::function<size_t(char* buffer, size_t & size)> callback) : size{size}, callback{callback} {}
+
+    ssize_t size;
+    std::function<bool(char* buffer, size_t & size)> callback;
+};
+
+class HeaderCallback {
+  public:
+    HeaderCallback() {}
+    HeaderCallback(std::function<bool(std::string header)> callback) : callback(callback) {}
+
+    std::function<bool(std::string header)> callback;
 };
 
 class WriteCallback {
-  private:
-    typedef struct {
-    write_cb_t cb;
-    WriteCallbackUser data;
-  } WriteCallbackData;
-
-  size_t WriteCallbackFunction(void* ptr, size_t size, size_t nmemb, WriteCallbackData* data) {
-    data->data.buffer = ptr;
-    data->data.size = size;
-    data->data.nmeb = nmemb;
-    data->data.realsize = size * nmemb;
-    return data->cb(&data->data);
-  }
-
   public:
-    WriteCallbackData callback;
+    WriteCallback() {}
+    WriteCallback(std::function<bool(std::string data)> callback) : callback(callback) {}
+
+    std::function<bool(std::string data)> callback;
 };
 
 class ProgressCallback {
-  private:
-    typedef struct {
-    progress_cb_t cb;
-    ProgressCallbackUser data;
-  } ProgressCallbackData;
-
-  #if LIBCURL_VERSION_NUM < 0x072000
-  int ProgressCallbackFunction(ProgressCallbackData* data, double downloadNow, double downloadTotal, double uploadNow, double uploadTotal) {
-  #else
-  int ProgressCallbackFunction(ProgressCallbackData* data, cpr_off_t downloadNow, cpr_off_t downloadTotal, cpr_off_t uploadNow, cpr_off_t uploadTotal) {
-  #endif
-    data->data.downloadNow = downloadNow;
-    data->data.downloadTotal = downloadTotal;
-    data->data.uploadNow = uploadNow;
-    data->data.uploadTotal = uploadTotal;
-    return data->cb(&data->data);
-  }
-
   public:
-    ProgressCallback() = default;
-    ProgressCallback(const progress_cb_t cb) { callback.cb = cb; }
-    ProgressCallback(const progress_cb_t cb, void* userData) {
-      callback.cb = cb;
-      callback.data.userData = userData;
-    }
+    ProgressCallback() {}
+    ProgressCallback(std::function<bool(size_t downloadTotal, size_t downloadNow, size_t uploadTotal, size_t uploadNow)> callback) : callback(callback) {}
 
-    void AddCallback(const progress_cb_t cb) { callback.cb = cb; }
-    void AddUserData(void* userData) { callback.data.userData = userData; }
+    std::function<bool(size_t downloadTotal, size_t downloadNow, size_t uploadTotal, size_t uploadNow)> callback;
+};
 
-    ProgressCallbackData callback;
+class DebugCallback {
+  public:
+    enum class InfoType {
+      TEXT = 0,
+      HEADER_IN = 1,
+      HEADER_OUT = 2,
+      DATA_IN = 3,
+      DATA_OUT = 4,
+      SSL_DATA_IN = 5,
+      SSL_DATA_OUT = 6,
+    };
+    DebugCallback() {}
+    DebugCallback(std::function<void(InfoType type, std::string data)> callback) : callback(callback) {}
+
+    std::function<void(InfoType type, std::string data)> callback;
 };
 
 } // namespace cpr
