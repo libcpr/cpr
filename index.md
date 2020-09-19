@@ -45,13 +45,12 @@ C++ Requests currently supports:
 * :cookie: support!
 * HTTPS support with OpenSSL
 * Proxy support
-* Callback interface
+* Callback interfaces
 * PUT methods
 * DELETE methods
 * HEAD methods
 * OPTIONS methods
 * PATCH methods
-* Progress callback support
 
 ## Planned
 

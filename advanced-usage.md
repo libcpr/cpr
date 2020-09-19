@@ -206,79 +206,77 @@ Setting the `Timeout` option sets the maximum allowed time the transfer operatio
 
 ## Setting Callbacks
 
-You can optionally set a callbacks for a request. Currently there is support for read, write and progress callbacks.
+You can optionally set callbacks for a request. Currently there is support for read, header, write, progress, and debug callbacks.
 
 ### ReadCallback
 
-This one will be called every time curl is ready for data to be sent to the server.
+This callback function will be called every time `libcurl` is ready for data to be sent to the server, and provides for streaming uploads.
 
-The layout of the read struct looks like this.
+The callback signature looks like this.
 
 ```c++
-typedef struct {
-  void* userData = nullptr; // user data ptr
-  void* buffer; // buffer to read into
-  size_t realsize, size, nmeb; // actual size, chunk size, number of chunks
-} ReadCallbackUser;
+  bool readCallback(char* buffer, size_t & length);
 ```
 
-More information of this `libcurl` callback can be found [here](https://curl.haxx.se/libcurl/c/CURLOPT_READFUNCTION.html).
+Provide the callback with the ReadCallback options object.  Only one read callback may be set.
+When called, `length` is the length of `buffer`.  `buffer` should be filled with data, and `length` updated to how much was filled.
+Return `true` on success, or `false` to cancel the transfer.
+
+### HeaderCallback
+
+This callback function gets called by `libcurl` once for each non-data line received from the server.
+This includes empty lines and the `HTTP` status line.  `\r\n` endings are preserved.
+
+The callback signature looks like this.
+
+```c++
+  bool headerCallback(std::string data);
+```
+
+Provide the callback with the HeaderCallback options object.  Only one header callback may be set.
+When a header callback is set, the Response object's `header` member will not be filled.
+Return `true` on success, or `false` to cancel the transfer.
 
 ### WriteCallback
 
-This callback function gets called by `libcurl` as soon as there is data received that needs to be saved. You can either choose to write directly to a file, append the data to a buffer or save the data in a buffer until an arbitrary number of bytes arrived and then write that chunk of memory to a file.
+This callback function gets called by `libcurl` as soon as there is data received that needs to be saved, and provides for streaming downloads.
+You could buffer data in your own way, or write every chunk immediately out to some other stream or file.
 
-The layout of the write struct looks like this.
+The callback signature looks like this.
 
 ```c++
-typedef struct {
-  void* userData = nullptr; // user data ptr
-  void* buffer; // buffer containing downloaded data
-  size_t realsize, size, nmeb; // actual size, chunk size, number of chunks
-} WriteCallbackUser;
+  bool writeCallback(std::string data);
 ```
 
-More information of this `libcurl` callback can be found [here](https://curl.haxx.se/libcurl/c/CURLOPT_WRITEFUNCTION.html).
+Provide the callback with the WriteCallback options object.  Only one write callback may be set.
+When a write callback is set, the Response object's `text` member will not be filled.
+Return `true` on success, or `false` to cancel the transfer.
 
 ### ProgressCallback
 
 While data is being transferred it will be called very frequently, and during slow periods like when nothing is being transferred it can slow down to about one call per second. The callback gets told how much data `libcurl` will transfer and has transferred, in number of bytes.
 
-The layout of the progress struct looks like this.
+The callback signature looks like this.
 
 ```c++
-typedef struct {
-  void* userData = nullptr; // pointer to your userdata
-  cpr_off_t downloadNow; // how much data has been downloaded
-  cpr_off_t downloadTotal; // how much data to download in total
-  cpr_off_t uploadNow; // how much data has been uploaded
-  cpr_off_t uploadTotal; // how much data to upload in total
-} ProgressCallbackUser;
+  bool progressCallback(size_t downloadTotal, size_t downloadNow, size_t uploadTotal, size_t uploadNow);
 ```
+
+The values are in bytes.  Return `true` to continue the transfer, and `false` to cancel it.
 
 Here is an example of using the callback.
 
 ```c++
-typedef struct {
-    std::string message = "Hello World";
-    int returnValue = 0;
-} MyData;
-
-int myCallback(cpr::ProgressCallbackUser *data) {
-    MyData* myData = dynamic_cast<MyData*>(data->userData);
-    std::cout << myData->message << '\n';
-    return myData->returnValue; // returing non-zero will end the transfer.
-}
-
 int main(int argc, char **argv) {
-    MyData myData;
     cpr::Response r = cpr::Get(cpr::Url{"http://www.httpbin.org/get"},
-                      cpr::ProgressCallback(myCallback, &myData));
+                      cpr::ProgressCallback([&](size_t downloadTotal, size_t downloadNow, size_t uploadTotal, size_t uploadNow) -> bool
+    {
+        std::cout << "Downloaded " << downloadNow << " / " << downloadTotal << " bytes." << std::endl;
+        return True;
+    }));
     return 0;
 }
 ```
-
-The value returned is in this callback is important. By returning a non-zero value, this will cause libcurl to cancel the current request, which is very useful for async requests. Otherwise, returning zero will continue the request. More information of this libcurl callback can be found [here](https://curl.haxx.se/libcurl/c/CURLOPT_XFERINFOFUNCTION.html).
 
 ## Using Proxies
 
