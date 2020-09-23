@@ -235,7 +235,7 @@ The callback signature looks like this.
 
 Provide the callback with the HeaderCallback options object.  Only one header callback may be set.
 When a header callback is set, the Response object's `header` member will not be filled.
-Return `true` on success, or `false` to cancel the transfer.
+Return `true` on success, or `false` to **cancel** the transfer.
 
 ### WriteCallback
 
