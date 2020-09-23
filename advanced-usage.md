@@ -220,7 +220,7 @@ The callback signature looks like this.
 
 Provide the callback with the ReadCallback options object.  Only one read callback may be set.
 When called, `length` is the length of `buffer`.  `buffer` should be filled with data, and `length` updated to how much was filled.
-Return `true` on success, or `false` to cancel the transfer.
+Return `true` on success, or `false` to **cancel** the transfer.
 
 ### HeaderCallback
 
@@ -600,4 +600,3 @@ The default certificate and private key files are in PEM format, and DER format 
 By default, `libcurl` uses the operating system's root certificate chain to authenticate peer certificate.
 
 If you need to verify a self-signed certificate, you can use the `CaInfo` to specify the CA certificate bundle file, or `CaPath` to specify the directory where multiple CA certificate files are located. If `libcurl` is built against OpenSSL, the certificate directory must be prepared using the openssl `c_rehash` utility.
-
