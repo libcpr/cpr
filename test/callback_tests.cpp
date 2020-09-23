@@ -757,6 +757,153 @@ TEST(CallbackPatchTests, CallbackPatchFunctionTextReferenceTest) {
     EXPECT_EQ(expected_text, future.get());
 }
 
+TEST(CallbackDataTests, CallbackReadFunctionCancelTest) {
+    Url url{server->GetBaseUrl() + "/url_post.html"};
+    Response response = cpr::Post(url, cpr::ReadCallback([](char* buffer, size_t & size) -> size_t {
+        return false;
+    }));
+    EXPECT_EQ(response.error.code, ErrorCode::REQUEST_CANCELLED);
+}
+
+TEST(CallbackDataTests, CallbackReadFunctionTextTest) {
+    Url url{server->GetBaseUrl() + "/url_post.html"};
+    std::string expected_text{
+            "{\n"
+            "  \"x\": 5\n"
+            "}"};
+    unsigned count = 0;
+    Response response = cpr::Post(url, cpr::ReadCallback{3, [&](char* buffer, size_t & size) -> size_t {
+        std::string data;
+        ++ count;
+        switch (count) {
+        case 1:
+            data = "x=";
+            break;
+        case 2:
+            data = "5";
+            break;
+        default:
+            return false;
+        }
+        std::copy(data.begin(), data.end(), buffer);
+        size = data.size();
+        return true;
+    }});
+    EXPECT_EQ(2, count);
+    EXPECT_EQ(expected_text, response.text);
+}
+
+/* cesanta mongoose doesn't support chunked requests yet
+TEST(CallbackDataTests, CallbackReadFunctionChunkedTest) {
+    Url url{server->GetBaseUrl() + "/url_post.html"};
+    std::string expected_text{
+            "{\n"
+            "  \"x\": 5\n"
+            "}"};
+    unsigned count = 0;
+    Response response = cpr::Post(url, cpr::ReadCallback{[&count](char* buffer, size_t & size) -> size_t {
+        std::string data;
+        ++ count;
+        switch (count) {
+        case 1:
+            data = "x=";
+            break;
+        case 2:
+            data = "5";
+            break;
+        default:
+            data = "";
+            break;
+        }
+        std::copy(data.begin(), data.end(), buffer);
+        size = data.size();
+        return true;
+    }});
+    EXPECT_EQ(3, count);
+    EXPECT_EQ(expected_text, response.text);
+}
+*/
+
+TEST(CallbackDataTests, CallbackHeaderFunctionCancelTest) {
+    Url url{server->GetBaseUrl() + "/url_post.html"};
+    Response response = Post(url, HeaderCallback{[](std::string header) -> bool {
+        return false;
+    }});
+    EXPECT_EQ(response.error.code, ErrorCode::REQUEST_CANCELLED);
+}
+
+TEST(CallbackDataTests, CallbackHeaderFunctionTextTest) {
+    Url url{server->GetBaseUrl() + "/url_post.html"};
+    std::vector<std::string> expected_headers{
+            "HTTP/1.1 201 OK\r\n",
+            "Content-Type: application/json\r\n",
+            "\r\n"
+    };
+    std::set<std::string> response_headers;
+    Post(url, HeaderCallback{[&response_headers](std::string header) -> bool {
+        response_headers.insert(header);
+        return true;
+    }});
+    for (std::string & header : expected_headers) {
+        EXPECT_TRUE(response_headers.count(header));
+    }
+}
+
+TEST(CallbackDataTests, CallbackWriteFunctionCancelTest) {
+    Url url{server->GetBaseUrl() + "/url_post.html"};
+    Response response = Post(url, WriteCallback{[](std::string header) -> bool {
+        return false;
+    }});
+    EXPECT_EQ(response.error.code, ErrorCode::REQUEST_CANCELLED);
+}
+
+TEST(CallbackDataTests, CallbackWriteFunctionTextTest) {
+    Url url{server->GetBaseUrl() + "/url_post.html"};
+    std::string expected_text{
+            "{\n"
+            "  \"x\": 5\n"
+            "}"};
+    std::string response_text;
+    Post(url, Payload{{"x", "5"}}, WriteCallback{[&response_text](std::string header) -> bool {
+        response_text.append(header);
+        return true;
+    }});
+    EXPECT_EQ(expected_text, response_text);
+}
+
+TEST(CallbackDataTests, CallbackProgressFunctionCancelTest) {
+    Url url{server->GetBaseUrl() + "/url_post.html"};
+    Response response = Post(url, ProgressCallback{[](size_t downloadTotal, size_t downloadNow, size_t uploadTotal, size_t uploadNow) -> bool {
+        return false;
+    }});
+    EXPECT_EQ(response.error.code, ErrorCode::REQUEST_CANCELLED);
+}
+
+TEST(CallbackDataTests, CallbackProgressFunctionTotalTest) {
+    Url url{server->GetBaseUrl() + "/url_post.html"};
+    Body body{"x=5"};
+    size_t response_upload = 0, response_download = 0;
+    Response response = Post(url, body, ProgressCallback{[&](size_t downloadTotal, size_t downloadNow, size_t uploadTotal, size_t uploadNow) -> bool {
+        response_upload = uploadTotal;
+        response_download = downloadTotal;
+        return true;
+    }});
+    EXPECT_EQ(body.str().length(), response_upload);
+    EXPECT_EQ(response.text.length(), response_download);
+}
+
+TEST(CallbackDataTests, CallbackDebugFunctionTextTest) {
+    Url url{server->GetBaseUrl() + "/url_post.html"};
+    Body body{"x=5"};
+    std::string debug_body;
+    Response response = Post(url, body, DebugCallback{[&](DebugCallback::InfoType type, std::string data) {
+        if (type == DebugCallback::InfoType::DATA_OUT) {
+            debug_body = data;
+        }
+    }});
+    EXPECT_EQ(body.str(), debug_body);
+}
+
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
     ::testing::AddGlobalTestEnvironment(server);

@@ -26,6 +26,10 @@ ErrorCode Error::getErrorCodeForCurlError(std::int32_t curl_code) {
         case CURLE_PEER_FAILED_VERIFICATION:
             return ErrorCode::SSL_REMOTE_CERTIFICATE_ERROR;
 #endif
+        case CURLE_ABORTED_BY_CALLBACK:
+            return ErrorCode::REQUEST_CANCELLED;
+        case CURLE_WRITE_ERROR:
+            return ErrorCode::REQUEST_CANCELLED;
         case CURLE_GOT_NOTHING:
             return ErrorCode::EMPTY_RESPONSE;
         case CURLE_SSL_ENGINE_NOTFOUND:

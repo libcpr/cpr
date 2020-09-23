@@ -52,7 +52,7 @@ C++ Requests currently supports:
 * Asynchronous requests
 * :cookie: support!
 * Proxy support
-* Callback interface
+* Callback interfaces
 * PUT methods
 * DELETE methods
 * HEAD methods

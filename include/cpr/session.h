@@ -25,6 +25,7 @@
 #include "cpr/unix_socket.h"
 #include "cpr/user_agent.h"
 #include "cpr/verbose.h"
+#include "cpr/callback.h"
 
 namespace cpr {
 
@@ -61,6 +62,11 @@ class Session {
     void SetVerifySsl(const VerifySsl& verify);
     void SetUnixSocket(const UnixSocket& unix_socket);
     void SetSslOptions(const SslOptions& options);
+    void SetReadCallback(const ReadCallback& read);
+    void SetHeaderCallback(const HeaderCallback& header);
+    void SetWriteCallback(const WriteCallback& write);
+    void SetProgressCallback(const ProgressCallback& progress);
+    void SetDebugCallback(const DebugCallback& debug);
     void SetVerbose(const Verbose& verbose);
 
     // Used in templated functions
@@ -86,6 +92,11 @@ class Session {
     void SetOption(const Cookies& cookies);
     void SetOption(Body&& body);
     void SetOption(const Body& body);
+    void SetOption(const ReadCallback& read);
+    void SetOption(const HeaderCallback& header);
+    void SetOption(const WriteCallback& write);
+    void SetOption(const ProgressCallback& progress);
+    void SetOption(const DebugCallback& debug);
     void SetOption(const LowSpeed& low_speed);
     void SetOption(const VerifySsl& verify);
     void SetOption(const Verbose& verbose);
@@ -93,6 +104,7 @@ class Session {
     void SetOption(const SslOptions& options);
 
     Response Delete();
+    Response Download(const WriteCallback& write);
     Response Download(std::ofstream& file);
     Response Get();
     Response Head();
