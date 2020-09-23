@@ -362,8 +362,8 @@ void Session::Impl::SetHeaderCallback(const HeaderCallback& header) {
     CURL* curl = curl_->handle;
     if (curl) {
         curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION , cpr::util::headerUserFunction);
-        curl_easy_setopt(curl, CURLOPT_HEADERDATA, &headercb_);
         headercb_ = header;
+        curl_easy_setopt(curl, CURLOPT_HEADERDATA, &headercb_);
     }
 }
 
