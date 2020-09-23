@@ -312,7 +312,8 @@ void Session::Impl::SetBody(Body&& body) {
     hasBodyOrPayload_ = true;
     auto curl = curl_->handle;
     if (curl) {
-        curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE_LARGE, body.str().length());
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE_LARGE,
+                         static_cast<curl_off_t>(body.str().length()));
         curl_easy_setopt(curl, CURLOPT_COPYPOSTFIELDS, body.c_str());
     }
 }
@@ -321,7 +322,8 @@ void Session::Impl::SetBody(const Body& body) {
     hasBodyOrPayload_ = true;
     auto curl = curl_->handle;
     if (curl) {
-        curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE_LARGE, body.str().length());
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE_LARGE,
+                         static_cast<curl_off_t>(body.str().length()));
         curl_easy_setopt(curl, CURLOPT_POSTFIELDS, body.c_str());
     }
 }
