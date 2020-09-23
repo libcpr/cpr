@@ -250,7 +250,7 @@ The callback signature looks like this.
 
 Provide the callback with the WriteCallback options object.  Only one write callback may be set.
 When a write callback is set, the Response object's `text` member will not be filled.
-Return `true` on success, or `false` to cancel the transfer.
+Return `true` on success, or `false` to **cancel** the transfer.
 
 ### ProgressCallback
 
