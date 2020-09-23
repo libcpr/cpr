@@ -379,6 +379,7 @@ void Session::Impl::SetWriteCallback(const WriteCallback& write) {
 void Session::Impl::SetProgressCallback(const ProgressCallback& progress) {
     CURL* curl = curl_->handle;
     if (curl) {
+        progresscb_ = progress;
         #if LIBCURL_VERSION_NUM < 0x072000
         curl_easy_setopt(curl, CURLOPT_PROGRESSFUNCTION, cpr::util::progressUserFunction);
         curl_easy_setopt(curl, CURLOPT_PROGRESSDATA, &progresscb_);
@@ -387,7 +388,6 @@ void Session::Impl::SetProgressCallback(const ProgressCallback& progress) {
         curl_easy_setopt(curl, CURLOPT_XFERINFODATA, &progresscb_);
         #endif
         curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0L);
-        progresscb_ = progress;
     }
 }
 
