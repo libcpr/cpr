@@ -45,7 +45,7 @@ C++ Requests currently supports:
 * :cookie: support!
 * HTTPS support with OpenSSL
 * Proxy support
-* Callback interface
+* Callback interfaces
 * PUT methods
 * DELETE methods
 * HEAD methods

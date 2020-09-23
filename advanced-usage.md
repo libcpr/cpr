@@ -204,6 +204,102 @@ assert(r.elapsed <= 1); // Less than one second should have elapsed
 
 Setting the `Timeout` option sets the maximum allowed time the transfer operation can take. Since C++ Requests is built on top of libcurl, it's important to know what setting this `Timeout` does to the request. You can find more information about the specific libcurl option [here](http://curl.haxx.se/libcurl/c/CURLOPT_TIMEOUT_MS.html).
 
+## Setting Callbacks
+
+You can optionally set callbacks for a request. Currently there is support for read, header, write, progress, and debug callbacks.
+
+### ReadCallback
+
+This callback function will be called every time `libcurl` is ready for data to be sent to the server, and provides for streaming uploads.
+
+The callback signature looks like this.
+
+```c++
+  bool readCallback(char* buffer, size_t & length);
+```
+
+Provide the callback with the ReadCallback options object.  Only one read callback may be set.
+When called, `length` is the length of `buffer`.  `buffer` should be filled with data, and `length` updated to how much was filled.
+Return `true` on success, or `false` to **cancel** the transfer.
+
+### HeaderCallback
+
+This callback function gets called by `libcurl` once for each non-data line received from the server.
+This includes empty lines and the `HTTP` status line.  `\r\n` endings are preserved.
+
+The callback signature looks like this.
+
+```c++
+  bool headerCallback(std::string data);
+```
+
+Provide the callback with the HeaderCallback options object.  Only one header callback may be set.
+When a header callback is set, the Response object's `header` member will not be filled.
+Return `true` on success, or `false` to **cancel** the transfer.
+
+### WriteCallback
+
+This callback function gets called by `libcurl` as soon as there is data received that needs to be saved, and provides for streaming downloads.
+You could buffer data in your own way, or write every chunk immediately out to some other stream or file.
+
+The callback signature looks like this.
+
+```c++
+  bool writeCallback(std::string data);
+```
+
+Provide the callback with the WriteCallback options object.  Only one write callback may be set.
+When a write callback is set, the Response object's `text` member will not be filled.
+Return `true` on success, or `false` to **cancel** the transfer.
+
+### ProgressCallback
+
+While data is being transferred it will be called very frequently, and during slow periods like when nothing is being transferred it can slow down to about one call per second. The callback gets told how much data `libcurl` will transfer and has transferred, in number of bytes.
+
+The callback signature looks like this.
+
+```c++
+  bool progressCallback(size_t downloadTotal, size_t downloadNow, size_t uploadTotal, size_t uploadNow);
+```
+
+The values are in bytes.  Return `true` to continue the transfer, and `false` to **cancel** it.
+
+Here is an example of using the callback.
+
+```c++
+int main(int argc, char** argv) {
+    cpr::Response r = cpr::Get(cpr::Url{"http://www.httpbin.org/get"},
+                      cpr::ProgressCallback([&](size_t downloadTotal, size_t downloadNow, size_t uploadTotal, size_t uploadNow) -> bool
+    {
+        std::cout << "Downloaded " << downloadNow << " / " << downloadTotal << " bytes." << std::endl;
+        return True;
+    }));
+    return 0;
+}
+```
+
+### DebugCallback
+
+This is called by `libcurl` for verbose debugging information, including all data transferred.
+
+The callback signature looks like this.
+
+```c++
+  enum class DebugCallback::InfoType {
+    TEXT = 0,
+    HEADER_IN = 1,
+    HEADER_OUT = 2,
+    DATA_IN = 3,
+    DATA_OUT = 4,
+    SSL_DATA_IN = 5,
+    SSL_DATA_OUT = 6,
+  };
+  void debugCallback(DebugCallback::InfoType type, std::string data);
+```
+
+`type` represents the type of the content, whereas `data` contains the content itself.  Debug messages have type `TEXT`.
+
+
 ## Using Proxies
 
 `Proxies`, like `Parameters`, are map-like objects. It's easy to set one:
@@ -504,4 +600,3 @@ The default certificate and private key files are in PEM format, and DER format 
 By default, `libcurl` uses the operating system's root certificate chain to authenticate peer certificate.
 
 If you need to verify a self-signed certificate, you can use the `CaInfo` to specify the CA certificate bundle file, or `CaPath` to specify the directory where multiple CA certificate files are located. If `libcurl` is built against OpenSSL, the certificate directory must be prepared using the openssl `c_rehash` utility.
-
