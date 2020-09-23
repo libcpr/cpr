@@ -44,7 +44,7 @@ class Session::Impl {
     void SetReadCallback(const ReadCallback& read);
     void SetHeaderCallback(const HeaderCallback& header);
     void SetWriteCallback(const WriteCallback& write);
-    void SetProgressCallback(const ProgressCallback& parameters);
+    void SetProgressCallback(const ProgressCallback& progress);
     void SetDebugCallback(const DebugCallback& debug);
     void SetLowSpeed(const LowSpeed& low_speed);
     void SetVerifySsl(const VerifySsl& verify);
