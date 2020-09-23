@@ -328,7 +328,8 @@ void Session::Impl::SetBody(Body&& body) {
     hasBodyOrPayload_ = true;
     CURL* curl = curl_->handle;
     if (curl) {
-        curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE_LARGE, body.str().length());
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE_LARGE,
+                         static_cast<curl_off_t>(body.str().length()));
         curl_easy_setopt(curl, CURLOPT_COPYPOSTFIELDS, body.c_str());
     }
 }
@@ -337,7 +338,8 @@ void Session::Impl::SetBody(const Body& body) {
     hasBodyOrPayload_ = true;
     CURL* curl = curl_->handle;
     if (curl) {
-        curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE_LARGE, body.str().length());
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE_LARGE,
+                         static_cast<curl_off_t>(body.str().length()));
         curl_easy_setopt(curl, CURLOPT_POSTFIELDS, body.c_str());
     }
 }
@@ -346,10 +348,8 @@ void Session::Impl::SetReadCallback(const ReadCallback& read) {
     CURL* curl = curl_->handle;
     if (curl) {
         readcb_ = read;
-        curl_easy_setopt(curl, CURLOPT_INFILESIZE_LARGE,
-                         static_cast<curl_off_t>(read.size));
-        curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE_LARGE,
-                         static_cast<curl_off_t>(read.size));
+        curl_easy_setopt(curl, CURLOPT_INFILESIZE_LARGE, read.size);
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE_LARGE, read.size);
         curl_easy_setopt(curl, CURLOPT_READFUNCTION, cpr::util::readUserFunction);
         curl_easy_setopt(curl, CURLOPT_READDATA, &readcb_);
         if (read.size == -1) {
@@ -361,7 +361,7 @@ void Session::Impl::SetReadCallback(const ReadCallback& read) {
 void Session::Impl::SetHeaderCallback(const HeaderCallback& header) {
     CURL* curl = curl_->handle;
     if (curl) {
-        curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION , cpr::util::headerUserFunction);
+        curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, cpr::util::headerUserFunction);
         headercb_ = header;
         curl_easy_setopt(curl, CURLOPT_HEADERDATA, &headercb_);
     }
@@ -380,13 +380,13 @@ void Session::Impl::SetProgressCallback(const ProgressCallback& progress) {
     CURL* curl = curl_->handle;
     if (curl) {
         progresscb_ = progress;
-        #if LIBCURL_VERSION_NUM < 0x072000
+#if LIBCURL_VERSION_NUM < 0x072000
         curl_easy_setopt(curl, CURLOPT_PROGRESSFUNCTION, cpr::util::progressUserFunction);
         curl_easy_setopt(curl, CURLOPT_PROGRESSDATA, &progresscb_);
-        #else
+#else
         curl_easy_setopt(curl, CURLOPT_XFERINFOFUNCTION, cpr::util::progressUserFunction);
         curl_easy_setopt(curl, CURLOPT_XFERINFODATA, &progresscb_);
-        #endif
+#endif
         curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0L);
     }
 }
@@ -604,11 +604,11 @@ Response Session::Impl::makeDownloadRequest(CURL* curl) {
 
     std::string header_string;
     if (headercb_.callback) {
-      curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, cpr::util::headerUserFunction);
-      curl_easy_setopt(curl, CURLOPT_HEADERDATA, &headercb_);
+        curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, cpr::util::headerUserFunction);
+        curl_easy_setopt(curl, CURLOPT_HEADERDATA, &headercb_);
     } else {
-      curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, cpr::util::writeFunction);
-      curl_easy_setopt(curl, CURLOPT_HEADERDATA, &header_string);
+        curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, cpr::util::writeFunction);
+        curl_easy_setopt(curl, CURLOPT_HEADERDATA, &header_string);
     }
 
     CURLcode curl_error = curl_easy_perform(curl);
