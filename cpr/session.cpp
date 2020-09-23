@@ -371,8 +371,8 @@ void Session::Impl::SetWriteCallback(const WriteCallback& write) {
     CURL* curl = curl_->handle;
     if (curl) {
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, cpr::util::writeUserFunction);
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &writecb_);
         writecb_ = write;
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &writecb_);
     }
 }
 
