@@ -345,6 +345,7 @@ void Session::Impl::SetBody(const Body& body) {
 void Session::Impl::SetReadCallback(const ReadCallback& read) {
     CURL* curl = curl_->handle;
     if (curl) {
+        readcb_ = read;
         curl_easy_setopt(curl, CURLOPT_INFILESIZE_LARGE,
                          static_cast<curl_off_t>(read.size));
         curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE_LARGE,
@@ -354,7 +355,6 @@ void Session::Impl::SetReadCallback(const ReadCallback& read) {
         if (read.size == -1) {
             SetHeader({{"Transfer-Encoding", "chunked"}});
         }
-        readcb_ = read;
     }
 }
 
