@@ -267,7 +267,7 @@ The values are in bytes.  Return `true` to continue the transfer, and `false` to
 Here is an example of using the callback.
 
 ```c++
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
     cpr::Response r = cpr::Get(cpr::Url{"http://www.httpbin.org/get"},
                       cpr::ProgressCallback([&](size_t downloadTotal, size_t downloadNow, size_t uploadTotal, size_t uploadNow) -> bool
     {
