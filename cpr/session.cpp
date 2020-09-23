@@ -395,9 +395,9 @@ void Session::Impl::SetDebugCallback(const DebugCallback& debug) {
     CURL* curl = curl_->handle;
     if (curl) {
         curl_easy_setopt(curl, CURLOPT_DEBUGFUNCTION, cpr::util::debugUserFunction);
+        debugcb_ = debug;
         curl_easy_setopt(curl, CURLOPT_DEBUGDATA, &debugcb_);
         curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
-        debugcb_ = debug;
     }
 }
 
