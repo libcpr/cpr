@@ -262,7 +262,7 @@ The callback signature looks like this.
   bool progressCallback(size_t downloadTotal, size_t downloadNow, size_t uploadTotal, size_t uploadNow);
 ```
 
-The values are in bytes.  Return `true` to continue the transfer, and `false` to cancel it.
+The values are in bytes.  Return `true` to continue the transfer, and `false` to **cancel** it.
 
 Here is an example of using the callback.
 
