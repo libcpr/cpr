@@ -182,6 +182,20 @@ TEST(UrlEncodedPostTests, FormPostFileNoCopyTest) {
     EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
+TEST(UrlEncodedPostTests, TimeoutPostTest) {
+    Url url{server->GetBaseUrl() + "/json_post.html"};
+    std::string body{"{\"RegisterObject\": {\"DeviceID\": \"65010000005030000001\"}}"};
+    cpr::Response response =
+            cpr::Post(url, cpr::Header{{"Content-Type", "application/json"}}, cpr::Body{body},
+                      cpr::ConnectTimeout{3000}, cpr::Timeout{3000});
+    std::string expected_text{"{\"RegisterObject\": {\"DeviceID\": \"65010000005030000001\"}}"};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
+    EXPECT_EQ(201, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
 TEST(UrlEncodedPostTests, FormPostFileBufferTest) {
     auto content = std::string{"hello world"};
     auto url = Url{server->GetBaseUrl() + "/form_post.html"};
