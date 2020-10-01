@@ -40,7 +40,7 @@ class Response {
     Response() = default;
     Response(std::shared_ptr<CurlHolder> curl, std::string&& p_text, std::string&& p_header_string,
              Cookies&& p_cookies, Error&& p_error);
-    std::vector<std::string> GetCertinfo();
+    std::vector<std::string> GetCertInfo();
 };
 } // namespace cpr
 

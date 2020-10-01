@@ -66,7 +66,7 @@ TEST(SslTests, GetCertInfo) {
     EXPECT_EQ(200, response.status_code);
     EXPECT_EQ(ErrorCode::OK, response.error.code) << response.error.message;
 
-    std::vector<std::string> certInfo = response.GetCertinfo();
+    std::vector<std::string> certInfo = response.GetCertInfo();
     EXPECT_EQ(certInfo.size(), 1);
     std::string expected_certInfo = "Subject:C = XX, L = Default City, O = Default Company Ltd";
     EXPECT_EQ(certInfo[0], expected_certInfo);
