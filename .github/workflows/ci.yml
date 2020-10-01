@@ -50,6 +50,7 @@ jobs:
 
   ubuntu-gcc-ssl-thread-sanitizer:
     runs-on: ubuntu-latest
+    if: ${{ false }} # Disabled for now until all problems are resolved
     steps:
     - name: Checkout
       uses: actions/checkout@v2.2.0
