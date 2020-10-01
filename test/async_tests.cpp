@@ -25,10 +25,10 @@ TEST(UrlEncodedPostTests, AsyncGetTest) {
 TEST(UrlEncodedPostTests, AsyncGetMultipleTest) {
     Url url{server->GetBaseUrl() + "/hello.html"};
     std::vector<AsyncResponse> responses;
-    for (int i = 0; i < 10; ++i) {
+    for (size_t i = 0; i < 10; ++i) {
         responses.emplace_back(cpr::GetAsync(url));
     }
-    for (auto& future : responses) {
+    for (cpr::AsyncResponse& future : responses) {
         std::string expected_text{"Hello world!"};
         cpr::Response response = future.get();
         EXPECT_EQ(expected_text, response.text);
@@ -41,12 +41,12 @@ TEST(UrlEncodedPostTests, AsyncGetMultipleTest) {
 TEST(UrlEncodedPostTests, AsyncGetMultipleReflectTest) {
     Url url{server->GetBaseUrl() + "/hello.html"};
     std::vector<AsyncResponse> responses;
-    for (int i = 0; i < 100; ++i) {
+    for (size_t i = 0; i < 100; ++i) {
         Parameters p{{"key", std::to_string(i)}};
         responses.emplace_back(cpr::GetAsync(url, p));
     }
     int i = 0;
-    for (auto& future : responses) {
+    for (cpr::AsyncResponse& future : responses) {
         std::string expected_text{"Hello world!"};
         cpr::Response response = future.get();
         EXPECT_EQ(expected_text, response.text);

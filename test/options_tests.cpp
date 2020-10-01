@@ -37,10 +37,10 @@ TEST(OptionsTests, SpecificUrlTest) {
 TEST(OptionsTests, AsyncBaseUrlTest) {
     Url url{server->GetBaseUrl() + "/"};
     std::vector<AsyncResponse> responses;
-    for (int i = 0; i < 10; ++i) {
+    for (size_t i = 0; i < 10; ++i) {
         responses.emplace_back(cpr::OptionsAsync(url));
     }
-    for (auto& future_response : responses) {
+    for (cpr::AsyncResponse& future_response : responses) {
         cpr::Response response = future_response.get();
         std::string expected_text{""};
         EXPECT_EQ(expected_text, response.text);
@@ -55,10 +55,10 @@ TEST(OptionsTests, AsyncBaseUrlTest) {
 TEST(OptionsTests, AsyncSpecificUrlTest) {
     Url url{server->GetBaseUrl() + "/hello.html"};
     std::vector<AsyncResponse> responses;
-    for (int i = 0; i < 10; ++i) {
+    for (size_t i = 0; i < 10; ++i) {
         responses.emplace_back(cpr::OptionsAsync(url));
     }
-    for (auto& future_response : responses) {
+    for (cpr::AsyncResponse& future_response : responses) {
         cpr::Response response = future_response.get();
         std::string expected_text{""};
         EXPECT_EQ(expected_text, response.text);

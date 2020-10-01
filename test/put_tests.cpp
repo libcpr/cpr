@@ -234,10 +234,10 @@ TEST(PutTests, AsyncMultiplePutTest) {
     Url url{server->GetBaseUrl() + "/put.html"};
     Payload payload{{"x", "5"}};
     std::vector<AsyncResponse> responses;
-    for (int i = 0; i < 10; ++i) {
+    for (size_t i = 0; i < 10; ++i) {
         responses.emplace_back(cpr::PutAsync(url, payload));
     }
-    for (auto& future_response : responses) {
+    for (cpr::AsyncResponse& future_response : responses) {
         cpr::Response response = future_response.get();
         std::string expected_text{
                 "{\n"
@@ -255,10 +255,10 @@ TEST(PutTests, AsyncMultiplePutUnallowedTest) {
     Url url{server->GetBaseUrl() + "/put_unallowed.html"};
     Payload payload{{"x", "5"}};
     std::vector<AsyncResponse> responses;
-    for (int i = 0; i < 10; ++i) {
+    for (size_t i = 0; i < 10; ++i) {
         responses.emplace_back(cpr::PutAsync(url, payload));
     }
-    for (auto& future_response : responses) {
+    for (cpr::AsyncResponse& future_response : responses) {
         cpr::Response response = future_response.get();
         std::string expected_text{"Method Not Allowed"};
         EXPECT_EQ(expected_text, response.text);

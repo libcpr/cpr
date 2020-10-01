@@ -137,7 +137,7 @@ TEST(MultipleGetTests, BasicMultipleGetTest) {
     Url url{server->GetBaseUrl() + "/hello.html"};
     Session session;
     session.SetUrl(url);
-    for (int i = 0; i < 100; ++i) {
+    for (size_t i = 0; i < 100; ++i) {
         Response response = session.Get();
         std::string expected_text{"Hello world!"};
         EXPECT_EQ(expected_text, response.text);
@@ -185,7 +185,7 @@ TEST(MultipleGetTests, HeaderMultipleGetTest) {
     Session session;
     session.SetUrl(url);
     session.SetHeader(Header{{"hello", "world"}});
-    for (int i = 0; i < 100; ++i) {
+    for (size_t i = 0; i < 100; ++i) {
         Response response = session.Get();
         std::string expected_text{"Header reflect GET"};
         EXPECT_EQ(expected_text, response.text);
@@ -230,7 +230,7 @@ TEST(MultipleGetTests, ParameterMultipleGetTest) {
     Session session;
     session.SetUrl(url);
     session.SetParameters({{"hello", "world"}});
-    for (int i = 0; i < 100; ++i) {
+    for (size_t i = 0; i < 100; ++i) {
         Response response = session.Get();
         std::string expected_text{"Hello world!"};
         EXPECT_EQ(expected_text, response.text);
@@ -273,7 +273,7 @@ TEST(MultipleGetTests, BasicAuthenticationMultipleGetTest) {
     Session session;
     session.SetUrl(url);
     session.SetAuth(Authentication{"user", "password"});
-    for (int i = 0; i < 100; ++i) {
+    for (size_t i = 0; i < 100; ++i) {
         Response response = session.Get();
         std::string expected_text{"Header reflect GET"};
         EXPECT_EQ(expected_text, response.text);
@@ -823,7 +823,7 @@ TEST(DifferentMethodTests, PostGetPostTest) {
 
 TEST(DifferentMethodTests, MultipleGetPostTest) {
     Session session;
-    for (int i = 0; i < 100; ++i) {
+    for (size_t i = 0; i < 100; ++i) {
         {
             Url url{server->GetBaseUrl() + "/hello.html"};
             session.SetUrl(url);

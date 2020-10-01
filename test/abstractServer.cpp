@@ -93,7 +93,7 @@ std::string AbstractServer::Base64Decode(const std::string& in) {
     std::string out;
 
     std::vector<int> T(256, -1);
-    for (int i = 0; i < 64; i++)
+    for (size_t i = 0; i < 64; i++)
         T[base64_chars[i]] = i;
 
     int val = 0, valb = -8;

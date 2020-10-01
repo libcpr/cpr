@@ -119,7 +119,7 @@ void Session::Impl::SetParameters(Parameters&& parameters) {
 
 void Session::Impl::SetHeader(const Header& header) {
     curl_slist* chunk = nullptr;
-    for (auto item = header.cbegin(); item != header.cend(); ++item) {
+    for (Header::const_iterator item = header.cbegin(); item != header.cend(); ++item) {
         std::string header_string = item->first;
         if (item->second.empty()) {
             header_string += ";";
@@ -192,7 +192,7 @@ void Session::Impl::SetMultipart(Multipart&& multipart) {
     curl_httppost* formpost = nullptr;
     curl_httppost* lastptr = nullptr;
 
-    for (auto& part : multipart.parts) {
+    for (const Part& part : multipart.parts) {
         std::vector<curl_forms> formdata;
         formdata.push_back({CURLFORM_COPYNAME, part.name.c_str()});
         if (part.is_buffer) {
@@ -222,7 +222,7 @@ void Session::Impl::SetMultipart(const Multipart& multipart) {
     curl_httppost* formpost = nullptr;
     curl_httppost* lastptr = nullptr;
 
-    for (auto& part : multipart.parts) {
+    for (const Part& part : multipart.parts) {
         std::vector<curl_forms> formdata;
         formdata.push_back({CURLFORM_PTRNAME, part.name.c_str()});
         if (part.is_buffer) {

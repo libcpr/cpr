@@ -78,7 +78,7 @@ void HttpServer::OnRequestLowSpeedBytes(mg_connection* conn, http_message* msg) 
     std::string headers = "Content-Type: text/html";
     mg_send_head(conn, 200, response.length(), headers.c_str());
     std::this_thread::sleep_for(std::chrono::seconds(2));
-    for (auto i = 0; i < 20; ++i) {
+    for (size_t i = 0; i < 20; ++i) {
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
         mg_send(conn, response.c_str(), response.length());
     }

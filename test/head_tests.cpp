@@ -182,10 +182,10 @@ TEST(HeadTests, ZeroMaxRedirectsHeadTest) {
 TEST(HeadTests, BasicHeadAsyncTest) {
     Url url{server->GetBaseUrl() + "/hello.html"};
     std::vector<AsyncResponse> responses;
-    for (int i = 0; i < 10; ++i) {
+    for (size_t i = 0; i < 10; ++i) {
         responses.emplace_back(cpr::HeadAsync(url));
     }
-    for (auto& future_response : responses) {
+    for (cpr::AsyncResponse& future_response : responses) {
         cpr::Response response = future_response.get();
         EXPECT_EQ(std::string{}, response.text);
         EXPECT_EQ(url, response.url);

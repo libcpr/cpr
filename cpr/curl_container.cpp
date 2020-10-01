@@ -4,28 +4,27 @@
 namespace cpr {
 
 
-template<class T>
-CurlContainer<T>::CurlContainer(const std::initializer_list<T>& containerList) : containerList_(containerList) {
+template <class T>
+CurlContainer<T>::CurlContainer(const std::initializer_list<T>& containerList)
+        : containerList_(containerList) {}
 
-}
 
-
-template<class T>
+template <class T>
 void CurlContainer<T>::Add(const std::initializer_list<T>& containerList) {
-    for(const auto& element : containerList) {
+    for (const T& element : containerList) {
         containerList_.push_back(std::move(element));
     }
 }
 
-template<class T>
+template <class T>
 void CurlContainer<T>::Add(const T& element) {
     containerList_.push_back(std::move(element));
 }
 
-template<>
+template <>
 const std::string CurlContainer<Parameter>::GetContent(const CurlHolder& holder) const {
     std::string content{};
-    for(const auto& parameter : containerList_) {
+    for (const Parameter& parameter : containerList_) {
         if (!content.empty()) {
             content += "&";
         }
@@ -42,10 +41,10 @@ const std::string CurlContainer<Parameter>::GetContent(const CurlHolder& holder)
     return content;
 }
 
-template<>
+template <>
 const std::string CurlContainer<Pair>::GetContent(const CurlHolder& holder) const {
     std::string content{};
-    for(const auto& element : containerList_) {
+    for (const cpr::Pair& element : containerList_) {
         if (!content.empty()) {
             content += "&";
         }

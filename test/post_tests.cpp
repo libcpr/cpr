@@ -365,10 +365,10 @@ TEST(UrlEncodedPostTests, UrlPostAsyncSingleTest) {
     Url url{server->GetBaseUrl() + "/url_post.html"};
     Payload payload{{"x", "5"}};
     std::vector<AsyncResponse> responses;
-    for (int i = 0; i < 10; ++i) {
+    for (size_t i = 0; i < 10; ++i) {
         responses.emplace_back(cpr::PostAsync(url, payload));
     }
-    for (auto& future_response : responses) {
+    for (cpr::AsyncResponse& future_response : responses) {
         cpr::Response response = future_response.get();
         std::string expected_text{
                 "{\n"

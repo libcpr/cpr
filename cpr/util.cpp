@@ -35,7 +35,7 @@ Header parseHeader(const std::string& headers, std::string* status_line, std::st
         }
     }
 
-    for (auto& line : lines) {
+    for (std::string& line : lines) {
         if (line.substr(0, 5) == "HTTP/") {
             // set the status_line if it was given
             if ((status_line != nullptr) || (reason != nullptr)) {
@@ -86,7 +86,7 @@ std::vector<std::string> split(const std::string& to_split, char delimiter) {
     return tokens;
 }
 
-size_t readUserFunction(char * ptr, size_t size, size_t nitems, const ReadCallback* read) {
+size_t readUserFunction(char* ptr, size_t size, size_t nitems, const ReadCallback* read) {
     size *= nitems;
     return read->callback(ptr, size) ? size : CURL_READFUNC_ABORT;
 }
@@ -96,8 +96,7 @@ size_t headerUserFunction(char* ptr, size_t size, size_t nmemb, const HeaderCall
     return header->callback({ptr, size}) ? size : 0;
 }
 
-size_t writeFunction(char* ptr, size_t size, size_t nmemb, std::string* data)
-{
+size_t writeFunction(char* ptr, size_t size, size_t nmemb, std::string* data) {
     size *= nmemb;
     data->append(ptr, size);
     return size;
@@ -109,20 +108,23 @@ size_t writeFileFunction(char* ptr, size_t size, size_t nmemb, std::ofstream* fi
     return size;
 }
 
-size_t writeUserFunction(char * ptr, size_t size, size_t nmemb, const WriteCallback* write) {
+size_t writeUserFunction(char* ptr, size_t size, size_t nmemb, const WriteCallback* write) {
     size *= nmemb;
     return write->callback({ptr, size}) ? size : 0;
 }
 
 #if LIBCURL_VERSION_NUM < 0x072000
-int progressUserFunction(const ProgressCallback * progress, double dltotal, double dlnow, double ultotal, double ulnow) {
+int progressUserFunction(const ProgressCallback* progress, double dltotal, double dlnow,
+                         double ultotal, double ulnow) {
 #else
-int progressUserFunction(const ProgressCallback * progress, curl_off_t dltotal, curl_off_t dlnow, curl_off_t ultotal, curl_off_t ulnow) {
+int progressUserFunction(const ProgressCallback* progress, curl_off_t dltotal, curl_off_t dlnow,
+                         curl_off_t ultotal, curl_off_t ulnow) {
 #endif
     return progress->callback(dltotal, dlnow, ultotal, ulnow) ? 0 : 1;
 }
 
-int debugUserFunction(CURL *handle, curl_infotype type, char * data, size_t size, const DebugCallback * debug) {
+int debugUserFunction(CURL* handle, curl_infotype type, char* data, size_t size,
+                      const DebugCallback* debug) {
     debug->callback(DebugCallback::InfoType(type), std::string(data, size));
     return 0;
 }
