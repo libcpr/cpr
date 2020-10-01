@@ -7,15 +7,24 @@ title: cpr - Advanced Usage
 
 `Response` objects are bags of data. Their sole purpose is to give the client information at the end of a request -- there's nothing in the API that uses a `Response` after it gets back to you. This reasoning drove the decision to make the member fields of the response public and mutable.
 
-A `Response` has these fields:
+A `Response` has these fields and methods:
 
 ```c++
-long status_code; // The HTTP status code for the request
-std::string text; // The body of the HTTP response
-Header header;    // A map-like collection of the header fields
-Url url;          // The effective URL of the ultimate request
-double elapsed;   // The total time of the request in seconds
-Cookies cookies;  // A map-like collection of cookies returned in the request
+long status_code;               // The HTTP status code for the request
+std::string text;               // The body of the HTTP response
+Header header;                  // A map-like collection of the header fields
+Url url;                        // The effective URL of the ultimate request
+double elapsed;                 // The total time of the request in seconds
+Cookies cookies;                // A map-like collection of cookies returned in the request
+Error error;                    // An error object containing the error code and a message
+std::string raw_header;         // The raw header string
+std::string status_line;        // The status line of the respone
+std::string reason;             // The reason for the status code
+cpr_off_t uploaded_bytes;       // How many bytes have been send to the server
+cpr_off_t downloaded_bytes;     // How many bytes have been received from the server
+long redirect_count;            // How many redirects occurred
+
+std::vector<std::string> GetCertInfo(); // Returns a vector of certificate information strings (HTTPS only)
 ```
 
 and they're dead simple to access:
