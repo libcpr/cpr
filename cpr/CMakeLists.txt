@@ -15,6 +15,7 @@ add_library(cpr
     timeout.cpp
     unix_socket.cpp
     util.cpp
+    response.cpp
     )
 
 add_library(cpr::cpr ALIAS cpr)
