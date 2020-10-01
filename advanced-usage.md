@@ -600,3 +600,24 @@ The default certificate and private key files are in PEM format, and DER format 
 By default, `libcurl` uses the operating system's root certificate chain to authenticate peer certificate.
 
 If you need to verify a self-signed certificate, you can use the `CaInfo` to specify the CA certificate bundle file, or `CaPath` to specify the directory where multiple CA certificate files are located. If `libcurl` is built against OpenSSL, the certificate directory must be prepared using the openssl `c_rehash` utility.
+
+### Retrieving Certificate Information
+
+After a successful request it is possible to retrieve certificate information. The return value is of type `std::vector<std::string>`. It contains one entry per certificate. An example can be found bellow:
+
+```c++
+Url url = "https://github.com";
+Response response = cpr::Get(url);
+std::vector<std::string> certInfo = response.GetCertInfo();
+for (const std::string& s : certInfo)
+{
+    std::cout << "Info: " << s << '\n';
+}
+```
+
+The output could look like:
+```
+[...]
+Info: Subject:C = XX, L = Default City, O = Default Company Ltd
+[...]
+```
