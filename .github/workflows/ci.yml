@@ -25,6 +25,51 @@ jobs:
         build-type: Release
         run-test: true
         ctest-options: -V
+    
+  ubuntu-gcc-ssl-address-leak-undefined-behavior-sanitizer:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2.2.0
+      with:
+        submodules: true
+    - name: Install libssl-dev
+      run: sudo apt install libssl-dev
+    - name: Install sanitizer
+      run: sudo apt install libasan5 libubsan1 liblsan0 libtsan0
+    - name: "[Release g++] Build & Test"
+      uses: ashutoshvarma/action-cmake-build@master
+      with:
+        build-dir: ${{github.workspace}}/build
+        source-dir: ${{github.workspace}}
+        cc: gcc
+        cxx: g++
+        build-type: AllSan
+        run-test: true
+        ctest-options: -V
+
+  ubuntu-gcc-ssl-thread-sanitizer:
+    runs-on: ubuntu-latest
+    if: ${{ false }} # Disabled for now until all problems are resolved
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2.2.0
+      with:
+        submodules: true
+    - name: Install libssl-dev
+      run: sudo apt install libssl-dev
+    - name: Install sanitizer
+      run: sudo apt install libasan5 libubsan1 liblsan0 libtsan0
+    - name: "[Release g++] Build & Test"
+      uses: ashutoshvarma/action-cmake-build@master
+      with:
+        build-dir: ${{github.workspace}}/build
+        source-dir: ${{github.workspace}}
+        cc: gcc
+        cxx: g++
+        build-type: ThreadSan
+        run-test: true
+        ctest-options: -V
   
   ubuntu-clang-ssl:
     runs-on: ubuntu-latest

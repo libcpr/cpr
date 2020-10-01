@@ -4,6 +4,9 @@
 namespace cpr {
 std::mutex CurlHolder::curl_easy_init_mutex_{};
 
+#if !defined(_WIN32) // There is no thread sanitizer on windows
+__attribute__((no_sanitize("thread")))
+#endif
 CurlHolder::CurlHolder() {
     /**
      * Allow multithreaded access to CPR by locking curl_easy_init().
@@ -17,7 +20,7 @@ CurlHolder::CurlHolder() {
     curl_easy_init_mutex_.unlock();
 
     assert(handle);
-}
+} // namespace cpr
 
 CurlHolder::~CurlHolder() {
     curl_easy_cleanup(handle);
