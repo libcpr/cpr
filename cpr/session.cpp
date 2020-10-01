@@ -547,6 +547,9 @@ Response Session::Impl::makeRequest() {
         curl_easy_setopt(curl_->handle, CURLOPT_HEADERDATA, &header_string);
     }
 
+    // Enable so we are able to retrive certificate information:
+    curl_easy_setopt(curl_->handle, CURLOPT_CERTINFO, 1L);
+
     CURLcode curl_error = curl_easy_perform(curl_->handle);
 
     curl_slist* raw_cookies;

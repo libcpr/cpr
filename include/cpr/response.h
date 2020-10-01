@@ -6,12 +6,14 @@
 #include <curl/curl.h>
 #include <memory>
 #include <string>
+#include <utility>
+#include <vector>
 
 #include "cpr/cookies.h"
 #include "cpr/cprtypes.h"
 #include "cpr/error.h"
+#include "cpr/ssl_options.h"
 #include "cpr/util.h"
-#include <utility>
 
 namespace cpr {
 
@@ -37,20 +39,8 @@ class Response {
   public:
     Response() = default;
     Response(std::shared_ptr<CurlHolder> curl, std::string&& p_text, std::string&& p_header_string,
-             Cookies&& p_cookies = Cookies{}, Error&& p_error = Error{})
-            : curl_(std::move(curl)), text(std::move(p_text)), cookies(std::move(p_cookies)),
-              error(std::move(p_error)) {
-        header = cpr::util::parseHeader(p_header_string, &status_line, &reason);
-        assert(curl_->handle);
-        curl_easy_getinfo(curl_->handle, CURLINFO_RESPONSE_CODE, &status_code);
-        curl_easy_getinfo(curl_->handle, CURLINFO_TOTAL_TIME, &elapsed);
-        char* url_string{nullptr};
-        curl_easy_getinfo(curl_->handle, CURLINFO_EFFECTIVE_URL, &url_string);
-        url = Url(url_string);
-        curl_easy_getinfo(curl_->handle, CURLINFO_SIZE_DOWNLOAD_T, &downloaded_bytes);
-        curl_easy_getinfo(curl_->handle, CURLINFO_SIZE_UPLOAD_T, &uploaded_bytes);
-        curl_easy_getinfo(curl_->handle, CURLINFO_REDIRECT_COUNT, &redirect_count);
-    }
+             Cookies&& p_cookies, Error&& p_error);
+    std::vector<std::string> GetCertinfo();
 };
 } // namespace cpr
 
