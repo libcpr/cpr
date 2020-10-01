@@ -1,6 +1,7 @@
 #ifndef CPR_TEST_ABSTRACT_SERVER_SERVER_H
 #define CPR_TEST_ABSTRACT_SERVER_SERVER_H
 
+#include <atomic>
 #include <condition_variable>
 #include <gtest/gtest.h>
 #include <memory>
@@ -31,7 +32,7 @@ class AbstractServer : public testing::Environment {
     std::mutex server_mutex;
     std::condition_variable server_start_cv;
     std::condition_variable server_stop_cv;
-    bool should_run{false};
+    std::atomic<bool> should_run{false};
     mg_mgr mgr{};
 
     void Run();
