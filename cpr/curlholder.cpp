@@ -4,7 +4,7 @@
 namespace cpr {
 std::mutex CurlHolder::curl_easy_init_mutex_{};
 
-#if !defined(_WIN32) // There is no thread sanitizer on windows
+#ifndef _WIN32 // There is no thread sanitizer on windows
 __attribute__((no_sanitize("thread")))
 #endif
 CurlHolder::CurlHolder() {
