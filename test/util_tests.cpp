@@ -146,6 +146,20 @@ TEST(UtilUrlEncodeTests, AsciiEncoderTest) {
     EXPECT_EQ(result, expected);
 }
 
+TEST(UtilUrlDecodeTests, UnicodeDecoderTest) {
+    std::string input = "%E4%B8%80%E4%BA%8C%E4%B8%89";
+    std::string result = util::urlDecode(input);
+    std::string expected = "一二三";
+    EXPECT_EQ(result, expected);
+}
+
+TEST(UtilUrlDecodeTests, AsciiDecoderTest) {
+    std::string input = "Hello%20World%21";
+    std::string result = util::urlDecode(input);
+    std::string expected = "Hello World!";
+    EXPECT_EQ(result, expected);
+}
+
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();

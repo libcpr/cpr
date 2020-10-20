@@ -144,5 +144,20 @@ std::string urlEncode(const std::string& s) {
     return holder.urlEncode(s);
 }
 
+/**
+ * Creates a temporary CurlHolder object and uses it to unescape the given string.
+ * If you plan to use this methode on a regular basis think about creating CurlHolder
+ * object and calling urlDecode(std::string) on it.
+ *
+ * Example:
+ * CurlHolder holder;
+ * std::string input = "Hello%20World%21";
+ * std::string result = holder.urlDecode(input);
+ **/
+std::string urlDecode(const std::string& s) {
+    CurlHolder holder; // Create a temporary new holder for URL decoding
+    return holder.urlDecode(s);
+}
+
 } // namespace util
 } // namespace cpr

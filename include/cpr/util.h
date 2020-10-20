@@ -29,6 +29,7 @@ int progressUserFunction(const ProgressCallback * progress, curl_off_t dltotal, 
 int debugUserFunction(CURL *handle, curl_infotype type, char * data, size_t size, const DebugCallback * debug);
 std::vector<std::string> split(const std::string& to_split, char delimiter);
 std::string urlEncode(const std::string& s);
+std::string urlDecode(const std::string& s);
 
 } // namespace util
 } // namespace cpr
