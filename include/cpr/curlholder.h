@@ -31,6 +31,11 @@ struct CurlHolder {
      * Uses curl_easy_escape(...) for escaping the given string.
      **/
     std::string urlEncode(const std::string& s) const;
+
+    /**
+     * Uses curl_easy_unescape(...) for unescaping the given string.
+     **/
+    std::string urlDecode(const std::string& s) const;
 };
 } // namespace cpr
 

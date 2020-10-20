@@ -38,4 +38,15 @@ std::string CurlHolder::urlEncode(const std::string& s) const {
     }
     return "";
 }
+
+std::string CurlHolder::urlDecode(const std::string& s) const {
+    assert(handle);
+    char* output = curl_easy_unescape(handle, s.c_str(), s.length(), nullptr);
+    if (output) {
+        std::string result = output;
+        curl_free(output);
+        return result;
+    }
+    return "";
+}
 } // namespace cpr
