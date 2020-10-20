@@ -1,8 +1,8 @@
 #include "httpsServer.hpp"
 
 namespace cpr {
-HttpsServer::HttpsServer(const std::string&& baseDirPath, const std::string&& sslCertFileName,
-                         const std::string&& sslKeyFileName)
+HttpsServer::HttpsServer(std::string&& baseDirPath, std::string&& sslCertFileName,
+                         std::string&& sslKeyFileName)
         : baseDirPath(std::move(baseDirPath)), sslCertFileName(std::move(sslCertFileName)),
           sslKeyFileName(std::move(sslKeyFileName)) {}
 

@@ -12,7 +12,7 @@ class Body : public StringHolder<Body> {
   public:
     Body() : StringHolder<Body>() {}
     Body(const std::string& body) : StringHolder<Body>(body) {}
-    Body(const std::string&& body) : StringHolder<Body>(std::move(body)) {}
+    Body(std::string&& body) : StringHolder<Body>(std::move(body)) {}
     Body(const char* body) : StringHolder<Body>(body) {}
     Body(const char* str, size_t len) : StringHolder<Body>(str, len) {}
     Body(const std::initializer_list<std::string> args) : StringHolder<Body>(args) {}

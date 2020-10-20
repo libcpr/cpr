@@ -10,7 +10,7 @@
 namespace cpr {
 
 struct File {
-    explicit File(const std::string&& filepath) : filepath(std::move(filepath)) {}
+    explicit File(std::string&& filepath) : filepath(std::move(filepath)) {}
     explicit File(const std::string& filepath) : filepath(filepath) {}
     const std::string filepath;
 };
@@ -19,7 +19,7 @@ struct Buffer {
     typedef const unsigned char* data_t;
 
     template <typename Iterator>
-    explicit Buffer(Iterator begin, Iterator end, const std::string&& filename)
+    explicit Buffer(Iterator begin, Iterator end, std::string&& filename)
             : data{reinterpret_cast<data_t>(&(*begin))}, datalen{static_cast<unsigned long>(
                                                                  std::distance(begin, end))},
               filename(std::move(filename)) {

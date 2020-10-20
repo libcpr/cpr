@@ -11,7 +11,7 @@ class UserAgent : public StringHolder<UserAgent> {
   public:
     UserAgent() : StringHolder<UserAgent>() {}
     UserAgent(const std::string& useragent) : StringHolder<UserAgent>(useragent) {}
-    UserAgent(const std::string&& useragent)
+    UserAgent(std::string&& useragent)
             : StringHolder<UserAgent>(std::move(useragent)) {}
     UserAgent(const char* useragent) : StringHolder<UserAgent>(useragent) {}
     UserAgent(const char* str, size_t len) : StringHolder<UserAgent>(str, len) {}
