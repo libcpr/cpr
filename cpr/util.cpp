@@ -131,7 +131,7 @@ int debugUserFunction(CURL* handle, curl_infotype type, char* data, size_t size,
 
 /**
  * Creates a temporary CurlHolder object and uses it to escape the given string.
- * If you plan to use this methode on a regular basis think about creating CurlHolder
+ * If you plan to use this methode on a regular basis think about creating a CurlHolder
  * object and calling urlEncode(std::string) on it.
  *
  * Example:
