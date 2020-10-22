@@ -13,8 +13,16 @@ Response::Response(std::shared_ptr<CurlHolder> curl, std::string&& p_text,
     char* url_string{nullptr};
     curl_easy_getinfo(curl_->handle, CURLINFO_EFFECTIVE_URL, &url_string);
     url = Url(url_string);
+#if LUBCURL_VERSION_NUM < 0x075500
+    double downloaded_bytes_double, uploaded_bytes_double;
+    curl_easy_getinfo(curl_->handle, CURLINFO_SIZE_DOWNLOAD, &downloaded_bytes_double);
+    curl_easy_getinfo(curl_->handle, CURLINFO_SIZE_UPLOAD, &uploaded_bytes_double);
+    downloaded_bytes = downloaded_bytes_double;
+    uploaded_bytes = uploaded_bytes_double;
+#else
     curl_easy_getinfo(curl_->handle, CURLINFO_SIZE_DOWNLOAD_T, &downloaded_bytes);
     curl_easy_getinfo(curl_->handle, CURLINFO_SIZE_UPLOAD_T, &uploaded_bytes);
+#endif
     curl_easy_getinfo(curl_->handle, CURLINFO_REDIRECT_COUNT, &redirect_count);
 }
 
