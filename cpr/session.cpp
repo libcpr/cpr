@@ -365,7 +365,9 @@ void Session::Impl::SetSslOptions(const SslOptions& opts) {
 #endif
     curl_easy_setopt(curl_->handle, CURLOPT_SSL_VERIFYPEER, opts.verify_peer ? ON : OFF);
     curl_easy_setopt(curl_->handle, CURLOPT_SSL_VERIFYHOST, opts.verify_host ? 2L : 0L);
+#if LIBCURL_VERSION_NUM >= 0x074100
     curl_easy_setopt(curl_->handle, CURLOPT_SSL_VERIFYSTATUS, opts.verify_status ? ON : OFF);
+#endif
     curl_easy_setopt(curl_->handle, CURLOPT_SSLVERSION,
                      opts.ssl_version
 #if SUPPORT_MAX_TLS_VERSION
