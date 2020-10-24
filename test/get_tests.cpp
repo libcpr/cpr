@@ -193,6 +193,17 @@ TEST(BasicAuthenticationTests, BasicAuthenticationSuccessTest) {
     EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
+TEST(BasicAuthenticationTests, BasicBearerTokenSuccessTest) {
+    Url url{server->GetBaseUrl() + "/bearer_token.html"};
+    Response response = cpr::Get(url, BearerToken{"the_token"});
+    std::string expected_text{"Header reflect GET"};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
 TEST(BasicAuthenticationTests, BasicDigestSuccessTest) {
     Url url{server->GetBaseUrl() + "/digest_auth.html"};
     Response response = cpr::Get(url, Digest{"user", "password"});

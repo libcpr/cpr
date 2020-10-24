@@ -193,6 +193,24 @@ void HttpServer::OnRequestBasicAuth(mg_connection* conn, http_message* msg) {
     }
 }
 
+void HttpServer::OnRequestBearerTokenAuth(mg_connection* conn, http_message* msg) {
+    mg_str* requested_auth;
+    std::string auth{"Bearer"};
+    if ((requested_auth = mg_get_http_header(msg, "Authorization")) == nullptr ||
+        mg_ncasecmp(requested_auth->p, auth.c_str(), auth.length()) != 0) {
+        mg_http_send_error(conn, 401, "Unauthorized");
+        return;
+    }
+    std::string auth_string{requested_auth->p, requested_auth->len};
+    size_t basic_token = auth_string.find(' ') + 1;
+    auth_string = auth_string.substr(basic_token, auth_string.length() - basic_token);
+    if (auth_string == "the_token") {
+        OnRequestHeaderReflect(conn, msg);
+    } else {
+        mg_http_send_error(conn, 401, "Unauthorized");
+    }
+}
+
 void HttpServer::OnRequestBasicJson(mg_connection* conn, http_message* msg) {
     std::string response =
             "[\n"
@@ -539,6 +557,8 @@ void HttpServer::OnRequest(mg_connection* conn, http_message* msg) {
         OnRequestCheckV1Cookies(conn, msg);
     } else if (uri == "/basic_auth.html") {
         OnRequestBasicAuth(conn, msg);
+    } else if (uri == "/bearer_token.html") {
+        OnRequestBearerTokenAuth(conn, msg);
     } else if (uri == "/digest_auth.html") {
         OnRequestHeaderReflect(conn, msg);
     } else if (uri == "/basic.json") {
