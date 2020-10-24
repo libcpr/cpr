@@ -105,6 +105,16 @@ TEST(HeadTests, AuthenticationFailureHeadTest) {
     EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
+TEST(HeadTests, BearerTokenSuccessHeadTest) {
+    Url url{server->GetBaseUrl() + "/bearer_token.html"};
+    Response response = cpr::Head(url, BearerToken{"the_token"});
+    EXPECT_EQ(std::string{}, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
 TEST(HeadTests, DigestSuccessHeadTest) {
     Url url{server->GetBaseUrl() + "/digest_auth.html"};
     Response response = cpr::Head(url, Digest{"user", "password"});
