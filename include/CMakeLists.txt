@@ -8,6 +8,7 @@ target_sources(cpr PRIVATE
      # Header files (useful in IDEs)
     cpr/api.h
     cpr/auth.h
+    cpr/bearer.h
     cpr/body.h
     cpr/cookies.h
     cpr/cpr.h

@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "cpr/auth.h"
+#include "cpr/bearer.h"
 #include "cpr/cprtypes.h"
 #include "cpr/digest.h"
 #include "cpr/multipart.h"

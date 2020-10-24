@@ -27,6 +27,7 @@ class Session::Impl {
     void SetTimeout(const Timeout& timeout);
     void SetConnectTimeout(const ConnectTimeout& timeout);
     void SetAuth(const Authentication& auth);
+    void SetBearer(const BearerToken& token);
     void SetDigest(const Digest& auth);
     void SetUserAgent(const UserAgent& ua);
     void SetPayload(Payload&& payload);
@@ -153,6 +154,11 @@ void Session::Impl::SetVerbose(const Verbose& verbose) {
 void Session::Impl::SetAuth(const Authentication& auth) {
     curl_easy_setopt(curl_->handle, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
     curl_easy_setopt(curl_->handle, CURLOPT_USERPWD, auth.GetAuthString());
+}
+
+void Session::Impl::SetBearer(const BearerToken& token) {
+    curl_easy_setopt(curl_->handle, CURLOPT_HTTPAUTH, CURLAUTH_BEARER);
+    curl_easy_setopt(curl_->handle, CURLOPT_XOAUTH2_BEARER, token.GetToken());
 }
 
 void Session::Impl::SetDigest(const Digest& auth) {
@@ -611,6 +617,7 @@ void Session::SetOption(const Header& header) { pimpl_->SetHeader(header); }
 void Session::SetOption(const Timeout& timeout) { pimpl_->SetTimeout(timeout); }
 void Session::SetOption(const ConnectTimeout& timeout) { pimpl_->SetConnectTimeout(timeout); }
 void Session::SetOption(const Authentication& auth) { pimpl_->SetAuth(auth); }
+void Session::SetOption(const BearerToken& auth) { pimpl_->SetBearer(auth); }
 void Session::SetOption(const Digest& auth) { pimpl_->SetDigest(auth); }
 void Session::SetOption(const UserAgent& ua) { pimpl_->SetUserAgent(ua); }
 void Session::SetOption(const Payload& payload) { pimpl_->SetPayload(payload); }
