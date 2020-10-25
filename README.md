@@ -45,6 +45,7 @@ C++ Requests currently supports:
 * Multipart form POST upload
 * File POST upload
 * Basic authentication
+* Bearer authentication
 * Digest authentication
 * NTLM authentication
 * Connection and request timeout specification
