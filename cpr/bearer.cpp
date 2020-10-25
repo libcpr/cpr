@@ -2,7 +2,7 @@
 
 namespace cpr {
 
-const char* BearerToken::GetToken() const noexcept {
+const char* Bearer::GetToken() const noexcept {
     return token_string_.c_str();
 }
 

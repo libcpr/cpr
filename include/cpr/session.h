@@ -78,7 +78,7 @@ class Session {
     void SetOption(const Timeout& timeout);
     void SetOption(const ConnectTimeout& timeout);
     void SetOption(const Authentication& auth);
-    void SetOption(const BearerToken& auth);
+    void SetOption(const Bearer& auth);
     void SetOption(const Digest& auth);
     void SetOption(const UserAgent& ua);
     void SetOption(Payload&& payload);

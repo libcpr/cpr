@@ -32,7 +32,7 @@ class HttpServer : public AbstractServer {
     static void OnRequestV1Cookies(mg_connection* conn, http_message* msg);
     static void OnRequestCheckV1Cookies(mg_connection* conn, http_message* msg);
     static void OnRequestBasicAuth(mg_connection* conn, http_message* msg);
-    static void OnRequestBearerTokenAuth(mg_connection* conn, http_message* msg);
+    static void OnRequestBearerAuth(mg_connection* conn, http_message* msg);
     static void OnRequestBasicJson(mg_connection* conn, http_message* msg);
     static void OnRequestHeaderReflect(mg_connection* conn, http_message* msg);
     static void OnRequestTempRedirect(mg_connection* conn, http_message* msg);
