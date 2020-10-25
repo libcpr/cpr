@@ -7,13 +7,13 @@
 
 namespace cpr {
 
-class BearerToken {
+class Bearer {
   public:
-    BearerToken(const std::string& token)
+    Bearer(const std::string& token)
             : token_string_{token} {}
-    BearerToken(std::string&& token)
+    Bearer(std::string&& token)
             : token_string_{std::move(token)} {}
-    virtual ~BearerToken() = default;
+    virtual ~Bearer() = default;
 
     virtual const char* GetToken() const noexcept;
 

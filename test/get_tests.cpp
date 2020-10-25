@@ -193,9 +193,9 @@ TEST(BasicAuthenticationTests, BasicAuthenticationSuccessTest) {
     EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
-TEST(BasicAuthenticationTests, BasicBearerTokenSuccessTest) {
+TEST(BasicAuthenticationTests, BasicBearerSuccessTest) {
     Url url{server->GetBaseUrl() + "/bearer_token.html"};
-    Response response = cpr::Get(url, BearerToken{"the_token"});
+    Response response = cpr::Get(url, Bearer{"the_token"});
     std::string expected_text{"Header reflect GET"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);

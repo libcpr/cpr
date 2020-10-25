@@ -193,7 +193,7 @@ void HttpServer::OnRequestBasicAuth(mg_connection* conn, http_message* msg) {
     }
 }
 
-void HttpServer::OnRequestBearerTokenAuth(mg_connection* conn, http_message* msg) {
+void HttpServer::OnRequestBearerAuth(mg_connection* conn, http_message* msg) {
     mg_str* requested_auth;
     std::string auth{"Bearer"};
     if ((requested_auth = mg_get_http_header(msg, "Authorization")) == nullptr ||
@@ -558,7 +558,7 @@ void HttpServer::OnRequest(mg_connection* conn, http_message* msg) {
     } else if (uri == "/basic_auth.html") {
         OnRequestBasicAuth(conn, msg);
     } else if (uri == "/bearer_token.html") {
-        OnRequestBearerTokenAuth(conn, msg);
+        OnRequestBearerAuth(conn, msg);
     } else if (uri == "/digest_auth.html") {
         OnRequestHeaderReflect(conn, msg);
     } else if (uri == "/basic.json") {
