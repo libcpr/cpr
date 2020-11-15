@@ -3,7 +3,7 @@
 namespace cpr {
 std::string Cookies::GetEncoded(const CurlHolder& holder) const {
     std::stringstream stream;
-    for (const std::pair<std::string, std::string>& item : map_) {
+    for (const auto& item : map_) {
         // Depending on if encoding is set to "true", we will URL-encode cookies
         stream << (encode ? holder.urlEncode(item.first) : item.first) << "=";
 
