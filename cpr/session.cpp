@@ -16,73 +16,6 @@ namespace cpr {
 constexpr long ON = 1L;
 constexpr long OFF = 0L;
 
-class Session::Impl {
-  public:
-    Impl();
-
-    void SetUrl(const Url& url);
-    void SetParameters(const Parameters& parameters);
-    void SetParameters(Parameters&& parameters);
-    void SetHeader(const Header& header);
-    void SetTimeout(const Timeout& timeout);
-    void SetConnectTimeout(const ConnectTimeout& timeout);
-    void SetAuth(const Authentication& auth);
-    void SetBearer(const Bearer& token);
-    void SetDigest(const Digest& auth);
-    void SetUserAgent(const UserAgent& ua);
-    void SetPayload(Payload&& payload);
-    void SetPayload(const Payload& payload);
-    void SetProxies(Proxies&& proxies);
-    void SetProxies(const Proxies& proxies);
-    void SetMultipart(Multipart&& multipart);
-    void SetMultipart(const Multipart& multipart);
-    void SetNTLM(const NTLM& auth);
-    void SetRedirect(const bool& redirect);
-    void SetMaxRedirects(const MaxRedirects& max_redirects);
-    void SetCookies(const Cookies& cookies);
-    void SetBody(Body&& body);
-    void SetBody(const Body& body);
-    void SetReadCallback(const ReadCallback& read);
-    void SetHeaderCallback(const HeaderCallback& header);
-    void SetWriteCallback(const WriteCallback& write);
-    void SetProgressCallback(const ProgressCallback& progress);
-    void SetDebugCallback(const DebugCallback& debug);
-    void SetLowSpeed(const LowSpeed& low_speed);
-    void SetVerifySsl(const VerifySsl& verify);
-    void SetLimitRate(const LimitRate& limit_rate);
-    void SetUnixSocket(const UnixSocket& unix_socket);
-    void SetVerbose(const Verbose& verbose);
-    void SetSslOptions(const SslOptions& options);
-
-    Response Delete();
-    Response Download(const WriteCallback& write);
-    Response Download(std::ofstream& file);
-    Response Get();
-    Response Head();
-    Response Options();
-    Response Patch();
-    Response Post();
-    Response Put();
-
-  private:
-    bool hasBodyOrPayload_{false};
-
-    std::shared_ptr<CurlHolder> curl_;
-    Url url_;
-    Parameters parameters_;
-    Proxies proxies_;
-
-    ReadCallback readcb_;
-    HeaderCallback headercb_;
-    WriteCallback writecb_;
-    ProgressCallback progresscb_;
-    DebugCallback debugcb_;
-
-    Response makeDownloadRequest();
-    Response makeRequest();
-    static void freeHolder(CurlHolder* holder);
-};
-
 Session::Impl::Impl() : curl_(new CurlHolder()) {
     // Set up some sensible defaults
     curl_version_info_data* version_info = curl_version_info(CURLVERSION_NOW);
@@ -120,12 +53,12 @@ void Session::Impl::SetParameters(Parameters&& parameters) {
 
 void Session::Impl::SetHeader(const Header& header) {
     curl_slist* chunk = nullptr;
-    for (Header::const_iterator item = header.cbegin(); item != header.cend(); ++item) {
-        std::string header_string = item->first;
-        if (item->second.empty()) {
+    for (const std::pair<const std::string, std::string>& item : header) {
+        std::string header_string = item.first;
+        if (item.second.empty()) {
             header_string += ";";
         } else {
-            header_string += ": " + item->second;
+            header_string += ": " + item.second;
         }
 
         curl_slist* temp = curl_slist_append(chunk, header_string.c_str());
@@ -183,7 +116,7 @@ void Session::Impl::SetPayload(const Payload& payload) {
     const std::string content = payload.GetContent(*curl_);
     curl_easy_setopt(curl_->handle, CURLOPT_POSTFIELDSIZE_LARGE,
                      static_cast<curl_off_t>(content.length()));
-    curl_easy_setopt(curl_->handle, CURLOPT_COPYPOSTFIELDS, std::move(content.c_str()));
+    curl_easy_setopt(curl_->handle, CURLOPT_COPYPOSTFIELDS, content.c_str());
 }
 
 void Session::Impl::SetProxies(const Proxies& proxies) {
@@ -573,10 +506,6 @@ Response Session::Impl::makeRequest() {
 }
 
 // clang-format off
-Session::Session() : pimpl_{ new Impl{} } {}
-Session::Session(Session&& other) : pimpl_{ std::move(other.pimpl_) } {}
-Session& Session::operator=(Session&& other) { pimpl_ = std::move(other.pimpl_); return *this; }
-Session::~Session() {}
 void Session::SetReadCallback(const ReadCallback& read) { pimpl_->SetReadCallback(read); }
 void Session::SetHeaderCallback(const HeaderCallback& header) { pimpl_->SetHeaderCallback(header); }
 void Session::SetWriteCallback(const WriteCallback& write) { pimpl_->SetWriteCallback(write); }

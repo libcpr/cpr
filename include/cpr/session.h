@@ -8,6 +8,7 @@
 #include "cpr/auth.h"
 #include "cpr/bearer.h"
 #include "cpr/body.h"
+#include "cpr/callback.h"
 #include "cpr/connect_timeout.h"
 #include "cpr/cookies.h"
 #include "cpr/cprtypes.h"
@@ -26,17 +27,11 @@
 #include "cpr/unix_socket.h"
 #include "cpr/user_agent.h"
 #include "cpr/verbose.h"
-#include "cpr/callback.h"
 
 namespace cpr {
 
 class Session {
   public:
-    Session();
-    ~Session();
-
-    Session(Session&& other);
-    Session& operator=(Session&& other);
 
     void SetUrl(const Url& url);
     void SetParameters(const Parameters& parameters);
@@ -116,8 +111,73 @@ class Session {
     Response Put();
 
   private:
-    class Impl;
-    std::unique_ptr<Impl> pimpl_;
+    class Impl {
+      public:
+        Impl();
+
+        void SetUrl(const Url& url);
+        void SetParameters(const Parameters& parameters);
+        void SetParameters(Parameters&& parameters);
+        void SetHeader(const Header& header);
+        void SetTimeout(const Timeout& timeout);
+        void SetConnectTimeout(const ConnectTimeout& timeout);
+        void SetAuth(const Authentication& auth);
+        void SetBearer(const Bearer& token);
+        void SetDigest(const Digest& auth);
+        void SetUserAgent(const UserAgent& ua);
+        void SetPayload(Payload&& payload);
+        void SetPayload(const Payload& payload);
+        void SetProxies(Proxies&& proxies);
+        void SetProxies(const Proxies& proxies);
+        void SetMultipart(Multipart&& multipart);
+        void SetMultipart(const Multipart& multipart);
+        void SetNTLM(const NTLM& auth);
+        void SetRedirect(const bool& redirect);
+        void SetMaxRedirects(const MaxRedirects& max_redirects);
+        void SetCookies(const Cookies& cookies);
+        void SetBody(Body&& body);
+        void SetBody(const Body& body);
+        void SetReadCallback(const ReadCallback& read);
+        void SetHeaderCallback(const HeaderCallback& header);
+        void SetWriteCallback(const WriteCallback& write);
+        void SetProgressCallback(const ProgressCallback& progress);
+        void SetDebugCallback(const DebugCallback& debug);
+        void SetLowSpeed(const LowSpeed& low_speed);
+        void SetVerifySsl(const VerifySsl& verify);
+        void SetLimitRate(const LimitRate& limit_rate);
+        void SetUnixSocket(const UnixSocket& unix_socket);
+        void SetVerbose(const Verbose& verbose);
+        void SetSslOptions(const SslOptions& options);
+
+        Response Delete();
+        Response Download(const WriteCallback& write);
+        Response Download(std::ofstream& file);
+        Response Get();
+        Response Head();
+        Response Options();
+        Response Patch();
+        Response Post();
+        Response Put();
+
+      private:
+        bool hasBodyOrPayload_{false};
+
+        std::shared_ptr<CurlHolder> curl_;
+        Url url_;
+        Parameters parameters_;
+        Proxies proxies_;
+
+        ReadCallback readcb_;
+        HeaderCallback headercb_;
+        WriteCallback writecb_;
+        ProgressCallback progresscb_;
+        DebugCallback debugcb_;
+
+        Response makeDownloadRequest();
+        Response makeRequest();
+        static void freeHolder(CurlHolder* holder);
+    };
+    std::unique_ptr<Impl> pimpl_ {new Impl{}};
 };
 
 } // namespace cpr
