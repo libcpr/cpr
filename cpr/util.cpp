@@ -61,7 +61,7 @@ Header parseHeader(const std::string& headers, std::string* status_line, std::st
         }
 
         if (line.length() > 0) {
-            size_t found = line.find(":");
+            size_t found = line.find(':');
             if (found != std::string::npos) {
                 std::string value = line.substr(found + 1);
                 value.erase(0, value.find_first_not_of("\t "));
