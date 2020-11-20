@@ -95,7 +95,7 @@ Session::Impl::Impl() : curl_(new CurlHolder()) {
     curl_easy_setopt(curl_->handle, CURLOPT_FOLLOWLOCATION, 1L);
     curl_easy_setopt(curl_->handle, CURLOPT_NOPROGRESS, 1L);
     curl_easy_setopt(curl_->handle, CURLOPT_MAXREDIRS, 50L);
-    curl_easy_setopt(curl_->handle, CURLOPT_ERRORBUFFER, curl_->error);
+    curl_easy_setopt(curl_->handle, CURLOPT_ERRORBUFFER, curl_->error.data());
     curl_easy_setopt(curl_->handle, CURLOPT_COOKIEFILE, "");
 #ifdef CPR_CURL_NOSIGNAL
     curl_easy_setopt(curl_->handle, CURLOPT_NOSIGNAL, 1L);
@@ -534,9 +534,10 @@ Response Session::Impl::makeDownloadRequest() {
     curl_easy_getinfo(curl_->handle, CURLINFO_COOKIELIST, &raw_cookies);
     Cookies cookies = util::parseCookies(raw_cookies);
     curl_slist_free_all(raw_cookies);
+    std::string errorMsg = curl_->error.data();
 
     return Response(curl_, "", std::move(header_string), std::move(cookies),
-                    Error(curl_error, curl_->error));
+                    Error(curl_error, std::move(errorMsg)));
 }
 
 Response Session::Impl::makeRequest() {
@@ -589,8 +590,9 @@ Response Session::Impl::makeRequest() {
     // Reset the has no body property:
     hasBodyOrPayload_ = false;
 
+    std::string errorMsg = curl_->error.data();
     return Response(curl_, std::move(response_string), std::move(header_string), std::move(cookies),
-                    Error(curl_error, curl_->error));
+                    Error(curl_error, std::move(errorMsg)));
 }
 
 // clang-format off

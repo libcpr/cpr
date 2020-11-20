@@ -20,7 +20,8 @@ Checks: '*,
 -cppcoreguidelines-owning-memory,
 -llvmlibc-callee-namespace,
 -cppcoreguidelines-pro-bounds-array-to-pointer-decay,
--hicpp-no-array-decay
+-hicpp-no-array-decay,
+-modernize-pass-by-value
 '
 WarningsAsErrors: '*'
 HeaderFilterRegex: 'src/*.hpp'

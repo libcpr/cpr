@@ -2,6 +2,8 @@
 #include <cassert>
 
 namespace cpr {
+// It does not make sense to make a std::mutex const.
+// NOLINTNEXTLINE (cppcoreguidelines-avoid-non-const-global-variables)
 std::mutex CurlHolder::curl_easy_init_mutex_{};
 
 #ifndef _WIN32 // There is no thread sanitizer on windows

@@ -8,7 +8,7 @@ constexpr std::int32_t HTTP_CONTINUE = 100;
 constexpr std::int32_t HTTP_SWITCHING_PROTOCOL = 101;
 constexpr std::int32_t HTTP_PROCESSING = 102;
 constexpr std::int32_t HTTP_EARLY_HINTS = 103;
-// Sucessful responses
+// Successful responses
 constexpr std::int32_t HTTP_OK = 200;
 constexpr std::int32_t HTTP_CREATED = 201;
 constexpr std::int32_t HTTP_ACCEPTED = 202;
@@ -72,20 +72,27 @@ constexpr std::int32_t HTTP_LOOP_DETECTED = 508;
 constexpr std::int32_t HTTP_NOT_EXTENDED = 510;
 constexpr std::int32_t HTTP_NETWORK_AUTHENTICATION_REQUIRED = 511;
 
+constexpr std::int32_t INFO_CODE_OFFSET = 100;
+constexpr std::int32_t SUCCESS_CODE_OFFSET = 200;
+constexpr std::int32_t REDIRECT_CODE_OFFSET = 300;
+constexpr std::int32_t CLIENT_ERROR_CODE_OFFSET = 400;
+constexpr std::int32_t SERVER_ERROR_CODE_OFFSET = 500;
+constexpr std::int32_t MISC_CODE_OFFSET = 600;
+
 constexpr bool is_informational(const std::int32_t code) {
-    return (code >= 100 && code < 200);
+    return (code >= INFO_CODE_OFFSET && code < SUCCESS_CODE_OFFSET);
 }
 constexpr bool is_success(const std::int32_t code) {
-    return (code >= 200 && code < 300);
+    return (code >= SUCCESS_CODE_OFFSET && code < REDIRECT_CODE_OFFSET);
 }
 constexpr bool is_redirect(const std::int32_t code) {
-    return (code >= 300 && code < 400);
+    return (code >= REDIRECT_CODE_OFFSET && code < CLIENT_ERROR_CODE_OFFSET);
 }
 constexpr bool is_client_error(const std::int32_t code) {
-    return (code >= 400 && code < 500);
+    return (code >= CLIENT_ERROR_CODE_OFFSET && code < SERVER_ERROR_CODE_OFFSET);
 }
 constexpr bool is_server_error(const std::int32_t code) {
-    return (code >= 500 && code < 600);
+    return (code >= SERVER_ERROR_CODE_OFFSET && code < MISC_CODE_OFFSET);
 }
 
 } // namespace status

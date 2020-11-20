@@ -24,10 +24,12 @@ class Cookies {
      **/
     bool encode{true};
 
+    // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
     Cookies(bool encode = true) : encode(encode) {}
     Cookies(const std::initializer_list<std::pair<const std::string, std::string>>& pairs,
             bool encode = true)
             : encode(encode), map_{pairs} {}
+    // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
     Cookies(const std::map<std::string, std::string>& map, bool encode = true)
             : encode(encode), map_{map} {}
 

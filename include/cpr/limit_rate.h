@@ -7,7 +7,8 @@ namespace cpr {
 
 class LimitRate {
   public:
-    LimitRate(const std::int64_t downrate, const std::int64_t uprate) : downrate(downrate), uprate(uprate) {}
+    LimitRate(const std::int64_t downrate, const std::int64_t uprate)
+            : downrate(downrate), uprate(uprate) {}
 
     std::int64_t downrate = 0;
     std::int64_t uprate = 0;

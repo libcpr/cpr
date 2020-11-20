@@ -8,9 +8,12 @@ namespace cpr {
 
 class Timeout {
   public:
+    // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
     Timeout(const std::chrono::milliseconds& duration) : ms{duration} {}
+    // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
     Timeout(const std::int32_t& milliseconds) : Timeout{std::chrono::milliseconds(milliseconds)} {}
 
+    // NOLINTNEXTLINE(google-runtime-int)
     long Milliseconds() const;
 
     std::chrono::milliseconds ms;

@@ -4,7 +4,6 @@
 #include "cpr/auth.h"
 
 namespace cpr {
-
 class Digest : public Authentication {
   public:
     Digest(const std::string& username, const std::string& password)

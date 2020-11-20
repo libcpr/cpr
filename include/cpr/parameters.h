@@ -2,9 +2,6 @@
 #define CPR_PARAMETERS_H
 
 #include <initializer_list>
-#include <memory>
-#include <string>
-#include <vector>
 
 #include "cpr/curl_container.h"
 
