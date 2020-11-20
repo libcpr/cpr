@@ -28,12 +28,14 @@ Response::Response(std::shared_ptr<CurlHolder> curl, std::string&& p_text,
 
 std::vector<std::string> Response::GetCertInfo() {
     assert(curl_->handle);
-    curl_certinfo* ci;
+    curl_certinfo* ci{nullptr};
     curl_easy_getinfo(curl_->handle, CURLINFO_CERTINFO, &ci);
 
     std::vector<std::string> info;
     info.resize(ci->num_of_certs);
     for (size_t i = 0; i < ci->num_of_certs; i++) {
+        // No way around here.
+        // NOLINTNEXTLINE (cppcoreguidelines-pro-bounds-pointer-arithmetic)
         info[i] = std::string{ci->certinfo[i]->data};
     }
 

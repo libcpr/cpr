@@ -36,6 +36,7 @@ Header parseHeader(const std::string& headers, std::string* status_line, std::st
     }
 
     for (std::string& line : lines) {
+        // NOLINTNEXTLINE (cppcoreguidelines-avoid-magic-numbers)
         if (line.substr(0, 5) == "HTTP/") {
             // set the status_line if it was given
             if ((status_line != nullptr) || (reason != nullptr)) {
@@ -61,7 +62,7 @@ Header parseHeader(const std::string& headers, std::string* status_line, std::st
         }
 
         if (line.length() > 0) {
-            size_t found = line.find(":");
+            size_t found = line.find(':');
             if (found != std::string::npos) {
                 std::string value = line.substr(found + 1);
                 value.erase(0, value.find_first_not_of("\t "));
@@ -123,7 +124,7 @@ int progressUserFunction(const ProgressCallback* progress, curl_off_t dltotal, c
     return progress->callback(dltotal, dlnow, ultotal, ulnow) ? 0 : 1;
 }
 
-int debugUserFunction(CURL* handle, curl_infotype type, char* data, size_t size,
+int debugUserFunction(CURL* /*handle*/, curl_infotype type, char* data, size_t size,
                       const DebugCallback* debug) {
     debug->callback(DebugCallback::InfoType(type), std::string(data, size));
     return 0;

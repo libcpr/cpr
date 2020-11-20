@@ -2,12 +2,9 @@
 
 
 namespace cpr {
-
-
 template <class T>
 CurlContainer<T>::CurlContainer(const std::initializer_list<T>& containerList)
         : containerList_(containerList) {}
-
 
 template <class T>
 void CurlContainer<T>::Add(const std::initializer_list<T>& containerList) {
@@ -34,7 +31,8 @@ const std::string CurlContainer<Parameter>::GetContent(const CurlHolder& holder)
             content += escapedKey;
         } else {
             std::string escapedValue = holder.urlEncode(parameter.value);
-            content += escapedKey + "=" + escapedValue;
+            content += escapedKey + "=";
+            content += escapedValue;
         }
     };
 

@@ -3,7 +3,6 @@
 #include <curl/curl.h>
 
 namespace cpr {
-
 ErrorCode Error::getErrorCodeForCurlError(std::int32_t curl_code) {
     switch (curl_code) {
         case CURLE_OK:
@@ -27,13 +26,11 @@ ErrorCode Error::getErrorCodeForCurlError(std::int32_t curl_code) {
             return ErrorCode::SSL_REMOTE_CERTIFICATE_ERROR;
 #endif
         case CURLE_ABORTED_BY_CALLBACK:
-            return ErrorCode::REQUEST_CANCELLED;
         case CURLE_WRITE_ERROR:
             return ErrorCode::REQUEST_CANCELLED;
         case CURLE_GOT_NOTHING:
             return ErrorCode::EMPTY_RESPONSE;
         case CURLE_SSL_ENGINE_NOTFOUND:
-            return ErrorCode::GENERIC_SSL_ERROR;
         case CURLE_SSL_ENGINE_SETFAILED:
             return ErrorCode::GENERIC_SSL_ERROR;
         case CURLE_SEND_ERROR:
@@ -52,7 +49,6 @@ ErrorCode Error::getErrorCodeForCurlError(std::int32_t curl_code) {
             return ErrorCode::SSL_CACERT_ERROR;
 #endif
         case CURLE_USE_SSL_FAILED:
-            return ErrorCode::GENERIC_SSL_ERROR;
         case CURLE_SSL_ENGINE_INITFAILED:
             return ErrorCode::GENERIC_SSL_ERROR;
         case CURLE_SSL_CACERT_BADFILE:
@@ -60,7 +56,6 @@ ErrorCode Error::getErrorCodeForCurlError(std::int32_t curl_code) {
         case CURLE_SSL_SHUTDOWN_FAILED:
             return ErrorCode::GENERIC_SSL_ERROR;
         case CURLE_SSL_CRL_BADFILE:
-            return ErrorCode::SSL_CACERT_ERROR;
         case CURLE_SSL_ISSUER_ERROR:
             return ErrorCode::SSL_CACERT_ERROR;
         case CURLE_TOO_MANY_REDIRECTS:
