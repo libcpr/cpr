@@ -14,10 +14,10 @@
 namespace cpr {
 class AbstractServer : public testing::Environment {
   public:
-    virtual ~AbstractServer() = default;
+    ~AbstractServer() override = default;
 
-    virtual void SetUp();
-    virtual void TearDown();
+    void SetUp() override;
+    void TearDown() override;
 
     void Start();
     void Stop();

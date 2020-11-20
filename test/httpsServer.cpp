@@ -37,11 +37,11 @@ void HttpsServer::OnRequest(mg_connection* conn, http_message* msg) {
     }
 }
 
-void HttpsServer::OnRequestNotFound(mg_connection* conn, http_message* msg) {
+void HttpsServer::OnRequestNotFound(mg_connection* conn, http_message*  /*msg*/) {
     mg_http_send_error(conn, 404, "Not Found");
 }
 
-void HttpsServer::OnRequestHello(mg_connection* conn, http_message* msg) {
+void HttpsServer::OnRequestHello(mg_connection* conn, http_message*  /*msg*/) {
     std::string response{"Hello world!"};
     std::string headers = "Content-Type: text/html";
     mg_send_head(conn, 200, response.length(), headers.c_str());
