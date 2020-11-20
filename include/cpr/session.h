@@ -33,10 +33,13 @@ namespace cpr {
 class Session {
   public:
     Session();
+    Session(Session&& old) noexcept = default;
+    Session(const Session& other) = delete;
+
     ~Session();
 
-    Session(Session&& other);
-    Session& operator=(Session&& other);
+    Session& operator=(Session&& old) noexcept = default;
+    Session& operator=(const Session& other) = delete;
 
     void SetUrl(const Url& url);
     void SetParameters(const Parameters& parameters);
