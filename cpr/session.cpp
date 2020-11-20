@@ -124,7 +124,7 @@ void Session::Impl::SetParameters(Parameters&& parameters) {
 
 void Session::Impl::SetHeader(const Header& header) {
     curl_slist* chunk = nullptr;
-    for (const std::pair<const std::string, std::string> & item : header) {
+    for (const std::pair<const std::string, std::string>& item : header) {
         std::string header_string = item.first;
         if (item.second.empty()) {
             header_string += ";";
@@ -183,14 +183,16 @@ void Session::Impl::SetUserAgent(const UserAgent& ua) {
 void Session::Impl::SetPayload(Payload&& payload) {
     hasBodyOrPayload_ = true;
     const std::string content = payload.GetContent(*curl_);
-    curl_easy_setopt(curl_->handle, CURLOPT_POSTFIELDSIZE_LARGE, static_cast<curl_off_t>(content.length()));
+    curl_easy_setopt(curl_->handle, CURLOPT_POSTFIELDSIZE_LARGE,
+                     static_cast<curl_off_t>(content.length()));
     curl_easy_setopt(curl_->handle, CURLOPT_COPYPOSTFIELDS, content.c_str());
 }
 
 void Session::Impl::SetPayload(const Payload& payload) {
     hasBodyOrPayload_ = true;
     const std::string content = payload.GetContent(*curl_);
-    curl_easy_setopt(curl_->handle, CURLOPT_POSTFIELDSIZE_LARGE, static_cast<curl_off_t>(content.length()));
+    curl_easy_setopt(curl_->handle, CURLOPT_POSTFIELDSIZE_LARGE,
+                     static_cast<curl_off_t>(content.length()));
     curl_easy_setopt(curl_->handle, CURLOPT_COPYPOSTFIELDS, content.c_str());
 }
 
@@ -210,12 +212,9 @@ void Session::Impl::SetMultipart(Multipart&& multipart) {
         std::vector<curl_forms> formdata;
         if (part.is_buffer) {
             // Do not use formdata, to prevent having to use reinterpreter_cast:
-            curl_formadd(&formpost, &lastptr,
-              CURLFORM_COPYNAME, part.name.c_str(),
-              CURLFORM_BUFFER, part.value.c_str(),
-              CURLFORM_BUFFERPTR, part.data,
-              CURLFORM_BUFFERLENGTH, part.datalen,
-              CURLFORM_END);
+            curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, part.name.c_str(), CURLFORM_BUFFER,
+                         part.value.c_str(), CURLFORM_BUFFERPTR, part.data, CURLFORM_BUFFERLENGTH,
+                         part.datalen, CURLFORM_END);
         } else {
             formdata.push_back({CURLFORM_COPYNAME, part.name.c_str()});
             if (part.is_file) {
@@ -227,7 +226,7 @@ void Session::Impl::SetMultipart(Multipart&& multipart) {
         if (!part.content_type.empty()) {
             formdata.push_back({CURLFORM_CONTENTTYPE, part.content_type.c_str()});
         }
-        
+
         formdata.push_back({CURLFORM_END, nullptr});
         curl_formadd(&formpost, &lastptr, CURLFORM_ARRAY, formdata.data(), CURLFORM_END);
     }
@@ -246,12 +245,9 @@ void Session::Impl::SetMultipart(const Multipart& multipart) {
         std::vector<curl_forms> formdata;
         if (part.is_buffer) {
             // Do not use formdata, to prevent having to use reinterpreter_cast:
-            curl_formadd(&formpost, &lastptr,
-              CURLFORM_COPYNAME, part.name.c_str(),
-              CURLFORM_BUFFER, part.value.c_str(),
-              CURLFORM_BUFFERPTR, part.data,
-              CURLFORM_BUFFERLENGTH, part.datalen,
-              CURLFORM_END);
+            curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, part.name.c_str(), CURLFORM_BUFFER,
+                         part.value.c_str(), CURLFORM_BUFFERPTR, part.data, CURLFORM_BUFFERLENGTH,
+                         part.datalen, CURLFORM_END);
         } else {
             formdata.push_back({CURLFORM_COPYNAME, part.name.c_str()});
             if (part.is_file) {
@@ -401,7 +397,7 @@ void Session::Impl::SetSslOptions(const SslOptions& options) {
                      // NOLINTNEXTLINE(hicpp-signed-bitwise)
                      options.ssl_version
 #if SUPPORT_MAX_TLS_VERSION
-                     | options.max_version
+                             | options.max_version
 #endif
     );
     if (!options.ca_info.empty()) {
@@ -422,7 +418,8 @@ void Session::Impl::SetSslOptions(const SslOptions& options) {
     }
 #endif
 #if SUPPORT_SESSIONID_CACHE
-    curl_easy_setopt(curl_->handle, CURLOPT_SSL_SESSIONID_CACHE, options.session_id_cache ? ON : OFF);
+    curl_easy_setopt(curl_->handle, CURLOPT_SSL_SESSIONID_CACHE,
+                     options.session_id_cache ? ON : OFF);
 #endif
 }
 
@@ -592,9 +589,11 @@ Response Session::Impl::makeRequest() {
     // Reset the has no body property:
     hasBodyOrPayload_ = false;
 
-    return Response(curl_, std::move(response_string), std::move(header_string), std::move(cookies), Error(curl_error, curl_->error));
+    return Response(curl_, std::move(response_string), std::move(header_string), std::move(cookies),
+                    Error(curl_error, curl_->error));
 }
 
+// clang-format off
 Session::Session() : pimpl_(new Impl()) {}
 Session::~Session() = default;
 void Session::SetReadCallback(const ReadCallback& read) { pimpl_->SetReadCallback(read); }
@@ -669,4 +668,5 @@ Response Session::Options() { return pimpl_->Options(); }
 Response Session::Patch() { return pimpl_->Patch(); }
 Response Session::Post() { return pimpl_->Post(); }
 Response Session::Put() { return pimpl_->Put(); }
+// clang-format on
 } // namespace cpr

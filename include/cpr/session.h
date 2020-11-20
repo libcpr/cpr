@@ -8,6 +8,7 @@
 #include "cpr/auth.h"
 #include "cpr/bearer.h"
 #include "cpr/body.h"
+#include "cpr/callback.h"
 #include "cpr/connect_timeout.h"
 #include "cpr/cookies.h"
 #include "cpr/cprtypes.h"
@@ -26,7 +27,6 @@
 #include "cpr/unix_socket.h"
 #include "cpr/user_agent.h"
 #include "cpr/verbose.h"
-#include "cpr/callback.h"
 
 namespace cpr {
 
