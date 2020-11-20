@@ -11,7 +11,7 @@
 namespace cpr {
 class HttpServer : public AbstractServer {
   public:
-    ~HttpServer() = default;
+    ~HttpServer() override = default;
 
     std::string GetBaseUrl() override;
     uint16_t GetPort() override;

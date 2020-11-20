@@ -18,14 +18,14 @@ class HttpsServer : public AbstractServer {
   public:
     explicit HttpsServer(std::string&& baseDirPath, std::string&& sslCertFileName,
                          std::string&& sslKeyFileName);
-    ~HttpsServer() = default;
+    ~HttpsServer() override = default;
 
     std::string GetBaseUrl() override;
     uint16_t GetPort() override;
 
     void OnRequest(mg_connection* conn, http_message* msg) override;
-    void OnRequestHello(mg_connection* conn, http_message* msg);
-    void OnRequestNotFound(mg_connection* conn, http_message* msg);
+    static void OnRequestHello(mg_connection* conn, http_message* msg);
+    static void OnRequestNotFound(mg_connection* conn, http_message* msg);
 
     const std::string& getBaseDirPath() const;
     const std::string& getSslCertFileName() const;

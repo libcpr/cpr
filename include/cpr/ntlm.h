@@ -1,11 +1,9 @@
 #ifndef CPR_NTLM_H
 #define CPR_NTLM_H
 
-#include "auth.h"
-#include <utility>
+#include "cpr/auth.h"
 
 namespace cpr {
-
 class NTLM : public Authentication {
   public:
     NTLM(const std::string& username, const std::string& password)

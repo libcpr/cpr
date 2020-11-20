@@ -1,6 +1,7 @@
 #ifndef CPR_CURL_HOLDER_H
 #define CPR_CURL_HOLDER_H
 
+#include <array>
 #include <mutex>
 #include <string>
 
@@ -16,16 +17,23 @@ struct CurlHolder {
      * https://curl.haxx.se/libcurl/c/curl_easy_init.html
      * https://curl.haxx.se/libcurl/c/threadsafe.html
      **/
+    // It does not make sense to make a std::mutex const.
+    // NOLINTNEXTLINE (cppcoreguidelines-avoid-non-const-global-variables)    
     static std::mutex curl_easy_init_mutex_;
 
   public:
     CURL* handle{nullptr};
     struct curl_slist* chunk{nullptr};
     struct curl_httppost* formpost{nullptr};
-    char error[CURL_ERROR_SIZE];
+    std::array<char, CURL_ERROR_SIZE> error{};
 
     CurlHolder();
+    CurlHolder(const CurlHolder& other) = default;
+    CurlHolder(CurlHolder&& old) noexcept = default;
     ~CurlHolder();
+
+    CurlHolder& operator=(CurlHolder&& old) noexcept = default;
+    CurlHolder& operator=(const CurlHolder& other) noexcept = default;
 
     /**
      * Uses curl_easy_escape(...) for escaping the given string.

@@ -56,7 +56,7 @@ void HttpServer::OnRequestOptions(mg_connection* conn, http_message* msg) {
             "Access-Control-Max-Age: 3600";
 
     mg_send_head(conn, 200, 0, headers.c_str());
-    std::string response{""};
+    std::string response;
     mg_send(conn, response.c_str(), response.length());
 }
 
@@ -65,7 +65,7 @@ void HttpServer::OnRequestTimeout(mg_connection* conn, http_message* msg) {
     OnRequestHello(conn, msg);
 }
 
-void HttpServer::OnRequestLowSpeed(mg_connection* conn, http_message* msg) {
+void HttpServer::OnRequestLowSpeed(mg_connection* conn, http_message*  /*msg*/) {
     std::string response{"Hello world!"};
     std::string headers = "Content-Type: text/html";
     mg_send_head(conn, 200, response.length(), headers.c_str());
@@ -73,7 +73,7 @@ void HttpServer::OnRequestLowSpeed(mg_connection* conn, http_message* msg) {
     mg_send(conn, response.c_str(), response.length());
 }
 
-void HttpServer::OnRequestLowSpeedBytes(mg_connection* conn, http_message* msg) {
+void HttpServer::OnRequestLowSpeedBytes(mg_connection* conn, http_message*  /*msg*/) {
     std::string response{"a"};
     std::string headers = "Content-Type: text/html";
     mg_send_head(conn, 200, response.length(), headers.c_str());
@@ -84,7 +84,7 @@ void HttpServer::OnRequestLowSpeedBytes(mg_connection* conn, http_message* msg) 
     }
 }
 
-void HttpServer::OnRequestBasicCookies(mg_connection* conn, http_message* msg) {
+void HttpServer::OnRequestBasicCookies(mg_connection* conn, http_message* /*msg*/) {
     time_t t = time(nullptr) + 5; // Valid for 1 hour
     char expire[100], expire_epoch[100];
     snprintf(expire_epoch, sizeof(expire_epoch), "%lu", static_cast<unsigned long>(t));
@@ -103,9 +103,10 @@ void HttpServer::OnRequestBasicCookies(mg_connection* conn, http_message* msg) {
     mg_send(conn, response.c_str(), response.length());
 }
 
-void HttpServer::OnRequestEmptyCookies(mg_connection* conn, http_message* msg) {
+void HttpServer::OnRequestEmptyCookies(mg_connection* conn, http_message* /*msg*/) {
     time_t t = time(nullptr) + 5; // Valid for 1 hour
-    char expire[100], expire_epoch[100];
+    char expire[100];
+    char expire_epoch[100];
     snprintf(expire_epoch, sizeof(expire_epoch), "%lu", static_cast<unsigned long>(t));
     strftime(expire, sizeof(expire), "%a, %d %b %Y %H:%M:%S GMT", gmtime(&t));
     std::string cookie{"cookie=; expires=\"" + std::string{expire} + "\"; http-only;"};
@@ -138,7 +139,7 @@ void HttpServer::OnRequestCheckCookies(mg_connection* conn, http_message* msg) {
     OnRequestHello(conn, msg);
 }
 
-void HttpServer::OnRequestV1Cookies(mg_connection* conn, http_message* msg) {
+void HttpServer::OnRequestV1Cookies(mg_connection* conn, http_message* /*msg*/) {
     time_t t = time(nullptr) + 5; // Valid for 1 hour
     char expire[100], expire_epoch[100];
     snprintf(expire_epoch, sizeof(expire_epoch), "%lu", static_cast<unsigned long>(t));
@@ -163,7 +164,7 @@ void HttpServer::OnRequestCheckV1Cookies(mg_connection* conn, http_message* msg)
     }
     std::string cookie_str{request_cookies->p, request_cookies->len};
 
-    if (cookie_str.find("cookie=\"value with spaces (v1 cookie)\";") == cookie_str.npos) {
+    if (cookie_str.find("cookie=\"value with spaces (v1 cookie)\";") == std::string::npos) {
         mg_http_send_error(conn, 400, "Cookie with space not found");
         return;
     }
@@ -211,7 +212,7 @@ void HttpServer::OnRequestBearerAuth(mg_connection* conn, http_message* msg) {
     }
 }
 
-void HttpServer::OnRequestBasicJson(mg_connection* conn, http_message* msg) {
+void HttpServer::OnRequestBasicJson(mg_connection* conn, http_message* /*msg*/) {
     std::string response =
             "[\n"
             "  {\n"

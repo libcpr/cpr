@@ -32,7 +32,6 @@ namespace cpr {
 
 class Session {
   public:
-
     void SetUrl(const Url& url);
     void SetParameters(const Parameters& parameters);
     void SetParameters(Parameters&& parameters);

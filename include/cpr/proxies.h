@@ -4,13 +4,11 @@
 #include <initializer_list>
 #include <map>
 #include <string>
-#include <utility>
 
 namespace cpr {
-
 class Proxies {
   public:
-    Proxies() {}
+    Proxies() = default;
     Proxies(const std::initializer_list<std::pair<const std::string, std::string>>& hosts);
 
     bool has(const std::string& protocol) const;
@@ -19,7 +17,6 @@ class Proxies {
   private:
     std::map<std::string, std::string> hosts_;
 };
-
 } // namespace cpr
 
 #endif

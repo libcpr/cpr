@@ -5,7 +5,8 @@ namespace cpr {
 
 class Verbose {
   public:
-    Verbose() {}
+    Verbose() = default;
+    // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
     Verbose(const bool verbose) : verbose{verbose} {}
 
     bool verbose = true;

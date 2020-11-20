@@ -46,3 +46,6 @@ _site/
 
 # VSCode
 .vscode/
+
+# clangd
+.cache/

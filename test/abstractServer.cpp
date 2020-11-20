@@ -26,8 +26,6 @@ void AbstractServer::Stop() {
 static void EventHandler(mg_connection* conn, int event, void* event_data) {
     switch (event) {
         case MG_EV_RECV:
-            /** Do nothing. Just for housekeeping. **/
-            break;
         case MG_EV_SEND:
             /** Do nothing. Just for housekeeping. **/
             break;
@@ -71,6 +69,7 @@ void AbstractServer::Run() {
 
     // Main server loop:
     while (should_run) {
+        // NOLINTNEXTLINE (cppcoreguidelines-avoid-magic-numbers)
         mg_mgr_poll(&mgr, 1000);
     }
 
@@ -92,18 +91,27 @@ static const std::string base64_chars =
 std::string AbstractServer::Base64Decode(const std::string& in) {
     std::string out;
 
+    // NOLINTNEXTLINE (cppcoreguidelines-avoid-magic-numbers)
     std::vector<int> T(256, -1);
+    // NOLINTNEXTLINE (cppcoreguidelines-avoid-magic-numbers)
     for (size_t i = 0; i < 64; i++)
         T[base64_chars[i]] = i;
 
-    int val = 0, valb = -8;
+    int val = 0;
+    // NOLINTNEXTLINE (cppcoreguidelines-avoid-magic-numbers)
+    int valb = -8;
     for (unsigned char c : in) {
-        if (T[c] == -1)
+        if (T[c] == -1) {
             break;
+        }
+        // NOLINTNEXTLINE (cppcoreguidelines-avoid-magic-numbers)
         val = (val << 6) + T[c];
+        // NOLINTNEXTLINE (cppcoreguidelines-avoid-magic-numbers)
         valb += 6;
         if (valb >= 0) {
+            // NOLINTNEXTLINE (cppcoreguidelines-avoid-magic-numbers)
             out.push_back(char((val >> valb) & 0xFF));
+            // NOLINTNEXTLINE (cppcoreguidelines-avoid-magic-numbers)
             valb -= 8;
         }
     }
@@ -111,7 +119,7 @@ std::string AbstractServer::Base64Decode(const std::string& in) {
 }
 
 static int LowerCase(const char* s) {
-    return tolower(*reinterpret_cast<const unsigned char*>(s));
+    return tolower(*s);
 }
 
 static int StrnCaseCmp(const char* s1, const char* s2, size_t len) {
@@ -119,7 +127,9 @@ static int StrnCaseCmp(const char* s1, const char* s2, size_t len) {
 
     if (len > 0) {
         do {
+            // NOLINTNEXTLINE (cppcoreguidelines-pro-bounds-pointer-arithmetic)
             diff = LowerCase(s1++) - LowerCase(s2++);
+            // NOLINTNEXTLINE (cppcoreguidelines-pro-bounds-pointer-arithmetic)
         } while (diff == 0 && s1[-1] != '\0' && --len > 0);
     }
 
