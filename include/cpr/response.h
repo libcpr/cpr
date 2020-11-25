@@ -49,7 +49,7 @@ class Response {
     ~Response() noexcept = default;
 
     Response& operator=(Response&& old) noexcept = default;
-    Response& operator=(const Response& other) noexcept = default;
+    Response& operator=(const Response& other) = default;
 };
 } // namespace cpr
 

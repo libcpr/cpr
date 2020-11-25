@@ -18,12 +18,12 @@ class UserAgent : public StringHolder<UserAgent> {
     UserAgent(const char* useragent) : StringHolder<UserAgent>(useragent) {}
     UserAgent(const char* str, size_t len) : StringHolder<UserAgent>(str, len) {}
     UserAgent(const std::initializer_list<std::string> args) : StringHolder<UserAgent>(args) {}
-    UserAgent(const UserAgent& other) noexcept = default;
+    UserAgent(const UserAgent& other) = default;
     UserAgent(UserAgent&& old) noexcept = default;
     ~UserAgent() override = default;
 
     UserAgent& operator=(UserAgent&& old) noexcept = default;
-    UserAgent& operator=(const UserAgent& other) noexcept = default;
+    UserAgent& operator=(const UserAgent& other) = default;
 };
 
 } // namespace cpr

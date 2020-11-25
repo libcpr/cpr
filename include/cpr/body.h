@@ -24,7 +24,7 @@ class Body : public StringHolder<Body> {
     ~Body() override = default;
 
     Body& operator=(Body&& old) noexcept = default;
-    Body& operator=(const Body& other) noexcept = default;
+    Body& operator=(const Body& other) = default;
 };
 
 } // namespace cpr

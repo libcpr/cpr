@@ -33,7 +33,7 @@ struct CurlHolder {
     ~CurlHolder();
 
     CurlHolder& operator=(CurlHolder&& old) noexcept = default;
-    CurlHolder& operator=(const CurlHolder& other) noexcept = default;
+    CurlHolder& operator=(const CurlHolder& other) = default;
 
     /**
      * Uses curl_easy_escape(...) for escaping the given string.

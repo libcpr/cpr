@@ -18,7 +18,7 @@ class Bearer {
     virtual ~Bearer() noexcept = default;
 
     Bearer& operator=(Bearer&& old) noexcept = default;
-    Bearer& operator=(const Bearer& other) noexcept = default;
+    Bearer& operator=(const Bearer& other) = default;
 
     virtual const char* GetToken() const noexcept;
 

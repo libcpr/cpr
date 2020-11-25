@@ -26,22 +26,13 @@ class StringHolder {
     StringHolder(const std::initializer_list<std::string> args) {
         str_ = std::accumulate(args.begin(), args.end(), str_);
     }
-    StringHolder(const StringHolder& other) noexcept = default;
+    StringHolder(const StringHolder& other) = default;
     StringHolder(StringHolder&& old) noexcept = default;
     virtual ~StringHolder() = default;
 
-    StringHolder& operator=(StringHolder&& old) noexcept {
-        str_ = std::move(old.str_);
-        return *this;
-    };
+    StringHolder& operator=(StringHolder&& old) noexcept = default;
 
-    StringHolder& operator=(const StringHolder& other) noexcept {
-        if(this == &other) {
-            return *this;
-        }
-        str_ = other.str_;
-        return *this;
-    };
+    StringHolder& operator=(const StringHolder& other) = default;
 
     explicit operator std::string() const {
         return str_;
@@ -123,12 +114,12 @@ class Url : public StringHolder<Url> {
     Url(const char* url) : StringHolder<Url>(url) {}
     Url(const char* str, size_t len) : StringHolder<Url>(std::string(str, len)) {}
     Url(const std::initializer_list<std::string> args) : StringHolder<Url>(args) {}
-    Url(const Url& other) noexcept = default;
+    Url(const Url& other) = default;
     Url(Url&& old) noexcept = default;
     ~Url() override = default;
 
     Url& operator=(Url&& old) noexcept = default;
-    Url& operator=(const Url& other) noexcept = default;
+    Url& operator=(const Url& other) = default;
 };
 
 struct CaseInsensitiveCompare {
