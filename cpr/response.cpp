@@ -7,6 +7,7 @@ Response::Response(std::shared_ptr<CurlHolder> curl, std::string&& p_text,
         : curl_(std::move(curl)), text(std::move(p_text)), cookies(std::move(p_cookies)),
           error(std::move(p_error)) {
     header = cpr::util::parseHeader(p_header_string, &status_line, &reason);
+    assert(curl_);
     assert(curl_->handle);
     curl_easy_getinfo(curl_->handle, CURLINFO_RESPONSE_CODE, &status_code);
     curl_easy_getinfo(curl_->handle, CURLINFO_TOTAL_TIME, &elapsed);
@@ -27,6 +28,7 @@ Response::Response(std::shared_ptr<CurlHolder> curl, std::string&& p_text,
 }
 
 std::vector<std::string> Response::GetCertInfo() {
+    assert(curl_);
     assert(curl_->handle);
     curl_certinfo* ci{nullptr};
     curl_easy_getinfo(curl_->handle, CURLINFO_CERTINFO, &ci);

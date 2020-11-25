@@ -19,27 +19,28 @@ namespace cpr {
 
 class Response {
   private:
-    std::shared_ptr<CurlHolder> curl_;
+    std::shared_ptr<CurlHolder> curl_{nullptr};
 
   public:
     // Ignored here since libcurl uses a long for this.
     // NOLINTNEXTLINE(google-runtime-int)
     long status_code{};
-    std::string text;
-    Header header;
-    Url url;
+    std::string text{};
+    Header header{};
+    Url url{};
     double elapsed{};
-    Cookies cookies;
-    Error error;
-    std::string raw_header;
-    std::string status_line;
-    std::string reason;
+    Cookies cookies{};
+    Error error{};
+    std::string raw_header{};
+    std::string status_line{};
+    std::string reason{};
     cpr_off_t uploaded_bytes{};
     cpr_off_t downloaded_bytes{};
     // Ignored here since libcurl uses a long for this.
     // NOLINTNEXTLINE(google-runtime-int)
     long redirect_count{};
 
+    Response() = default;
     Response(std::shared_ptr<CurlHolder> curl, std::string&& p_text, std::string&& p_header_string,
              Cookies&& p_cookies, Error&& p_error);
     std::vector<std::string> GetCertInfo();
