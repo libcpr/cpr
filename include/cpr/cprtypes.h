@@ -30,8 +30,18 @@ class StringHolder {
     StringHolder(StringHolder&& old) noexcept = default;
     virtual ~StringHolder() = default;
 
-    StringHolder& operator=(StringHolder&& old) noexcept = default;
-    StringHolder& operator=(const StringHolder& other) noexcept = default;
+    StringHolder& operator=(StringHolder&& old) noexcept {
+        str_ = std::move(old.str_);
+        return *this;
+    };
+
+    StringHolder& operator=(const StringHolder& other) noexcept {
+        if(this == &other) {
+            return *this;
+        }
+        str_ = other.str_;
+        return *this;
+    };
 
     explicit operator std::string() const {
         return str_;
