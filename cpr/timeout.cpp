@@ -3,6 +3,7 @@
 #include <limits>
 #include <stdexcept>
 #include <type_traits>
+#include <string>
 
 namespace cpr {
 
