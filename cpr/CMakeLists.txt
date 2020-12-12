@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.15)
 add_library(cpr
     auth.cpp
     bearer.cpp
+    connection_pool.cpp
     cookies.cpp
     cprtypes.cpp
     curl_container.cpp

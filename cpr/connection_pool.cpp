@@ -1,7 +1,7 @@
 #include "cpr/connection_pool.h"
+#include <iostream>
 
 namespace cpr {
-
 ConnectionPool::ConnectionPool() {
     auto curl_share = curl_share_init();
     this->connection_mutex_ = std::make_shared<std::mutex>();

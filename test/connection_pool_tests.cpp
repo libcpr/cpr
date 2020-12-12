@@ -5,11 +5,12 @@
 
 #include <cpr/cpr.h>
 
-#include "server.h"
+#include "httpServer.hpp"
 
+using namespace cpr;
 
-static Server* server = new Server();
-auto base = server->GetBaseUrl();
+static HttpServer* server = new HttpServer();
+auto base = server -> GetBaseUrl();
 auto requests = 100;
 
 TEST(MultipleGetTests, PoolBasicMultipleGetTest) {

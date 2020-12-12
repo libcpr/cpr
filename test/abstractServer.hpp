@@ -22,6 +22,10 @@ class AbstractServer : public testing::Environment {
     void Start();
     void Stop();
 
+    size_t GetConnectionCount();
+    void ResetConnectionCount();
+    void AddConnection(int remote_port);
+
     virtual std::string GetBaseUrl() = 0;
     virtual uint16_t GetPort() = 0;
 
@@ -33,6 +37,7 @@ class AbstractServer : public testing::Environment {
     std::condition_variable server_start_cv;
     std::condition_variable server_stop_cv;
     std::atomic<bool> should_run{false};
+    std::set<int> unique_connections;
     mg_mgr mgr{};
 
     void Run();

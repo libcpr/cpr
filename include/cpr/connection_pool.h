@@ -2,15 +2,15 @@
 #define CPR_CONNECTION_POOL_H
 
 #include <curl/curl.h>
-#include <mutex>
 #include <memory>
+#include <mutex>
 
 namespace cpr {
 class ConnectionPool {
   public:
     ConnectionPool();
     ConnectionPool(const ConnectionPool&) = default;
-    ConnectionPool & operator=(const ConnectionPool&) = delete;
+    ConnectionPool& operator=(const ConnectionPool&) = delete;
     void SetupHandler(CURL* easy_handler) const;
 
   private:
