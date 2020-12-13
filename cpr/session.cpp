@@ -775,6 +775,7 @@ void Session::SetHeader(const Header& header) { pimpl_->SetHeader(header); }
 void Session::UpdateHeader(const Header& header) { pimpl_->UpdateHeader(header); }
 void Session::SetTimeout(const Timeout& timeout) { pimpl_->SetTimeout(timeout); }
 void Session::SetConnectTimeout(const ConnectTimeout& timeout) { pimpl_->SetConnectTimeout(timeout); }
+void Session::SetConnectionPool(const ConnectionPool& pool) { pimpl_->SetConnectionPool(pool); }
 void Session::SetAuth(const Authentication& auth) { pimpl_->SetAuth(auth); }
 void Session::SetDigest(const Digest& auth) { pimpl_->SetDigest(auth); }
 void Session::SetUserAgent(const UserAgent& ua) { pimpl_->SetUserAgent(ua); }
@@ -802,7 +803,6 @@ void Session::SetOption(const HeaderCallback& header) { pimpl_->SetHeaderCallbac
 void Session::SetOption(const WriteCallback& write) { pimpl_->SetWriteCallback(write); }
 void Session::SetOption(const ProgressCallback& progress) { pimpl_->SetProgressCallback(progress); }
 void Session::SetOption(const DebugCallback& debug) { pimpl_->SetDebugCallback(debug); }
-void Session::SetConnectionPool(const ConnectionPool& pool) { pimpl_->SetConnectionPool(pool); }
 void Session::SetOption(const Url& url) { pimpl_->SetUrl(url); }
 void Session::SetOption(const Parameters& parameters) { pimpl_->SetParameters(parameters); }
 void Session::SetOption(Parameters&& parameters) { pimpl_->SetParameters(std::move(parameters)); }
