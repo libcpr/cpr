@@ -5,6 +5,9 @@ namespace cpr {
 ConnectionPool::ConnectionPool() {
     auto curl_share = curl_share_init();
     this->connection_mutex_ = std::make_shared<std::mutex>();
+    // Force mutex initalization
+    this->connection_mutex_->lock();
+    this->connection_mutex_->unlock();
     auto lock_f = +[](CURL* handle, curl_lock_data data, curl_lock_access access, void* userptr) {
         std::mutex* lock = static_cast<std::mutex*>(userptr);
         lock->lock();
