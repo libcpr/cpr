@@ -451,7 +451,7 @@ Response Session::Impl::Download(std::ofstream& file) {
 
 Response Session::Impl::Get() {
     curl_easy_setopt(curl_->handle, CURLOPT_NOBODY, 0L);
-    curl_easy_setopt(curl_->handle, CURLOPT_CUSTOMREQUEST, "GET");
+    curl_easy_setopt(curl_->handle, CURLOPT_CUSTOMREQUEST, nullptr);
 
     return makeRequest();
 }
@@ -479,7 +479,7 @@ Response Session::Impl::Patch() {
 
 Response Session::Impl::Post() {
     curl_easy_setopt(curl_->handle, CURLOPT_NOBODY, 0L);
-    curl_easy_setopt(curl_->handle, CURLOPT_CUSTOMREQUEST, "POST");
+    curl_easy_setopt(curl_->handle, CURLOPT_CUSTOMREQUEST, nullptr);
 
     // In case there is no body or payload set it to an empty post:
     if (!hasBodyOrPayload_) {
