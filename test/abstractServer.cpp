@@ -51,9 +51,9 @@ static void EventHandler(mg_connection* conn, int event, void* event_data) {
 
         case MG_EV_HTTP_REQUEST: {
             AbstractServer* server = static_cast<AbstractServer*>(conn->mgr->user_data);
-            char port_cstr[256];
-            mg_conn_addr_to_str(conn, port_cstr, 256, MG_SOCK_STRINGIFY_REMOTE | MG_SOCK_STRINGIFY_PORT);
-            int port = atoi(port_cstr);
+            std::array<char,256> port_cstr;
+            mg_conn_addr_to_str(conn, port_cstr.data(), 256, MG_SOCK_STRINGIFY_REMOTE | MG_SOCK_STRINGIFY_PORT);
+            int port = atoi(port_cstr.data());
             server->AddConnection(port);
             server->OnRequest(conn, static_cast<http_message*>(event_data));
         } break;
