@@ -12,8 +12,13 @@ else ()
                 abstractServer.cpp
                 httpServer.cpp)
 endif()
-target_link_libraries(test_server PRIVATE Threads::Threads cpr::cpr GTest::GTest
-                                             PUBLIC mongoose)
+if(WIN32)
+    target_link_libraries(test_server PRIVATE Threads::Threads cpr::cpr GTest::GTest
+                                                PUBLIC mongoose ws2_32 wsock32)
+else()
+    target_link_libraries(test_server PRIVATE Threads::Threads cpr::cpr GTest::GTest
+                                                PUBLIC mongoose)
+endif()
 
 macro(add_cpr_test _TEST_NAME)
     add_executable(${_TEST_NAME}_tests ${_TEST_NAME}_tests.cpp)
