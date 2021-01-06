@@ -45,7 +45,28 @@ jobs:
         build-type: Release
         run-test: true
         ctest-options: -V
-    
+        
+  ubuntu-18-gcc-ssl-system-curl:
+    runs-on: ubuntu-18.04
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2.2.0
+      with:
+        submodules: true
+    - name: Install libssl-dev
+      run: sudo apt install libssl-dev
+    - name: "[Release g++] Build & Test"
+      uses: ashutoshvarma/action-cmake-build@master
+      with:
+        build-dir: ${{github.workspace}}/build
+        source-dir: ${{github.workspace}}
+        configure-options: -DUSE_SYSTEM_CURL=ON
+        cc: gcc
+        cxx: g++
+        build-type: Release
+        run-test: true
+        ctest-options: -V      
+  
   ubuntu-18-gcc-ssl-address-leak-undefined-behavior-sanitizer:
     runs-on: ubuntu-18.04
     steps:
