@@ -45,7 +45,7 @@ jobs:
         build-type: Release
         run-test: true
         ctest-options: -V
-        
+
   ubuntu-18-gcc-ssl-system-curl:
     runs-on: ubuntu-18.04
     steps:
