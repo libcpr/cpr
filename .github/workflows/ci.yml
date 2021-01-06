@@ -54,7 +54,7 @@ jobs:
       with:
         submodules: true
     - name: Install libssl-dev
-      run: sudo apt install libssl-dev
+      run: sudo apt install libcurl4-openssl-dev
     - name: "[Release g++] Build & Test"
       uses: ashutoshvarma/action-cmake-build@master
       with:
