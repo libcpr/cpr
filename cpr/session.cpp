@@ -11,6 +11,16 @@
 #include "cpr/curlholder.h"
 #include "cpr/util.h"
 
+/**
+ * CURLAUTH_BEARER got defined after curl 7.60.0.
+ * Source: https://github.com/curl/curl/issues/2661
+ * 
+ * To allow using CPR with an older version we define it here.
+ **/
+#if !defined(CURLAUTH_BEARER)
+#define CURLAUTH_BEARER (((unsigned long)1)<<6)
+#endif
+
 namespace cpr {
 
 // Ignored here since libcurl reqires a long:
