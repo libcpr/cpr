@@ -11,15 +11,6 @@
 #include "cpr/curlholder.h"
 #include "cpr/util.h"
 
-/**
- * CURLAUTH_BEARER got defined after curl 7.60.0.
- * Source: https://github.com/curl/curl/issues/2661
- * 
- * To allow using CPR with an older version we define it here.
- **/
-#if !defined(CURLAUTH_BEARER)
-#define CURLAUTH_BEARER (((unsigned long)1)<<6)
-#endif
 
 namespace cpr {
 
@@ -175,7 +166,13 @@ void Session::Impl::SetAuth(const Authentication& auth) {
 void Session::Impl::SetBearer(const Bearer& token) {
     // Ignore here since this has been defined by libcurl.
     // NOLINTNEXTLINE(hicpp-signed-bitwise)
+#if LIBCURL_VERSION_NUM >= 0x076100
     curl_easy_setopt(curl_->handle, CURLOPT_HTTPAUTH, CURLAUTH_BEARER);
+#else
+    // Ignore here since this has been defined by libcurl.
+    // NOLINTNEXTLINE(hicpp-signed-bitwise)
+    curl_easy_setopt(curl_->handle, CURLOPT_HTTPAUTH, CURLAUTH_ANY);
+#endif
     curl_easy_setopt(curl_->handle, CURLOPT_XOAUTH2_BEARER, token.GetToken());
 }
 
