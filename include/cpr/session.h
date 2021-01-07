@@ -81,7 +81,11 @@ class Session {
     void SetOption(const Timeout& timeout);
     void SetOption(const ConnectTimeout& timeout);
     void SetOption(const Authentication& auth);
+// Only supported with libcurl >= 7.61.0.
+// As an alternative use SetHeader and add the token manually.
+#if LIBCURL_VERSION_NUM >= 0x073D00
     void SetOption(const Bearer& auth);
+#endif
     void SetOption(const Digest& auth);
     void SetOption(const UserAgent& ua);
     void SetOption(Payload&& payload);

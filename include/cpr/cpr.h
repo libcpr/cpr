@@ -8,4 +8,6 @@
 #include "cpr/session.h"
 #include "cpr/status_codes.h"
 
+#define CPR_LIBCURL_VERSION_NUM LIBCURL_VERSION_NUM
+
 #endif

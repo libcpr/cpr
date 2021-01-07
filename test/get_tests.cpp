@@ -195,7 +195,11 @@ TEST(BasicAuthenticationTests, BasicAuthenticationSuccessTest) {
 
 TEST(BasicAuthenticationTests, BasicBearerSuccessTest) {
     Url url{server->GetBaseUrl() + "/bearer_token.html"};
+#if CPR_LIBCURL_VERSION_NUM >= 0x073D00
     Response response = cpr::Get(url, Bearer{"the_token"});
+#else
+    Response response = cpr::Get(url, Header{{"Authorization", "Bearer the_token"}});
+#endif
     std::string expected_text{"Header reflect GET"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);

@@ -32,7 +32,11 @@ class Session::Impl {
     void SetTimeout(const Timeout& timeout);
     void SetConnectTimeout(const ConnectTimeout& timeout);
     void SetAuth(const Authentication& auth);
+// Only supported with libcurl >= 7.61.0.
+// As an alternative use SetHeader and add the token manually.
+#if LIBCURL_VERSION_NUM >= 0x073D00
     void SetBearer(const Bearer& token);
+#endif
     void SetDigest(const Digest& auth);
     void SetUserAgent(const UserAgent& ua);
     void SetPayload(Payload&& payload);
@@ -163,18 +167,14 @@ void Session::Impl::SetAuth(const Authentication& auth) {
     curl_easy_setopt(curl_->handle, CURLOPT_USERPWD, auth.GetAuthString());
 }
 
+// Only supported with libcurl >= 7.61.0.
+// As an alternative use SetHeader and add the token manually.
+#if LIBCURL_VERSION_NUM >= 0x073D00
 void Session::Impl::SetBearer(const Bearer& token) {
-    // Ignore here since this has been defined by libcurl.
-    // NOLINTNEXTLINE(hicpp-signed-bitwise)
-#if LIBCURL_VERSION_NUM >= 0x076100
     curl_easy_setopt(curl_->handle, CURLOPT_HTTPAUTH, CURLAUTH_BEARER);
-#else
-    // Ignore here since this has been defined by libcurl.
-    // NOLINTNEXTLINE(hicpp-signed-bitwise)
-    curl_easy_setopt(curl_->handle, CURLOPT_HTTPAUTH, CURLAUTH_ANY);
-#endif
     curl_easy_setopt(curl_->handle, CURLOPT_XOAUTH2_BEARER, token.GetToken());
 }
+#endif
 
 void Session::Impl::SetDigest(const Digest& auth) {
     // Ignore here since this has been defined by libcurl.
@@ -647,7 +647,11 @@ void Session::SetOption(const Header& header) { pimpl_->SetHeader(header); }
 void Session::SetOption(const Timeout& timeout) { pimpl_->SetTimeout(timeout); }
 void Session::SetOption(const ConnectTimeout& timeout) { pimpl_->SetConnectTimeout(timeout); }
 void Session::SetOption(const Authentication& auth) { pimpl_->SetAuth(auth); }
+// Only supported with libcurl >= 7.61.0.
+// As an alternative use SetHeader and add the token manually.
+#if LIBCURL_VERSION_NUM >= 0x073D00
 void Session::SetOption(const Bearer& auth) { pimpl_->SetBearer(auth); }
+#endif
 void Session::SetOption(const Digest& auth) { pimpl_->SetDigest(auth); }
 void Session::SetOption(const UserAgent& ua) { pimpl_->SetUserAgent(ua); }
 void Session::SetOption(const Payload& payload) { pimpl_->SetPayload(payload); }
