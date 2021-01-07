@@ -271,4 +271,26 @@ std::cout << r.text << std::endl;
  */
 ```
 
+Built in [OAuth - Bearer Token](https://en.wikipedia.org/wiki/OAuth) authentication is available in case your `libcurl` version is >= `7.61.0`.
+For versions of `libcurl` < `7.61.0`, you have to manipulate the header of your request manually.
+```c++
+#if CPR_LIBCURL_VERSION_NUM >= 0x073D00
+    // Perform the request like usually:
+    cpr::Response r = cpr::Get(cpr::Url{"http://www.httpbin.org/bearer"},
+                  cpr::Bearer{"ACCESS_TOKEN"});
+#else
+    // Manually add the Authorization header:
+    cpr::Response r = cpr::Get(cpr::Url{"http://www.httpbin.org/bearer"},
+                  cpr::Header{{"Authorization", "Bearer ACCESS_TOKEN"}});
+#endif
+std::cout << r.text << std::endl;
+
+/*
+ * {
+ *   "authenticated": true,
+ *   "token": "ACCESS_TOKEN"
+ * }
+ */
+```
+
 With these basic operations, modern C++ has access to a significant portion of the world wide web's APIs. For more complex applications, check out the [Advanced Usage guides](/cpr/advanced-usage.html).
