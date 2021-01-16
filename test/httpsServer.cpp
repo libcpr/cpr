@@ -12,7 +12,8 @@ std::string HttpsServer::GetBaseUrl() {
 }
 
 uint16_t HttpsServer::GetPort() {
-    return 8081;
+    // Unassigned port in the ephemeral range
+    return 61937;
 }
 
 mg_connection* HttpsServer::initServer(mg_mgr* mgr,
