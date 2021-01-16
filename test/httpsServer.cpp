@@ -1,4 +1,5 @@
 #include "httpsServer.hpp"
+#include <system_error>
 
 namespace cpr {
 HttpsServer::HttpsServer(std::string&& baseDirPath, std::string&& sslCertFileName,
@@ -24,6 +25,9 @@ mg_connection* HttpsServer::initServer(mg_mgr* mgr,
     bind_opts.ssl_key = sslKeyFileName.c_str();
     std::string port = std::to_string(GetPort());
     mg_connection* c = mg_bind_opt(mgr, port.c_str(), event_handler, bind_opts);
+    if (!c) {
+        throw std::system_error(errno, std::system_category(), "Failed to bind to port " + port);
+    }
     mg_set_protocol_http_websocket(c);
     return c;
 }
