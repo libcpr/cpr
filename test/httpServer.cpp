@@ -1,5 +1,6 @@
 #include "httpServer.hpp"
 #include <string>
+#include <system_error>
 
 namespace cpr {
 std::string HttpServer::GetBaseUrl() {
@@ -16,6 +17,9 @@ mg_connection* HttpServer::initServer(mg_mgr* mgr,
     mg_mgr_init(mgr, this);
     std::string port = std::to_string(GetPort());
     mg_connection* c = mg_bind(mgr, port.c_str(), event_handler);
+    if (!c) {
+        throw std::system_error(errno, std::system_category(), "Failed to bind to port " + port);
+    }
     mg_set_protocol_http_websocket(c);
     return c;
 }
