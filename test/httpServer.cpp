@@ -70,7 +70,18 @@ void HttpServer::OnRequestTimeout(mg_connection* conn, http_message* msg) {
     OnRequestHello(conn, msg);
 }
 
-void HttpServer::OnRequestLowSpeed(mg_connection* conn, http_message* /*msg*/) {
+void HttpServer::OnRequestLowSpeedTimeout(mg_connection* conn, http_message* /*msg*/) {
+    std::string response{"Hello world!"};
+    std::string headers = "Content-Type: text/html";
+    mg_send_head(conn, 200, response.length() * 20, headers.c_str());
+    for (size_t i = 0; i < 20; i++)
+    {
+        mg_send(conn, response.c_str(), response.length());
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
+}
+
+void HttpServer::OnRequestLowSpeed(mg_connection* conn, http_message*  /*msg*/) {
     std::string response{"Hello world!"};
     std::string headers = "Content-Type: text/html";
     mg_send_head(conn, 200, response.length(), headers.c_str());
@@ -559,6 +570,8 @@ void HttpServer::OnRequest(mg_connection* conn, http_message* msg) {
         OnRequestHello(conn, msg);
     } else if (uri == "/timeout.html") {
         OnRequestTimeout(conn, msg);
+    } else if (uri == "/low_speed_timeout.html") {
+        OnRequestLowSpeedTimeout(conn, msg);
     } else if (uri == "/low_speed.html") {
         OnRequestLowSpeed(conn, msg);
     } else if (uri == "/low_speed_bytes.html") {

@@ -376,6 +376,17 @@ TEST(TimeoutTests, SetTimeoutLongTest) {
     EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
+TEST(TimeoutTests, SetTimeoutLowSpeed) {
+    Url url{server->GetBaseUrl() + "/low_speed_timeout.html"};
+    Session session;
+    session.SetUrl(url);
+    session.SetTimeout(1000);
+    Response response = session.Get();
+    EXPECT_EQ(url, response.url);
+    EXPECT_FALSE(response.status_code == 200);
+    EXPECT_EQ(ErrorCode::OPERATION_TIMEDOUT, response.error.code);
+}
+
 TEST(TimeoutTests, SetChronoTimeoutTest) {
     Url url{server->GetBaseUrl() + "/hello.html"};
     Session session;
