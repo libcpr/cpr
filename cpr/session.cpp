@@ -465,16 +465,17 @@ Response Session::Impl::Get() {
         curl_easy_setopt(curl_->handle, CURLOPT_NOBODY, 0L);
         curl_easy_setopt(curl_->handle, CURLOPT_CUSTOMREQUEST, "GET");
     } else {
-        curl_easy_setopt(curl_->handle, CURLOPT_HTTPGET, 1L);
         curl_easy_setopt(curl_->handle, CURLOPT_NOBODY, 0L);
+        curl_easy_setopt(curl_->handle, CURLOPT_CUSTOMREQUEST, nullptr);
+        curl_easy_setopt(curl_->handle, CURLOPT_HTTPGET, 1L);
     }
 
     return makeRequest();
 }
 
 Response Session::Impl::Head() {
-    curl_easy_setopt(curl_->handle, CURLOPT_CUSTOMREQUEST, nullptr);
     curl_easy_setopt(curl_->handle, CURLOPT_NOBODY, 1L);
+    curl_easy_setopt(curl_->handle, CURLOPT_CUSTOMREQUEST, nullptr);
 
     return makeRequest();
 }
@@ -495,15 +496,13 @@ Response Session::Impl::Patch() {
 
 Response Session::Impl::Post() {
     curl_easy_setopt(curl_->handle, CURLOPT_NOBODY, 0L);
-    curl_easy_setopt(curl_->handle, CURLOPT_CUSTOMREQUEST, nullptr);
 
     // In case there is no body or payload set it to an empty post:
-    if (!hasBodyOrPayload_) {
-        if (!readcb_.callback) {
-            curl_easy_setopt(curl_->handle, CURLOPT_POSTFIELDS, "");
-        } else {
-            curl_easy_setopt(curl_->handle, CURLOPT_POSTFIELDS, 0);
-        }
+    if (hasBodyOrPayload_) {
+        curl_easy_setopt(curl_->handle, CURLOPT_CUSTOMREQUEST, nullptr);
+    } else {
+        curl_easy_setopt(curl_->handle, CURLOPT_POSTFIELDS, readcb_.callback ? nullptr : "");
+        curl_easy_setopt(curl_->handle, CURLOPT_CUSTOMREQUEST, "POST");
     }
 
     return makeRequest();

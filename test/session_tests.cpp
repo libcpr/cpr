@@ -805,10 +805,12 @@ TEST(DifferentMethodTests, MultipleGetPostTest) {
 
 TEST(DifferentMethodTests, MultipleDeleteHeadPutGetPostTest) {
     Url url{server->GetBaseUrl() + "/header_reflect.html"};
+    Url urlPost{server->GetBaseUrl() + "/reflect_post.html"};
+    Url urlPut{server->GetBaseUrl() + "/put.html"};
     Session session;
-    session.SetUrl(url);
     for (size_t i = 0; i < 10; ++i) {
         {
+            session.SetUrl(url);
             Response response = session.Delete();
             std::string expected_text{"Header reflect DELETE"};
             EXPECT_EQ(expected_text, response.text);
@@ -817,14 +819,17 @@ TEST(DifferentMethodTests, MultipleDeleteHeadPutGetPostTest) {
             EXPECT_EQ(ErrorCode::OK, response.error.code);
         }
         {
+            session.SetUrl(urlPost);
+            std::string expectedBody = "a1b2c3Post";
+            session.SetBody(expectedBody);
             Response response = session.Post();
-            std::string expected_text{"Header reflect POST"};
-            EXPECT_EQ(expected_text, response.text);
-            EXPECT_EQ(url, response.url);
+            EXPECT_EQ(expectedBody, response.text);
+            EXPECT_EQ(urlPost, response.url);
             EXPECT_EQ(200, response.status_code);
             EXPECT_EQ(ErrorCode::OK, response.error.code);
         }
         {
+            session.SetUrl(url);
             Response response = session.Get();
             std::string expected_text{"Header reflect GET"};
             EXPECT_EQ(expected_text, response.text);
@@ -833,16 +838,15 @@ TEST(DifferentMethodTests, MultipleDeleteHeadPutGetPostTest) {
             EXPECT_EQ(ErrorCode::OK, response.error.code);
         }
         {
-            Url putUrl{server->GetBaseUrl() + "/put.html"};
+            session.SetUrl(urlPut);
             session.SetPayload({{"x", "5"}});
-            session.SetUrl(putUrl);
             Response response = session.Put();
             std::string expected_text{
                     "{\n"
                     "  \"x\": 5\n"
                     "}"};
             EXPECT_EQ(expected_text, response.text);
-            EXPECT_EQ(putUrl, response.url);
+            EXPECT_EQ(urlPut, response.url);
             EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
             EXPECT_EQ(200, response.status_code);
             EXPECT_EQ(ErrorCode::OK, response.error.code);

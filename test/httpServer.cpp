@@ -465,6 +465,10 @@ void HttpServer::OnRequestPut(mg_connection* conn, http_message* msg) {
 }
 
 void HttpServer::OnRequestReflectPost(mg_connection* conn, http_message* msg) {
+    if (std::string{msg->method.p, msg->method.len} != std::string{"POST"}) {
+        mg_http_send_error(conn, 405, "Method Not Allowed");
+    }
+
     std::string response = std::string{msg->body.p, msg->body.len};
     std::string headers;
     for (size_t i = 0; i < sizeof(msg->header_names) / sizeof(mg_str); i++) {
