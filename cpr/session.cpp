@@ -171,6 +171,8 @@ void Session::Impl::SetAuth(const Authentication& auth) {
 // As an alternative use SetHeader and add the token manually.
 #if LIBCURL_VERSION_NUM >= 0x073D00
 void Session::Impl::SetBearer(const Bearer& token) {
+    // Ignore here since this has been defined by libcurl.
+    // NOLINTNEXTLINE(hicpp-signed-bitwise)
     curl_easy_setopt(curl_->handle, CURLOPT_HTTPAUTH, CURLAUTH_BEARER);
     curl_easy_setopt(curl_->handle, CURLOPT_XOAUTH2_BEARER, token.GetToken());
 }
@@ -457,8 +459,15 @@ Response Session::Impl::Download(std::ofstream& file) {
 }
 
 Response Session::Impl::Get() {
-    curl_easy_setopt(curl_->handle, CURLOPT_NOBODY, 0L);
-    curl_easy_setopt(curl_->handle, CURLOPT_CUSTOMREQUEST, nullptr);
+    // In case there is a body or payload for this request, we create a custom GET-Request since a
+    // GET-Request with body is based on the HTTP RFC **not** a leagal request.
+    if (hasBodyOrPayload_) {
+        curl_easy_setopt(curl_->handle, CURLOPT_NOBODY, 0L);
+        curl_easy_setopt(curl_->handle, CURLOPT_CUSTOMREQUEST, "GET");
+    } else {
+        curl_easy_setopt(curl_->handle, CURLOPT_HTTPGET, 1L);
+        curl_easy_setopt(curl_->handle, CURLOPT_NOBODY, 0L);
+    }
 
     return makeRequest();
 }

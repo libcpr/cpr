@@ -70,7 +70,7 @@ void HttpServer::OnRequestTimeout(mg_connection* conn, http_message* msg) {
     OnRequestHello(conn, msg);
 }
 
-void HttpServer::OnRequestLowSpeed(mg_connection* conn, http_message*  /*msg*/) {
+void HttpServer::OnRequestLowSpeed(mg_connection* conn, http_message* /*msg*/) {
     std::string response{"Hello world!"};
     std::string headers = "Content-Type: text/html";
     mg_send_head(conn, 200, response.length(), headers.c_str());
@@ -78,7 +78,7 @@ void HttpServer::OnRequestLowSpeed(mg_connection* conn, http_message*  /*msg*/) 
     mg_send(conn, response.c_str(), response.length());
 }
 
-void HttpServer::OnRequestLowSpeedBytes(mg_connection* conn, http_message*  /*msg*/) {
+void HttpServer::OnRequestLowSpeedBytes(mg_connection* conn, http_message* /*msg*/) {
     std::string response{"a"};
     std::string headers = "Content-Type: text/html";
     mg_send_head(conn, 200, response.length(), headers.c_str());
@@ -310,16 +310,24 @@ void HttpServer::OnRequestUrlPost(mg_connection* conn, http_message* msg) {
 }
 
 void HttpServer::OnRequestBodyGet(mg_connection* conn, http_message* msg) {
-    char message[100];
-    mg_get_http_var(&(msg->body), "message", message, sizeof(message));
-    std::string response = message;
+    if (std::string{msg->method.p, msg->method.len} != std::string{"GET"}) {
+        mg_http_send_error(conn, 405, "Method Not Allowed");
+        return;
+    }
+    std::array<char, 100> message{};
+    mg_get_http_var(&(msg->body), "message", message.data(), message.size());
+    if (msg->body.len <= 0) {
+        mg_http_send_error(conn, 405, "No Content");
+        return;
+    }
+    std::string response = message.data();
     std::string headers = "Content-Type: text/html";
     mg_send_head(conn, 200, response.length(), headers.c_str());
     mg_send(conn, response.c_str(), response.length());
 }
 
 void HttpServer::OnRequestJsonPost(mg_connection* conn, http_message* msg) {
-    mg_str* content_type;
+    mg_str* content_type{nullptr};
     if ((content_type = mg_get_http_header(msg, "Content-Type")) == nullptr ||
         std::string{content_type->p, content_type->len} != "application/json") {
         mg_http_send_error(conn, 415, "Unsupported Media Type");
