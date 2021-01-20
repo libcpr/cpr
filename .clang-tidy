@@ -21,7 +21,8 @@ Checks: '*,
 -llvmlibc-callee-namespace,
 -cppcoreguidelines-pro-bounds-array-to-pointer-decay,
 -hicpp-no-array-decay,
--modernize-pass-by-value
+-modernize-pass-by-value,
+-cppcoreguidelines-pro-bounds-constant-array-index
 '
 WarningsAsErrors: '*'
 HeaderFilterRegex: 'src/*.hpp'
