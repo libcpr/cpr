@@ -410,6 +410,11 @@ void Session::Impl::SetSslOptions(const SslOptions& options) {
                              | options.max_version
 #endif
     );
+#if SUPPORT_SSL_NO_REVOKE
+    if (options.ssl_no_revoke) {
+        curl_easy_setopt(curl_->handle, CURLOPT_SSL_OPTIONS, CURLSSLOPT_NO_REVOKE);
+    }
+#endif
     if (!options.ca_info.empty()) {
         curl_easy_setopt(curl_->handle, CURLOPT_CAINFO, options.ca_info.c_str());
     }
