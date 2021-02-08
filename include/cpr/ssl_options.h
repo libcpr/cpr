@@ -60,6 +60,9 @@
 #ifndef SUPPORT_SSL_FALSESTART
 #define SUPPORT_SSL_FALSESTART __LIBCURL_VERSION_GTE(7, 42)
 #endif
+#ifndef SUPPORT_SSL_NO_REVOKE
+#define SUPPORT_SSL_NO_REVOKE __LIBCURL_VERSION_GTE(7, 44)
+#endif
 
 namespace cpr {
 
@@ -340,6 +343,19 @@ class SslFastStart {
 };
 #endif
 
+class NoRevoke {
+public:
+    NoRevoke() = default;
+    // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
+    NoRevoke(bool enabled) : enabled(enabled) {}
+
+    explicit operator bool() const {
+        return enabled;
+    }
+
+    bool enabled = false;
+};
+
 } // namespace ssl
 
 struct SslOptions {
@@ -358,6 +374,9 @@ struct SslOptions {
     bool verify_peer = true;
     bool verify_status = false;
     int ssl_version = CURL_SSLVERSION_DEFAULT;
+#if SUPPORT_SSL_NO_REVOKE
+    bool ssl_no_revoke = false;
+#endif
 #if SUPPORT_MAX_TLS_VERSION
     int max_version = CURL_SSLVERSION_MAX_DEFAULT;
 #endif
@@ -403,6 +422,11 @@ struct SslOptions {
     void SetOption(const ssl::TLSv1& /*opt*/) {
         ssl_version = CURL_SSLVERSION_TLSv1;
     }
+#if SUPPORT_SSL_NO_REVOKE
+    void SetOption(const ssl::NoRevoke& opt) {
+        ssl_no_revoke = opt.enabled;
+    }
+#endif
 #if SUPPORT_SSLv2
     void SetOption(const ssl::SSLv2& /*opt*/) {
         ssl_version = CURL_SSLVERSION_SSLv2;
