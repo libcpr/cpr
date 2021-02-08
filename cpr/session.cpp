@@ -8,7 +8,6 @@
 
 #include <curl/curl.h>
 
-#include "cpr/curlholder.h"
 #include "cpr/util.h"
 
 
@@ -72,6 +71,8 @@ class Session::Impl {
     Response Patch();
     Response Post();
     Response Put();
+
+    std::shared_ptr<CurlHolder> GetCurlHolder();
 
   private:
     bool hasBodyOrPayload_{false};
@@ -515,6 +516,10 @@ Response Session::Impl::Put() {
     return makeRequest();
 }
 
+std::shared_ptr<CurlHolder> Session::Impl::GetCurlHolder() {
+    return curl_;
+}
+
 Response Session::Impl::makeDownloadRequest() {
     assert(curl_->handle);
     const std::string parametersContent = parameters_.GetContent(*curl_);
@@ -689,5 +694,7 @@ Response Session::Options() { return pimpl_->Options(); }
 Response Session::Patch() { return pimpl_->Patch(); }
 Response Session::Post() { return pimpl_->Post(); }
 Response Session::Put() { return pimpl_->Put(); }
+
+std::shared_ptr<CurlHolder> Session::GetCurlHolder() { return pimpl_->GetCurlHolder(); }
 // clang-format on
 } // namespace cpr

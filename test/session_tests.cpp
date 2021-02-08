@@ -4,6 +4,7 @@
 #include <string>
 
 #include <cpr/cpr.h>
+#include <curl/curl.h>
 
 #include "httpServer.hpp"
 
@@ -870,6 +871,30 @@ TEST(DifferentMethodTests, MultipleDeleteHeadPutGetPostTest) {
             EXPECT_EQ(200, response.status_code);
             EXPECT_EQ(ErrorCode::OK, response.error.code);
         }
+    }
+}
+
+TEST(CurlHolderManipulateTests, CustomOptionTest) {
+    Url url{server->GetBaseUrl() + "/header_reflect.html"};
+    Session session;
+    session.SetUrl(url);
+    curl_easy_setopt(session.GetCurlHolder()->handle, CURLOPT_SSL_OPTIONS,
+                     CURLSSLOPT_ALLOW_BEAST | CURLSSLOPT_NO_REVOKE);
+    {
+        Response response = session.Get();
+        std::string expected_text{"Header reflect GET"};
+        EXPECT_EQ(expected_text, response.text);
+        EXPECT_EQ(url, response.url);
+        EXPECT_EQ(200, response.status_code);
+        EXPECT_EQ(ErrorCode::OK, response.error.code);
+    }
+    {
+        Response response = session.Post();
+        std::string expected_text{"Header reflect POST"};
+        EXPECT_EQ(expected_text, response.text);
+        EXPECT_EQ(url, response.url);
+        EXPECT_EQ(200, response.status_code);
+        EXPECT_EQ(ErrorCode::OK, response.error.code);
     }
 }
 

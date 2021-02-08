@@ -12,6 +12,7 @@
 #include "cpr/connect_timeout.h"
 #include "cpr/cookies.h"
 #include "cpr/cprtypes.h"
+#include "cpr/curlholder.h"
 #include "cpr/digest.h"
 #include "cpr/limit_rate.h"
 #include "cpr/low_speed.h"
@@ -121,6 +122,8 @@ class Session {
     Response Patch();
     Response Post();
     Response Put();
+
+    std::shared_ptr<CurlHolder> GetCurlHolder();
 
   private:
     class Impl;
