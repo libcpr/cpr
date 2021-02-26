@@ -1,3 +1,4 @@
+#include <cstddef>
 #include <gtest/gtest.h>
 
 #include <string>
@@ -5,6 +6,7 @@
 
 #include <cpr/cpr.h>
 
+#include "cpr/cprtypes.h"
 #include "httpServer.hpp"
 
 using namespace cpr;
@@ -791,6 +793,38 @@ TEST(CallbackDataTests, CallbackReadFunctionTextTest) {
     }});
     EXPECT_EQ(2, count);
     EXPECT_EQ(expected_text, response.text);
+}
+
+/**
+ * Checks if the "Transfer-Encoding" header will be kept when using headers and a read callback.
+ * Issue: https://github.com/whoshuu/cpr/issues/517
+ **/
+TEST(CallbackDataTests, CallbackReadFunctionHeaderTest) {
+    Url url{server->GetBaseUrl() + "/header_reflect.html"};
+    bool send = false;
+    std::string data = "Test";
+    Response response = cpr::Post(url,
+                                  cpr::ReadCallback{3,
+                                                    [&](char* buffer, size_t& size) -> size_t {
+                                                        if (!send) {
+                                                            std::copy(data.begin(), data.end(), buffer);
+                                                            size = data.size();
+                                                            send = true;
+                                                        } else {
+                                                            size = 0;
+                                                        }
+                                                        return true;
+                                                    }},
+                                  Header{{"TestHeader", "42"}});
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+
+    // Check Header:
+    EXPECT_EQ(std::string{"42"}, response.header["TestHeader"]); // Set by us
+    EXPECT_TRUE(response.header.find("TestHeader") != response.header.end());
+    EXPECT_EQ(std::string{"chunked"}, response.header["Transfer-Encoding"]); // Set by the read callback
+    EXPECT_TRUE(response.header.find("Transfer-Encoding") != response.header.end());
 }
 
 /* cesanta mongoose doesn't support chunked requests yet
