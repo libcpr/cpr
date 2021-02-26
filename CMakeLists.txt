@@ -109,8 +109,8 @@ if(NOT USE_SYSTEM_CURL OR NOT CURL_FOUND)
     # Show progress of FetchContent:
     set(FETCHCONTENT_QUIET OFF CACHE INTERNAL "" FORCE)
     FetchContent_Declare(curl
-                         URL                    https://github.com/curl/curl/releases/download/curl-7_69_1/curl-7.69.1.tar.xz
-                         URL_HASH               SHA256=03c7d5e6697f7b7e40ada1b2256e565a555657398e6c1fcfa4cb251ccd819d4f # the file hash for curl-7.69.1.tar.xz
+                         URL                    https://github.com/curl/curl/releases/download/curl-7_75_0/curl-7.75.0.tar.xz
+                         URL_HASH               SHA256=fe0c49d8468249000bda75bcfdf9e30ff7e9a86d35f1a21f428d79c389d55675 # the file hash for curl-7.75.0.tar.xz
                          USES_TERMINAL_DOWNLOAD TRUE)   # <---- This is needed only for Ninja to show download progress
 
     FetchContent_MakeAvailable(curl)
