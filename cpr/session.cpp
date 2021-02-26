@@ -184,7 +184,6 @@ void Session::Impl::SetVerbose(const Verbose& verbose) {
 
 void Session::Impl::SetAuth(const Authentication& auth) {
     // Ignore here since this has been defined by libcurl.
-    // NOLINTNEXTLINE(hicpp-signed-bitwise)
     curl_easy_setopt(curl_->handle, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
     curl_easy_setopt(curl_->handle, CURLOPT_USERPWD, auth.GetAuthString());
 }
@@ -194,7 +193,6 @@ void Session::Impl::SetAuth(const Authentication& auth) {
 #if LIBCURL_VERSION_NUM >= 0x073D00
 void Session::Impl::SetBearer(const Bearer& token) {
     // Ignore here since this has been defined by libcurl.
-    // NOLINTNEXTLINE(hicpp-signed-bitwise)
     curl_easy_setopt(curl_->handle, CURLOPT_HTTPAUTH, CURLAUTH_BEARER);
     curl_easy_setopt(curl_->handle, CURLOPT_XOAUTH2_BEARER, token.GetToken());
 }
@@ -202,7 +200,6 @@ void Session::Impl::SetBearer(const Bearer& token) {
 
 void Session::Impl::SetDigest(const Digest& auth) {
     // Ignore here since this has been defined by libcurl.
-    // NOLINTNEXTLINE(hicpp-signed-bitwise)
     curl_easy_setopt(curl_->handle, CURLOPT_HTTPAUTH, CURLAUTH_DIGEST);
     curl_easy_setopt(curl_->handle, CURLOPT_USERPWD, auth.GetAuthString());
 }
@@ -308,7 +305,6 @@ void Session::Impl::SetLimitRate(const LimitRate& limit_rate) {
 
 void Session::Impl::SetNTLM(const NTLM& auth) {
     // Ignore here since this has been defined by libcurl.
-    // NOLINTNEXTLINE(hicpp-signed-bitwise)
     curl_easy_setopt(curl_->handle, CURLOPT_HTTPAUTH, CURLAUTH_NTLM);
     curl_easy_setopt(curl_->handle, CURLOPT_USERPWD, auth.GetAuthString());
 }
@@ -423,7 +419,6 @@ void Session::Impl::SetSslOptions(const SslOptions& options) {
 #endif
     curl_easy_setopt(curl_->handle, CURLOPT_SSLVERSION,
                      // Ignore here since this has been defined by libcurl.
-                     // NOLINTNEXTLINE(hicpp-signed-bitwise)
                      options.ssl_version
 #if SUPPORT_MAX_TLS_VERSION
                              | options.max_version

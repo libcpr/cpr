@@ -22,7 +22,8 @@ Checks: '*,
 -cppcoreguidelines-pro-bounds-array-to-pointer-decay,
 -hicpp-no-array-decay,
 -modernize-pass-by-value,
--cppcoreguidelines-pro-bounds-constant-array-index
+-cppcoreguidelines-pro-bounds-constant-array-index,
+-hicpp-signed-bitwise
 '
 WarningsAsErrors: '*'
 HeaderFilterRegex: 'src/*.hpp'
