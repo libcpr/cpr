@@ -8,6 +8,7 @@ on:
 jobs:
   ubuntu-20-gcc-ssl:
     runs-on: ubuntu-20.04
+    if: ${{ false }} # DISABLED DURING DEVELOPEMENT
     steps:
     - name: Checkout
       uses: actions/checkout@v2.2.0
@@ -28,6 +29,7 @@ jobs:
 
   ubuntu-18-gcc-ssl:
     runs-on: ubuntu-18.04
+    if: ${{ false }} # DISABLED DURING DEVELOPEMENT
     steps:
     - name: Checkout
       uses: actions/checkout@v2.2.0
@@ -48,6 +50,7 @@ jobs:
   
   ubuntu-18-gcc-ssl-system-curl:
     runs-on: ubuntu-18.04
+    if: ${{ false }} # DISABLED DURING DEVELOPEMENT
     steps:
     - name: Checkout
       uses: actions/checkout@v2.2.0
@@ -69,6 +72,7 @@ jobs:
     
   ubuntu-18-gcc-ssl-address-leak-undefined-behavior-sanitizer:
     runs-on: ubuntu-18.04
+    if: ${{ false }} # DISABLED DURING DEVELOPEMENT
     steps:
     - name: Checkout
       uses: actions/checkout@v2.2.0
@@ -114,6 +118,7 @@ jobs:
   
   ubuntu-18-clang-ssl:
     runs-on: ubuntu-18.04
+    if: ${{ false }} # DISABLED DURING DEVELOPEMENT
     steps:
     - name: Checkout
       uses: actions/checkout@v2.2.0
@@ -134,6 +139,7 @@ jobs:
 
   ubuntu-16-gcc-ssl:
     runs-on: ubuntu-16.04
+    if: ${{ false }} # DISABLED DURING DEVELOPEMENT
     steps:
     - name: Checkout
       uses: actions/checkout@v2.2.0
@@ -154,6 +160,7 @@ jobs:
     
   windows-msvc-winssl:
     runs-on: windows-latest
+    if: ${{ false }} # DISABLED DURING DEVELOPEMENT
     steps:
     - name: Checkout
       uses: actions/checkout@v2.2.0
@@ -176,12 +183,13 @@ jobs:
   
   windows-msvc-openssl:
     runs-on: windows-latest
-    if: ${{ false }} # Disabled for now until we find a way to install OpenSSL from the terminal (#418)
     steps:
     - name: Checkout
       uses: actions/checkout@v2.2.0
       with:
         submodules: true
+    - name: Install OpenSSL
+      run: choco install openssl
     - name: "[Release msvc] Build & Test"
       env:
         CMAKE_GENERATOR: "Visual Studio 16 2019"
@@ -199,6 +207,7 @@ jobs:
 
   macos-clang-ssl:
     runs-on: macos-latest
+    if: ${{ false }} # DISABLED DURING DEVELOPEMENT
     steps:
     - name: Checkout
       uses: actions/checkout@v2.2.0
