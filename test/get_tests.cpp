@@ -3,6 +3,8 @@
 #include <string>
 
 #include "cpr/cpr.h"
+#include "cpr/cprtypes.h"
+#include "cpr/session.h"
 #include "httpServer.hpp"
 
 using namespace cpr;
@@ -395,6 +397,54 @@ TEST(HeaderTests, HeaderReflectNoneTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(std::string{}, response.header["hello"]);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
+TEST(HeaderTests, HeaderReflectUpdateHeaderAddSessionTest) {
+    Url url{server->GetBaseUrl() + "/header_reflect.html"};
+    Session session;
+    session.SetHeader(Header{{"Header1", "Value1"}});
+    session.SetUrl(url);
+    Response response = session.Get();
+    std::string expected_text{"Header reflect GET"};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"Value1"}, response.header["Header1"]);
+    EXPECT_EQ(std::string{}, response.header["Header2"]);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+
+    session.UpdateHeader(Header{{"Header2", "Value2"}});
+    response = session.Get();
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"Value1"}, response.header["Header1"]);
+    EXPECT_EQ(std::string{"Value2"}, response.header["Header2"]);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
+TEST(HeaderTests, HeaderReflectUpdateHeaderUpdateSessionTest) {
+    Url url{server->GetBaseUrl() + "/header_reflect.html"};
+    Session session;
+    session.SetHeader(Header{{"Header1", "Value1"}});
+    session.SetUrl(url);
+    Response response = session.Get();
+    std::string expected_text{"Header reflect GET"};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"Value1"}, response.header["Header1"]);
+    EXPECT_EQ(std::string{}, response.header["Header2"]);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+
+    session.UpdateHeader(Header{{"Header1", "Value2"}});
+    response = session.Get();
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"Value2"}, response.header["Header1"]);
+    EXPECT_EQ(std::string{}, response.header["Header2"]);
     EXPECT_EQ(200, response.status_code);
     EXPECT_EQ(ErrorCode::OK, response.error.code);
 }

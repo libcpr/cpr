@@ -29,6 +29,7 @@ class Session::Impl {
     void SetParameters(const Parameters& parameters);
     void SetParameters(Parameters&& parameters);
     void SetHeader(const Header& header);
+    void UpdateHeader(const Header& header);
     void SetTimeout(const Timeout& timeout);
     void SetConnectTimeout(const ConnectTimeout& timeout);
     void SetAuth(const Authentication& auth);
@@ -168,6 +169,12 @@ void Session::Impl::SetHeaderInternal() {
 
 void Session::Impl::SetHeader(const Header& header) {
     header_ = header;
+}
+
+void Session::Impl::UpdateHeader(const Header& header) {
+    for (const std::pair<const std::string, std::string>& item : header) {
+        header_[item.first] = item.second;
+    }
 }
 
 void Session::Impl::SetTimeout(const Timeout& timeout) {
@@ -650,6 +657,7 @@ void Session::SetUrl(const Url& url) { pimpl_->SetUrl(url); }
 void Session::SetParameters(const Parameters& parameters) { pimpl_->SetParameters(parameters); }
 void Session::SetParameters(Parameters&& parameters) { pimpl_->SetParameters(std::move(parameters)); }
 void Session::SetHeader(const Header& header) { pimpl_->SetHeader(header); }
+void Session::UpdateHeader(const Header& header) { pimpl_->UpdateHeader(header); }
 void Session::SetTimeout(const Timeout& timeout) { pimpl_->SetTimeout(timeout); }
 void Session::SetConnectTimeout(const ConnectTimeout& timeout) { pimpl_->SetConnectTimeout(timeout); }
 void Session::SetAuth(const Authentication& auth) { pimpl_->SetAuth(auth); }
