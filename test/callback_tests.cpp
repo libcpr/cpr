@@ -804,21 +804,14 @@ TEST(CallbackDataTests, CallbackReadFunctionHeaderTest) {
     bool send = false;
     std::string data = "Test";
     Response response = cpr::Post(url,
-                                  cpr::ReadCallback{3,
-                                                    [&](char* buffer, size_t& size) -> size_t {
-                                                        if (!send) {
-                                                            std::copy(data.begin(), data.end(), buffer);
-                                                            size = data.size();
-                                                            send = true;
-                                                        } else {
-                                                            size = 0;
-                                                        }
+                                  cpr::ReadCallback{-1,
+                                                    [&](char* /*buffer*/, size_t& size) -> size_t {
+                                                        size = 0;
                                                         return true;
                                                     }},
                                   Header{{"TestHeader", "42"}});
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(200, response.status_code);
-    EXPECT_EQ(ErrorCode::OK, response.error.code);
 
     // Check Header:
     EXPECT_EQ(std::string{"42"}, response.header["TestHeader"]); // Set by us
