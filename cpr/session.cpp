@@ -8,6 +8,7 @@
 
 #include <curl/curl.h>
 
+#include "cpr/cprtypes.h"
 #include "cpr/util.h"
 
 
@@ -75,12 +76,19 @@ class Session::Impl {
     std::shared_ptr<CurlHolder> GetCurlHolder();
 
   private:
+    void SetHeaderInternal();
     bool hasBodyOrPayload_{false};
 
     std::shared_ptr<CurlHolder> curl_;
     Url url_;
     Parameters parameters_;
     Proxies proxies_;
+    Header header_;
+    /**
+     * Will be set by the read callback.
+     * Ensures that the "Transfer-Encoding" is set to "chunked", if not overriden in header_.
+     **/
+    bool chunkedTransferEncoding{false};
 
     ReadCallback readcb_;
     HeaderCallback headercb_;
@@ -128,9 +136,9 @@ void Session::Impl::SetParameters(Parameters&& parameters) {
     parameters_ = std::move(parameters);
 }
 
-void Session::Impl::SetHeader(const Header& header) {
+void Session::Impl::SetHeaderInternal() {
     curl_slist* chunk = nullptr;
-    for (const std::pair<const std::string, std::string>& item : header) {
+    for (const std::pair<const std::string, std::string>& item : header_) {
         std::string header_string = item.first;
         if (item.second.empty()) {
             header_string += ";";
@@ -143,10 +151,23 @@ void Session::Impl::SetHeader(const Header& header) {
             chunk = temp;
         }
     }
+
+    // Set the chunked transfer encoding in case it does not already exist:
+    if (chunkedTransferEncoding && header_.find("Transfer-Encoding") == header_.end()) {
+        curl_slist* temp = curl_slist_append(chunk, "Transfer-Encoding:chunked");
+        if (temp) {
+            chunk = temp;
+        }
+    }
+
     curl_easy_setopt(curl_->handle, CURLOPT_HTTPHEADER, chunk);
 
     curl_slist_free_all(curl_->chunk);
     curl_->chunk = chunk;
+}
+
+void Session::Impl::SetHeader(const Header& header) {
+    header_ = header;
 }
 
 void Session::Impl::SetTimeout(const Timeout& timeout) {
@@ -325,9 +346,7 @@ void Session::Impl::SetReadCallback(const ReadCallback& read) {
     curl_easy_setopt(curl_->handle, CURLOPT_POSTFIELDSIZE_LARGE, read.size);
     curl_easy_setopt(curl_->handle, CURLOPT_READFUNCTION, cpr::util::readUserFunction);
     curl_easy_setopt(curl_->handle, CURLOPT_READDATA, &readcb_);
-    if (read.size == -1) {
-        SetHeader({{"Transfer-Encoding", "chunked"}});
-    }
+    chunkedTransferEncoding = read.size == -1;
 }
 
 void Session::Impl::SetHeaderCallback(const HeaderCallback& header) {
@@ -567,6 +586,10 @@ Response Session::Impl::makeDownloadRequest() {
 
 Response Session::Impl::makeRequest() {
     assert(curl_->handle);
+
+    // Set Header:
+    SetHeaderInternal();
+
     const std::string parametersContent = parameters_.GetContent(*curl_);
     if (!parametersContent.empty()) {
         Url new_url{url_ + "?" + parametersContent};
@@ -575,6 +598,7 @@ Response Session::Impl::makeRequest() {
         curl_easy_setopt(curl_->handle, CURLOPT_URL, url_.c_str());
     }
 
+    // Proxy:
     std::string protocol = url_.str().substr(0, url_.str().find(':'));
     if (proxies_.has(protocol)) {
         curl_easy_setopt(curl_->handle, CURLOPT_PROXY, proxies_[protocol].c_str());

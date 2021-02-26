@@ -1,4 +1,5 @@
 #include "httpServer.hpp"
+#include <iostream>
 #include <string>
 #include <system_error>
 
@@ -259,6 +260,7 @@ void HttpServer::OnRequestHeaderReflect(mg_connection* conn, http_message* msg) 
                                std::string(msg->header_values[i].p, msg->header_values[i].len));
             }
         }
+        std::cout << "HEADERS: " << headers << '\n';
     }
     mg_send_head(conn, 200, response.length(), headers.c_str());
     mg_send(conn, response.c_str(), response.length());
