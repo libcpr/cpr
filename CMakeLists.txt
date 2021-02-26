@@ -98,7 +98,7 @@ if(NOT USE_SYSTEM_CURL OR NOT CURL_FOUND)
     endif()
 
     if(USE_WINSSL)
-        set(CMAKE_USE_WINSSL ON CACHE INTERNAL "" FORCE)
+        set(CMAKE_USE_SCHANNEL ON CACHE INTERNAL "" FORCE)
         set(CURL_CA_PATH "none" CACHE INTERNAL "" FORCE)
     endif()
 
