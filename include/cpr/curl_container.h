@@ -33,6 +33,11 @@ struct Pair {
 template <class T>
 class CurlContainer {
   public:
+    /**
+     * Enables or disables URL encoding for keys and values when calling GetContent(...).
+     **/
+    bool encode = true;
+
     CurlContainer() = default;
     CurlContainer(const std::initializer_list<T>&);
 

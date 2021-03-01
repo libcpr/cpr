@@ -16,12 +16,36 @@ TEST(PayloadTests, UseStringVariableTest) {
     EXPECT_EQ(payload.GetContent(CurlHolder()), expected);
 }
 
+TEST(PayloadTests, DisableEncodingTest) {
+    std::string key1 = "key1";
+    std::string key2 = "key2§$%&/";
+    std::string value1 = "hello.,.,";
+    std::string value2 = "hello";
+    Payload payload{{key1, value1}, {key2, value2}};
+    payload.encode = false;
+
+    std::string expected = key1 + '=' + value1 + '&' + key2 + '=' + value2;
+    EXPECT_EQ(payload.GetContent(CurlHolder()), expected);
+}
+
 TEST(ParametersTests, UseStringVariableTest) {
     std::string value1 = "hello";
     std::string key2 = "key2";
     Parameters parameters {{"key1", value1}, {key2, "world"}};
 
     std::string expected = "key1=hello&key2=world";
+    EXPECT_EQ(parameters.GetContent(CurlHolder()), expected);
+}
+
+TEST(ParametersTests, DisableEncodingTest) {
+    std::string key1 = "key1";
+    std::string key2 = "key2§$%&/";
+    std::string value1 = "hello.,.,";
+    std::string value2 = "hello";
+    Parameters parameters{{key1, value1}, {key2, value2}};
+    parameters.encode = false;
+
+    std::string expected = key1 + '=' + value1 + '&' + key2 + '=' + value2;
     EXPECT_EQ(parameters.GetContent(CurlHolder()), expected);
 }
 
