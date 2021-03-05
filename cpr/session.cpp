@@ -692,6 +692,7 @@ void Session::SetOption(const Header& header) { pimpl_->SetHeader(header); }
 void Session::SetOption(const Timeout& timeout) { pimpl_->SetTimeout(timeout); }
 void Session::SetOption(const ConnectTimeout& timeout) { pimpl_->SetConnectTimeout(timeout); }
 void Session::SetOption(const Authentication& auth) { pimpl_->SetAuth(auth); }
+void Session::SetOption(const LimitRate& limit_rate) { pimpl_->SetLimitRate(limit_rate); }
 // Only supported with libcurl >= 7.61.0.
 // As an alternative use SetHeader and add the token manually.
 #if LIBCURL_VERSION_NUM >= 0x073D00

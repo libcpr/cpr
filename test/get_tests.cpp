@@ -1273,6 +1273,17 @@ TEST(BasicTests, RequestBodyTest) {
     EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
+TEST(LimitRateTests, HelloWorldTest) {
+    Url url{server->GetBaseUrl() + "/hello.html"};
+    Response response = cpr::Get(url, LimitRate(1024, 1024));
+    std::string expected_text{"Hello world!"};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
     ::testing::AddGlobalTestEnvironment(server);
