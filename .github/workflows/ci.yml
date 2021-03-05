@@ -6,7 +6,7 @@ on:
     branches: [ master ]
 
 jobs:
-  ubuntu-20-gcc-ssl:
+  ubuntu-20-shared-gcc-ssl:
     runs-on: ubuntu-20.04
     steps:
     - name: Checkout
@@ -25,8 +25,30 @@ jobs:
         build-type: Release
         run-test: true
         ctest-options: -V
+        configure-options: -DBUILD_SHARED_LIBS=ON
 
-  ubuntu-18-gcc-ssl:
+  ubuntu-20-static-gcc-ssl:
+    runs-on: ubuntu-20.04
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2.2.0
+      with:
+        submodules: true
+    - name: Install libssl-dev
+      run: sudo apt install libssl-dev
+    - name: "[Release g++] Build & Test"
+      uses: ashutoshvarma/action-cmake-build@master
+      with:
+        build-dir: ${{github.workspace}}/build
+        source-dir: ${{github.workspace}}
+        cc: gcc
+        cxx: g++
+        build-type: Release
+        run-test: true
+        ctest-options: -V
+        configure-options: -DBUILD_SHARED_LIBS=OFF
+
+  ubuntu-18-gcc-shared-ssl:
     runs-on: ubuntu-18.04
     steps:
     - name: Checkout
@@ -45,8 +67,30 @@ jobs:
         build-type: Release
         run-test: true
         ctest-options: -V
+        configure-options: -DBUILD_SHARED_LIBS=ON
+
+  ubuntu-18-gcc-static-ssl:
+    runs-on: ubuntu-18.04
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2.2.0
+      with:
+        submodules: true
+    - name: Install libssl-dev
+      run: sudo apt install libssl-dev
+    - name: "[Release g++] Build & Test"
+      uses: ashutoshvarma/action-cmake-build@master
+      with:
+        build-dir: ${{github.workspace}}/build
+        source-dir: ${{github.workspace}}
+        cc: gcc
+        cxx: g++
+        build-type: Release
+        run-test: true
+        ctest-options: -V
+        configure-options: -DBUILD_SHARED_LIBS=OFF
   
-  ubuntu-18-gcc-ssl-system-curl:
+  ubuntu-18-gcc-shared-ssl-system-curl:
     runs-on: ubuntu-18.04
     steps:
     - name: Checkout
@@ -60,12 +104,33 @@ jobs:
       with:
         build-dir: ${{github.workspace}}/build
         source-dir: ${{github.workspace}}
-        configure-options: -DUSE_SYSTEM_CURL=ON
+        configure-options: -DUSE_SYSTEM_CURL=ON -DBUILD_SHARED_LIBS=ON
         cc: gcc
         cxx: g++
         build-type: Release
         run-test: true
-        ctest-options: -V      
+        ctest-options: -V
+
+  ubuntu-18-gcc-static-ssl-system-curl:
+    runs-on: ubuntu-18.04
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2.2.0
+      with:
+        submodules: true
+    - name: Install libssl-dev
+      run: sudo apt install libcurl4-openssl-dev
+    - name: "[Release g++] Build & Test"
+      uses: ashutoshvarma/action-cmake-build@master
+      with:
+        build-dir: ${{github.workspace}}/build
+        source-dir: ${{github.workspace}}
+        configure-options: -DUSE_SYSTEM_CURL=ON -DBUILD_SHARED_LIBS=OFF
+        cc: gcc
+        cxx: g++
+        build-type: Release
+        run-test: true
+        ctest-options: -V
     
   ubuntu-18-gcc-ssl-address-leak-undefined-behavior-sanitizer:
     runs-on: ubuntu-18.04
@@ -112,7 +177,7 @@ jobs:
         run-test: true
         ctest-options: -V
   
-  ubuntu-18-clang-ssl:
+  ubuntu-18-clang-shared-ssl:
     runs-on: ubuntu-18.04
     steps:
     - name: Checkout
@@ -131,8 +196,30 @@ jobs:
         build-type: Release
         run-test: true
         ctest-options: -V
+        configure-options: -DBUILD_SHARED_LIBS=ON
 
-  ubuntu-16-gcc-ssl:
+  ubuntu-18-clang-static-ssl:
+    runs-on: ubuntu-18.04
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2.2.0
+      with:
+        submodules: true
+    - name: Install libssl-dev
+      run: sudo apt install libssl-dev
+    - name: "[Release g++] Build & Test"
+      uses: ashutoshvarma/action-cmake-build@master
+      with:
+        build-dir: ${{github.workspace}}/build
+        source-dir: ${{github.workspace}}
+        cc: clang
+        cxx: clang++
+        build-type: Release
+        run-test: true
+        ctest-options: -V
+        configure-options: -DBUILD_SHARED_LIBS=OFF
+
+  ubuntu-16-gcc-shared-ssl:
     runs-on: ubuntu-16.04
     steps:
     - name: Checkout
@@ -151,8 +238,30 @@ jobs:
         build-type: Release
         run-test: true
         ctest-options: -V
+        configure-options: -DBUILD_SHARED_LIBS=ON
+
+  ubuntu-16-gcc-static-ssl:
+    runs-on: ubuntu-16.04
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2.2.0
+      with:
+        submodules: true
+    - name: Install libssl-dev
+      run: sudo apt install libssl-dev
+    - name: "[Release g++] Build & Test"
+      uses: ashutoshvarma/action-cmake-build@master
+      with:
+        build-dir: ${{github.workspace}}/build
+        source-dir: ${{github.workspace}}
+        cc: gcc
+        cxx: g++
+        build-type: Release
+        run-test: true
+        ctest-options: -V
+        configure-options: -DBUILD_SHARED_LIBS=OFF
     
-  windows-msvc-winssl:
+  windows-msvc-shared-winssl:
     runs-on: windows-latest
     steps:
     - name: Checkout
@@ -173,8 +282,32 @@ jobs:
         target: ALL_BUILD
         run-test: true
         ctest-options: -V
+        configure-options: -DBUILD_SHARED_LIBS=ON
+
+  windows-msvc-static-winssl:
+    runs-on: windows-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2.2.0
+      with:
+        submodules: true
+    - name: "[Release msvc] Build & Test"
+      env:
+        CMAKE_GENERATOR: "Visual Studio 16 2019"
+        USE_WINSSL: ON
+        USE_OPENSSL: OFF
+        BUILD_CPR_TESTS_SSL: OFF
+      uses: ashutoshvarma/action-cmake-build@master
+      with:
+        build-dir: ${{github.workspace}}/build
+        source-dir: ${{github.workspace}}
+        build-type: Release
+        target: ALL_BUILD
+        run-test: true
+        ctest-options: -V
+        configure-options: -DBUILD_SHARED_LIBS=OFF
   
-  windows-msvc-openssl:
+  windows-msvc-shared-openssl:
     runs-on: windows-latest
     steps:
     - name: Checkout
@@ -197,8 +330,34 @@ jobs:
         target: ALL_BUILD
         run-test: true
         ctest-options: -V
+        configure-options: -DBUILD_SHARED_LIBS=ON
 
-  macos-clang-ssl:
+  windows-msvc-static-openssl:
+    runs-on: windows-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2.2.0
+      with:
+        submodules: true
+    - name: Install OpenSSL
+      run: choco install openssl
+    - name: "[Release msvc] Build & Test"
+      env:
+        CMAKE_GENERATOR: "Visual Studio 16 2019"
+        USE_WINSSL: OFF
+        USE_OPENSSL: ON
+        BUILD_CPR_TESTS_SSL: ON
+      uses: ashutoshvarma/action-cmake-build@master
+      with:
+        build-dir: ${{github.workspace}}/build
+        source-dir: ${{github.workspace}}
+        build-type: Release
+        target: ALL_BUILD
+        run-test: true
+        ctest-options: -V
+        configure-options: -DBUILD_SHARED_LIBS=OFF
+
+  macos-clang-shared-ssl:
     runs-on: macos-latest
     steps:
     - name: Checkout
@@ -223,3 +382,31 @@ jobs:
         cxx: clang++
         run-test: true
         ctest-options: -V
+        configure-options: -DBUILD_SHARED_LIBS=ON
+
+  macos-clang-static-ssl:
+    runs-on: macos-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2.2.0
+      with:
+        submodules: true
+    - name: Install openssl
+      run: |
+        brew install openssl
+        echo 'export PATH="/usr/local/opt/openssl/bin:$PATH"' >> ~/.bash_profile
+        source ~/.bash_profile
+    - name: "[Release clang++] Build & Test"
+      env:
+        OPENSSL_ROOT_DIR: "/usr/local/opt/openssl"
+        OPENSSL_LIBRARIES: "/usr/local/opt/openssl/lib"
+      uses: ashutoshvarma/action-cmake-build@master
+      with:
+        build-dir: ${{github.workspace}}/build
+        source-dir: ${{github.workspace}}
+        build-type: Release
+        cc: clang
+        cxx: clang++
+        run-test: true
+        ctest-options: -V
+        configure-options: -DBUILD_SHARED_LIBS=OFF
