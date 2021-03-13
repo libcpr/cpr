@@ -615,6 +615,13 @@ Response Session::Impl::makeRequest() {
 #endif
 #endif
 
+#if LIBCURL_VERSION_MAJOR >= 7
+#if LIBCURL_VERSION_MINOR >= 71
+    // Fix loading certs from Windows cert store when using OpenSSL:
+    curl_easy_setopt(curl_->handle, CURLOPT_SSL_OPTIONS, CURLSSLOPT_NATIVE_CA);
+#endif
+#endif
+
     curl_->error[0] = '\0';
 
     std::string response_string;
