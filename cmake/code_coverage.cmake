@@ -1,5 +1,5 @@
 # Code coverage
-if(BUILD_CPR_TESTS AND GENERATE_COVERAGE)
+if(CPR_BUILD_TESTS AND CPR_GENERATE_COVERAGE)
     set(CMAKE_BUILD_TYPE COVERAGE CACHE INTERNAL "Coverage enabled build")
     message(STATUS "Enabling gcov support")
     if(NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
