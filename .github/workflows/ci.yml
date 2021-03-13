@@ -261,13 +261,22 @@ jobs:
         ctest-options: -V
         configure-options: -DBUILD_SHARED_LIBS=OFF
     
-  windows-msvc-shared-autossl:
+  windows-msvc-shared-ssl:
     runs-on: windows-latest
     steps:
     - name: Checkout
       uses: actions/checkout@v2.2.0
       with:
         submodules: true
+    - name: Install ZLIB
+      run: |
+        git clone https://github.com/madler/zlib.git
+        cd zlib
+        mkdir build
+        cd build
+        cmake.exe ..
+        cmake.exe --build .
+        cmake.exe --install .
     - name: "[Release msvc] Build & Test"
       env:
         CMAKE_GENERATOR: "Visual Studio 16 2019"
@@ -305,7 +314,7 @@ jobs:
         ctest-options: -V
         configure-options: -DBUILD_SHARED_LIBS=ON
 
-  windows-msvc-static-autossl:
+  windows-msvc-static-ssl:
     runs-on: windows-latest
     steps:
     - name: Checkout
@@ -381,7 +390,7 @@ jobs:
       uses: actions/checkout@v2.2.0
       with:
         submodules: true
-    - name: Install openssl
+    - name: Install OpenSSL
       run: |
         brew install openssl
         echo 'export PATH="/usr/local/opt/openssl/bin:$PATH"' >> ~/.bash_profile
@@ -408,7 +417,7 @@ jobs:
       uses: actions/checkout@v2.2.0
       with:
         submodules: true
-    - name: Install openssl
+    - name: Install OpenSSL
       run: |
         brew install openssl
         echo 'export PATH="/usr/local/opt/openssl/bin:$PATH"' >> ~/.bash_profile
