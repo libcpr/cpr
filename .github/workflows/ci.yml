@@ -268,8 +268,6 @@ jobs:
       uses: actions/checkout@v2.2.0
       with:
         submodules: true
-    - name: Install ZLIB
-      run: powershell -Command "(New-Object Net.WebClient).DownloadFile('https://raw.githubusercontent.com/horta/zlib.install/master/install.bat', 'install_zlib.bat')"; ./install_zlib.bat; del install_zlib.bat
     - name: "[Release msvc] Build & Test"
       env:
         CMAKE_GENERATOR: "Visual Studio 16 2019"
@@ -291,8 +289,6 @@ jobs:
       uses: actions/checkout@v2.2.0
       with:
         submodules: true
-    - name: Install ZLIB
-      run: powershell -Command "(New-Object Net.WebClient).DownloadFile('https://raw.githubusercontent.com/horta/zlib.install/master/install.bat', 'install_zlib.bat')"; ./install_zlib.bat; del install_zlib.bat
     - name: "[Release msvc] Build & Test"
       env:
         CMAKE_GENERATOR: "Visual Studio 16 2019"
@@ -316,8 +312,6 @@ jobs:
       uses: actions/checkout@v2.2.0
       with:
         submodules: true
-    - name: Install ZLIB
-      run: powershell -Command "(New-Object Net.WebClient).DownloadFile('https://raw.githubusercontent.com/horta/zlib.install/master/install.bat', 'install_zlib.bat')"; ./install_zlib.bat; del install_zlib.bat
     - name: "[Release msvc] Build & Test"
       env:
         CMAKE_GENERATOR: "Visual Studio 16 2019"
@@ -339,8 +333,6 @@ jobs:
       uses: actions/checkout@v2.2.0
       with:
         submodules: true
-    - name: Install ZLIB
-      run: powershell -Command "(New-Object Net.WebClient).DownloadFile('https://raw.githubusercontent.com/horta/zlib.install/master/install.bat', 'install_zlib.bat')"; ./install_zlib.bat; del install_zlib.bat
     - name: Install OpenSSL
       run: choco install openssl
     - name: "[Release msvc] Build & Test"
@@ -365,8 +357,6 @@ jobs:
       uses: actions/checkout@v2.2.0
       with:
         submodules: true
-    - name: Install ZLIB
-      run: powershell -Command "(New-Object Net.WebClient).DownloadFile('https://raw.githubusercontent.com/horta/zlib.install/master/install.bat', 'install_zlib.bat')"; ./install_zlib.bat; del install_zlib.bat
     - name: Install OpenSSL
       run: choco install openssl
     - name: "[Release msvc] Build & Test"
