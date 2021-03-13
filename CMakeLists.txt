@@ -25,12 +25,6 @@ macro(cpr_option OPTION_NAME OPTION_TEXT OPTION_DEFAULT)
     message(STATUS "  ${OPTION_NAME}: ${${OPTION_NAME}}")
 endmacro()
 
-include(GNUInstallDirs)
-include(FetchContent)
-include(cmake/code_coverage.cmake)
-include(cmake/sanitizer.cmake)
-include(cmake/gcc_analyze.cmake)
-
 option(BUILD_SHARED_LIBS "Build libraries as shared libraries" ON)
 message(STATUS "C++ Requests CMake Options")
 message(STATUS "=======================================================")
@@ -45,6 +39,13 @@ cpr_option(CPR_FORCE_WINSSL_BACKEND "Force to use the WinSSL backend. For this t
 cpr_option(CPR_BUILD_TESTS "Set to ON to build cpr tests." ON)
 cpr_option(CPR_BUILD_TESTS_SSL "Set to ON to build cpr ssl tests" ${CPR_BUILD_TESTS})
 message(STATUS "=======================================================")
+
+include(GNUInstallDirs)
+include(FetchContent)
+include(ExternalProject)
+include(cmake/code_coverage.cmake)
+include(cmake/sanitizer.cmake)
+include(cmake/gcc_analyze.cmake)
 
 # SSL
 if(CPR_ENABLE_SSL)
