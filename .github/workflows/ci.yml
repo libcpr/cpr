@@ -275,7 +275,7 @@ jobs:
         mkdir build
         cd build
         cmake.exe ..
-        cmake.exe --build .
+        cmake.exe --build . --config Release
         cmake.exe --install .
     - name: "[Release msvc] Build & Test"
       env:
