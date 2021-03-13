@@ -298,6 +298,15 @@ jobs:
       uses: actions/checkout@v2.2.0
       with:
         submodules: true
+    - name: Install ZLIB
+      run: |
+        git clone https://github.com/madler/zlib.git
+        cd zlib
+        mkdir build
+        cd build
+        cmake.exe ..
+        cmake.exe --build . --config Release
+        cmake.exe --install .
     - name: "[Release msvc] Build & Test"
       env:
         CMAKE_GENERATOR: "Visual Studio 16 2019"
@@ -321,6 +330,15 @@ jobs:
       uses: actions/checkout@v2.2.0
       with:
         submodules: true
+    - name: Install ZLIB
+      run: |
+        git clone https://github.com/madler/zlib.git
+        cd zlib
+        mkdir build
+        cd build
+        cmake.exe ..
+        cmake.exe --build . --config Release
+        cmake.exe --install .
     - name: "[Release msvc] Build & Test"
       env:
         CMAKE_GENERATOR: "Visual Studio 16 2019"
@@ -342,6 +360,15 @@ jobs:
       uses: actions/checkout@v2.2.0
       with:
         submodules: true
+    - name: Install ZLIB
+      run: |
+        git clone https://github.com/madler/zlib.git
+        cd zlib
+        mkdir build
+        cd build
+        cmake.exe ..
+        cmake.exe --build . --config Release
+        cmake.exe --install .
     - name: Install OpenSSL
       run: choco install openssl
     - name: "[Release msvc] Build & Test"
@@ -366,6 +393,15 @@ jobs:
       uses: actions/checkout@v2.2.0
       with:
         submodules: true
+    - name: Install ZLIB
+      run: |
+        git clone https://github.com/madler/zlib.git
+        cd zlib
+        mkdir build
+        cd build
+        cmake.exe ..
+        cmake.exe --build . --config Release
+        cmake.exe --install .
     - name: Install OpenSSL
       run: choco install openssl
     - name: "[Release msvc] Build & Test"
