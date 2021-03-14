@@ -161,14 +161,6 @@ else()
     # ZLIB is required by curl:
     include(cmake/zlib_external.cmake)
 
-    # Show progress of FetchContent:
-    set(FETCHCONTENT_QUIET OFF CACHE INTERNAL "" FORCE)
-    FetchContent_Declare(curl
-                         URL                    https://github.com/curl/curl/releases/download/curl-7_75_0/curl-7.75.0.tar.xz
-                         URL_HASH               SHA256=fe0c49d8468249000bda75bcfdf9e30ff7e9a86d35f1a21f428d79c389d55675 # the file hash for curl-7.75.0.tar.xz
-                         USES_TERMINAL_DOWNLOAD TRUE)   # <---- This is needed only for Ninja to show download progress
-    FetchContent_MakeAvailable(curl)
-
     # We only need HTTP (and HTTPS) support:
     set(HTTP_ONLY ON CACHE INTERNAL "" FORCE)
     set(BUILD_CURL_EXE OFF CACHE INTERNAL "" FORCE)
@@ -191,6 +183,14 @@ else()
     if(SSL_BACKEND_USED STREQUAL "OpenSSL")
         set(CMAKE_USE_OPENSSL ON CACHE INTERNAL "" FORCE)
     endif()
+
+    # Show progress of FetchContent:
+    set(FETCHCONTENT_QUIET OFF CACHE INTERNAL "" FORCE)
+    FetchContent_Declare(curl
+                         URL                    https://github.com/curl/curl/releases/download/curl-7_75_0/curl-7.75.0.tar.xz
+                         URL_HASH               SHA256=fe0c49d8468249000bda75bcfdf9e30ff7e9a86d35f1a21f428d79c389d55675 # the file hash for curl-7.75.0.tar.xz
+                         USES_TERMINAL_DOWNLOAD TRUE)   # <---- This is needed only for Ninja to show download progress
+    FetchContent_MakeAvailable(curl)
 
     add_library(curl_int INTERFACE)
     target_link_libraries(curl_int INTERFACE libcurl)
