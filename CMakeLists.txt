@@ -158,13 +158,8 @@ if(CPR_FORCE_USE_SYSTEM_CURL)
 else()
     message(STATUS "Configuring build in curl...")
 
-    # Check if ZLIB is present since it's required by curl:
-    find_package(ZLIB)
-    if(ZLIB_FOUND)
-        message(STATUS "ZLIB found")
-    else()
-        message(FATAL_ERROR "ZLIB not found, but this is required by curl. Install it and the retry. If you are on windows have a look at: https://github.com/horta/zlib.install")
-    endif()
+    # ZLIB is required by curl:
+    include(cmake/zlib_external.cmake)
 
     # Show progress of FetchContent:
     set(FETCHCONTENT_QUIET OFF CACHE INTERNAL "" FORCE)
