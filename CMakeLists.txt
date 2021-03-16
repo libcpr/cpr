@@ -42,7 +42,6 @@ message(STATUS "=======================================================")
 
 include(GNUInstallDirs)
 include(FetchContent)
-include(ExternalProject)
 include(cmake/code_coverage.cmake)
 include(cmake/sanitizer.cmake)
 include(cmake/gcc_analyze.cmake)
