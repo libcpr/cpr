@@ -1,3 +1,4 @@
+#include "cpr/cprtypes.h"
 #include <gtest/gtest.h>
 
 #include <string>
@@ -47,6 +48,12 @@ TEST(ParametersTests, DisableEncodingTest) {
 
     std::string expected = key1 + '=' + value1 + '&' + key2 + '=' + value2;
     EXPECT_EQ(parameters.GetContent(CurlHolder()), expected);
+}
+
+TEST(UrlToAndFromString, UrlTests) {
+    std::string s{"https://github.com/whoshuu/cpr"};
+    cpr::Url url = s;
+    EXPECT_EQ(s, url.str());
 }
 
 int main(int argc, char** argv) {
