@@ -293,7 +293,6 @@ jobs:
       env:
         CMAKE_GENERATOR: "Visual Studio 16 2019"
         CPR_BUILD_TESTS_SSL: OFF
-        CPR_DETECT_SSL_BACKEND: OFF
         CPR_FORCE_WINSSL_BACKEND: ON
       uses: ashutoshvarma/action-cmake-build@master
       with:
@@ -338,7 +337,6 @@ jobs:
     - name: "[Release msvc] Build & Test"
       env:
         CMAKE_GENERATOR: "Visual Studio 16 2019"
-        CPR_DETECT_SSL_BACKEND: OFF
         CPR_FORCE_OPENSSL_BACKEND: ON
       uses: ashutoshvarma/action-cmake-build@master
       with:
@@ -362,7 +360,6 @@ jobs:
     - name: "[Release msvc] Build & Test"
       env:
         CMAKE_GENERATOR: "Visual Studio 16 2019"
-        CPR_DETECT_SSL_BACKEND: OFF
         CPR_FORCE_OPENSSL_BACKEND: ON
       uses: ashutoshvarma/action-cmake-build@master
       with:
