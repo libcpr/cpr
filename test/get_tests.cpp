@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 
+#include <memory>
 #include <string>
 
 #include "cpr/cpr.h"
@@ -423,6 +424,22 @@ TEST(HeaderTests, HeaderReflectUpdateHeaderAddSessionTest) {
     EXPECT_EQ(std::string{"Value2"}, response.header["Header2"]);
     EXPECT_EQ(200, response.status_code);
     EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
+/**
+ * Test case for #532
+ * https://github.com/whoshuu/cpr/issues/532
+ **/
+TEST(HeaderTests, SessionHeaderReflectTest) {
+    std::unique_ptr<cpr::Session> session(new cpr::Session());
+    session->SetUrl({server->GetBaseUrl() + "/header_reflect.html"});
+    session->SetBody("Some Body to post");
+    session->SetHeader({{"Content-Type", "application/json"}});
+    cpr::Response response = session->Post();
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+    EXPECT_EQ(std::string{"Header reflect POST"}, response.text);
+    EXPECT_EQ(std::string{"application/json"}, response.header["Content-Type"]);
 }
 
 TEST(HeaderTests, HeaderReflectUpdateHeaderUpdateSessionTest) {

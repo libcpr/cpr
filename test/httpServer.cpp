@@ -244,13 +244,18 @@ void HttpServer::OnRequestBasicJson(mg_connection* conn, http_message* /*msg*/) 
 
 void HttpServer::OnRequestHeaderReflect(mg_connection* conn, http_message* msg) {
     std::string response = "Header reflect " + std::string{msg->method.p, msg->method.len};
-    std::string headers = "Content-Type: text/html";
+    std::string headers;
+    bool hasContentTypeHeader = false;
     for (size_t i = 0; i < sizeof(msg->header_names) / sizeof(mg_str); i++) {
         if (!msg->header_names[i].p) {
             continue;
         }
 
         std::string name = std::string(msg->header_names[i].p, msg->header_names[i].len);
+        if (std::string{"Content-Type"} == name) {
+            hasContentTypeHeader = true;
+        }
+
         if (std::string{"Host"} != name && std::string{"Accept"} != name) {
             if (!headers.empty()) {
                 headers.append("\r\n");
@@ -260,8 +265,15 @@ void HttpServer::OnRequestHeaderReflect(mg_connection* conn, http_message* msg) 
                                std::string(msg->header_values[i].p, msg->header_values[i].len));
             }
         }
-        std::cout << "HEADERS: " << headers << '\n';
     }
+
+    if (!hasContentTypeHeader) {
+        if (!headers.empty()) {
+            headers.append("\r\n");
+        }
+        headers.append("Content-Type: text/html");
+    }
+    std::cout << "HEADERS: " << headers << '\n';
     mg_send_head(conn, 200, response.length(), headers.c_str());
     mg_send(conn, response.c_str(), response.length());
 }
