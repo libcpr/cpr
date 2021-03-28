@@ -126,6 +126,15 @@ class Session {
 
     std::shared_ptr<CurlHolder> GetCurlHolder();
 
+    void PrepareDelete();
+    void PrepareGet();
+    void PrepareHead();
+    void PrepareOptions();
+    void PreparePatch();
+    void PreparePost();
+    void PreparePut();
+    Response Complete( CURLcode curl_error );
+
   private:
     class Impl;
     std::unique_ptr<Impl> pimpl_;
