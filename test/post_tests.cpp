@@ -48,8 +48,8 @@ TEST(UrlEncodedPostTests, UrlPostAddPayloadPair) {
 TEST(UrlEncodedPostTests, UrlPostPayloadIteratorTest) {
     Url url{server->GetBaseUrl() + "/url_post.html"};
     std::vector<Pair> payloadData;
-    payloadData.push_back({"x", "1"});
-    payloadData.push_back({"y", "2"});
+    payloadData.emplace_back("x", "1");
+    payloadData.emplace_back("y", "2");
     Response response = cpr::Post(url, Payload(payloadData.begin(), payloadData.end()));
     std::string expected_text{
             "{\n"
@@ -182,11 +182,11 @@ TEST(UrlEncodedPostTests, FormPostFileNoCopyTest) {
 
 TEST(UrlEncodedPostTests, TimeoutPostTest) {
     Url url{server->GetBaseUrl() + "/json_post.html"};
-    std::string body{"{\"RegisterObject\": {\"DeviceID\": \"65010000005030000001\"}}"};
+    std::string body{R"({"RegisterObject": {"DeviceID": "65010000005030000001"}})"};
     cpr::Response response =
             cpr::Post(url, cpr::Header{{"Content-Type", "application/json"}}, cpr::Body{body},
                       cpr::ConnectTimeout{3000}, cpr::Timeout{3000});
-    std::string expected_text{"{\"RegisterObject\": {\"DeviceID\": \"65010000005030000001\"}}"};
+    std::string expected_text{R"({"RegisterObject": {"DeviceID": "65010000005030000001"}})"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
@@ -416,7 +416,7 @@ static std::string getTimestamp() {
 
 TEST(UrlEncodedPostTests, PostReflectTest) {
     std::string uri = server->GetBaseUrl() + "/reflect_post.html";
-    std::string body = "{\"property1\": \"value1\"}";
+    std::string body = R"({"property1": "value1"})";
     std::string contentType = "application/json";
     std::string signature = "x-ms-date: something";
     std::string logType = "LoggingTest";
