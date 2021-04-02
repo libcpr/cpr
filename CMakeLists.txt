@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.15)
 project(cpr VERSION 1.6 LANGUAGES CXX)
 
 # Only change the folder behaviour if cpr is not a subproject
-if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+if(${CMAKE_PROJECT_NAME} STREQUAL ${PROJECT_NAME})
     set_property(GLOBAL PROPERTY USE_FOLDERS ON)
     set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "CMake")
 endif()
