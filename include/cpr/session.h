@@ -133,7 +133,7 @@ class Session {
     void PreparePatch();
     void PreparePost();
     void PreparePut();
-    Response Complete( CURLcode curl_error );
+    Response Complete(CURLcode curl_error);
 
   private:
     class Impl;

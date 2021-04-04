@@ -83,8 +83,8 @@ class Session::Impl {
     void PreparePatch();
     void PreparePost();
     void PreparePut();
-    Response Complete( CURLcode curl_error );
-	
+    Response Complete(CURLcode curl_error);
+
   private:
     void SetHeaderInternal();
     bool hasBodyOrPayload_{false};
@@ -681,10 +681,10 @@ void Session::Impl::prepareCommon() {
 Response Session::Impl::makeRequest()
 {
     CURLcode curl_error = curl_easy_perform(curl_->handle);
-    return Complete( curl_error );
+    return Complete(curl_error);
 }
 
-Response Session::Impl::Complete( CURLcode curl_error )
+Response Session::Impl::Complete(CURLcode curl_error)
 {
     curl_slist* raw_cookies{nullptr};
     curl_easy_getinfo(curl_->handle, CURLINFO_COOKIELIST, &raw_cookies);
