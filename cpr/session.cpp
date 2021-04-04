@@ -706,6 +706,7 @@ void Session::SetReadCallback(const ReadCallback& read) { pimpl_->SetReadCallbac
 void Session::SetHeaderCallback(const HeaderCallback& header) { pimpl_->SetHeaderCallback(header); }
 void Session::SetWriteCallback(const WriteCallback& write) { pimpl_->SetWriteCallback(write); }
 void Session::SetProgressCallback(const ProgressCallback& progress) { pimpl_->SetProgressCallback(progress); }
+void Session::SetDebugCallback(const DebugCallback& debug) { pimpl_->SetDebugCallback(debug); }
 void Session::SetUrl(const Url& url) { pimpl_->SetUrl(url); }
 void Session::SetParameters(const Parameters& parameters) { pimpl_->SetParameters(parameters); }
 void Session::SetParameters(Parameters&& parameters) { pimpl_->SetParameters(std::move(parameters)); }
