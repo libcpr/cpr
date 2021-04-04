@@ -135,6 +135,29 @@ The key to all of this is actually the way [libcurl](http://curl.haxx.se/libcurl
 
 `Session` leverages that and exposes a more modern interface that's free of the macro-heavy hulkiness of libcurl. Understanding the policy-based design of libcurl is important for understanding the way the `Session` object behaves.
 
+`Session` may also be used in scenarios when you want to benefit from `cpr`'s API for settings options and getting results back, but you need to perform the http request using `curl`'s advanced api such as `curl_multi_socket_action()`. In this case, you need to:
+
+1. prepare the request using one of `PrepareGet`, `PreparePut`, etc... instead of `Get`, `Put`, ... respectively
+2. perform the request yourself using `curl`'s API, fetching  the `curl` handle from the session using `GetCurlHolder()`
+3. once `curl`is done, give the resulting `CURLcode` to the session using `Complete()` and get the `Response` objet
+
+Keep in mind that `Session` is stateful, which means that you can't prepare multiple requests concurrently using the same `Session`: a request must be completed before you prepare the next one.
+
+{% raw %}
+```c++
+cpr::Url url = cpr::Url{"http://www.httpbin.org/get"};
+cpr::Session session;
+session.SetOption(url);
+session.PrepareGet();
+
+// here, curl_easy_perform would typically be replaced
+// by a more complex scheme using curl_multi API
+CURLcode curl_result = curl_easy_perform(session.GetCurlHolder()->handle);
+
+cpr::Response response = session.Complete(curl_result);
+```
+{% endraw %}
+
 ## Asynchronous Requests
 
 Making an asynchronous request uses a similar but separate interface:
