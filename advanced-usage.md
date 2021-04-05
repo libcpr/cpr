@@ -150,7 +150,7 @@ cpr::Session session;
 session.SetOption(url);
 session.PrepareGet();
 
-// here, curl_easy_perform would typically be replaced
+// Here, curl_easy_perform would typically be replaced
 // by a more complex scheme using curl_multi API
 CURLcode curl_result = curl_easy_perform(session.GetCurlHolder()->handle);
 
