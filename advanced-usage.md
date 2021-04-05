@@ -105,14 +105,14 @@ cpr::Session session;
 session.SetUrl(url);
 session.SetParameters(parameters);
 
-cpr::Response r = session.Get();             // Equivalent to cpr::Get(url, parameters);
-std::cout << r.url << std::endl     // Prints http://www.httpbin.org/get?hello=world
+cpr::Response r = session.Get();        // Equivalent to cpr::Get(url, parameters);
+std::cout << r.url << std::endl;        // Prints http://www.httpbin.org/get?hello=world
 
 cpr::Parameters new_parameters = cpr::Parameters{{"key", "value"}};
 session.SetParameters(new_parameters);
 
-cpr::Response new_r = session.Get();         // Equivalent to cpr::Get(url, new_parameters);
-std::cout << new_r.url << std::endl // Prints http://www.httpbin.org/get?key=value
+cpr::Response new_r = session.Get();    // Equivalent to cpr::Get(url, new_parameters);
+std::cout << new_r.url << std::endl;    // Prints http://www.httpbin.org/get?key=value
 ```
 {% endraw %}
 
@@ -164,7 +164,7 @@ Making an asynchronous request uses a similar but separate interface:
 
 ```c++
 AsyncResponse fr = cpr::GetAsync(cpr::Url{"http://www.httpbin.org/get"});
-// Sometime later
+// Sometime later...
 cpr::Response r = fr.get(); // This blocks until the request is complete
 std::cout << r.text << std::endl;
 ```
