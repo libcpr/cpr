@@ -24,15 +24,10 @@ using AsyncResponse = std::future<Response>;
 
 namespace priv {
 
-template <typename T>
-void set_option(Session& session, T&& t) {
-    session.SetOption(std::forward<T>(t));
-}
-
-template <typename T, typename... Ts>
-void set_option(Session& session, T&& t, Ts&&... ts) {
-    set_option(session, std::forward<T>(t));
-    set_option(session, std::forward<Ts>(ts)...);
+template <typename... Ts>
+void set_option(Session& session, Ts&&... ts) {
+    std::initializer_list<int> ignore = { (session.SetOption(std::forward<Ts>(ts)), 0)... };
+    (void)ignore;
 }
 
 } // namespace priv
