@@ -34,12 +34,12 @@ namespace cpr {
 class Session {
   public:
     Session();
-    Session(Session&& old) noexcept = default;
+    Session(Session&& old) noexcept;
     Session(const Session& other) = delete;
 
     ~Session();
 
-    Session& operator=(Session&& old) noexcept = default;
+    Session& operator=(Session&& old) noexcept;
     Session& operator=(const Session& other) = delete;
 
     void SetUrl(const Url& url);
