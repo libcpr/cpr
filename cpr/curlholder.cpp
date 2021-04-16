@@ -25,9 +25,9 @@ CurlHolder::CurlHolder() {
 } // namespace cpr
 
 CurlHolder::~CurlHolder() {
-    curl_easy_cleanup(handle);
     curl_slist_free_all(chunk);
     curl_formfree(formpost);
+    curl_easy_cleanup(handle);
 }
 
 std::string CurlHolder::urlEncode(const std::string& s) const {
