@@ -67,6 +67,10 @@ if(CPR_ENABLE_SSL)
         if(WIN32)
             message(STATUS "SSL auto detect: Using WinSSL.")
             set(SSL_BACKEND_USED "WinSSL")
+        elseif(APPLE)
+            message(STATUS "SSL auto detect: Using DarwinSSL.")
+            set(CPR_BUILD_TESTS_SSL OFF)
+            set(SSL_BACKEND_USED "DarwinSSL")
         else()
             find_package(OpenSSL)
             if(OPENSSL_FOUND)
@@ -166,6 +170,10 @@ else()
 
     if(SSL_BACKEND_USED STREQUAL "OpenSSL")
         set(CMAKE_USE_OPENSSL ON CACHE INTERNAL "" FORCE)
+    endif()
+
+    if(SSL_BACKEND_USED STREQUAL "DarwinSSL")
+        set(CMAKE_USE_SECTRANSP ON CACHE INTERNAL "" FORCE)
     endif()
 
     # Show progress of FetchContent:
