@@ -371,7 +371,7 @@ jobs:
         ctest-options: -V
         configure-options: -DBUILD_SHARED_LIBS=OFF
 
-  macos-clang-shared-ssl:
+  macos-clang-shared-openssl:
     runs-on: macos-latest
     steps:
     - name: Checkout
@@ -398,7 +398,7 @@ jobs:
         ctest-options: -V
         configure-options: -DBUILD_SHARED_LIBS=ON
 
-  macos-clang-static-ssl:
+  macos-clang-static-openssl:
     runs-on: macos-latest
     steps:
     - name: Checkout
@@ -424,3 +424,41 @@ jobs:
         run-test: true
         ctest-options: -V
         configure-options: -DBUILD_SHARED_LIBS=OFF
+  
+  macos-clang-static-autossl:
+    runs-on: macos-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2.2.0
+      with:
+        submodules: true
+    - name: "[Release clang++] Build & Test"
+      uses: ashutoshvarma/action-cmake-build@master
+      with:
+        build-dir: ${{github.workspace}}/build
+        source-dir: ${{github.workspace}}
+        build-type: Release
+        cc: clang
+        cxx: clang++
+        run-test: true
+        ctest-options: -V
+        configure-options: -DBUILD_SHARED_LIBS=OFF
+
+  macos-clang-static-darwinssl:
+    runs-on: macos-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2.2.0
+      with:
+        submodules: true
+    - name: "[Release clang++] Build & Test"
+      uses: ashutoshvarma/action-cmake-build@master
+      with:
+        build-dir: ${{github.workspace}}/build
+        source-dir: ${{github.workspace}}
+        build-type: Release
+        cc: clang
+        cxx: clang++
+        run-test: true
+        ctest-options: -V
+        configure-options: -DBUILD_SHARED_LIBS=OFF -DCPR_FORCE_DARWINSSL_BACKEND=ON
