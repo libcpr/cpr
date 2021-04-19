@@ -63,6 +63,7 @@ class Session::Impl {
     void SetUnixSocket(const UnixSocket& unix_socket);
     void SetVerbose(const Verbose& verbose);
     void SetSslOptions(const SslOptions& options);
+    int SetOption(int option, void* value);
 
     Response Delete();
     Response Download(const WriteCallback& write);
@@ -470,6 +471,15 @@ void Session::Impl::SetSslOptions(const SslOptions& options) {
 #endif
 }
 
+int Session::Impl::SetOption(int option, void* value) {
+    auto curl = curl_->handle;
+    if (curl) {
+        return curl_easy_setopt(curl, (CURLoption) option, value);
+    }
+    return 0;
+}
+
+
 void Session::Impl::PrepareDelete() {
     curl_easy_setopt(curl_->handle, CURLOPT_HTTPGET, 0L);
     curl_easy_setopt(curl_->handle, CURLOPT_NOBODY, 0L);
@@ -511,7 +521,7 @@ void Session::Impl::PrepareGet() {
         curl_easy_setopt(curl_->handle, CURLOPT_CUSTOMREQUEST, nullptr);
         curl_easy_setopt(curl_->handle, CURLOPT_HTTPGET, 1L);
     }
-	prepareCommon();
+    prepareCommon();
 }
 
 Response Session::Impl::Get() {
@@ -522,7 +532,7 @@ Response Session::Impl::Get() {
 void Session::Impl::PrepareHead() {
     curl_easy_setopt(curl_->handle, CURLOPT_NOBODY, 1L);
     curl_easy_setopt(curl_->handle, CURLOPT_CUSTOMREQUEST, nullptr);
-	 prepareCommon();
+    prepareCommon();
 }
 
 Response Session::Impl::Head() {
@@ -573,7 +583,7 @@ Response Session::Impl::Post() {
 void Session::Impl::PreparePut() {
     curl_easy_setopt(curl_->handle, CURLOPT_NOBODY, 0L);
     curl_easy_setopt(curl_->handle, CURLOPT_CUSTOMREQUEST, "PUT");
-	prepareCommon();
+    prepareCommon();
 }
 
 Response Session::Impl::Put() {
@@ -678,14 +688,12 @@ void Session::Impl::prepareCommon() {
     curl_easy_setopt(curl_->handle, CURLOPT_CERTINFO, 1L);
 }
 
-Response Session::Impl::makeRequest()
-{
+Response Session::Impl::makeRequest() {
     CURLcode curl_error = curl_easy_perform(curl_->handle);
     return Complete(curl_error);
 }
 
-Response Session::Impl::Complete(CURLcode curl_error)
-{
+Response Session::Impl::Complete(CURLcode curl_error) {
     curl_slist* raw_cookies{nullptr};
     curl_easy_getinfo(curl_->handle, CURLINFO_COOKIELIST, &raw_cookies);
     Cookies cookies = util::parseCookies(raw_cookies);
@@ -695,8 +703,8 @@ Response Session::Impl::Complete(CURLcode curl_error)
     hasBodyOrPayload_ = false;
 
     std::string errorMsg = curl_->error.data();
-    return Response(curl_, std::move(response_string_), std::move(header_string_), std::move(cookies),
-                    Error(curl_error, std::move(errorMsg)));
+    return Response(curl_, std::move(response_string_), std::move(header_string_),
+                    std::move(cookies), Error(curl_error, std::move(errorMsg)));
 }
 
 // clang-format off
@@ -773,6 +781,8 @@ void Session::SetOption(const VerifySsl& verify) { pimpl_->SetVerifySsl(verify);
 void Session::SetOption(const Verbose& verbose) { pimpl_->SetVerbose(verbose); }
 void Session::SetOption(const UnixSocket& unix_socket) { pimpl_->SetUnixSocket(unix_socket); }
 void Session::SetOption(const SslOptions& options) { pimpl_->SetSslOptions(options); }
+int  Session::SetOption(int option, void * value) { return pimpl_->SetOption(option, value); }
+
 
 Response Session::Delete() { return pimpl_->Delete(); }
 Response Session::Download(const WriteCallback& write) { return pimpl_->Download(write); }

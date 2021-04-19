@@ -113,6 +113,7 @@ class Session {
     void SetOption(const Verbose& verbose);
     void SetOption(const UnixSocket& unix_socket);
     void SetOption(const SslOptions& options);
+    int SetOption(int option, void* value);
 
     Response Delete();
     Response Download(const WriteCallback& write);
