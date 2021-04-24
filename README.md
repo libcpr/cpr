@@ -68,7 +68,9 @@ For a quick overview about the planed features, have a look at the next [Milesto
 
 ## Usage
 
-If you already have a project you need to integrate C++ Requests with, the primary way is to use CMake `fetch_content`.
+### CMake
+
+If you already have a CMake project you need to integrate C++ Requests with, the primary way is to use `fetch_content`.
 Add the following to your `CMakeLists.txt`.
 
 
@@ -86,6 +88,16 @@ target_link_libraries(your_target_name PRIVATE cpr::cpr)
 
 That should do it!
 There's no need to handle `libcurl` yourself. All dependencies are taken care of for you.
+
+### Packages for Linux Distributions
+
+Alternatively, you may install a package specific to your Linux distribution. Since so few distributions currently have a package for cpr, most users will not be able to run your program with this approach.
+
+Currently, we are aware of packages for the following distributions:
+
+* [Arch Linux (AUR)](https://aur.archlinux.org/packages/cpr)
+
+If there's no package for your distribution, try making one! If you do, and it is added to your distribution's repositories, please submit a pull request to add it to the list above. However, please only do this if you plan to actively maintain the package.
 
 ## Requirements
 
