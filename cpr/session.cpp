@@ -24,6 +24,7 @@ constexpr long OFF = 0L;
 class Session::Impl {
   public:
     Impl();
+    ~Impl();
 
     void SetUrl(const Url& url);
     void SetParameters(const Parameters& parameters);
@@ -135,6 +136,7 @@ Session::Impl::Impl() : curl_(new CurlHolder()) {
 #endif
 #endif
 }
+Session::Impl::~Impl() {}
 
 void Session::Impl::SetUrl(const Url& url) {
     url_ = url;
