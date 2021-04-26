@@ -39,6 +39,8 @@ cpr_option(CPR_ENABLE_SSL "Enables or disables the SSL backend. Required to perf
 cpr_option(CPR_FORCE_OPENSSL_BACKEND "Force to use the OpenSSL backend. If CPR_FORCE_OPENSSL_BACKEND, CPR_FORCE_DARWINSSL_BACKEND, and CPR_FORCE_WINSSL_BACKEND are set to to OFF, cpr will try to automatically detect the best available SSL backend (WinSSL - Windows, OpenSSL - Linux, DarwinSSL - Mac ...)." OFF)
 cpr_option(CPR_FORCE_WINSSL_BACKEND "Force to use the WinSSL backend. If CPR_FORCE_OPENSSL_BACKEND, CPR_FORCE_DARWINSSL_BACKEND, and CPR_FORCE_WINSSL_BACKEND are set to to OFF, cpr will try to automatically detect the best available SSL backend (WinSSL - Windows, OpenSSL - Linux, DarwinSSL - Mac ...)." OFF)
 cpr_option(CPR_FORCE_DARWINSSL_BACKEND "Force to use the DarwinSSL backend. If CPR_FORCE_OPENSSL_BACKEND, CPR_FORCE_DARWINSSL_BACKEND, and CPR_FORCE_WINSSL_BACKEND are set to to OFF, cpr will try to automatically detect the best available SSL backend (WinSSL - Windows, OpenSSL - Linux, DarwinSSL - Mac ...)." OFF)
+cpr_option(CPR_ENABLE_LINTING "Set to ON to enable clang linting. If enabled, CPR_STATIC_ANALYZE has to be disabled." OFF)
+cpr_option(CPR_STATIC_ANALYZE "Set to ON to enable the GCC 10 static analysis. If enabled, CPR_ENABLE_LINTING has to be disabled." OFF)
 cpr_option(CPR_BUILD_TESTS "Set to ON to build cpr tests." ON)
 cpr_option(CPR_BUILD_TESTS_SSL "Set to ON to build cpr ssl tests" ${CPR_BUILD_TESTS})
 message(STATUS "=======================================================")
@@ -47,7 +49,20 @@ include(GNUInstallDirs)
 include(FetchContent)
 include(cmake/code_coverage.cmake)
 include(cmake/sanitizer.cmake)
-include(cmake/gcc_analyze.cmake)
+include(cmake/clear_variable.cmake)
+
+# Linting and Static Analyze
+if(CPR_ENABLE_LINTING AND CPR_STATIC_ANALYZE)
+    message(FATAL_ERROR "Linting and the GCC static analysis can not be enabled at the same time! Disable either CPR_STATIC_ANALYZE or CPR_ENABLE_LINTING.")
+endif()
+if(CPR_ENABLE_LINTING)
+    include(cmake/clang-tidy.cmake)
+endif()
+
+if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+else()
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic -Werror")
+endif()
 
 # SSL
 if(CPR_ENABLE_SSL)
@@ -184,11 +199,16 @@ else()
         set(CMAKE_USE_SECTRANSP ON CACHE INTERNAL "" FORCE)
     endif()
 
+    # Disable linting for curl
+    clear_variable(DESTINATION CMAKE_CXX_CLANG_TIDY BACKUP CMAKE_CXX_CLANG_TIDY_BKP)
+
     FetchContent_Declare(curl
                          URL                    https://github.com/curl/curl/releases/download/curl-7_75_0/curl-7.75.0.tar.xz
                          URL_HASH               SHA256=fe0c49d8468249000bda75bcfdf9e30ff7e9a86d35f1a21f428d79c389d55675 # the file hash for curl-7.75.0.tar.xz
                          USES_TERMINAL_DOWNLOAD TRUE)   # <---- This is needed only for Ninja to show download progress
     FetchContent_MakeAvailable(curl)
+
+    restore_variable(DESTINATION CMAKE_CXX_CLANG_TIDY BACKUP CMAKE_CXX_CLANG_TIDY_BKP)
 
     add_library(curl_int INTERFACE)
     target_link_libraries(curl_int INTERFACE libcurl)
@@ -216,11 +236,17 @@ if(CPR_BUILD_TESTS)
             # does.
             set(gtest_force_shared_crt ON CACHE BOOL "Force gtest to use the shared c runtime")
         endif()
+
+        # Disable linting for google test
+        clear_variable(DESTINATION CMAKE_CXX_CLANG_TIDY BACKUP CMAKE_CXX_CLANG_TIDY_BKP)
+
         FetchContent_Declare(googletest
                              URL                    https://github.com/google/googletest/archive/release-1.10.0.tar.gz
                              URL_HASH               SHA256=9dc9157a9a1551ec7a7e43daea9a694a0bb5fb8bec81235d8a1e6ef64c716dcb # the file hash for release-1.10.0.tar.gz
                              USES_TERMINAL_DOWNLOAD TRUE)   # <---- This is needed only for Ninja to show download progress
         FetchContent_MakeAvailable(googletest)
+
+        restore_variable(DESTINATION CMAKE_CXX_CLANG_TIDY BACKUP CMAKE_CXX_CLANG_TIDY_BKP)
         
         add_library(gtest_int INTERFACE)
         target_link_libraries(gtest_int INTERFACE gtest)
@@ -253,6 +279,9 @@ if(CPR_BUILD_TESTS)
         set(ENABLE_SSL_TESTS OFF CACHE INTERNAL "")
     endif()
 
+    # Disable linting for mongoose
+    clear_variable(DESTINATION CMAKE_CXX_CLANG_TIDY BACKUP CMAKE_CXX_CLANG_TIDY_BKP)
+
     FetchContent_Declare(mongoose 
                          URL                    https://github.com/cesanta/mongoose/archive/6.18.tar.gz
                          URL_HASH               SHA256=f5c10346abc9c72f7cac7885d853ca064fb09aad57580433941a8fd7a3543769 # the hash for 6.18.tar.gz
@@ -268,13 +297,15 @@ if(CPR_BUILD_TESTS)
     endif()
     # Group under the "external" project folder in IDEs such as Visual Studio.
     set_property(TARGET mongoose PROPERTY FOLDER "external")
+    restore_variable(DESTINATION CMAKE_CXX_CLANG_TIDY BACKUP CMAKE_CXX_CLANG_TIDY_BKP)
 endif()
 
 
 add_subdirectory(cpr)
 add_subdirectory(include)
 
-if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND CPR_BUILD_TESTS)
+
     enable_testing()
     add_subdirectory(test)
+    restore_variable(DESTINATION CMAKE_CXX_CLANG_TIDY BACKUP CMAKE_CXX_CLANG_TIDY_BKP)
 endif()

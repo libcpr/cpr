@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 3.15)
 
+if(CPR_STATIC_ANALYZE)
+    include(../cmake/gcc_analyze.cmake)
+endif()
+
 add_library(cpr
     auth.cpp
     bearer.cpp
