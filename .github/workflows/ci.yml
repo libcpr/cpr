@@ -26,6 +26,27 @@ jobs:
         run-test: true
         ctest-options: -V
         configure-options: -DBUILD_SHARED_LIBS=ON
+  
+  clang-tidy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2.2.0
+      with:
+        submodules: true
+    - name: Install libssl-dev
+      run: sudo apt install libssl-dev
+    - name: "[Release g++] Build & Test"
+      uses: ashutoshvarma/action-cmake-build@master
+      with:
+        build-dir: ${{github.workspace}}/build
+        source-dir: ${{github.workspace}}
+        cc: gcc
+        cxx: g++
+        build-type: Release
+        run-test: true
+        ctest-options: -V
+        configure-options: -DBUILD_SHARED_LIBS=ON -DCPR_ENABLE_LINTING=ON
 
   ubuntu-20-static-gcc-ssl:
     runs-on: ubuntu-20.04
