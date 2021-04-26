@@ -23,7 +23,9 @@ Checks: '*,
 -hicpp-no-array-decay,
 -modernize-pass-by-value,
 -cppcoreguidelines-pro-bounds-constant-array-index,
--hicpp-signed-bitwise
+-hicpp-signed-bitwise,
+-llvmlibc-implementation-in-namespace,
+-llvmlibc-restrict-system-libc-headers
 '
 WarningsAsErrors: '*'
 HeaderFilterRegex: 'src/*.hpp'
