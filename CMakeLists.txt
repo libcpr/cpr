@@ -153,7 +153,7 @@ else()
     # We only need HTTP (and HTTPS) support:
     set(HTTP_ONLY ON CACHE INTERNAL "" FORCE)
     set(BUILD_CURL_EXE OFF CACHE INTERNAL "" FORCE)
-    set(BUILD_TESTING OFF CACHE INTERNAL "" FORCE)
+    set(BUILD_TESTING OFF)
 
     if (CPR_ENABLE_SSL)
         set(SSL_ENABLED ON CACHE INTERNAL "" FORCE)
@@ -269,7 +269,7 @@ endif()
 add_subdirectory(cpr)
 add_subdirectory(include)
 
-if(CPR_BUILD_TESTS)
+if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND CPR_BUILD_TESTS)
     enable_testing()
     add_subdirectory(test)
 endif()
