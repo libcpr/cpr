@@ -147,8 +147,15 @@ if(CPR_FORCE_USE_SYSTEM_CURL)
 else()
     message(STATUS "Configuring build in curl...")
 
-    # ZLIB is required by curl:
-    include(cmake/zlib_external.cmake)
+    # ZLIB is optional for curl
+    # to disable it:
+    # * from command line:
+    #     -DCURL_ZLIB=OFF
+    # * from CMake script:
+    #     SET(CURL_ZLIB OFF CACHE STRING "" FORCE)
+    if (CURL_ZLIB OR CURL_ZLIB STREQUAL AUTO OR NOT DEFINED CACHE{CURL_ZLIB})
+        include(cmake/zlib_external.cmake)
+    endif()
 
     # We only need HTTP (and HTTPS) support:
     set(HTTP_ONLY ON CACHE INTERNAL "" FORCE)
