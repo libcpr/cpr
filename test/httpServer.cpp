@@ -53,7 +53,7 @@ void HttpServer::OnRequestNotFound(mg_connection* conn, http_message* msg) {
     }
 }
 
-void HttpServer::OnRequestOptions(mg_connection* conn, http_message* msg) {
+void HttpServer::OnRequestOptions(mg_connection* conn, http_message* /*msg*/) {
     std::string headers =
             "Content-Type: text/plain\r\n"
             "Access-Control-Allow-Origin: *\r\n"
@@ -278,21 +278,21 @@ void HttpServer::OnRequestHeaderReflect(mg_connection* conn, http_message* msg) 
     mg_send(conn, response.c_str(), response.length());
 }
 
-void HttpServer::OnRequestTempRedirect(mg_connection* conn, http_message* msg) {
+void HttpServer::OnRequestTempRedirect(mg_connection* conn, http_message* /*msg*/) {
     std::string response = "Moved Temporarily";
     std::string headers = "Location: hello.html";
     mg_send_head(conn, 302, response.length(), headers.c_str());
     mg_send(conn, response.c_str(), response.length());
 }
 
-void HttpServer::OnRequestPermRedirect(mg_connection* conn, http_message* msg) {
+void HttpServer::OnRequestPermRedirect(mg_connection* conn, http_message* /*msg*/) {
     std::string response = "Moved Permanently";
     std::string headers = "Location: hello.html";
     mg_send_head(conn, 301, response.length(), headers.c_str());
     mg_send(conn, response.c_str(), response.length());
 }
 
-void HttpServer::OnRequestTwoRedirects(mg_connection* conn, http_message* msg) {
+void HttpServer::OnRequestTwoRedirects(mg_connection* conn, http_message* /*msg*/) {
     std::string response = "Moved Permanently";
     std::string headers = "Location: permanent_redirect.html";
     mg_send_head(conn, 301, response.length(), headers.c_str());

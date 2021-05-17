@@ -449,13 +449,15 @@ void Session::Impl::SetSslOptions(const SslOptions& options) {
 #if LIBCURL_VERSION_NUM >= 0x072900
     curl_easy_setopt(curl_->handle, CURLOPT_SSL_VERIFYSTATUS, options.verify_status ? ON : OFF);
 #endif
+
+    int maxTlsVersion = options.ssl_version;
+#if SUPPORT_MAX_TLS_VERSION
+    maxTlsVersion |= options.max_version;
+#endif
+
     curl_easy_setopt(curl_->handle, CURLOPT_SSLVERSION,
                      // Ignore here since this has been defined by libcurl.
-                     options.ssl_version
-#if SUPPORT_MAX_TLS_VERSION
-                             | options.max_version
-#endif
-    );
+                     maxTlsVersion);
 #if SUPPORT_SSL_NO_REVOKE
     if (options.ssl_no_revoke) {
         curl_easy_setopt(curl_->handle, CURLOPT_SSL_OPTIONS, CURLSSLOPT_NO_REVOKE);
