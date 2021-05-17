@@ -725,7 +725,7 @@ Response Session::Impl::Complete(CURLcode curl_error)
 
 // clang-format off
 Session::Session() : pimpl_(new Impl()) {}
-Session::Session(Session&& old) noexcept = default;
+Session::Session(Session&& /*old*/) noexcept = default;
 Session::~Session() = default;
 Session& Session::operator=(Session&& old) noexcept = default;
 void Session::SetReadCallback(const ReadCallback& read) { pimpl_->SetReadCallback(read); }
