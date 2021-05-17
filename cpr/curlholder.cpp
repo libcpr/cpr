@@ -6,9 +6,6 @@ namespace cpr {
 // NOLINTNEXTLINE (cppcoreguidelines-avoid-non-const-global-variables)
 std::mutex CurlHolder::curl_easy_init_mutex_{};
 
-#ifndef _WIN32 // There is no thread sanitizer on windows
-__attribute__((no_sanitize("thread")))
-#endif
 CurlHolder::CurlHolder() {
     /**
      * Allow multithreaded access to CPR by locking curl_easy_init().
