@@ -1,7 +1,9 @@
 #include <cstddef>
 #include <gtest/gtest.h>
 
+#include <chrono>
 #include <string>
+#include <thread>
 #include <vector>
 
 #include <cpr/cpr.h>
