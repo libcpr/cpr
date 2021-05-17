@@ -13,11 +13,11 @@ else ()
                 httpServer.cpp)
 endif()
 if(WIN32)
-    target_link_libraries(test_server PRIVATE Threads::Threads cpr::cpr GTest::GTest
-                                                PUBLIC mongoose ws2_32 wsock32)
+    target_link_libraries(test_server PRIVATE cpr::cpr GTest::GTest
+                                      PUBLIC mongoose ws2_32 wsock32 Threads::Threads)
 else()
-    target_link_libraries(test_server PRIVATE Threads::Threads cpr::cpr GTest::GTest
-                                                PUBLIC mongoose)
+    target_link_libraries(test_server PRIVATE cpr::cpr GTest::GTest
+                                      PUBLIC mongoose Threads::Threads)
 endif()
 
 macro(add_cpr_test _TEST_NAME)

@@ -62,8 +62,6 @@ endif()
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
 else()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic -Werror")
-    # Fix for "no member named 'sleep_for'" on old compilers:
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_GLIBCXX_USE_NANOSLEEP=1")
 endif()
 
 # SSL
