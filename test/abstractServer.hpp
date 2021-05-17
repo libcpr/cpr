@@ -42,8 +42,6 @@ class AbstractServer : public testing::Environment {
                                       MG_CB(mg_event_handler_t event_handler, void* user_data)) = 0;
 
     static std::string Base64Decode(const std::string& in);
-    static int LowerCase(const char* s);
-    static int StrnCaseCmp(const char* s1, const char* s2, size_t len);
 };
 } // namespace cpr
 

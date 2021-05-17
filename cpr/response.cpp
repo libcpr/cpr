@@ -35,7 +35,7 @@ std::vector<std::string> Response::GetCertInfo() {
 
     std::vector<std::string> info;
     info.resize(ci->num_of_certs);
-    for (size_t i = 0; i < ci->num_of_certs; i++) {
+    for (int i = 0; i < ci->num_of_certs; i++) {
         // No way around here.
         // NOLINTNEXTLINE (cppcoreguidelines-pro-bounds-pointer-arithmetic)
         info[i] = std::string{ci->certinfo[i]->data};

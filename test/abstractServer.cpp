@@ -62,7 +62,7 @@ static void EventHandler(mg_connection* conn, int event, void* event_data) {
 void AbstractServer::Run() {
     // Setup a new mongoose http server.
     memset(&mgr, 0, sizeof(mg_mgr));
-    mg_connection* c = initServer(&mgr, EventHandler);
+    initServer(&mgr, EventHandler);
 
     // Notify the main thread that the server is up and runing:
     server_start_cv.notify_all();
@@ -116,24 +116,6 @@ std::string AbstractServer::Base64Decode(const std::string& in) {
         }
     }
     return out;
-}
-
-static int LowerCase(const char* s) {
-    return tolower(*s);
-}
-
-static int StrnCaseCmp(const char* s1, const char* s2, size_t len) {
-    int diff = 0;
-
-    if (len > 0) {
-        do {
-            // NOLINTNEXTLINE (cppcoreguidelines-pro-bounds-pointer-arithmetic)
-            diff = LowerCase(s1++) - LowerCase(s2++);
-            // NOLINTNEXTLINE (cppcoreguidelines-pro-bounds-pointer-arithmetic)
-        } while (diff == 0 && s1[-1] != '\0' && --len > 0);
-    }
-
-    return diff;
 }
 
 } // namespace cpr
