@@ -8,7 +8,6 @@ endif()
 set(ZLIB_COMPAT ON CACHE INTERNAL "" FORCE)
 set(ZLIB_ENABLE_TESTS OFF CACHE INTERNAL "" FORCE)
 
-set(FETCHCONTENT_QUIET OFF CACHE INTERNAL "" FORCE)
 FetchContent_Declare(zlib
                     GIT_REPOSITORY https://github.com/zlib-ng/zlib-ng
                     GIT_TAG v2.0.0-RC2
