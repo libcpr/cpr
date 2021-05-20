@@ -7,8 +7,8 @@ namespace cpr {
 
 class MaxRedirects {
   public:
-    explicit MaxRedirects(const std::int32_t number_of_redirects)
-            : number_of_redirects(number_of_redirects) {}
+    explicit MaxRedirects(const std::int32_t p_number_of_redirects)
+            : number_of_redirects(p_number_of_redirects) {}
 
     std::int32_t number_of_redirects;
 };

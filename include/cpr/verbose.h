@@ -7,7 +7,7 @@ class Verbose {
   public:
     Verbose() = default;
     // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
-    Verbose(const bool verbose) : verbose{verbose} {}
+    Verbose(const bool p_verbose) : verbose{p_verbose} {}
 
     bool verbose = true;
 };
