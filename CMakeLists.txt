@@ -184,8 +184,6 @@ else()
         set(CMAKE_USE_SECTRANSP ON CACHE INTERNAL "" FORCE)
     endif()
 
-    # Show progress of FetchContent:
-    set(FETCHCONTENT_QUIET OFF CACHE INTERNAL "" FORCE)
     FetchContent_Declare(curl
                          URL                    https://github.com/curl/curl/releases/download/curl-7_75_0/curl-7.75.0.tar.xz
                          URL_HASH               SHA256=fe0c49d8468249000bda75bcfdf9e30ff7e9a86d35f1a21f428d79c389d55675 # the file hash for curl-7.75.0.tar.xz
