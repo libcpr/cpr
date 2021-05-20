@@ -10,8 +10,8 @@
 namespace cpr {
 
 struct File {
-    explicit File(std::string&& filepath) : filepath(std::move(filepath)) {}
-    explicit File(const std::string& filepath) : filepath(filepath) {}
+    explicit File(std::string&& p_filepath) : filepath(std::move(p_filepath)) {}
+    explicit File(const std::string& p_filepath) : filepath(p_filepath) {}
     const std::string filepath;
 };
 
@@ -19,13 +19,13 @@ struct Buffer {
     using data_t = const unsigned char*;
 
     template <typename Iterator>
-    Buffer(Iterator begin, Iterator end, std::string&& filename)
+    Buffer(Iterator begin, Iterator end, std::string&& p_filename)
             // Ignored here since libcurl reqires a long.
             // There is also no way around the reinterpret_cast.
             // NOLINTNEXTLINE(google-runtime-int, cppcoreguidelines-pro-type-reinterpret-cast)
             : data{reinterpret_cast<data_t>(&(*begin))}, datalen{static_cast<long>(
                                                             std::distance(begin, end))},
-              filename(std::move(filename)) {
+              filename(std::move(p_filename)) {
         is_random_access_iterator(begin, end);
         static_assert(sizeof(*begin) == 1, "only byte buffers can be used");
     }
@@ -43,17 +43,17 @@ struct Buffer {
 };
 
 struct Part {
-    Part(const std::string& name, const std::string& value, const std::string& content_type = {})
-            : name{name}, value{value},
-              content_type{content_type}, is_file{false}, is_buffer{false} {}
-    Part(const std::string& name, const std::int32_t& value, const std::string& content_type = {})
-            : name{name}, value{std::to_string(value)},
-              content_type{content_type}, is_file{false}, is_buffer{false} {}
-    Part(const std::string& name, const File& file, const std::string& content_type = {})
-            : name{name}, value{file.filepath},
-              content_type{content_type}, is_file{true}, is_buffer{false} {}
-    Part(const std::string& name, const Buffer& buffer, const std::string& content_type = {})
-            : name{name}, value{buffer.filename}, content_type{content_type}, data{buffer.data},
+    Part(const std::string& p_name, const std::string& p_value, const std::string& p_content_type = {})
+            : name{p_name}, value{p_value},
+              content_type{p_content_type}, is_file{false}, is_buffer{false} {}
+    Part(const std::string& p_name, const std::int32_t& p_value, const std::string& p_content_type = {})
+            : name{p_name}, value{std::to_string(p_value)},
+              content_type{p_content_type}, is_file{false}, is_buffer{false} {}
+    Part(const std::string& p_name, const File& file, const std::string& p_content_type = {})
+            : name{p_name}, value{file.filepath},
+              content_type{p_content_type}, is_file{true}, is_buffer{false} {}
+    Part(const std::string& p_name, const Buffer& buffer, const std::string& p_content_type = {})
+            : name{p_name}, value{buffer.filename}, content_type{p_content_type}, data{buffer.data},
               datalen{buffer.datalen}, is_file{false}, is_buffer{true} {}
 
     std::string name;

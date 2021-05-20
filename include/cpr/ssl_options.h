@@ -70,7 +70,7 @@ class VerifySsl {
   public:
     VerifySsl() = default;
     // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
-    VerifySsl(bool verify) : verify(verify) {}
+    VerifySsl(bool p_verify) : verify(p_verify) {}
 
     explicit operator bool() const {
         return verify;
@@ -147,7 +147,7 @@ class ALPN {
   public:
     ALPN() = default;
     // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
-    ALPN(bool enabled) : enabled(enabled) {}
+    ALPN(bool p_enabled) : enabled(p_enabled) {}
 
     explicit operator bool() const {
         return enabled;
@@ -164,7 +164,7 @@ class NPN {
   public:
     NPN() = default;
     // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
-    NPN(bool enabled) : enabled(enabled) {}
+    NPN(bool p_enabled) : enabled(p_enabled) {}
 
     explicit operator bool() const {
         return enabled;
@@ -180,7 +180,7 @@ class VerifyHost {
   public:
     VerifyHost() = default;
     // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
-    VerifyHost(bool enabled) : enabled(enabled) {}
+    VerifyHost(bool p_enabled) : enabled(p_enabled) {}
 
     explicit operator bool() const {
         return enabled;
@@ -194,7 +194,7 @@ class VerifyPeer {
   public:
     VerifyPeer() = default;
     // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
-    VerifyPeer(bool enabled) : enabled(enabled) {}
+    VerifyPeer(bool p_enabled) : enabled(p_enabled) {}
 
     explicit operator bool() const {
         return enabled;
@@ -208,7 +208,7 @@ class VerifyPeer {
 class VerifyStatus {
   public:
     // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
-    VerifyStatus(bool enabled) : enabled(enabled) {}
+    VerifyStatus(bool p_enabled) : enabled(p_enabled) {}
 
     explicit operator bool() const {
         return enabled;
@@ -318,7 +318,7 @@ class SessionIdCache {
   public:
     SessionIdCache() = default;
     // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
-    SessionIdCache(bool enabled) : enabled(enabled) {}
+    SessionIdCache(bool p_enabled) : enabled(p_enabled) {}
 
     explicit operator bool() const {
         return enabled;
@@ -333,7 +333,7 @@ class SslFastStart {
   public:
     SslFastStart() = default;
     // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
-    SslFastStart(bool enabled) : enabled(enabled) {}
+    SslFastStart(bool p_enabled) : enabled(p_enabled) {}
 
     explicit operator bool() const {
         return enabled;
@@ -347,7 +347,7 @@ class NoRevoke {
 public:
     NoRevoke() = default;
     // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
-    NoRevoke(bool enabled) : enabled(enabled) {}
+    NoRevoke(bool p_enabled) : enabled(p_enabled) {}
 
     explicit operator bool() const {
         return enabled;
