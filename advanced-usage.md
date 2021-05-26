@@ -304,7 +304,7 @@ int main(int argc, char** argv) {
                       cpr::ProgressCallback([&](size_t downloadTotal, size_t downloadNow, size_t uploadTotal, size_t uploadNow) -> bool
     {
         std::cout << "Downloaded " << downloadNow << " / " << downloadTotal << " bytes." << std::endl;
-        return True;
+        return true;
     }));
     return 0;
 }
