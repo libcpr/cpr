@@ -24,6 +24,7 @@ target_sources(cpr PRIVATE
     cpr/parameters.h
     cpr/payload.h
     cpr/proxies.h
+    cpr/proxyauth.h
     cpr/response.h
     cpr/session.h
     cpr/ssl_options.h
