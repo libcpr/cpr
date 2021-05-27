@@ -6,8 +6,7 @@
 namespace cpr {
 class ProxyAuth : public Authentication {
   public:
-    ProxyAuth(const std::string& username, const std::string& password) 
-            : Authentication{username, password} {}
+    ProxyAuth(const std::string& username, const std::string& password) : Authentication{username, password} {}
 };
 
 } // namespace cpr
