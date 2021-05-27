@@ -22,6 +22,7 @@
 #include "cpr/parameters.h"
 #include "cpr/payload.h"
 #include "cpr/proxies.h"
+#include "cpr/proxyauth.h"
 #include "cpr/response.h"
 #include "cpr/ssl_options.h"
 #include "cpr/timeout.h"
@@ -56,6 +57,7 @@ class Session {
     void SetPayload(const Payload& payload);
     void SetProxies(Proxies&& proxies);
     void SetProxies(const Proxies& proxies);
+    void SetProxyAuth(const ProxyAuth& auth);
     void SetMultipart(Multipart&& multipart);
     void SetMultipart(const Multipart& multipart);
     void SetNTLM(const NTLM& auth);
@@ -95,6 +97,7 @@ class Session {
     void SetOption(const LimitRate& limit_rate);
     void SetOption(Proxies&& proxies);
     void SetOption(const Proxies& proxies);
+    void SetOption(const ProxyAuth& auth);
     void SetOption(Multipart&& multipart);
     void SetOption(const Multipart& multipart);
     void SetOption(const NTLM& auth);
