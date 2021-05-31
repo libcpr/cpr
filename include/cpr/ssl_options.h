@@ -140,6 +140,14 @@ class DerKey : public KeyFile {
     }
 };
 
+class PinnedPublicKey {
+  public:
+    // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
+    PinnedPublicKey(std::string&& p_pinned_public_key) : pinned_public_key(std::move(p_pinned_public_key)) {}
+
+    const std::string pinned_public_key;
+};
+
 #if SUPPORT_ALPN
 // This option enables/disables ALPN in the SSL handshake (if the SSL backend libcurl is built to
 // use supports it), which can be used to negotiate http2.
@@ -364,6 +372,7 @@ struct SslOptions {
     std::string key_file;
     std::string key_type;
     std::string key_pass;
+    std::string pinned_public_key;
 #if SUPPORT_ALPN
     bool enable_alpn = true;
 #endif // SUPPORT_ALPN
@@ -400,6 +409,10 @@ struct SslOptions {
         key_type = opt.GetKeyType();
         key_pass = opt.password;
     }
+    void SetOption(const ssl::PinnedPublicKey& opt) {
+        pinned_public_key = opt.pinned_public_key;
+    }
+
 #if SUPPORT_ALPN
     void SetOption(const ssl::ALPN& opt) {
         enable_alpn = opt.enabled;

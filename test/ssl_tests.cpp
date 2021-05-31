@@ -21,6 +21,7 @@ TEST(SslTests, HelloWorldTestSimpel) {
     SslOptions sslOpts =
             Ssl(ssl::CaPath{baseDirPath + "ca.cer"}, ssl::CertFile{baseDirPath + "client.cer"},
                 ssl::KeyFile{baseDirPath + "client.key"}, ssl::VerifyPeer{false},
+                ssl::PinnedPublicKey{baseDirPath + "server.pubkey"},
                 ssl::VerifyHost{false}, ssl::VerifyStatus{false});
     Response response = cpr::Get(url, sslOpts, Timeout{5000}, Verbose{});
     std::string expected_text = "Hello world!";
@@ -39,6 +40,7 @@ TEST(SslTests, HelloWorldTestFull) {
     SslOptions sslOpts = Ssl(
             ssl::TLSv1{}, ssl::ALPN{false}, ssl::NPN{false}, ssl::CaPath{baseDirPath + "ca.cer"},
             ssl::CertFile{baseDirPath + "client.cer"}, ssl::KeyFile{baseDirPath + "client.key"},
+            ssl::PinnedPublicKey{baseDirPath + "server.pubkey"},
             ssl::VerifyPeer{false}, ssl::VerifyHost{false}, ssl::VerifyStatus{false});
     Response response = cpr::Get(url, sslOpts, Timeout{5000}, Verbose{});
     std::string expected_text = "Hello world!";
