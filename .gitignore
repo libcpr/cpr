@@ -49,3 +49,4 @@ _site/
 
 # clangd
 .cache/
+.vs
