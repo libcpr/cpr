@@ -3,3 +3,4 @@ opt/
 build/
 .vscode/
 .cache/
+.vs
