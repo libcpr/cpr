@@ -368,6 +368,28 @@ session.SetUrl("https://www.httpbin.org/get");
 
 Setting `Proxies` on a `Session` lets you intelligently route requests using different protocols through different proxies without having to respecify anything but the request `Url`.
 
+Sometimes a proxy requires authentication:
+
+{% raw %}
+```c++
+cpr::Response r = cpr::Get(cpr::Url{"http://www.httpbin.org/get"},
+                  cpr::Proxies{{"http", "http://www.fake_auth_proxy.com"}},
+                  cpr::ProxyAuth{"user", "pass"});
+std::cout << r.text << std::endl;
+/*
+ * {
+ *   "args": {},
+ *   "headers": {
+ *     ..
+ *   },
+ *   "url": "http://httpbin.org/get"
+ * }
+ */
+```
+{% endraw %}
+
+The one username/password pair is applied to all proxies.
+
 ## Sending Cookies
 
 Earlier you saw how to grab a cookie from the request:
