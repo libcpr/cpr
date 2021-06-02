@@ -53,6 +53,8 @@ add_cpr_test(error)
 add_cpr_test(alternating)
 add_cpr_test(util)
 add_cpr_test(structures)
+add_cpr_test(encoded_auth)
+add_cpr_test(proxy_auth)
 
 if (ENABLE_SSL_TESTS)
     add_cpr_test(ssl)

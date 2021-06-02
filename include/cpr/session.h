@@ -57,7 +57,8 @@ class Session {
     void SetPayload(const Payload& payload);
     void SetProxies(Proxies&& proxies);
     void SetProxies(const Proxies& proxies);
-    void SetProxyAuth(const ProxyAuth& auth);
+    void SetProxyAuth(ProxyAuthentication&& proxy_auth);
+    void SetProxyAuth(const ProxyAuthentication& proxy_auth);
     void SetMultipart(Multipart&& multipart);
     void SetMultipart(const Multipart& multipart);
     void SetNTLM(const NTLM& auth);
@@ -97,7 +98,8 @@ class Session {
     void SetOption(const LimitRate& limit_rate);
     void SetOption(Proxies&& proxies);
     void SetOption(const Proxies& proxies);
-    void SetOption(const ProxyAuth& auth);
+    void SetOption(ProxyAuthentication&& proxy_auth);
+    void SetOption(const ProxyAuthentication& proxy_auth);
     void SetOption(Multipart&& multipart);
     void SetOption(const Multipart& multipart);
     void SetOption(const NTLM& auth);

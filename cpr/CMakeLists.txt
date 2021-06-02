@@ -12,6 +12,7 @@ add_library(cpr
     parameters.cpp
     payload.cpp
     proxies.cpp
+    proxyauth.cpp
     session.cpp
     timeout.cpp
     unix_socket.cpp
