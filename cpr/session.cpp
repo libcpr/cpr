@@ -44,7 +44,8 @@ class Session::Impl {
     void SetPayload(const Payload& payload);
     void SetProxies(Proxies&& proxies);
     void SetProxies(const Proxies& proxies);
-    void SetProxyAuth(const ProxyAuth& auth);
+    void SetProxyAuth(ProxyAuthentication&& proxy_auth);
+    void SetProxyAuth(const ProxyAuthentication& proxy_auth);
     void SetMultipart(Multipart&& multipart);
     void SetMultipart(const Multipart& multipart);
     void SetNTLM(const NTLM& auth);
@@ -94,6 +95,7 @@ class Session::Impl {
     Url url_;
     Parameters parameters_;
     Proxies proxies_;
+    ProxyAuthentication proxyAuth_;
     Header header_;
     /**
      * Will be set by the read callback.
@@ -251,9 +253,12 @@ void Session::Impl::SetProxies(Proxies&& proxies) {
     proxies_ = std::move(proxies);
 }
 
-void Session::Impl::SetProxyAuth(const ProxyAuth& auth) {
-    curl_easy_setopt(curl_->handle, CURLOPT_PROXYAUTH, CURLAUTH_ANY);
-    curl_easy_setopt(curl_->handle, CURLOPT_PROXYUSERPWD, auth.GetAuthString());
+void Session::Impl::SetProxyAuth(ProxyAuthentication&& proxy_auth) {
+    proxyAuth_ = std::move(proxy_auth);
+}
+
+void Session::Impl::SetProxyAuth(const ProxyAuthentication& proxy_auth) {
+    proxyAuth_ = proxy_auth;
 }
 
 void Session::Impl::SetMultipart(Multipart&& multipart) {
@@ -607,6 +612,10 @@ Response Session::Impl::makeDownloadRequest() {
     std::string protocol = url_.str().substr(0, url_.str().find(':'));
     if (proxies_.has(protocol)) {
         curl_easy_setopt(curl_->handle, CURLOPT_PROXY, proxies_[protocol].c_str());
+        if (proxyAuth_.has(protocol)) {
+            curl_easy_setopt(curl_->handle, CURLOPT_PROXYAUTH, CURLAUTH_ANY);
+            curl_easy_setopt(curl_->handle, CURLOPT_PROXYUSERPWD, proxyAuth_[protocol]);
+        }
     } else {
         curl_easy_setopt(curl_->handle, CURLOPT_PROXY, "");
     }
@@ -652,6 +661,10 @@ void Session::Impl::prepareCommon() {
     std::string protocol = url_.str().substr(0, url_.str().find(':'));
     if (proxies_.has(protocol)) {
         curl_easy_setopt(curl_->handle, CURLOPT_PROXY, proxies_[protocol].c_str());
+        if (proxyAuth_.has(protocol)) {
+            curl_easy_setopt(curl_->handle, CURLOPT_PROXYAUTH, CURLAUTH_ANY);
+            curl_easy_setopt(curl_->handle, CURLOPT_PROXYUSERPWD, proxyAuth_[protocol]);
+        }
     } else {
         curl_easy_setopt(curl_->handle, CURLOPT_PROXY, nullptr);
     }
@@ -732,7 +745,8 @@ void Session::SetPayload(const Payload& payload) { pimpl_->SetPayload(payload); 
 void Session::SetPayload(Payload&& payload) { pimpl_->SetPayload(std::move(payload)); }
 void Session::SetProxies(const Proxies& proxies) { pimpl_->SetProxies(proxies); }
 void Session::SetProxies(Proxies&& proxies) { pimpl_->SetProxies(std::move(proxies)); }
-void Session::SetProxyAuth(const ProxyAuth& auth) { pimpl_->SetProxyAuth(auth); }
+void Session::SetProxyAuth(ProxyAuthentication&& proxy_auth) { pimpl_->SetProxyAuth(std::move(proxy_auth)); }
+void Session::SetProxyAuth(const ProxyAuthentication& proxy_auth) { pimpl_->SetProxyAuth(proxy_auth); }
 void Session::SetMultipart(const Multipart& multipart) { pimpl_->SetMultipart(multipart); }
 void Session::SetMultipart(Multipart&& multipart) { pimpl_->SetMultipart(std::move(multipart)); }
 void Session::SetNTLM(const NTLM& auth) { pimpl_->SetNTLM(auth); }
@@ -770,7 +784,8 @@ void Session::SetOption(const Payload& payload) { pimpl_->SetPayload(payload); }
 void Session::SetOption(Payload&& payload) { pimpl_->SetPayload(std::move(payload)); }
 void Session::SetOption(const Proxies& proxies) { pimpl_->SetProxies(proxies); }
 void Session::SetOption(Proxies&& proxies) { pimpl_->SetProxies(std::move(proxies)); }
-void Session::SetOption(const ProxyAuth& auth) { pimpl_->SetProxyAuth(auth); }
+void Session::SetOption(ProxyAuthentication&& proxy_auth) { pimpl_->SetProxyAuth(std::move(proxy_auth)); }
+void Session::SetOption(const ProxyAuthentication& proxy_auth) { pimpl_->SetProxyAuth(proxy_auth); }
 void Session::SetOption(const Multipart& multipart) { pimpl_->SetMultipart(multipart); }
 void Session::SetOption(Multipart&& multipart) { pimpl_->SetMultipart(std::move(multipart)); }
 void Session::SetOption(const NTLM& auth) { pimpl_->SetNTLM(auth); }
