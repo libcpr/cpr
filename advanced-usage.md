@@ -568,7 +568,7 @@ Starting with version 7.39, `libcurl` uses TLS v1.0 by default.
 If you have security and performance concerns, you can force a newer version of the protocol.
 
 ```c++
-cpr::Ssl sslOpts = cpr::Ssl(ssl:TLSv1_2{});
+cpr::SslOptions sslOpts = cpr::Ssl(ssl:TLSv1_2{});
 cpr::Response r = cpr::Get(cpr::Url{"https://www.httpbin.org/get"}, sslOpts);
 ```
 
@@ -592,7 +592,7 @@ Or a lower but insecure version of the protocol for compatibility reasons.
 Some older HTTPS services do not support ALPN and NPN negotiation, which may result in connections not being established properly. Compatibility issues can be resolved by disabling ALPN/NPN support for the request.
 
 ```c++
-cpr::Ssl sslOpts = cpr::Ssl(ssl::ALPN{false}, ssl::NPN{false});
+cpr::SslOptions sslOpts = cpr::Ssl(ssl::ALPN{false}, ssl::NPN{false});
 cpr::Response r = cpr::Get(cpr::Url{"https://www.httpbin.org/get"}, sslOpts);
 ```
 
@@ -621,7 +621,7 @@ Some HTTPS services require client certificates to be given at the time of conne
 You can specify filenames for client certificates and private keys using the `CertFile` and `KeyFile` options.
 
 ```c++
-cpr::Ssl sslOpts = cpr::Ssl(ssl::CertFile{"cert.pem"}, ssl::KeyFile{"key.pem"});
+cpr::SslOptions sslOpts = cpr::Ssl(ssl::CertFile{"cert.pem"}, ssl::KeyFile{"key.pem"});
 cpr::Response r = cpr::Get(cpr::Url{"https://www.httpbin.org/get"}, sslOpts);
 ```
 
