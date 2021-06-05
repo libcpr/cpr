@@ -614,6 +614,49 @@ If you wish to connect to a server that uses a self-signed certificate, you can 
 * `VerifyPeer`: the authenticity of the peer's certificate.
 * `VerifyStatus`: the status of the server cert using the "Certificate Status Request" TLS extension (aka. OCSP stapling). (libcurl 7.41.0)
 
+### Pinned Public Key
+
+When negotiating a TLS or SSL connection, the server sends a certificate indicating its identity.
+A public key is extracted from this certificate and if it does not exactly match the public key provided to this option,
+`libcurl` will abort the connection before sending or receiving any data.
+
+You can specify the public key using the `PinnedPublicKey` option. 
+The string can be the file name of your pinned public key. The file format expected is "PEM" or "DER". 
+The string can also be any number of base64 encoded sha256 hashes preceded by "sha256//" and separated by ";"
+
+```c++
+cpr::SslOptions sslOpts = cpr::Ssl(ssl::PinnedPublicKey{"pubkey.pem"});
+/* OR
+cpr::SslOptions sslOpts = cpr::Ssl(ssl::PinnedPublicKey{"sha256//J0dKy1gw45muM4o/vm/tskFQ2BWudtp9XLxaW7OtowQ="});
+*/
+cpr::Response r = cpr::Get(cpr::Url{"https://www.httpbin.org/get"}, sslOpts);
+```
+
+If you do not have the server's public key file you can extract it from the server's certificate:
+
+``` bash
+# retrieve the server's certificate if you don't already have it
+#
+# be sure to examine the certificate to see if it is what you expected
+#
+# Windows-specific:
+# - Use NUL instead of /dev/null.
+# - OpenSSL may wait for input instead of disconnecting. Hit enter.
+# - If you don't have sed, then just copy the certificate into a file:
+#   Lines from -----BEGIN CERTIFICATE----- to -----END CERTIFICATE-----.
+#
+openssl s_client -servername www.httpbin.org -connect www.httpbin.org:443 < /dev/null | sed -n "/-----BEGIN/,/-----END/p" > www.httpbin.org.pem
+ 
+# extract public key in pem format from certificate
+openssl x509 -in www.httpbin.org.pem -pubkey -noout > www.httpbin.org.pubkey.pem
+ 
+# convert public key from pem to der
+openssl asn1parse -noout -inform pem -in www.httpbin.org.pubkey.pem -out www.httpbin.org.pubkey.der
+ 
+# sha256 hash and base64 encode der to string for use
+openssl dgst -sha256 -binary www.httpbin.org.pubkey.der | openssl base64
+```
+
 ### SSL Client Certificate
 
 Some HTTPS services require client certificates to be given at the time of connection for authentication and authentication.
