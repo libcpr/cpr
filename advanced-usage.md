@@ -618,7 +618,7 @@ If you wish to connect to a server that uses a self-signed certificate, you can 
 
 When negotiating a TLS or SSL connection, the server sends a certificate indicating its identity.
 A public key is extracted from this certificate and if it does not exactly match the public key provided to this option,
-`libcurl` will abort the connection before sending or receiving any data.
+`libcurl` (and therefore `CPR`) will abort the connection before sending or receiving any data.
 
 You can specify the public key using the `PinnedPublicKey` option. 
 The string can be the file name of your pinned public key. The file format expected is "PEM" or "DER". 
