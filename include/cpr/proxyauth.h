@@ -17,6 +17,9 @@ class EncodedAuthentication {
     EncodedAuthentication(EncodedAuthentication&& old) noexcept = default;
     virtual ~EncodedAuthentication() noexcept = default;
 
+    EncodedAuthentication& operator=(EncodedAuthentication&& old) noexcept = default;
+    EncodedAuthentication& operator=(const EncodedAuthentication& other) = default;
+
     const char* GetAuthString() const noexcept;
 
   protected:
