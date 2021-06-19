@@ -679,7 +679,7 @@ openssl dgst -sha256 -binary www.httpbin.org.pubkey.der | openssl base64
 
 ### SSL Client Certificate
 
-Some HTTPS services require client certificates to be given at the time of connection for authentication and authentication.
+Some HTTPS services require client certificates to be given at the time of connection for authentication and authorization.
 
 You can specify filenames for client certificates and private keys using the `CertFile` and `KeyFile` options.
 
