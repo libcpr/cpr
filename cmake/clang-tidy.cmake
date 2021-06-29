@@ -1,5 +1,5 @@
 if (NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
-    find_program(CLANG_TIDY_EXECUTABLE NAMES clang-tidy-7 clang-tidy)
+    find_program(CLANG_TIDY_EXECUTABLE NAMES clang-tidy)
     mark_as_advanced(CLANG_TIDY_EXECUTABLE)
 
     if (${CLANG_TIDY_EXECUTABLE})
