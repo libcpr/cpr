@@ -39,9 +39,8 @@ cpr_option(CPR_ENABLE_SSL "Enables or disables the SSL backend. Required to perf
 cpr_option(CPR_FORCE_OPENSSL_BACKEND "Force to use the OpenSSL backend. If CPR_FORCE_OPENSSL_BACKEND, CPR_FORCE_DARWINSSL_BACKEND, and CPR_FORCE_WINSSL_BACKEND are set to to OFF, cpr will try to automatically detect the best available SSL backend (WinSSL - Windows, OpenSSL - Linux, DarwinSSL - Mac ...)." OFF)
 cpr_option(CPR_FORCE_WINSSL_BACKEND "Force to use the WinSSL backend. If CPR_FORCE_OPENSSL_BACKEND, CPR_FORCE_DARWINSSL_BACKEND, and CPR_FORCE_WINSSL_BACKEND are set to to OFF, cpr will try to automatically detect the best available SSL backend (WinSSL - Windows, OpenSSL - Linux, DarwinSSL - Mac ...)." OFF)
 cpr_option(CPR_FORCE_DARWINSSL_BACKEND "Force to use the DarwinSSL backend. If CPR_FORCE_OPENSSL_BACKEND, CPR_FORCE_DARWINSSL_BACKEND, and CPR_FORCE_WINSSL_BACKEND are set to to OFF, cpr will try to automatically detect the best available SSL backend (WinSSL - Windows, OpenSSL - Linux, DarwinSSL - Mac ...)." OFF)
-cpr_option(CPR_ENABLE_LINTING "Set to ON to enable clang linting. If enabled, CPR_STATIC_ANALYZE has to be disabled." OFF)
-cpr_option(CPR_STATIC_ANALYZE "Set to ON to enable the GCC 10 static analysis. If enabled, CPR_ENABLE_LINTING has to be disabled." OFF)
-cpr_option(CPR_BUILD_TESTS "Set to ON to build cpr tests." ON)
+cpr_option(CPR_ENABLE_LINTING "Set to ON to enable clang linting." ON)
+cpr_option(CPR_BUILD_TESTS "Set to ON to build cpr tests." OFF)
 cpr_option(CPR_BUILD_TESTS_SSL "Set to ON to build cpr ssl tests" ${CPR_BUILD_TESTS})
 message(STATUS "=======================================================")
 
@@ -51,10 +50,7 @@ include(cmake/code_coverage.cmake)
 include(cmake/sanitizer.cmake)
 include(cmake/clear_variable.cmake)
 
-# Linting and Static Analyze
-if(CPR_ENABLE_LINTING AND CPR_STATIC_ANALYZE)
-    message(FATAL_ERROR "Linting and the GCC static analysis can not be enabled at the same time! Disable either CPR_STATIC_ANALYZE or CPR_ENABLE_LINTING.")
-endif()
+# Linting
 if(CPR_ENABLE_LINTING)
     include(cmake/clang-tidy.cmake)
 endif()
