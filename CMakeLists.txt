@@ -300,7 +300,7 @@ endif()
 add_subdirectory(cpr)
 add_subdirectory(include)
 
-
+if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND CPR_BUILD_TESTS)
     enable_testing()
     add_subdirectory(test)
     restore_variable(DESTINATION CMAKE_CXX_CLANG_TIDY BACKUP CMAKE_CXX_CLANG_TIDY_BKP)
