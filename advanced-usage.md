@@ -31,7 +31,9 @@ and they're dead simple to access:
 
 ```c++
 cpr::Response r = cpr::Get(cpr::Url{"http://www.httpbin.org/get"});
-if (r.status_code >= 400) {
+if(r.status_code == 0)
+    std::cerr << r.error.message << std::endl;
+else if (r.status_code >= 400) {
     std::cerr << "Error [" << r.status_code << "] making request" << std::endl;
 } else {
     std::cout << "Request took " << r.elapsed << std::endl;
