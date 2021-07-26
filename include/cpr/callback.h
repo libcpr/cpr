@@ -12,10 +12,8 @@ class ReadCallback {
   public:
     ReadCallback() = default;
     // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
-    ReadCallback(std::function<bool(char* buffer, size_t& size)> p_callback)
-            : size{-1}, callback{std::move(p_callback)} {}
-    ReadCallback(cpr_off_t p_size, std::function<bool(char* buffer, size_t& size)> p_callback)
-            : size{p_size}, callback{std::move(p_callback)} {}
+    ReadCallback(std::function<bool(char* buffer, size_t& size)> p_callback) : size{-1}, callback{std::move(p_callback)} {}
+    ReadCallback(cpr_off_t p_size, std::function<bool(char* buffer, size_t& size)> p_callback) : size{p_size}, callback{std::move(p_callback)} {}
 
     cpr_off_t size{};
     std::function<bool(char* buffer, size_t& size)> callback;
@@ -25,8 +23,7 @@ class HeaderCallback {
   public:
     HeaderCallback() = default;
     // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
-    HeaderCallback(std::function<bool(std::string header)> p_callback)
-            : callback(std::move(p_callback)) {}
+    HeaderCallback(std::function<bool(std::string header)> p_callback) : callback(std::move(p_callback)) {}
 
     std::function<bool(std::string header)> callback;
 };
@@ -44,14 +41,9 @@ class ProgressCallback {
   public:
     ProgressCallback() = default;
     // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
-    ProgressCallback(std::function<bool(size_t downloadTotal, size_t downloadNow,
-                                        size_t uploadTotal, size_t uploadNow)>
-                             p_callback)
-            : callback(std::move(p_callback)) {}
+    ProgressCallback(std::function<bool(cpr_off_t downloadTotal, cpr_off_t downloadNow, cpr_off_t uploadTotal, cpr_off_t uploadNow)> p_callback) : callback(std::move(p_callback)) {}
 
-    std::function<bool(size_t downloadTotal, size_t downloadNow, size_t uploadTotal,
-                       size_t uploadNow)>
-            callback;
+    std::function<bool(cpr_off_t downloadTotal, cpr_off_t downloadNow, cpr_off_t uploadTotal, cpr_off_t uploadNow)> callback;
 };
 
 class DebugCallback {
@@ -67,8 +59,7 @@ class DebugCallback {
     };
     DebugCallback() = default;
     // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
-    DebugCallback(std::function<void(InfoType type, std::string data)> p_callback)
-            : callback(std::move(p_callback)) {}
+    DebugCallback(std::function<void(InfoType type, std::string data)> p_callback) : callback(std::move(p_callback)) {}
 
     std::function<void(InfoType type, std::string data)> callback;
 };
