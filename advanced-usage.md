@@ -293,7 +293,7 @@ While data is being transferred it will be called very frequently, and during sl
 The callback signature looks like this.
 
 ```c++
-  bool progressCallback(size_t downloadTotal, size_t downloadNow, size_t uploadTotal, size_t uploadNow);
+  bool progressCallback(cpr_off_t downloadTotal, cpr_off_t downloadNow, cpr_off_t uploadTotal, cpr_off_t uploadNow);
 ```
 
 The values are in bytes.  Return `true` to continue the transfer, and `false` to **cancel** it.
@@ -303,7 +303,7 @@ Here is an example of using the callback.
 ```c++
 int main(int argc, char** argv) {
     cpr::Response r = cpr::Get(cpr::Url{"http://www.httpbin.org/get"},
-                      cpr::ProgressCallback([&](size_t downloadTotal, size_t downloadNow, size_t uploadTotal, size_t uploadNow) -> bool
+                      cpr::ProgressCallback([&](cpr_off_t downloadTotal, cpr_off_t downloadNow, cpr_off_t uploadTotal, cpr_off_t uploadNow) -> bool
     {
         std::cout << "Downloaded " << downloadNow << " / " << downloadTotal << " bytes." << std::endl;
         return true;
