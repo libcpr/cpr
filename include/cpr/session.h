@@ -119,6 +119,7 @@ class Session {
     void SetOption(const UnixSocket& unix_socket);
     void SetOption(const SslOptions& options);
 
+    int64_t GetDownloadFileLength();
     Response Delete();
     Response Download(const WriteCallback& write);
     Response Download(std::ofstream& file);

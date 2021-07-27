@@ -66,6 +66,7 @@ class Session::Impl {
     void SetVerbose(const Verbose& verbose);
     void SetSslOptions(const SslOptions& options);
 
+    int64_t GetDownloadFileLength();
     Response Delete();
     Response Download(const WriteCallback& write);
     Response Download(std::ofstream& file);
@@ -493,6 +494,30 @@ void Session::Impl::PrepareDelete() {
     prepareCommon();
 }
 
+int64_t Session::Impl::GetDownloadFileLength() {
+	curl_off_t downloadFileLenth = -1;
+	curl_easy_setopt(curl_->handle, CURLOPT_URL, url_.c_str());
+
+    std::string protocol = url_.str().substr(0, url_.str().find(':'));
+    if (proxies_.has(protocol)) {
+        curl_easy_setopt(curl_->handle, CURLOPT_PROXY, proxies_[protocol].c_str());
+        if (proxyAuth_.has(protocol)) {
+            curl_easy_setopt(curl_->handle, CURLOPT_PROXYAUTH, CURLAUTH_ANY);
+            curl_easy_setopt(curl_->handle, CURLOPT_PROXYUSERPWD, proxyAuth_[protocol]);
+        }
+    } else {
+        curl_easy_setopt(curl_->handle, CURLOPT_PROXY, "");
+    }
+
+    curl_easy_setopt(curl_->handle, CURLOPT_HTTPGET, 1);
+    curl_easy_setopt(curl_->handle, CURLOPT_NOBODY, 1);
+    if (curl_easy_perform(curl_->handle) == CURLE_OK)
+    {
+       curl_easy_getinfo(curl_->handle, CURLINFO_CONTENT_LENGTH_DOWNLOAD_T, &downloadFileLenth);
+    }
+	return downloadFileLenth;
+}
+
 Response Session::Impl::Delete() {
     PrepareDelete();
     return makeRequest();
@@ -802,6 +827,7 @@ void Session::SetOption(const Verbose& verbose) { pimpl_->SetVerbose(verbose); }
 void Session::SetOption(const UnixSocket& unix_socket) { pimpl_->SetUnixSocket(unix_socket); }
 void Session::SetOption(const SslOptions& options) { pimpl_->SetSslOptions(options); }
 
+int64_t Session::GetDownloadFileLength() { return pimpl_->GetDownloadFileLength(); }
 Response Session::Delete() { return pimpl_->Delete(); }
 Response Session::Download(const WriteCallback& write) { return pimpl_->Download(write); }
 Response Session::Download(std::ofstream& file) { return pimpl_->Download(file); }
