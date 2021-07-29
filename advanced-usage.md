@@ -249,7 +249,7 @@ This callback function will be called every time `libcurl` is ready for data to 
 The callback signature looks like this.
 
 ```c++
-  bool readCallback(char* buffer, size_t & length);
+  bool readCallback(char* buffer, size_t & length, intptr_t userdata);
 ```
 
 Provide the callback with the ReadCallback options object.  Only one read callback may be set.
@@ -264,7 +264,7 @@ This includes empty lines and the `HTTP` status line.  `\r\n` endings are preser
 The callback signature looks like this.
 
 ```c++
-  bool headerCallback(std::string data);
+  bool headerCallback(std::string data, intptr_t userdata);
 ```
 
 Provide the callback with the HeaderCallback options object.  Only one header callback may be set.
@@ -279,7 +279,7 @@ You could buffer data in your own way, or write every chunk immediately out to s
 The callback signature looks like this.
 
 ```c++
-  bool writeCallback(std::string data);
+  bool writeCallback(std::string data, intptr_t userdata);
 ```
 
 Provide the callback with the WriteCallback options object.  Only one write callback may be set.
@@ -293,7 +293,7 @@ While data is being transferred it will be called very frequently, and during sl
 The callback signature looks like this.
 
 ```c++
-  bool progressCallback(cpr_off_t downloadTotal, cpr_off_t downloadNow, cpr_off_t uploadTotal, cpr_off_t uploadNow);
+  bool progressCallback(cpr_off_t downloadTotal, cpr_off_t downloadNow, cpr_off_t uploadTotal, cpr_off_t uploadNow, intptr_t userdata);
 ```
 
 The values are in bytes.  Return `true` to continue the transfer, and `false` to **cancel** it.
@@ -303,7 +303,7 @@ Here is an example of using the callback.
 ```c++
 int main(int argc, char** argv) {
     cpr::Response r = cpr::Get(cpr::Url{"http://www.httpbin.org/get"},
-                      cpr::ProgressCallback([&](cpr_off_t downloadTotal, cpr_off_t downloadNow, cpr_off_t uploadTotal, cpr_off_t uploadNow) -> bool
+                      cpr::ProgressCallback([&](cpr_off_t downloadTotal, cpr_off_t downloadNow, cpr_off_t uploadTotal, cpr_off_t uploadNow, intptr_t userdata) -> bool
     {
         std::cout << "Downloaded " << downloadNow << " / " << downloadTotal << " bytes." << std::endl;
         return true;
@@ -328,7 +328,7 @@ The callback signature looks like this.
     SSL_DATA_IN = 5,
     SSL_DATA_OUT = 6,
   };
-  void debugCallback(DebugCallback::InfoType type, std::string data);
+  void debugCallback(DebugCallback::InfoType type, std::string data, intptr_t userdata);
 ```
 
 `type` represents the type of the content, whereas `data` contains the content itself.  Debug messages have type `TEXT`.
@@ -596,7 +596,7 @@ cpr::Response r = cpr::Get(cpr::Url{"https://www.httpbin.org/get"}, sslOpts);
 
 Or a lower but insecure version of the protocol for compatibility reasons.
 
-* `TLSv1`: TLS v1.0 or later 
+* `TLSv1`: TLS v1.0 or later
 * `SSLv2`: SSL v2 (but not SSLv3)
 * `SSLv3`: SSL v3 (but not SSLv2)
 * `TLSv1_0`: TLS v1.0 or later (libcurl 7.34.0)
@@ -642,8 +642,8 @@ When negotiating a TLS or SSL connection, the server sends a certificate indicat
 A public key is extracted from this certificate and if it does not exactly match the public key provided to this option,
 `libcurl` (and therefore `CPR`) will abort the connection before sending or receiving any data.
 
-You can specify the public key using the `PinnedPublicKey` option. 
-The string can be the file name of your pinned public key. The file format expected is "PEM" or "DER". 
+You can specify the public key using the `PinnedPublicKey` option.
+The string can be the file name of your pinned public key. The file format expected is "PEM" or "DER".
 The string can also be any number of base64 encoded sha256 hashes preceded by "sha256//" and separated by ";"
 
 ```c++
@@ -668,13 +668,13 @@ If you do not have the server's public key file you can extract it from the serv
 #   Lines from -----BEGIN CERTIFICATE----- to -----END CERTIFICATE-----.
 #
 openssl s_client -servername www.httpbin.org -connect www.httpbin.org:443 < /dev/null | sed -n "/-----BEGIN/,/-----END/p" > www.httpbin.org.pem
- 
+
 # extract public key in pem format from certificate
 openssl x509 -in www.httpbin.org.pem -pubkey -noout > www.httpbin.org.pubkey.pem
- 
+
 # convert public key from pem to der
 openssl asn1parse -noout -inform pem -in www.httpbin.org.pubkey.pem -out www.httpbin.org.pubkey.der
- 
+
 # sha256 hash and base64 encode der to string for use
 openssl dgst -sha256 -binary www.httpbin.org.pubkey.der | openssl base64
 ```
