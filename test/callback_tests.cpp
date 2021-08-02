@@ -735,7 +735,7 @@ TEST(CallbackPatchTests, CallbackPatchFunctionTextReferenceTest) {
 
 TEST(CallbackDataTests, CallbackReadFunctionCancelTest) {
     Url url{server->GetBaseUrl() + "/url_post.html"};
-    Response response = cpr::Post(url, cpr::ReadCallback([](char* /*buffer*/, size_t& /*size*/) -> size_t { return false; }));
+    Response response = cpr::Post(url, cpr::ReadCallback([](char* /*buffer*/, size_t& /*size*/, intptr_t /*userdata*/) -> size_t { return false; }));
     EXPECT_EQ(response.error.code, ErrorCode::REQUEST_CANCELLED);
 }
 
@@ -746,7 +746,7 @@ TEST(CallbackDataTests, CallbackReadFunctionTextTest) {
             "  \"x\": 5\n"
             "}"};
     unsigned count = 0;
-    Response response = cpr::Post(url, cpr::ReadCallback{3, [&](char* buffer, size_t& size) -> size_t {
+    Response response = cpr::Post(url, cpr::ReadCallback{3, [&](char* buffer, size_t& size, intptr_t /*userdata*/) -> size_t {
                                                              std::string data;
                                                              ++count;
                                                              switch (count) {
@@ -776,7 +776,7 @@ TEST(CallbackDataTests, CallbackReadFunctionHeaderTest) {
     std::string data = "Test";
     Response response = cpr::Post(url,
                                   cpr::ReadCallback{-1,
-                                                    [&](char* /*buffer*/, size_t& size) -> size_t {
+                                                    [&](char* /*buffer*/, size_t& size, intptr_t /*userdata*/) -> size_t {
                                                         size = 0;
                                                         return true;
                                                     }},
@@ -824,7 +824,7 @@ TEST(CallbackDataTests, CallbackReadFunctionChunkedTest) {
 
 TEST(CallbackDataTests, CallbackHeaderFunctionCancelTest) {
     Url url{server->GetBaseUrl() + "/url_post.html"};
-    Response response = Post(url, HeaderCallback{[](std::string /*header*/) -> bool { return false; }});
+    Response response = Post(url, HeaderCallback{[](std::string /*header*/, intptr_t /*userdata*/) -> bool { return false; }});
     EXPECT_EQ(response.error.code, ErrorCode::REQUEST_CANCELLED);
 }
 
@@ -832,7 +832,7 @@ TEST(CallbackDataTests, CallbackHeaderFunctionTextTest) {
     Url url{server->GetBaseUrl() + "/url_post.html"};
     std::vector<std::string> expected_headers{"HTTP/1.1 201 OK\r\n", "Content-Type: application/json\r\n", "\r\n"};
     std::set<std::string> response_headers;
-    Post(url, HeaderCallback{[&response_headers](std::string header) -> bool {
+    Post(url, HeaderCallback{[&response_headers](std::string header, intptr_t /*userdata*/) -> bool {
              response_headers.insert(header);
              return true;
          }});
@@ -843,7 +843,7 @@ TEST(CallbackDataTests, CallbackHeaderFunctionTextTest) {
 
 TEST(CallbackDataTests, CallbackWriteFunctionCancelTest) {
     Url url{server->GetBaseUrl() + "/url_post.html"};
-    Response response = Post(url, WriteCallback{[](std::string /*header*/) -> bool { return false; }});
+    Response response = Post(url, WriteCallback{[](std::string /*header*/, intptr_t /*userdata*/) -> bool { return false; }});
     EXPECT_EQ(response.error.code, ErrorCode::REQUEST_CANCELLED);
 }
 
@@ -854,7 +854,7 @@ TEST(CallbackDataTests, CallbackWriteFunctionTextTest) {
             "  \"x\": 5\n"
             "}"};
     std::string response_text;
-    Post(url, Payload{{"x", "5"}}, WriteCallback{[&response_text](std::string header) -> bool {
+    Post(url, Payload{{"x", "5"}}, WriteCallback{[&response_text](std::string header, intptr_t /*userdata*/) -> bool {
              response_text.append(header);
              return true;
          }});
@@ -863,7 +863,7 @@ TEST(CallbackDataTests, CallbackWriteFunctionTextTest) {
 
 TEST(CallbackDataTests, CallbackProgressFunctionCancelTest) {
     Url url{server->GetBaseUrl() + "/url_post.html"};
-    Response response = Post(url, ProgressCallback{[](size_t /*downloadTotal*/, size_t /*downloadNow*/, size_t /*uploadTotal*/, size_t /*uploadNow*/) -> bool { return false; }});
+    Response response = Post(url, ProgressCallback{[](size_t /*downloadTotal*/, size_t /*downloadNow*/, size_t /*uploadTotal*/, size_t /*uploadNow*/, intptr_t /*userdata*/) -> bool { return false; }});
     EXPECT_EQ(response.error.code, ErrorCode::REQUEST_CANCELLED);
 }
 
@@ -871,7 +871,7 @@ TEST(CallbackDataTests, CallbackProgressFunctionTotalTest) {
     Url url{server->GetBaseUrl() + "/url_post.html"};
     Body body{"x=5"};
     size_t response_upload = 0, response_download = 0;
-    Response response = Post(url, body, ProgressCallback{[&](size_t downloadTotal, size_t /*downloadNow*/, size_t uploadTotal, size_t /*uploadNow*/) -> bool {
+    Response response = Post(url, body, ProgressCallback{[&](size_t downloadTotal, size_t /*downloadNow*/, size_t uploadTotal, size_t /*uploadNow*/, intptr_t /*userdata*/) -> bool {
                                  response_upload = uploadTotal;
                                  response_download = downloadTotal;
                                  return true;
@@ -884,7 +884,7 @@ TEST(CallbackDataTests, CallbackDebugFunctionTextTest) {
     Url url{server->GetBaseUrl() + "/url_post.html"};
     Body body{"x=5"};
     std::string debug_body;
-    Response response = Post(url, body, DebugCallback{[&](DebugCallback::InfoType type, std::string data) {
+    Response response = Post(url, body, DebugCallback{[&](DebugCallback::InfoType type, std::string data, intptr_t /*userdata*/) {
                                  if (type == DebugCallback::InfoType::DATA_OUT) {
                                      debug_body = data;
                                  }

@@ -12,38 +12,54 @@ class ReadCallback {
   public:
     ReadCallback() = default;
     // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
-    ReadCallback(std::function<bool(char* buffer, size_t& size)> p_callback) : size{-1}, callback{std::move(p_callback)} {}
-    ReadCallback(cpr_off_t p_size, std::function<bool(char* buffer, size_t& size)> p_callback) : size{p_size}, callback{std::move(p_callback)} {}
+    ReadCallback(std::function<bool(char* buffer, size_t& size, intptr_t userdata)> p_callback, intptr_t p_userdata = 0) : userdata(p_userdata), size{-1}, callback{std::move(p_callback)} {}
+    ReadCallback(cpr_off_t p_size, std::function<bool(char* buffer, size_t& size, intptr_t userdata)> p_callback, intptr_t p_userdata = 0) : userdata(p_userdata), size{p_size}, callback{std::move(p_callback)} {}
+    bool operator()(char* buffer, size_t& size) const {
+        return callback(buffer, size, userdata);
+    }
 
+    intptr_t userdata;
     cpr_off_t size{};
-    std::function<bool(char* buffer, size_t& size)> callback;
+    std::function<bool(char* buffer, size_t& size, intptr_t userdata)> callback;
 };
 
 class HeaderCallback {
   public:
     HeaderCallback() = default;
     // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
-    HeaderCallback(std::function<bool(std::string header)> p_callback) : callback(std::move(p_callback)) {}
+    HeaderCallback(std::function<bool(std::string header, intptr_t userdata)> p_callback, intptr_t p_userdata = 0) : userdata(p_userdata), callback(std::move(p_callback)) {}
+    bool operator()(std::string header) const {
+        return callback(std::move(header), userdata);
+    }
 
-    std::function<bool(std::string header)> callback;
+    intptr_t userdata;
+    std::function<bool(std::string header, intptr_t userdata)> callback;
 };
 
 class WriteCallback {
   public:
     WriteCallback() = default;
     // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
-    WriteCallback(std::function<bool(std::string data)> p_callback) : callback(std::move(p_callback)) {}
+    WriteCallback(std::function<bool(std::string data, intptr_t userdata)> p_callback, intptr_t p_userdata = 0) : userdata(p_userdata), callback(std::move(p_callback)) {}
+    bool operator()(std::string data) const {
+        return callback(std::move(data), userdata);
+    }
 
-    std::function<bool(std::string data)> callback;
+    intptr_t userdata;
+    std::function<bool(std::string data, intptr_t userdata)> callback;
 };
 
 class ProgressCallback {
   public:
     ProgressCallback() = default;
     // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
-    ProgressCallback(std::function<bool(cpr_off_t downloadTotal, cpr_off_t downloadNow, cpr_off_t uploadTotal, cpr_off_t uploadNow)> p_callback) : callback(std::move(p_callback)) {}
+    ProgressCallback(std::function<bool(cpr_off_t downloadTotal, cpr_off_t downloadNow, cpr_off_t uploadTotal, cpr_off_t uploadNow, intptr_t userdata)> p_callback, intptr_t p_userdata = 0) : userdata(p_userdata), callback(std::move(p_callback)) {}
+    bool operator()(cpr_off_t downloadTotal, cpr_off_t downloadNow, cpr_off_t uploadTotal, cpr_off_t uploadNow) const {
+        return callback(downloadTotal, downloadNow, uploadTotal, uploadNow, userdata);
+    }
 
-    std::function<bool(cpr_off_t downloadTotal, cpr_off_t downloadNow, cpr_off_t uploadTotal, cpr_off_t uploadNow)> callback;
+    intptr_t userdata;
+    std::function<bool(size_t downloadTotal, size_t downloadNow, size_t uploadTotal, size_t uploadNow, intptr_t userdata)> callback;
 };
 
 class DebugCallback {
@@ -59,9 +75,13 @@ class DebugCallback {
     };
     DebugCallback() = default;
     // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
-    DebugCallback(std::function<void(InfoType type, std::string data)> p_callback) : callback(std::move(p_callback)) {}
+    DebugCallback(std::function<void(InfoType type, std::string data, intptr_t userdata)> p_callback, intptr_t p_userdata = 0) : userdata(p_userdata), callback(std::move(p_callback)) {}
+    void operator()(InfoType type, std::string data) const {
+        callback(type, std::move(data), userdata);
+    }
 
-    std::function<void(InfoType type, std::string data)> callback;
+    intptr_t userdata;
+    std::function<void(InfoType type, std::string data, intptr_t userdata)> callback;
 };
 
 } // namespace cpr
