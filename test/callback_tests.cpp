@@ -863,7 +863,7 @@ TEST(CallbackDataTests, CallbackWriteFunctionTextTest) {
 
 TEST(CallbackDataTests, CallbackProgressFunctionCancelTest) {
     Url url{server->GetBaseUrl() + "/url_post.html"};
-    Response response = Post(url, ProgressCallback{[](intptr_t /*userdata*/, size_t /*downloadTotal*/, size_t /*downloadNow*/, size_t /*uploadTotal*/, size_t /*uploadNow*/) -> bool { return false; }});
+    Response response = Post(url, ProgressCallback{[](size_t /*downloadTotal*/, size_t /*downloadNow*/, size_t /*uploadTotal*/, size_t /*uploadNow*/, intptr_t /*userdata*/) -> bool { return false; }});
     EXPECT_EQ(response.error.code, ErrorCode::REQUEST_CANCELLED);
 }
 
@@ -871,7 +871,7 @@ TEST(CallbackDataTests, CallbackProgressFunctionTotalTest) {
     Url url{server->GetBaseUrl() + "/url_post.html"};
     Body body{"x=5"};
     size_t response_upload = 0, response_download = 0;
-    Response response = Post(url, body, ProgressCallback{[&](intptr_t /*userdata*/, size_t downloadTotal, size_t /*downloadNow*/, size_t uploadTotal, size_t /*uploadNow*/) -> bool {
+    Response response = Post(url, body, ProgressCallback{[&](size_t downloadTotal, size_t /*downloadNow*/, size_t uploadTotal, size_t /*uploadNow*/, intptr_t /*userdata*/) -> bool {
                                  response_upload = uploadTotal;
                                  response_download = downloadTotal;
                                  return true;
