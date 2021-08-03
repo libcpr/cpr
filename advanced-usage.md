@@ -540,6 +540,58 @@ std::cout << r.text << std::endl;
 
 As with PUT, PATCH only works if the method is supported by the API you're sending the request to.
 
+## Download File
+
+CPR specifically provides an interface for downloading files.
+
+### Download To File
+
+Download to file is simple:
+
+{% raw %}
+```c++
+    std::ofstream of("1.jpg", std::ios::binary);
+    cpr::Response r = cpr::Download(of, cpr::Url{"http://www.httpbin.org/1.jpg"});
+    std::cout << "http status code = " << r.status_code << std::endl << std::endl;
+```
+{% endraw %}
+
+### Download With Callback
+
+When downloading a small file, you might want to allocate enough memory to hold the data you read before starting the download. This is where 'GetDownloadFileLength()' comes in.
+
+{% raw %}
+```c++
+struct File
+{
+    void *  file_buf;  // file data will be save to
+    int64_t read_len;  // file bytes
+};
+bool write_data(std::string data, intptr_t userdata)
+{
+    File *pf = (File *)userdata;
+    memcpy(pf->file_buf + pf->read_len, data.data(), data.size());
+    pf->read_len += data.size();
+}
+void download_to_mem(File &f)
+{
+    cpr::Session session;
+    session.SetUrl(cpr::Url{"http://www.httpbin.org/1.jpg"});
+    f.read_len = session.GetDownloadFileLength();
+    f.file_buf = malloc(f.read_len);
+    auto r     = session.Download(cpr::WriteCallback{write_data, &f});
+}
+int main()
+{
+    File f{nullptr, 0};
+    download_to_mem(f);
+    // do something
+    free(f.file_buf); // free file data buf
+    return 0;
+}
+```
+{% endraw %}
+
 ## Other Request Methods
 
 C++ Requests also supports `DELETE`, `HEAD`, and `OPTIONS` methods in the expected forms:
@@ -596,7 +648,7 @@ cpr::Response r = cpr::Get(cpr::Url{"https://www.httpbin.org/get"}, sslOpts);
 
 Or a lower but insecure version of the protocol for compatibility reasons.
 
-* `TLSv1`: TLS v1.0 or later 
+* `TLSv1`: TLS v1.0 or later
 * `SSLv2`: SSL v2 (but not SSLv3)
 * `SSLv3`: SSL v3 (but not SSLv2)
 * `TLSv1_0`: TLS v1.0 or later (libcurl 7.34.0)
@@ -642,8 +694,8 @@ When negotiating a TLS or SSL connection, the server sends a certificate indicat
 A public key is extracted from this certificate and if it does not exactly match the public key provided to this option,
 `libcurl` (and therefore `CPR`) will abort the connection before sending or receiving any data.
 
-You can specify the public key using the `PinnedPublicKey` option. 
-The string can be the file name of your pinned public key. The file format expected is "PEM" or "DER". 
+You can specify the public key using the `PinnedPublicKey` option.
+The string can be the file name of your pinned public key. The file format expected is "PEM" or "DER".
 The string can also be any number of base64 encoded sha256 hashes preceded by "sha256//" and separated by ";"
 
 ```c++
@@ -668,13 +720,13 @@ If you do not have the server's public key file you can extract it from the serv
 #   Lines from -----BEGIN CERTIFICATE----- to -----END CERTIFICATE-----.
 #
 openssl s_client -servername www.httpbin.org -connect www.httpbin.org:443 < /dev/null | sed -n "/-----BEGIN/,/-----END/p" > www.httpbin.org.pem
- 
+
 # extract public key in pem format from certificate
 openssl x509 -in www.httpbin.org.pem -pubkey -noout > www.httpbin.org.pubkey.pem
- 
+
 # convert public key from pem to der
 openssl asn1parse -noout -inform pem -in www.httpbin.org.pubkey.pem -out www.httpbin.org.pubkey.der
- 
+
 # sha256 hash and base64 encode der to string for use
 openssl dgst -sha256 -binary www.httpbin.org.pubkey.der | openssl base64
 ```
