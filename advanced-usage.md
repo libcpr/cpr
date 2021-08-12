@@ -564,12 +564,12 @@ When downloading a small file, you might want to allocate enough memory to hold 
 ```c++
 struct File
 {
-    void *  file_buf;  // file data will be save to
+    void*  file_buf;   // file data will be save to
     int64_t read_len;  // file bytes
 };
 bool write_data(std::string data, intptr_t userdata)
 {
-    File *pf = (File *)userdata;
+    File* pf = (File *)userdata;
     memcpy(pf->file_buf + pf->read_len, data.data(), data.size());
     pf->read_len += data.size();
 }
