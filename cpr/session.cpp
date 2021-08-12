@@ -66,6 +66,7 @@ class Session::Impl {
     void SetVerbose(const Verbose& verbose);
     void SetSslOptions(const SslOptions& options);
 
+    cpr_off_t GetDownloadFileLength();
     Response Delete();
     Response Download(const WriteCallback& write);
     Response Download(std::ofstream& file);
@@ -232,16 +233,14 @@ void Session::Impl::SetUserAgent(const UserAgent& ua) {
 void Session::Impl::SetPayload(Payload&& payload) {
     hasBodyOrPayload_ = true;
     const std::string content = payload.GetContent(*curl_);
-    curl_easy_setopt(curl_->handle, CURLOPT_POSTFIELDSIZE_LARGE,
-                     static_cast<curl_off_t>(content.length()));
+    curl_easy_setopt(curl_->handle, CURLOPT_POSTFIELDSIZE_LARGE, static_cast<curl_off_t>(content.length()));
     curl_easy_setopt(curl_->handle, CURLOPT_COPYPOSTFIELDS, content.c_str());
 }
 
 void Session::Impl::SetPayload(const Payload& payload) {
     hasBodyOrPayload_ = true;
     const std::string content = payload.GetContent(*curl_);
-    curl_easy_setopt(curl_->handle, CURLOPT_POSTFIELDSIZE_LARGE,
-                     static_cast<curl_off_t>(content.length()));
+    curl_easy_setopt(curl_->handle, CURLOPT_POSTFIELDSIZE_LARGE, static_cast<curl_off_t>(content.length()));
     curl_easy_setopt(curl_->handle, CURLOPT_COPYPOSTFIELDS, content.c_str());
 }
 
@@ -269,9 +268,7 @@ void Session::Impl::SetMultipart(Multipart&& multipart) {
         std::vector<curl_forms> formdata;
         if (part.is_buffer) {
             // Do not use formdata, to prevent having to use reinterpreter_cast:
-            curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, part.name.c_str(), CURLFORM_BUFFER,
-                         part.value.c_str(), CURLFORM_BUFFERPTR, part.data, CURLFORM_BUFFERLENGTH,
-                         part.datalen, CURLFORM_END);
+            curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, part.name.c_str(), CURLFORM_BUFFER, part.value.c_str(), CURLFORM_BUFFERPTR, part.data, CURLFORM_BUFFERLENGTH, part.datalen, CURLFORM_END);
         } else {
             formdata.push_back({CURLFORM_COPYNAME, part.name.c_str()});
             if (part.is_file) {
@@ -302,9 +299,7 @@ void Session::Impl::SetMultipart(const Multipart& multipart) {
         std::vector<curl_forms> formdata;
         if (part.is_buffer) {
             // Do not use formdata, to prevent having to use reinterpreter_cast:
-            curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, part.name.c_str(), CURLFORM_BUFFER,
-                         part.value.c_str(), CURLFORM_BUFFERPTR, part.data, CURLFORM_BUFFERLENGTH,
-                         part.datalen, CURLFORM_END);
+            curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, part.name.c_str(), CURLFORM_BUFFER, part.value.c_str(), CURLFORM_BUFFERPTR, part.data, CURLFORM_BUFFERLENGTH, part.datalen, CURLFORM_END);
         } else {
             formdata.push_back({CURLFORM_COPYNAME, part.name.c_str()});
             if (part.is_file) {
@@ -353,15 +348,13 @@ void Session::Impl::SetCookies(const Cookies& cookies) {
 
 void Session::Impl::SetBody(Body&& body) {
     hasBodyOrPayload_ = true;
-    curl_easy_setopt(curl_->handle, CURLOPT_POSTFIELDSIZE_LARGE,
-                     static_cast<curl_off_t>(body.str().length()));
+    curl_easy_setopt(curl_->handle, CURLOPT_POSTFIELDSIZE_LARGE, static_cast<curl_off_t>(body.str().length()));
     curl_easy_setopt(curl_->handle, CURLOPT_COPYPOSTFIELDS, body.c_str());
 }
 
 void Session::Impl::SetBody(const Body& body) {
     hasBodyOrPayload_ = true;
-    curl_easy_setopt(curl_->handle, CURLOPT_POSTFIELDSIZE_LARGE,
-                     static_cast<curl_off_t>(body.str().length()));
+    curl_easy_setopt(curl_->handle, CURLOPT_POSTFIELDSIZE_LARGE, static_cast<curl_off_t>(body.str().length()));
     curl_easy_setopt(curl_->handle, CURLOPT_POSTFIELDS, body.c_str());
 }
 
@@ -481,8 +474,7 @@ void Session::Impl::SetSslOptions(const SslOptions& options) {
     }
 #endif
 #if SUPPORT_SESSIONID_CACHE
-    curl_easy_setopt(curl_->handle, CURLOPT_SSL_SESSIONID_CACHE,
-                     options.session_id_cache ? ON : OFF);
+    curl_easy_setopt(curl_->handle, CURLOPT_SSL_SESSIONID_CACHE, options.session_id_cache ? ON : OFF);
 #endif
 }
 
@@ -491,6 +483,29 @@ void Session::Impl::PrepareDelete() {
     curl_easy_setopt(curl_->handle, CURLOPT_NOBODY, 0L);
     curl_easy_setopt(curl_->handle, CURLOPT_CUSTOMREQUEST, "DELETE");
     prepareCommon();
+}
+
+cpr_off_t Session::Impl::GetDownloadFileLength() {
+    cpr_off_t downloadFileLenth = -1;
+    curl_easy_setopt(curl_->handle, CURLOPT_URL, url_.c_str());
+
+    std::string protocol = url_.str().substr(0, url_.str().find(':'));
+    if (proxies_.has(protocol)) {
+        curl_easy_setopt(curl_->handle, CURLOPT_PROXY, proxies_[protocol].c_str());
+        if (proxyAuth_.has(protocol)) {
+            curl_easy_setopt(curl_->handle, CURLOPT_PROXYAUTH, CURLAUTH_ANY);
+            curl_easy_setopt(curl_->handle, CURLOPT_PROXYUSERPWD, proxyAuth_[protocol]);
+        }
+    } else {
+        curl_easy_setopt(curl_->handle, CURLOPT_PROXY, "");
+    }
+
+    curl_easy_setopt(curl_->handle, CURLOPT_HTTPGET, 1);
+    curl_easy_setopt(curl_->handle, CURLOPT_NOBODY, 1);
+    if (curl_easy_perform(curl_->handle) == CURLE_OK) {
+        curl_easy_getinfo(curl_->handle, CURLINFO_CONTENT_LENGTH_DOWNLOAD_T, &downloadFileLenth);
+    }
+    return downloadFileLenth;
 }
 
 Response Session::Impl::Delete() {
@@ -527,7 +542,7 @@ void Session::Impl::PrepareGet() {
         curl_easy_setopt(curl_->handle, CURLOPT_CUSTOMREQUEST, nullptr);
         curl_easy_setopt(curl_->handle, CURLOPT_HTTPGET, 1L);
     }
-	prepareCommon();
+    prepareCommon();
 }
 
 Response Session::Impl::Get() {
@@ -538,7 +553,7 @@ Response Session::Impl::Get() {
 void Session::Impl::PrepareHead() {
     curl_easy_setopt(curl_->handle, CURLOPT_NOBODY, 1L);
     curl_easy_setopt(curl_->handle, CURLOPT_CUSTOMREQUEST, nullptr);
-	 prepareCommon();
+    prepareCommon();
 }
 
 Response Session::Impl::Head() {
@@ -589,7 +604,7 @@ Response Session::Impl::Post() {
 void Session::Impl::PreparePut() {
     curl_easy_setopt(curl_->handle, CURLOPT_NOBODY, 0L);
     curl_easy_setopt(curl_->handle, CURLOPT_CUSTOMREQUEST, "PUT");
-	prepareCommon();
+    prepareCommon();
 }
 
 Response Session::Impl::Put() {
@@ -641,8 +656,7 @@ Response Session::Impl::makeDownloadRequest() {
     curl_slist_free_all(raw_cookies);
     std::string errorMsg = curl_->error.data();
 
-    return Response(curl_, "", std::move(header_string), std::move(cookies),
-                    Error(curl_error, std::move(errorMsg)));
+    return Response(curl_, "", std::move(header_string), std::move(cookies), Error(curl_error, std::move(errorMsg)));
 }
 
 void Session::Impl::prepareCommon() {
@@ -702,14 +716,12 @@ void Session::Impl::prepareCommon() {
     curl_easy_setopt(curl_->handle, CURLOPT_CERTINFO, 1L);
 }
 
-Response Session::Impl::makeRequest()
-{
+Response Session::Impl::makeRequest() {
     CURLcode curl_error = curl_easy_perform(curl_->handle);
     return Complete(curl_error);
 }
 
-Response Session::Impl::Complete(CURLcode curl_error)
-{
+Response Session::Impl::Complete(CURLcode curl_error) {
     curl_slist* raw_cookies{nullptr};
     curl_easy_getinfo(curl_->handle, CURLINFO_COOKIELIST, &raw_cookies);
     Cookies cookies = util::parseCookies(raw_cookies);
@@ -719,8 +731,7 @@ Response Session::Impl::Complete(CURLcode curl_error)
     hasBodyOrPayload_ = false;
 
     std::string errorMsg = curl_->error.data();
-    return Response(curl_, std::move(response_string_), std::move(header_string_), std::move(cookies),
-                    Error(curl_error, std::move(errorMsg)));
+    return Response(curl_, std::move(response_string_), std::move(header_string_), std::move(cookies), Error(curl_error, std::move(errorMsg)));
 }
 
 // clang-format off
@@ -802,6 +813,7 @@ void Session::SetOption(const Verbose& verbose) { pimpl_->SetVerbose(verbose); }
 void Session::SetOption(const UnixSocket& unix_socket) { pimpl_->SetUnixSocket(unix_socket); }
 void Session::SetOption(const SslOptions& options) { pimpl_->SetSslOptions(options); }
 
+cpr_off_t Session::GetDownloadFileLength() { return pimpl_->GetDownloadFileLength(); }
 Response Session::Delete() { return pimpl_->Delete(); }
 Response Session::Download(const WriteCallback& write) { return pimpl_->Download(write); }
 Response Session::Download(std::ofstream& file) { return pimpl_->Download(file); }
