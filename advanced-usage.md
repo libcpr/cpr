@@ -540,6 +540,58 @@ std::cout << r.text << std::endl;
 
 As with PUT, PATCH only works if the method is supported by the API you're sending the request to.
 
+## Download File
+
+CPR specifically provides an interface for downloading files.
+
+### Download To File
+
+Download to file is simple:
+
+{% raw %}
+```c++
+    std::ofstream of("1.jpg", std::ios::binary);
+    cpr::Response r = cpr::Download(of, cpr::Url{"http://www.httpbin.org/1.jpg"});
+    std::cout << "http status code = " << r.status_code << std::endl << std::endl;
+```
+{% endraw %}
+
+### Download With Callback
+
+When downloading a small file, you might want to allocate enough memory to hold the data you read before starting the download. This is where 'GetDownloadFileLength()' comes in.
+
+{% raw %}
+```c++
+struct File
+{
+    void*  file_buf;   // file data will be save to
+    int64_t read_len;  // file bytes
+};
+bool write_data(std::string data, intptr_t userdata)
+{
+    File* pf = (File *)userdata;
+    memcpy(pf->file_buf + pf->read_len, data.data(), data.size());
+    pf->read_len += data.size();
+}
+void download_to_mem(File &f)
+{
+    cpr::Session session;
+    session.SetUrl(cpr::Url{"http://www.httpbin.org/1.jpg"});
+    f.read_len = session.GetDownloadFileLength();
+    f.file_buf = malloc(f.read_len);
+    auto r     = session.Download(cpr::WriteCallback{write_data, &f});
+}
+int main()
+{
+    File f{nullptr, 0};
+    download_to_mem(f);
+    // do something
+    free(f.file_buf); // free file data buf
+    return 0;
+}
+```
+{% endraw %}
+
 ## Other Request Methods
 
 C++ Requests also supports `DELETE`, `HEAD`, and `OPTIONS` methods in the expected forms:
