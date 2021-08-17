@@ -42,6 +42,7 @@ cpr_option(CPR_FORCE_DARWINSSL_BACKEND "Force to use the DarwinSSL backend. If C
 cpr_option(CPR_ENABLE_LINTING "Set to ON to enable clang linting." OFF)
 cpr_option(CPR_BUILD_TESTS "Set to ON to build cpr tests." ON)
 cpr_option(CPR_BUILD_TESTS_SSL "Set to ON to build cpr ssl tests" ${CPR_BUILD_TESTS})
+cpr_option(CPR_USE_PIC "Set to ON to build cpr with -fPIC" ON)
 message(STATUS "=======================================================")
 
 include(GNUInstallDirs)
@@ -58,6 +59,11 @@ endif()
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
 else()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic -Werror")
+endif()
+
+if(CPR_USE_PIC)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
 endif()
 
 # SSL
@@ -125,8 +131,8 @@ else ()
     foreach(TYPE ${ALLOWED_BUILD_TYPES})
     if (NOT ${TYPE} IN_LIST CMAKE_CONFIGURATION_TYPES)
         list(APPEND CMAKE_CONFIGURATION_TYPES ${TYPE})
-    endif()  
-    endforeach()  
+    endif()
+    endforeach()
 endif()
 
 # Curl configuration
@@ -215,7 +221,7 @@ else()
     if(BUILD_CURL_EXE)
         set_property(TARGET curl PROPERTY FOLDER "external")
     endif()
-        
+
     set_property(TARGET libcurl PROPERTY FOLDER "external")
 endif()
 
@@ -243,13 +249,13 @@ if(CPR_BUILD_TESTS)
         FetchContent_MakeAvailable(googletest)
 
         restore_variable(DESTINATION CMAKE_CXX_CLANG_TIDY BACKUP CMAKE_CXX_CLANG_TIDY_BKP)
-        
+
         add_library(gtest_int INTERFACE)
         target_link_libraries(gtest_int INTERFACE gtest)
         target_include_directories(gtest_int INTERFACE ${googletest_SOURCE_DIR}/include)
 
         add_library(GTest::GTest ALIAS gtest_int)
-       
+
         # Group under the "tests/gtest" project folder in IDEs such as Visual Studio.
     set_property(TARGET gtest PROPERTY FOLDER "tests/gtest")
     set_property(TARGET gtest_main PROPERTY FOLDER "tests/gtest")
@@ -278,7 +284,7 @@ if(CPR_BUILD_TESTS)
     # Disable linting for mongoose
     clear_variable(DESTINATION CMAKE_CXX_CLANG_TIDY BACKUP CMAKE_CXX_CLANG_TIDY_BKP)
 
-    FetchContent_Declare(mongoose 
+    FetchContent_Declare(mongoose
                          URL                    https://github.com/cesanta/mongoose/archive/6.18.tar.gz
                          URL_HASH               SHA256=f5c10346abc9c72f7cac7885d853ca064fb09aad57580433941a8fd7a3543769 # the hash for 6.18.tar.gz
                          USES_TERMINAL_DOWNLOAD TRUE)   # <---- This is needed only for Ninja to show download progress
