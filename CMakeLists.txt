@@ -62,8 +62,7 @@ else()
 endif()
 
 if(CPR_USE_PIC)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+    set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 endif()
 
 # SSL
