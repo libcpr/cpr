@@ -496,8 +496,6 @@ cpr_off_t Session::Impl::GetDownloadFileLength() {
             curl_easy_setopt(curl_->handle, CURLOPT_PROXYAUTH, CURLAUTH_ANY);
             curl_easy_setopt(curl_->handle, CURLOPT_PROXYUSERPWD, proxyAuth_[protocol]);
         }
-    } else {
-        curl_easy_setopt(curl_->handle, CURLOPT_PROXY, "");
     }
 
     curl_easy_setopt(curl_->handle, CURLOPT_HTTPGET, 1);
@@ -633,8 +631,6 @@ Response Session::Impl::makeDownloadRequest() {
             curl_easy_setopt(curl_->handle, CURLOPT_PROXYAUTH, CURLAUTH_ANY);
             curl_easy_setopt(curl_->handle, CURLOPT_PROXYUSERPWD, proxyAuth_[protocol]);
         }
-    } else {
-        curl_easy_setopt(curl_->handle, CURLOPT_PROXY, "");
     }
 
     curl_->error[0] = '\0';
@@ -686,8 +682,6 @@ void Session::Impl::prepareCommon() {
             curl_easy_setopt(curl_->handle, CURLOPT_PROXYAUTH, CURLAUTH_ANY);
             curl_easy_setopt(curl_->handle, CURLOPT_PROXYUSERPWD, proxyAuth_[protocol]);
         }
-    } else {
-        curl_easy_setopt(curl_->handle, CURLOPT_PROXY, nullptr);
     }
 
 #if LIBCURL_VERSION_MAJOR >= 7
