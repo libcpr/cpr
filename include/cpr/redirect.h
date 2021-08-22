@@ -66,11 +66,11 @@ class Redirect {
 
     Redirect() = default;
     // NOLINTNEXTLINE (google-runtime-int)
-    Redirect(long max, bool follow, PostRedirectFlags post_flags) : max(max), follow(follow), post_flags(post_flags){};
+    Redirect(long p_max, bool p_follow, PostRedirectFlags p_post_flags) : max(p_max), follow(p_follow), post_flags(p_post_flags){};
     // NOLINTNEXTLINE (google-runtime-int)
-    explicit Redirect(long max) : max(max){};
-    explicit Redirect(bool follow) : follow(follow){};
-    explicit Redirect(PostRedirectFlags post_flags) : post_flags(post_flags){};
+    explicit Redirect(long p_max) : max(p_max){};
+    explicit Redirect(bool p_follow) : follow(p_follow){};
+    explicit Redirect(PostRedirectFlags p_post_flags) : post_flags(p_post_flags){};
 };
 } // namespace cpr
 
