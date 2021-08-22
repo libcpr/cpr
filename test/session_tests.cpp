@@ -29,7 +29,7 @@ TEST(RedirectTests, NoTemporaryRedirectTest) {
     Url url{server->GetBaseUrl() + "/temporary_redirect.html"};
     Session session;
     session.SetUrl(url);
-    session.SetRedirect(false);
+    session.SetRedirect(Redirect(false));
     Response response = session.Get();
     std::string expected_text{"Moved Temporarily"};
     EXPECT_EQ(expected_text, response.text);
@@ -56,7 +56,7 @@ TEST(RedirectTests, NoPermanentRedirectTest) {
     Url url{server->GetBaseUrl() + "/permanent_redirect.html"};
     Session session;
     session.SetUrl(url);
-    session.SetRedirect(false);
+    session.SetRedirect(Redirect(false));
     Response response = session.Get();
     std::string expected_text{"Moved Permanently"};
     EXPECT_EQ(expected_text, response.text);
@@ -70,7 +70,7 @@ TEST(MaxRedirectsTests, ZeroMaxRedirectsSuccessTest) {
     Url url{server->GetBaseUrl() + "/hello.html"};
     Session session;
     session.SetUrl(url);
-    session.SetMaxRedirects(MaxRedirects(0));
+    session.SetRedirect(Redirect(0L));
     Response response = session.Get();
     std::string expected_text{"Hello world!"};
     EXPECT_EQ(expected_text, response.text);
@@ -84,7 +84,7 @@ TEST(MaxRedirectsTests, ZeroMaxRedirectsFailureTest) {
     Url url{server->GetBaseUrl() + "/permanent_redirect.html"};
     Session session;
     session.SetUrl(url);
-    session.SetMaxRedirects(MaxRedirects(0));
+    session.SetRedirect(Redirect(0L));
     Response response = session.Get();
     EXPECT_EQ(std::string{}, response.text);
     EXPECT_EQ(url, response.url);
@@ -97,7 +97,7 @@ TEST(MaxRedirectsTests, OneMaxRedirectsSuccessTest) {
     Url url{server->GetBaseUrl() + "/permanent_redirect.html"};
     Session session;
     session.SetUrl(url);
-    session.SetMaxRedirects(MaxRedirects(1));
+    session.SetRedirect(Redirect(1L));
     Response response = session.Get();
     std::string expected_text{"Hello world!"};
     EXPECT_EQ(expected_text, response.text);
@@ -111,7 +111,7 @@ TEST(MaxRedirectsTests, OneMaxRedirectsFailureTest) {
     Url url{server->GetBaseUrl() + "/two_redirects.html"};
     Session session;
     session.SetUrl(url);
-    session.SetMaxRedirects(MaxRedirects(1));
+    session.SetRedirect(Redirect(1L));
     Response response = session.Get();
     EXPECT_EQ(std::string{}, response.text);
     EXPECT_EQ(Url{server->GetBaseUrl() + "/permanent_redirect.html"}, response.url);
@@ -124,7 +124,7 @@ TEST(MaxRedirectsTests, TwoMaxRedirectsSuccessTest) {
     Url url{server->GetBaseUrl() + "/two_redirects.html"};
     Session session;
     session.SetUrl(url);
-    session.SetMaxRedirects(MaxRedirects(2));
+    session.SetRedirect(Redirect(2L));
     Response response = session.Get();
     std::string expected_text{"Hello world!"};
     EXPECT_EQ(expected_text, response.text);
@@ -878,8 +878,7 @@ TEST(CurlHolderManipulateTests, CustomOptionTest) {
     Url url{server->GetBaseUrl() + "/header_reflect.html"};
     Session session;
     session.SetUrl(url);
-    curl_easy_setopt(session.GetCurlHolder()->handle, CURLOPT_SSL_OPTIONS,
-                     CURLSSLOPT_ALLOW_BEAST | CURLSSLOPT_NO_REVOKE);
+    curl_easy_setopt(session.GetCurlHolder()->handle, CURLOPT_SSL_OPTIONS, CURLSSLOPT_ALLOW_BEAST | CURLSSLOPT_NO_REVOKE);
     {
         Response response = session.Get();
         std::string expected_text{"Header reflect GET"};

@@ -18,7 +18,6 @@ target_sources(cpr PRIVATE
     cpr/digest.h
     cpr/error.h
     cpr/limit_rate.h
-    cpr/max_redirects.h
     cpr/multipart.h
     cpr/ntlm.h
     cpr/parameters.h
@@ -33,6 +32,7 @@ target_sources(cpr PRIVATE
     cpr/util.h
     cpr/verbose.h
     cpr/interface.h
+    cpr/redirect.h
 )
 
 install(DIRECTORY cpr DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
