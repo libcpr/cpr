@@ -513,7 +513,7 @@ assert(cpr::Post(cpr::Url{"http://www.httpbin.org/patch"},
 assert(cpr::Put(cpr::Url{"http://www.httpbin.org/patch"},
                 cpr::Payload{{"key", "value"}}).status_code == 405);
 
-// On the other hand, this works just fine
+// On the other hand, this works just fine[libcurl](http://curl.haxx.se/libcurl/)
 cpr::Response r = cpr::Patch(cpr::Url{"http://www.httpbin.org/patch"},
                     cpr::Payload{{"key", "value"}});
 std::cout << r.text << std::endl;
@@ -770,3 +770,25 @@ The output could look like:
 Info: Subject:C = XX, L = Default City, O = Default Company Ltd
 [...]
 ```
+
+## Interface
+
+It is also possible to specify the outgoing interface used by [libcurl](http://curl.haxx.se/libcurl/).
+By default the TCP stack decides which interface to use for this request.
+You can change this behavior by passing the `cpr::Interface` option to your request.
+Passing an empty string corresponds to passing a `nullptr` to `CURLOPT_INTERFACE`.  
+Further details: https://curl.se/libcurl/c/CURLOPT_INTERFACE.html
+
+{% raw %}
+```c++
+cpr::Response r = cpr::Get(cpr::Url{"http://www.httpbin.org/get"},
+                  cpr::Interface{""}); // Let the TCP stack decide (same as default)
+```
+{% endraw %}
+
+{% raw %}
+```c++
+cpr::Response r = cpr::Get(cpr::Url{"http://www.httpbin.org/get"},
+                  cpr::Interface{"eth0"}); // eth0 will be used as outgoing interface
+```
+{% endraw %}
