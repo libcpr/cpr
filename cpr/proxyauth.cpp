@@ -11,7 +11,6 @@ bool ProxyAuthentication::has(const std::string& protocol) const {
 
 const char* ProxyAuthentication::operator[](const std::string& protocol) {
     return proxyAuth_[protocol].GetAuthString();
-    ;
 }
 
 } // namespace cpr

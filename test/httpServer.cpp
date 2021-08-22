@@ -15,8 +15,7 @@ uint16_t HttpServer::GetPort() {
     return 61936;
 }
 
-mg_connection* HttpServer::initServer(mg_mgr* mgr,
-                                      MG_CB(mg_event_handler_t event_handler, void* user_data)) {
+mg_connection* HttpServer::initServer(mg_mgr* mgr, MG_CB(mg_event_handler_t event_handler, void* user_data)) {
     // Based on: https://cesanta.com/docs/http/server-example.html
     mg_mgr_init(mgr, this);
     std::string port = std::to_string(GetPort());
@@ -77,14 +76,13 @@ void HttpServer::OnRequestLowSpeedTimeout(mg_connection* conn, http_message* /*m
     std::string response{"Hello world!"};
     std::string headers = "Content-Type: text/html";
     mg_send_head(conn, 200, response.length() * 20, headers.c_str());
-    for (size_t i = 0; i < 20; i++)
-    {
+    for (size_t i = 0; i < 20; i++) {
         mg_send(conn, response.c_str(), response.length());
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
 }
 
-void HttpServer::OnRequestLowSpeed(mg_connection* conn, http_message*  /*msg*/) {
+void HttpServer::OnRequestLowSpeed(mg_connection* conn, http_message* /*msg*/) {
     std::string response{"Hello world!"};
     std::string headers = "Content-Type: text/html";
     mg_send_head(conn, 200, response.length(), headers.c_str());
@@ -150,8 +148,7 @@ void HttpServer::OnRequestCheckCookies(mg_connection* conn, http_message* msg) {
     }
     std::string cookie_str{request_cookies->p, request_cookies->len};
 
-    if (cookie_str.find("cookie=chocolate;") == cookie_str.npos ||
-        cookie_str.find("icecream=vanilla;") == cookie_str.npos) {
+    if (cookie_str.find("cookie=chocolate;") == cookie_str.npos || cookie_str.find("icecream=vanilla;") == cookie_str.npos) {
         mg_http_send_error(conn, 400, "Cookies not found");
     }
 
@@ -163,8 +160,7 @@ void HttpServer::OnRequestV1Cookies(mg_connection* conn, http_message* /*msg*/) 
     char expire[100], expire_epoch[100];
     snprintf(expire_epoch, sizeof(expire_epoch), "%lu", static_cast<unsigned long>(t));
     strftime(expire, sizeof(expire), "%a, %d %b %Y %H:%M:%S GMT", gmtime(&t));
-    std::string v1cookie{"cookie=\"value with spaces (v1 cookie)\"; expires=\"" +
-                         std::string{expire} + "\"; http-only;"};
+    std::string v1cookie{"cookie=\"value with spaces (v1 cookie)\"; expires=\"" + std::string{expire} + "\"; http-only;"};
 
     std::string headers =
             "Content-Type: text/html\r\n"
@@ -194,8 +190,7 @@ void HttpServer::OnRequestCheckV1Cookies(mg_connection* conn, http_message* msg)
 void HttpServer::OnRequestBasicAuth(mg_connection* conn, http_message* msg) {
     mg_str* requested_auth;
     std::string auth{"Basic"};
-    if ((requested_auth = mg_get_http_header(msg, "Authorization")) == nullptr ||
-        mg_ncasecmp(requested_auth->p, auth.c_str(), auth.length()) != 0) {
+    if ((requested_auth = mg_get_http_header(msg, "Authorization")) == nullptr || mg_ncasecmp(requested_auth->p, auth.c_str(), auth.length()) != 0) {
         mg_http_send_error(conn, 401, "Unauthorized");
         return;
     }
@@ -216,8 +211,7 @@ void HttpServer::OnRequestBasicAuth(mg_connection* conn, http_message* msg) {
 void HttpServer::OnRequestBearerAuth(mg_connection* conn, http_message* msg) {
     mg_str* requested_auth;
     std::string auth{"Bearer"};
-    if ((requested_auth = mg_get_http_header(msg, "Authorization")) == nullptr ||
-        mg_ncasecmp(requested_auth->p, auth.c_str(), auth.length()) != 0) {
+    if ((requested_auth = mg_get_http_header(msg, "Authorization")) == nullptr || mg_ncasecmp(requested_auth->p, auth.c_str(), auth.length()) != 0) {
         mg_http_send_error(conn, 401, "Unauthorized");
         return;
     }
@@ -263,8 +257,7 @@ void HttpServer::OnRequestHeaderReflect(mg_connection* conn, http_message* msg) 
                 headers.append("\r\n");
             }
             if (msg->header_values[i].p) {
-                headers.append(name + ": " +
-                               std::string(msg->header_values[i].p, msg->header_values[i].len));
+                headers.append(name + ": " + std::string(msg->header_values[i].p, msg->header_values[i].len));
             }
         }
     }
@@ -280,16 +273,53 @@ void HttpServer::OnRequestHeaderReflect(mg_connection* conn, http_message* msg) 
     mg_send(conn, response.c_str(), response.length());
 }
 
-void HttpServer::OnRequestTempRedirect(mg_connection* conn, http_message* /*msg*/) {
+void HttpServer::OnRequestTempRedirect(mg_connection* conn, http_message* msg) {
+    // Get the requested target location:
+    std::string location;
+    for (size_t i = 0; i < sizeof(msg->header_names) / sizeof(mg_str); i++) {
+        if (!msg->header_names[i].p) {
+            continue;
+        }
+
+        std::string name = std::string(msg->header_names[i].p, msg->header_names[i].len);
+        if (std::string{"RedirectLocation"} == name) {
+            location = std::string(msg->header_values[i].p, msg->header_values[i].len);
+            break;
+        }
+    }
+
+    // Check if the request contains a valid location, else default to 'hello.html':
+    if (location.empty()) {
+        location = "hello.html";
+    }
+    std::string headers = "Location: " + location;
     std::string response = "Moved Temporarily";
-    std::string headers = "Location: hello.html";
     mg_send_head(conn, 302, response.length(), headers.c_str());
     mg_send(conn, response.c_str(), response.length());
 }
 
-void HttpServer::OnRequestPermRedirect(mg_connection* conn, http_message* /*msg*/) {
+void HttpServer::OnRequestPermRedirect(mg_connection* conn, http_message* msg) {
+    // Get the requested target location:
+    std::string location;
+    for (size_t i = 0; i < sizeof(msg->header_names) / sizeof(mg_str); i++) {
+        if (!msg->header_names[i].p) {
+            continue;
+        }
+
+        std::string name = std::string(msg->header_names[i].p, msg->header_names[i].len);
+        if (std::string{"RedirectLocation"} == name) {
+            location = std::string(msg->header_values[i].p, msg->header_values[i].len);
+            break;
+        }
+    }
+
+    // Check if the request contains a valid location, else default to 'hello.html':
+    if (location.empty()) {
+        location = "hello.html";
+    }
+    std::string headers = "Location: " + location;
     std::string response = "Moved Permanently";
-    std::string headers = "Location: hello.html";
+
     mg_send_head(conn, 301, response.length(), headers.c_str());
     mg_send(conn, response.c_str(), response.length());
 }
@@ -302,6 +332,11 @@ void HttpServer::OnRequestTwoRedirects(mg_connection* conn, http_message* /*msg*
 }
 
 void HttpServer::OnRequestUrlPost(mg_connection* conn, http_message* msg) {
+    if (std::string{msg->method.p, msg->method.len} != std::string{"POST"}) {
+        mg_http_send_error(conn, 405, "Method Not Allowed");
+        return;
+    }
+
     std::string headers = "Content-Type: application/json";
 
     char x[100];
@@ -355,8 +390,7 @@ void HttpServer::OnRequestBodyGet(mg_connection* conn, http_message* msg) {
 
 void HttpServer::OnRequestJsonPost(mg_connection* conn, http_message* msg) {
     mg_str* content_type{nullptr};
-    if ((content_type = mg_get_http_header(msg, "Content-Type")) == nullptr ||
-        std::string{content_type->p, content_type->len} != "application/json") {
+    if ((content_type = mg_get_http_header(msg, "Content-Type")) == nullptr || std::string{content_type->p, content_type->len} != "application/json") {
         mg_http_send_error(conn, 415, "Unsupported Media Type");
         return;
     }
@@ -375,9 +409,7 @@ void HttpServer::OnRequestFormPost(mg_connection* conn, http_message* msg) {
     size_t n2 = 0;
     std::map<std::string, std::string> forms;
 
-    while ((n2 = mg_parse_multipart(msg->body.p + n1, msg->body.len - n1, var_name,
-                                    sizeof(var_name), file_name, sizeof(file_name), &chunk,
-                                    &chunk_len)) > 0) {
+    while ((n2 = mg_parse_multipart(msg->body.p + n1, msg->body.len - n1, var_name, sizeof(var_name), file_name, sizeof(file_name), &chunk, &chunk_len)) > 0) {
         n1 += n2;
         forms[var_name] = std::string(chunk, chunk_len);
     }
@@ -509,8 +541,7 @@ void HttpServer::OnRequestReflectPost(mg_connection* conn, http_message* msg) {
                 headers.append("\r\n");
             }
             if (msg->header_values[i].p) {
-                headers.append(name + ": " +
-                               std::string(msg->header_values[i].p, msg->header_values[i].len));
+                headers.append(name + ": " + std::string(msg->header_values[i].p, msg->header_values[i].len));
             }
         }
     }

@@ -1198,7 +1198,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
 
 TEST(GetRedirectTests, RedirectTest) {
     Url url{server->GetBaseUrl() + "/temporary_redirect.html"};
-    Response response = cpr::Get(url, false); // This should be turned into an object
+    Response response = cpr::Get(url, Redirect(false));
     std::string expected_text{"Moved Temporarily"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
@@ -1209,7 +1209,7 @@ TEST(GetRedirectTests, RedirectTest) {
 
 TEST(GetRedirectTests, ZeroMaxRedirectsTest) {
     Url url{server->GetBaseUrl() + "/hello.html"};
-    Response response = cpr::Get(url, MaxRedirects(0));
+    Response response = cpr::Get(url, Redirect(0L));
     std::string expected_text{"Hello world!"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
