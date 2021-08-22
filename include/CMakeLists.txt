@@ -32,6 +32,7 @@ target_sources(cpr PRIVATE
     cpr/unix_socket.h
     cpr/util.h
     cpr/verbose.h
+    cpr/interface.h
 )
 
 install(DIRECTORY cpr DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})

@@ -65,6 +65,7 @@ class Session::Impl {
     void SetUnixSocket(const UnixSocket& unix_socket);
     void SetVerbose(const Verbose& verbose);
     void SetSslOptions(const SslOptions& options);
+    void SetInterface(const Interface& iface);
 
     cpr_off_t GetDownloadFileLength();
     Response Delete();
@@ -208,6 +209,14 @@ void Session::Impl::SetAuth(const Authentication& auth) {
     // Ignore here since this has been defined by libcurl.
     curl_easy_setopt(curl_->handle, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
     curl_easy_setopt(curl_->handle, CURLOPT_USERPWD, auth.GetAuthString());
+}
+
+void Session::Impl::SetInterface(const Interface& iface) {
+    if (iface.str().empty()) {
+        curl_easy_setopt(curl_->handle, CURLOPT_INTERFACE, nullptr);
+    } else {
+        curl_easy_setopt(curl_->handle, CURLOPT_INTERFACE, iface.c_str());
+    }
 }
 
 // Only supported with libcurl >= 7.61.0.
@@ -778,6 +787,7 @@ void Session::SetVerifySsl(const VerifySsl& verify) { pimpl_->SetVerifySsl(verif
 void Session::SetUnixSocket(const UnixSocket& unix_socket) { pimpl_->SetUnixSocket(unix_socket); }
 void Session::SetSslOptions(const SslOptions& options) { pimpl_->SetSslOptions(options); }
 void Session::SetVerbose(const Verbose& verbose) { pimpl_->SetVerbose(verbose); }
+void Session::SetInterface(const Interface& iface) { pimpl_->SetInterface(iface); }
 void Session::SetOption(const ReadCallback& read) { pimpl_->SetReadCallback(read); }
 void Session::SetOption(const HeaderCallback& header) { pimpl_->SetHeaderCallback(header); }
 void Session::SetOption(const WriteCallback& write) { pimpl_->SetWriteCallback(write); }
@@ -817,6 +827,7 @@ void Session::SetOption(const VerifySsl& verify) { pimpl_->SetVerifySsl(verify);
 void Session::SetOption(const Verbose& verbose) { pimpl_->SetVerbose(verbose); }
 void Session::SetOption(const UnixSocket& unix_socket) { pimpl_->SetUnixSocket(unix_socket); }
 void Session::SetOption(const SslOptions& options) { pimpl_->SetSslOptions(options); }
+void Session::SetOption(const Interface& iface) { pimpl_->SetInterface(iface); }
 
 cpr_off_t Session::GetDownloadFileLength() { return pimpl_->GetDownloadFileLength(); }
 Response Session::Delete() { return pimpl_->Delete(); }
