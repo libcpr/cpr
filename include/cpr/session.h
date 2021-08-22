@@ -14,6 +14,7 @@
 #include "cpr/cprtypes.h"
 #include "cpr/curlholder.h"
 #include "cpr/digest.h"
+#include "cpr/interface.h"
 #include "cpr/limit_rate.h"
 #include "cpr/low_speed.h"
 #include "cpr/max_redirects.h"
@@ -77,6 +78,7 @@ class Session {
     void SetProgressCallback(const ProgressCallback& progress);
     void SetDebugCallback(const DebugCallback& debug);
     void SetVerbose(const Verbose& verbose);
+    void SetInterface(const Interface& iface);
 
     // Used in templated functions
     void SetOption(const Url& url);
@@ -118,6 +120,7 @@ class Session {
     void SetOption(const Verbose& verbose);
     void SetOption(const UnixSocket& unix_socket);
     void SetOption(const SslOptions& options);
+    void SetOption(const Interface& iface);
 
     cpr_off_t GetDownloadFileLength();
     Response Delete();
