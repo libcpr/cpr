@@ -798,7 +798,7 @@ cpr::Response r = cpr::Get(cpr::Url{"http://www.httpbin.org/get"},
 For configuring the behavior once a redirect occurs, the `cpr::Redirect` class exists.
 It houses three attributes
 
-* `max`: The maximum number of redirects to follow. Default: `50L`. `0`: Refuse any redirects. `-1`: Infinite number of redirects.
+* `maximum`: The maximum number of redirects to follow. Default: `50L`. `0`: Refuse any redirects. `-1`: Infinite number of redirects.
 * `follow`: Follow 3xx redirects. Default: `true`.
 * `post_flags`: Flags to control how to act after a redirect for a post request. Default: `PostRedirectFlags::POST_ALL`.
 
