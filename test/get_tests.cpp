@@ -23,6 +23,19 @@ TEST(BasicTests, HelloWorldTest) {
     EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
+
+TEST(BasicTests, HelloWorldNoInterfaceTest) {
+    Url url{server->GetBaseUrl() + "/hello.html"};
+    Interface iface{""}; // Do not specify any specific interface
+    Response response = cpr::Get(url, iface);
+    std::string expected_text{"Hello world!"};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
 TEST(BasicTests, TimeoutTest) {
     Url url{server->GetBaseUrl() + "/hello.html"};
     Response response = cpr::Get(url, Timeout{0L});
@@ -161,8 +174,7 @@ TEST(ParameterTests, SingleParameterOnlyKeyTest) {
 
 TEST(ParameterTests, MultipleParametersTest) {
     Url url{server->GetBaseUrl() + "/hello.html"};
-    Response response =
-            cpr::Get(url, Parameters{{"key", "value"}, {"hello", "world"}, {"test", "case"}});
+    Response response = cpr::Get(url, Parameters{{"key", "value"}, {"hello", "world"}, {"test", "case"}});
     std::string expected_text{"Hello world!"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(Url{url + "?key=value&hello=world&test=case"}, response.url);
@@ -224,8 +236,7 @@ TEST(BasicAuthenticationTests, BasicDigestSuccessTest) {
 
 TEST(BasicAthenticationParameterTests, BasicAuthenticationSuccessSingleParameterTest) {
     Url url{server->GetBaseUrl() + "/basic_auth.html"};
-    Response response =
-            cpr::Get(url, Authentication{"user", "password"}, Parameters{{"hello", "world"}});
+    Response response = cpr::Get(url, Authentication{"user", "password"}, Parameters{{"hello", "world"}});
     std::string expected_text{"Header reflect GET"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(Url{url + "?hello=world"}, response.url);
@@ -236,9 +247,7 @@ TEST(BasicAthenticationParameterTests, BasicAuthenticationSuccessSingleParameter
 
 TEST(BasicAuthenticationParameterTests, BasicAuthenticationSuccessMultipleParametersTest) {
     Url url{server->GetBaseUrl() + "/basic_auth.html"};
-    Response response =
-            cpr::Get(url, Authentication{"user", "password"},
-                     Parameters{{"key", "value"}, {"hello", "world"}, {"test", "case"}});
+    Response response = cpr::Get(url, Authentication{"user", "password"}, Parameters{{"key", "value"}, {"hello", "world"}, {"test", "case"}});
     std::string expected_text{"Header reflect GET"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(Url{url + "?key=value&hello=world&test=case"}, response.url);
@@ -249,8 +258,7 @@ TEST(BasicAuthenticationParameterTests, BasicAuthenticationSuccessMultipleParame
 
 TEST(BasicAuthenticationParameterTests, BasicAuthenticationSuccessSingleParameterReverseTest) {
     Url url{server->GetBaseUrl() + "/basic_auth.html"};
-    Response response =
-            cpr::Get(url, Parameters{{"hello", "world"}}, Authentication{"user", "password"});
+    Response response = cpr::Get(url, Parameters{{"hello", "world"}}, Authentication{"user", "password"});
     std::string expected_text{"Header reflect GET"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(Url{url + "?hello=world"}, response.url);
@@ -261,9 +269,7 @@ TEST(BasicAuthenticationParameterTests, BasicAuthenticationSuccessSingleParamete
 
 TEST(BasicAuthenticationParameterTests, BasicAuthenticationSuccessMultipleParametersReverseTest) {
     Url url{server->GetBaseUrl() + "/basic_auth.html"};
-    Response response =
-            cpr::Get(url, Parameters{{"key", "value"}, {"hello", "world"}, {"test", "case"}},
-                     Authentication{"user", "password"});
+    Response response = cpr::Get(url, Parameters{{"key", "value"}, {"hello", "world"}, {"test", "case"}}, Authentication{"user", "password"});
 
     std::string expected_text{"Header reflect GET"};
     EXPECT_EQ(expected_text, response.text);
@@ -275,8 +281,7 @@ TEST(BasicAuthenticationParameterTests, BasicAuthenticationSuccessMultipleParame
 
 TEST(BasicAuthenticationHeaderTests, BasicAuthenticationSuccessSingleHeaderTest) {
     Url url{server->GetBaseUrl() + "/basic_auth.html"};
-    Response response =
-            cpr::Get(url, Authentication{"user", "password"}, Header{{"hello", "world"}});
+    Response response = cpr::Get(url, Authentication{"user", "password"}, Header{{"hello", "world"}});
     std::string expected_text{"Header reflect GET"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
@@ -288,8 +293,7 @@ TEST(BasicAuthenticationHeaderTests, BasicAuthenticationSuccessSingleHeaderTest)
 
 TEST(BasicAuthenticationHeaderTests, BasicAuthenticationSuccessMultipleHeadersTest) {
     Url url{server->GetBaseUrl() + "/basic_auth.html"};
-    Response response = cpr::Get(url, Authentication{"user", "password"},
-                                 Header{{"key", "value"}, {"hello", "world"}, {"test", "case"}});
+    Response response = cpr::Get(url, Authentication{"user", "password"}, Header{{"key", "value"}, {"hello", "world"}, {"test", "case"}});
     std::string expected_text{"Header reflect GET"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
@@ -303,8 +307,7 @@ TEST(BasicAuthenticationHeaderTests, BasicAuthenticationSuccessMultipleHeadersTe
 
 TEST(BasicAuthenticationHeaderTests, BasicAuthenticationSuccessSingleHeaderReverseTest) {
     Url url{server->GetBaseUrl() + "/basic_auth.html"};
-    Response response =
-            cpr::Get(url, Header{{"hello", "world"}}, Authentication{"user", "password"});
+    Response response = cpr::Get(url, Header{{"hello", "world"}}, Authentication{"user", "password"});
     std::string expected_text{"Header reflect GET"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
@@ -316,9 +319,7 @@ TEST(BasicAuthenticationHeaderTests, BasicAuthenticationSuccessSingleHeaderRever
 
 TEST(BasicAuthenticationHeaderTests, BasicAuthenticationSuccessMultipleHeadersReverseTest) {
     Url url{server->GetBaseUrl() + "/basic_auth.html"};
-    Response response =
-            cpr::Get(url, Header{{"key", "value"}, {"hello", "world"}, {"test", "case"}},
-                     Authentication{"user", "password"});
+    Response response = cpr::Get(url, Header{{"key", "value"}, {"hello", "world"}, {"test", "case"}}, Authentication{"user", "password"});
     std::string expected_text{"Header reflect GET"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
@@ -352,8 +353,7 @@ TEST(BasicAuthenticationTests, BasicAuthenticationFailureTest) {
 
 TEST(BasicAuthenticationParameterTests, BasicAuthenticationFailureSingleParameterTest) {
     Url url{server->GetBaseUrl() + "/basic_auth.html"};
-    Response response =
-            cpr::Get(url, Authentication{"user", "bad_password"}, Parameters{{"hello", "world"}});
+    Response response = cpr::Get(url, Authentication{"user", "bad_password"}, Parameters{{"hello", "world"}});
     EXPECT_EQ("Unauthorized", response.text);
     EXPECT_EQ(Url{url + "?hello=world"}, response.url);
     EXPECT_EQ("text/plain", response.header["content-type"]);
@@ -363,9 +363,7 @@ TEST(BasicAuthenticationParameterTests, BasicAuthenticationFailureSingleParamete
 
 TEST(BasicAuthenticationParameterTests, BasicAuthenticationFailureMultipleParametersTest) {
     Url url{server->GetBaseUrl() + "/basic_auth.html"};
-    Response response =
-            cpr::Get(url, Authentication{"user", "bad_password"},
-                     Parameters{{"key", "value"}, {"hello", "world"}, {"test", "case"}});
+    Response response = cpr::Get(url, Authentication{"user", "bad_password"}, Parameters{{"key", "value"}, {"hello", "world"}, {"test", "case"}});
     EXPECT_EQ("Unauthorized", response.text);
     EXPECT_EQ(Url{url + "?key=value&hello=world&test=case"}, response.url);
     EXPECT_EQ("text/plain", response.header["content-type"]);
@@ -492,8 +490,7 @@ TEST(HeaderTests, HeaderReflectSingleTest) {
 
 TEST(HeaderTests, HeaderReflectMultipleTest) {
     Url url{server->GetBaseUrl() + "/header_reflect.html"};
-    Response response =
-            cpr::Get(url, Header{{"hello", "world"}, {"key", "value"}, {"test", "case"}});
+    Response response = cpr::Get(url, Header{{"hello", "world"}, {"key", "value"}, {"test", "case"}});
     std::string expected_text{"Header reflect GET"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
@@ -533,8 +530,7 @@ TEST(HeaderTests, SetEmptyHeaderTest) {
 
 TEST(ParameterHeaderTests, HeaderReflectNoneParametersTest) {
     Url url{server->GetBaseUrl() + "/header_reflect.html"};
-    Response response =
-            cpr::Get(url, Parameters{{"one", "two"}, {"three", "four"}, {"five", "six"}});
+    Response response = cpr::Get(url, Parameters{{"one", "two"}, {"three", "four"}, {"five", "six"}});
     std::string expected_text{"Header reflect GET"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(Url{url + "?one=two&three=four&five=six"}, response.url);
@@ -546,8 +542,7 @@ TEST(ParameterHeaderTests, HeaderReflectNoneParametersTest) {
 
 TEST(ParameterHeaderTests, HeaderReflectEmptyParametersTest) {
     Url url{server->GetBaseUrl() + "/header_reflect.html"};
-    Response response =
-            cpr::Get(url, Header{}, Parameters{{"one", "two"}, {"three", "four"}, {"five", "six"}});
+    Response response = cpr::Get(url, Header{}, Parameters{{"one", "two"}, {"three", "four"}, {"five", "six"}});
     std::string expected_text{"Header reflect GET"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(Url{url + "?one=two&three=four&five=six"}, response.url);
@@ -559,8 +554,7 @@ TEST(ParameterHeaderTests, HeaderReflectEmptyParametersTest) {
 
 TEST(ParameterHeaderTests, HeaderReflectSingleParametersTest) {
     Url url{server->GetBaseUrl() + "/header_reflect.html"};
-    Response response = cpr::Get(url, Header{{"hello", "world"}},
-                                 Parameters{{"one", "two"}, {"three", "four"}, {"five", "six"}});
+    Response response = cpr::Get(url, Header{{"hello", "world"}}, Parameters{{"one", "two"}, {"three", "four"}, {"five", "six"}});
     std::string expected_text{"Header reflect GET"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(Url{url + "?one=two&three=four&five=six"}, response.url);
@@ -572,9 +566,7 @@ TEST(ParameterHeaderTests, HeaderReflectSingleParametersTest) {
 
 TEST(ParameterHeaderTests, HeaderReflectMultipleParametersTest) {
     Url url{server->GetBaseUrl() + "/header_reflect.html"};
-    Response response =
-            cpr::Get(url, Header{{"hello", "world"}, {"key", "value"}, {"test", "case"}},
-                     Parameters{{"one", "two"}, {"three", "four"}, {"five", "six"}});
+    Response response = cpr::Get(url, Header{{"hello", "world"}, {"key", "value"}, {"test", "case"}}, Parameters{{"one", "two"}, {"three", "four"}, {"five", "six"}});
     std::string expected_text{"Header reflect GET"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(Url{url + "?one=two&three=four&five=six"}, response.url);
@@ -588,8 +580,7 @@ TEST(ParameterHeaderTests, HeaderReflectMultipleParametersTest) {
 
 TEST(ParameterHeaderTests, HeaderReflectCaseInsensitiveParametersTest) {
     Url url{server->GetBaseUrl() + "/header_reflect.html"};
-    Response response = cpr::Get(url, Header{{"HeLlO", "wOrLd"}},
-                                 Parameters{{"one", "two"}, {"three", "four"}, {"five", "six"}});
+    Response response = cpr::Get(url, Header{{"HeLlO", "wOrLd"}}, Parameters{{"one", "two"}, {"three", "four"}, {"five", "six"}});
     std::string expected_text{"Header reflect GET"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(Url{url + "?one=two&three=four&five=six"}, response.url);
@@ -603,8 +594,7 @@ TEST(ParameterHeaderTests, HeaderReflectCaseInsensitiveParametersTest) {
 
 TEST(ParameterHeaderTests, HeaderReflectEmptyParametersReverseTest) {
     Url url{server->GetBaseUrl() + "/header_reflect.html"};
-    Response response =
-            cpr::Get(url, Parameters{{"one", "two"}, {"three", "four"}, {"five", "six"}}, Header{});
+    Response response = cpr::Get(url, Parameters{{"one", "two"}, {"three", "four"}, {"five", "six"}}, Header{});
     std::string expected_text{"Header reflect GET"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(Url{url + "?one=two&three=four&five=six"}, response.url);
@@ -616,9 +606,7 @@ TEST(ParameterHeaderTests, HeaderReflectEmptyParametersReverseTest) {
 
 TEST(ParameterHeaderTests, HeaderReflectSingleParametersReverseTest) {
     Url url{server->GetBaseUrl() + "/header_reflect.html"};
-    Response response =
-            cpr::Get(url, Parameters{{"one", "two"}, {"three", "four"}, {"five", "six"}},
-                     Header{{"hello", "world"}});
+    Response response = cpr::Get(url, Parameters{{"one", "two"}, {"three", "four"}, {"five", "six"}}, Header{{"hello", "world"}});
     std::string expected_text{"Header reflect GET"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(Url{url + "?one=two&three=four&five=six"}, response.url);
@@ -630,9 +618,7 @@ TEST(ParameterHeaderTests, HeaderReflectSingleParametersReverseTest) {
 
 TEST(ParameterHeaderTests, HeaderReflectMultipleParametersReverseTest) {
     Url url{server->GetBaseUrl() + "/header_reflect.html"};
-    Response response =
-            cpr::Get(url, Parameters{{"one", "two"}, {"three", "four"}, {"five", "six"}},
-                     Header{{"hello", "world"}, {"key", "value"}, {"test", "case"}});
+    Response response = cpr::Get(url, Parameters{{"one", "two"}, {"three", "four"}, {"five", "six"}}, Header{{"hello", "world"}, {"key", "value"}, {"test", "case"}});
     std::string expected_text{"Header reflect GET"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(Url{url + "?one=two&three=four&five=six"}, response.url);
@@ -646,9 +632,7 @@ TEST(ParameterHeaderTests, HeaderReflectMultipleParametersReverseTest) {
 
 TEST(ParameterHeaderTests, HeaderReflectCaseInsensitiveParametersReverseTest) {
     Url url{server->GetBaseUrl() + "/header_reflect.html"};
-    Response response =
-            cpr::Get(url, Parameters{{"one", "two"}, {"three", "four"}, {"five", "six"}},
-                     Header{{"HeLlO", "wOrLd"}});
+    Response response = cpr::Get(url, Parameters{{"one", "two"}, {"three", "four"}, {"five", "six"}}, Header{{"HeLlO", "wOrLd"}});
     std::string expected_text{"Header reflect GET"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(Url{url + "?one=two&three=four&five=six"}, response.url);
@@ -674,8 +658,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderABTest) {
     Url url{server->GetBaseUrl() + "/basic_auth.html"};
-    Response response =
-            cpr::Get(url, Authentication{"user", "bad_password"}, Parameters{}, Header{});
+    Response response = cpr::Get(url, Authentication{"user", "bad_password"}, Parameters{}, Header{});
     EXPECT_EQ("Unauthorized", response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ("text/plain", response.header["content-type"]);
@@ -686,8 +669,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderACTest) {
     Url url{server->GetBaseUrl() + "/basic_auth.html"};
-    Response response =
-            cpr::Get(url, Authentication{"user", "password"}, Parameters{{"one", "two"}}, Header{});
+    Response response = cpr::Get(url, Authentication{"user", "password"}, Parameters{{"one", "two"}}, Header{});
     std::string expected_text{"Header reflect GET"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(Url{url + "?one=two"}, response.url);
@@ -699,8 +681,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderADTest) {
     Url url{server->GetBaseUrl() + "/basic_auth.html"};
-    Response response = cpr::Get(url, Authentication{"user", "bad_password"},
-                                 Parameters{{"one", "two"}}, Header{});
+    Response response = cpr::Get(url, Authentication{"user", "bad_password"}, Parameters{{"one", "two"}}, Header{});
     EXPECT_EQ("Unauthorized", response.text);
     EXPECT_EQ(Url{url + "?one=two"}, response.url);
     EXPECT_EQ("text/plain", response.header["content-type"]);
@@ -711,8 +692,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderAETest) {
     Url url{server->GetBaseUrl() + "/basic_auth.html"};
-    Response response = cpr::Get(url, Authentication{"user", "password"}, Parameters{},
-                                 Header{{"hello", "world"}});
+    Response response = cpr::Get(url, Authentication{"user", "password"}, Parameters{}, Header{{"hello", "world"}});
     std::string expected_text{"Header reflect GET"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
@@ -724,8 +704,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderAFTest) {
     Url url{server->GetBaseUrl() + "/basic_auth.html"};
-    Response response = cpr::Get(url, Authentication{"user", "bad_password"}, Parameters{},
-                                 Header{{"hello", "world"}});
+    Response response = cpr::Get(url, Authentication{"user", "bad_password"}, Parameters{}, Header{{"hello", "world"}});
     EXPECT_EQ("Unauthorized", response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ("text/plain", response.header["content-type"]);
@@ -736,8 +715,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderAGTest) {
     Url url{server->GetBaseUrl() + "/basic_auth.html"};
-    Response response = cpr::Get(url, Authentication{"user", "password"},
-                                 Parameters{{"one", "two"}}, Header{{"hello", "world"}});
+    Response response = cpr::Get(url, Authentication{"user", "password"}, Parameters{{"one", "two"}}, Header{{"hello", "world"}});
     std::string expected_text{"Header reflect GET"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(Url{url + "?one=two"}, response.url);
@@ -749,8 +727,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderAHTest) {
     Url url{server->GetBaseUrl() + "/basic_auth.html"};
-    Response response = cpr::Get(url, Authentication{"user", "bad_password"},
-                                 Parameters{{"one", "two"}}, Header{{"hello", "world"}});
+    Response response = cpr::Get(url, Authentication{"user", "bad_password"}, Parameters{{"one", "two"}}, Header{{"hello", "world"}});
     EXPECT_EQ("Unauthorized", response.text);
     EXPECT_EQ(Url{url + "?one=two"}, response.url);
     EXPECT_EQ(std::string{"text/plain"}, response.header["content-type"]);
@@ -773,8 +750,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderBBTest) {
     Url url{server->GetBaseUrl() + "/basic_auth.html"};
-    Response response =
-            cpr::Get(url, Parameters{}, Header{}, Authentication{"user", "bad_password"});
+    Response response = cpr::Get(url, Parameters{}, Header{}, Authentication{"user", "bad_password"});
     EXPECT_EQ("Unauthorized", response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ("text/plain", response.header["content-type"]);
@@ -785,8 +761,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderBCTest) {
     Url url{server->GetBaseUrl() + "/basic_auth.html"};
-    Response response =
-            cpr::Get(url, Parameters{{"one", "two"}}, Header{}, Authentication{"user", "password"});
+    Response response = cpr::Get(url, Parameters{{"one", "two"}}, Header{}, Authentication{"user", "password"});
     std::string expected_text{"Header reflect GET"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(Url{url + "?one=two"}, response.url);
@@ -798,8 +773,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderBDTest) {
     Url url{server->GetBaseUrl() + "/basic_auth.html"};
-    Response response = cpr::Get(url, Parameters{{"one", "two"}}, Header{},
-                                 Authentication{"user", "bad_password"});
+    Response response = cpr::Get(url, Parameters{{"one", "two"}}, Header{}, Authentication{"user", "bad_password"});
     EXPECT_EQ("Unauthorized", response.text);
     EXPECT_EQ(Url{url + "?one=two"}, response.url);
     EXPECT_EQ(std::string{"text/plain"}, response.header["content-type"]);
@@ -810,8 +784,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderBETest) {
     Url url{server->GetBaseUrl() + "/basic_auth.html"};
-    Response response = cpr::Get(url, Parameters{}, Header{{"hello", "world"}},
-                                 Authentication{"user", "password"});
+    Response response = cpr::Get(url, Parameters{}, Header{{"hello", "world"}}, Authentication{"user", "password"});
     std::string expected_text{"Header reflect GET"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
@@ -823,8 +796,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderBFTest) {
     Url url{server->GetBaseUrl() + "/basic_auth.html"};
-    Response response = cpr::Get(url, Parameters{}, Header{{"hello", "world"}},
-                                 Authentication{"user", "bad_password"});
+    Response response = cpr::Get(url, Parameters{}, Header{{"hello", "world"}}, Authentication{"user", "bad_password"});
     EXPECT_EQ("Unauthorized", response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ("text/plain", response.header["content-type"]);
@@ -835,8 +807,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderBGTest) {
     Url url{server->GetBaseUrl() + "/basic_auth.html"};
-    Response response = cpr::Get(url, Parameters{{"one", "two"}}, Header{{"hello", "world"}},
-                                 Authentication{"user", "password"});
+    Response response = cpr::Get(url, Parameters{{"one", "two"}}, Header{{"hello", "world"}}, Authentication{"user", "password"});
     std::string expected_text{"Header reflect GET"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(Url{url + "?one=two"}, response.url);
@@ -848,8 +819,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderBHTest) {
     Url url{server->GetBaseUrl() + "/basic_auth.html"};
-    Response response = cpr::Get(url, Parameters{{"one", "two"}}, Header{{"hello", "world"}},
-                                 Authentication{"user", "bad_password"});
+    Response response = cpr::Get(url, Parameters{{"one", "two"}}, Header{{"hello", "world"}}, Authentication{"user", "bad_password"});
     EXPECT_EQ("Unauthorized", response.text);
     EXPECT_EQ(Url{url + "?one=two"}, response.url);
     EXPECT_EQ(std::string{"text/plain"}, response.header["content-type"]);
@@ -872,8 +842,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderCBTest) {
     Url url{server->GetBaseUrl() + "/basic_auth.html"};
-    Response response =
-            cpr::Get(url, Header{}, Authentication{"user", "bad_password"}, Parameters{});
+    Response response = cpr::Get(url, Header{}, Authentication{"user", "bad_password"}, Parameters{});
     EXPECT_EQ("Unauthorized", response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ("text/plain", response.header["content-type"]);
@@ -884,8 +853,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderCCTest) {
     Url url{server->GetBaseUrl() + "/basic_auth.html"};
-    Response response =
-            cpr::Get(url, Header{}, Authentication{"user", "password"}, Parameters{{"one", "two"}});
+    Response response = cpr::Get(url, Header{}, Authentication{"user", "password"}, Parameters{{"one", "two"}});
     std::string expected_text{"Header reflect GET"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(Url{url + "?one=two"}, response.url);
@@ -897,8 +865,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderCDTest) {
     Url url{server->GetBaseUrl() + "/basic_auth.html"};
-    Response response = cpr::Get(url, Header{}, Authentication{"user", "bad_password"},
-                                 Parameters{{"one", "two"}});
+    Response response = cpr::Get(url, Header{}, Authentication{"user", "bad_password"}, Parameters{{"one", "two"}});
     EXPECT_EQ("Unauthorized", response.text);
     EXPECT_EQ(Url{url + "?one=two"}, response.url);
     EXPECT_EQ(std::string{"text/plain"}, response.header["content-type"]);
@@ -909,8 +876,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderCETest) {
     Url url{server->GetBaseUrl() + "/basic_auth.html"};
-    Response response = cpr::Get(url, Header{{"hello", "world"}},
-                                 Authentication{"user", "password"}, Parameters{});
+    Response response = cpr::Get(url, Header{{"hello", "world"}}, Authentication{"user", "password"}, Parameters{});
     std::string expected_text{"Header reflect GET"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
@@ -922,8 +888,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderCFTest) {
     Url url{server->GetBaseUrl() + "/basic_auth.html"};
-    Response response = cpr::Get(url, Header{{"hello", "world"}},
-                                 Authentication{"user", "bad_password"}, Parameters{});
+    Response response = cpr::Get(url, Header{{"hello", "world"}}, Authentication{"user", "bad_password"}, Parameters{});
     EXPECT_EQ("Unauthorized", response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ("text/plain", response.header["content-type"]);
@@ -934,8 +899,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderCGTest) {
     Url url{server->GetBaseUrl() + "/basic_auth.html"};
-    Response response = cpr::Get(url, Header{{"hello", "world"}},
-                                 Authentication{"user", "password"}, Parameters{{"one", "two"}});
+    Response response = cpr::Get(url, Header{{"hello", "world"}}, Authentication{"user", "password"}, Parameters{{"one", "two"}});
     std::string expected_text{"Header reflect GET"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(Url{url + "?one=two"}, response.url);
@@ -947,9 +911,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderCHTest) {
     Url url{server->GetBaseUrl() + "/basic_auth.html"};
-    Response response =
-            cpr::Get(url, Header{{"hello", "world"}}, Authentication{"user", "bad_password"},
-                     Parameters{{"one", "two"}});
+    Response response = cpr::Get(url, Header{{"hello", "world"}}, Authentication{"user", "bad_password"}, Parameters{{"one", "two"}});
     EXPECT_EQ("Unauthorized", response.text);
     EXPECT_EQ(Url{url + "?one=two"}, response.url);
     EXPECT_EQ(std::string{"text/plain"}, response.header["content-type"]);
@@ -972,8 +934,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderDBTest) {
     Url url{server->GetBaseUrl() + "/basic_auth.html"};
-    Response response =
-            cpr::Get(url, Authentication{"user", "bad_password"}, Header{}, Parameters{});
+    Response response = cpr::Get(url, Authentication{"user", "bad_password"}, Header{}, Parameters{});
     EXPECT_EQ("Unauthorized", response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ("text/plain", response.header["content-type"]);
@@ -984,8 +945,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderDCTest) {
     Url url{server->GetBaseUrl() + "/basic_auth.html"};
-    Response response =
-            cpr::Get(url, Authentication{"user", "password"}, Header{}, Parameters{{"one", "two"}});
+    Response response = cpr::Get(url, Authentication{"user", "password"}, Header{}, Parameters{{"one", "two"}});
     std::string expected_text{"Header reflect GET"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(Url{url + "?one=two"}, response.url);
@@ -997,8 +957,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderDDTest) {
     Url url{server->GetBaseUrl() + "/basic_auth.html"};
-    Response response = cpr::Get(url, Authentication{"user", "bad_password"}, Header{},
-                                 Parameters{{"one", "two"}});
+    Response response = cpr::Get(url, Authentication{"user", "bad_password"}, Header{}, Parameters{{"one", "two"}});
     EXPECT_EQ("Unauthorized", response.text);
     EXPECT_EQ(Url{url + "?one=two"}, response.url);
     EXPECT_EQ(std::string{"text/plain"}, response.header["content-type"]);
@@ -1009,8 +968,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderDETest) {
     Url url{server->GetBaseUrl() + "/basic_auth.html"};
-    Response response = cpr::Get(url, Authentication{"user", "password"},
-                                 Header{{"hello", "world"}}, Parameters{});
+    Response response = cpr::Get(url, Authentication{"user", "password"}, Header{{"hello", "world"}}, Parameters{});
     std::string expected_text{"Header reflect GET"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
@@ -1022,8 +980,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderDFTest) {
     Url url{server->GetBaseUrl() + "/basic_auth.html"};
-    Response response = cpr::Get(url, Authentication{"user", "bad_password"},
-                                 Header{{"hello", "world"}}, Parameters{});
+    Response response = cpr::Get(url, Authentication{"user", "bad_password"}, Header{{"hello", "world"}}, Parameters{});
     EXPECT_EQ("Unauthorized", response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ("text/plain", response.header["content-type"]);
@@ -1034,8 +991,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderDGTest) {
     Url url{server->GetBaseUrl() + "/basic_auth.html"};
-    Response response = cpr::Get(url, Authentication{"user", "password"},
-                                 Header{{"hello", "world"}}, Parameters{{"one", "two"}});
+    Response response = cpr::Get(url, Authentication{"user", "password"}, Header{{"hello", "world"}}, Parameters{{"one", "two"}});
     std::string expected_text{"Header reflect GET"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(Url{url + "?one=two"}, response.url);
@@ -1047,8 +1003,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderDHTest) {
     Url url{server->GetBaseUrl() + "/basic_auth.html"};
-    Response response = cpr::Get(url, Authentication{"user", "bad_password"},
-                                 Header{{"hello", "world"}}, Parameters{{"one", "two"}});
+    Response response = cpr::Get(url, Authentication{"user", "bad_password"}, Header{{"hello", "world"}}, Parameters{{"one", "two"}});
     EXPECT_EQ("Unauthorized", response.text);
     EXPECT_EQ(Url{url + "?one=two"}, response.url);
     EXPECT_EQ(std::string{"text/plain"}, response.header["content-type"]);
@@ -1071,8 +1026,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderEBTest) {
     Url url{server->GetBaseUrl() + "/basic_auth.html"};
-    Response response =
-            cpr::Get(url, Header{}, Parameters{}, Authentication{"user", "bad_password"});
+    Response response = cpr::Get(url, Header{}, Parameters{}, Authentication{"user", "bad_password"});
     EXPECT_EQ("Unauthorized", response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ("text/plain", response.header["content-type"]);
@@ -1083,8 +1037,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderECTest) {
     Url url{server->GetBaseUrl() + "/basic_auth.html"};
-    Response response =
-            cpr::Get(url, Header{}, Parameters{{"one", "two"}}, Authentication{"user", "password"});
+    Response response = cpr::Get(url, Header{}, Parameters{{"one", "two"}}, Authentication{"user", "password"});
     std::string expected_text{"Header reflect GET"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(Url{url + "?one=two"}, response.url);
@@ -1096,8 +1049,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderEDTest) {
     Url url{server->GetBaseUrl() + "/basic_auth.html"};
-    Response response = cpr::Get(url, Header{}, Parameters{{"one", "two"}},
-                                 Authentication{"user", "bad_password"});
+    Response response = cpr::Get(url, Header{}, Parameters{{"one", "two"}}, Authentication{"user", "bad_password"});
     EXPECT_EQ("Unauthorized", response.text);
     EXPECT_EQ(Url{url + "?one=two"}, response.url);
     EXPECT_EQ(std::string{"text/plain"}, response.header["content-type"]);
@@ -1108,8 +1060,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderEETest) {
     Url url{server->GetBaseUrl() + "/basic_auth.html"};
-    Response response = cpr::Get(url, Header{{"hello", "world"}}, Parameters{},
-                                 Authentication{"user", "password"});
+    Response response = cpr::Get(url, Header{{"hello", "world"}}, Parameters{}, Authentication{"user", "password"});
     std::string expected_text{"Header reflect GET"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
@@ -1121,8 +1072,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderEFTest) {
     Url url{server->GetBaseUrl() + "/basic_auth.html"};
-    Response response = cpr::Get(url, Header{{"hello", "world"}}, Parameters{},
-                                 Authentication{"user", "bad_password"});
+    Response response = cpr::Get(url, Header{{"hello", "world"}}, Parameters{}, Authentication{"user", "bad_password"});
     EXPECT_EQ("Unauthorized", response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ("text/plain", response.header["content-type"]);
@@ -1133,8 +1083,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderEGTest) {
     Url url{server->GetBaseUrl() + "/basic_auth.html"};
-    Response response = cpr::Get(url, Header{{"hello", "world"}}, Parameters{{"one", "two"}},
-                                 Authentication{"user", "password"});
+    Response response = cpr::Get(url, Header{{"hello", "world"}}, Parameters{{"one", "two"}}, Authentication{"user", "password"});
     std::string expected_text{"Header reflect GET"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(Url{url + "?one=two"}, response.url);
@@ -1146,8 +1095,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderEHTest) {
     Url url{server->GetBaseUrl() + "/basic_auth.html"};
-    Response response = cpr::Get(url, Header{{"hello", "world"}}, Parameters{{"one", "two"}},
-                                 Authentication{"user", "bad_password"});
+    Response response = cpr::Get(url, Header{{"hello", "world"}}, Parameters{{"one", "two"}}, Authentication{"user", "bad_password"});
     EXPECT_EQ("Unauthorized", response.text);
     EXPECT_EQ(Url{url + "?one=two"}, response.url);
     EXPECT_EQ(std::string{"text/plain"}, response.header["content-type"]);
@@ -1170,8 +1118,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderFBTest) {
     Url url{server->GetBaseUrl() + "/basic_auth.html"};
-    Response response =
-            cpr::Get(url, Parameters{}, Authentication{"user", "bad_password"}, Header{});
+    Response response = cpr::Get(url, Parameters{}, Authentication{"user", "bad_password"}, Header{});
     EXPECT_EQ("Unauthorized", response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ("text/plain", response.header["content-type"]);
@@ -1182,8 +1129,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderFCTest) {
     Url url{server->GetBaseUrl() + "/basic_auth.html"};
-    Response response =
-            cpr::Get(url, Parameters{{"one", "two"}}, Authentication{"user", "password"}, Header{});
+    Response response = cpr::Get(url, Parameters{{"one", "two"}}, Authentication{"user", "password"}, Header{});
     std::string expected_text{"Header reflect GET"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(Url{url + "?one=two"}, response.url);
@@ -1195,8 +1141,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderFDTest) {
     Url url{server->GetBaseUrl() + "/basic_auth.html"};
-    Response response = cpr::Get(url, Parameters{{"one", "two"}},
-                                 Authentication{"user", "bad_password"}, Header{});
+    Response response = cpr::Get(url, Parameters{{"one", "two"}}, Authentication{"user", "bad_password"}, Header{});
     EXPECT_EQ("Unauthorized", response.text);
     EXPECT_EQ(Url{url + "?one=two"}, response.url);
     EXPECT_EQ(std::string{"text/plain"}, response.header["content-type"]);
@@ -1207,8 +1152,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderFETest) {
     Url url{server->GetBaseUrl() + "/basic_auth.html"};
-    Response response = cpr::Get(url, Parameters{}, Authentication{"user", "password"},
-                                 Header{{"hello", "world"}});
+    Response response = cpr::Get(url, Parameters{}, Authentication{"user", "password"}, Header{{"hello", "world"}});
     std::string expected_text{"Header reflect GET"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
@@ -1220,8 +1164,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderFFTest) {
     Url url{server->GetBaseUrl() + "/basic_auth.html"};
-    Response response = cpr::Get(url, Parameters{}, Authentication{"user", "bad_password"},
-                                 Header{{"hello", "world"}});
+    Response response = cpr::Get(url, Parameters{}, Authentication{"user", "bad_password"}, Header{{"hello", "world"}});
     EXPECT_EQ("Unauthorized", response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ("text/plain", response.header["content-type"]);
@@ -1232,8 +1175,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderFGTest) {
     Url url{server->GetBaseUrl() + "/basic_auth.html"};
-    Response response = cpr::Get(url, Parameters{{"one", "two"}},
-                                 Authentication{"user", "password"}, Header{{"hello", "world"}});
+    Response response = cpr::Get(url, Parameters{{"one", "two"}}, Authentication{"user", "password"}, Header{{"hello", "world"}});
     std::string expected_text{"Header reflect GET"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(Url{url + "?one=two"}, response.url);
@@ -1245,9 +1187,7 @@ TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeader
 
 TEST(BasicAuthenticationParameterHeaderTests, BasicAuthenticationParameterHeaderFHTest) {
     Url url{server->GetBaseUrl() + "/basic_auth.html"};
-    Response response =
-            cpr::Get(url, Parameters{{"one", "two"}}, Authentication{"user", "bad_password"},
-                     Header{{"hello", "world"}});
+    Response response = cpr::Get(url, Parameters{{"one", "two"}}, Authentication{"user", "bad_password"}, Header{{"hello", "world"}});
     EXPECT_EQ("Unauthorized", response.text);
     EXPECT_EQ(Url{url + "?one=two"}, response.url);
     EXPECT_EQ(std::string{"text/plain"}, response.header["content-type"]);
