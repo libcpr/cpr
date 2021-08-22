@@ -51,7 +51,7 @@ class Redirect {
      * https://curl.se/libcurl/c/CURLOPT_MAXREDIRS.html
      **/
     // NOLINTNEXTLINE (cppcoreguidelines-avoid-magic-numbers, google-runtime-int)
-    long max{50L};
+    long maximum{50L};
     /**
      * Follow 3xx redirects.
      * Default: true
@@ -66,9 +66,9 @@ class Redirect {
 
     Redirect() = default;
     // NOLINTNEXTLINE (google-runtime-int)
-    Redirect(long p_max, bool p_follow, PostRedirectFlags p_post_flags) : max(p_max), follow(p_follow), post_flags(p_post_flags){};
+    Redirect(long p_maximum, bool p_follow, PostRedirectFlags p_post_flags) : maximum(p_maximum), follow(p_follow), post_flags(p_post_flags){};
     // NOLINTNEXTLINE (google-runtime-int)
-    explicit Redirect(long p_max) : max(p_max){};
+    explicit Redirect(long p_maximum) : maximum(p_maximum){};
     explicit Redirect(bool p_follow) : follow(p_follow){};
     explicit Redirect(PostRedirectFlags p_post_flags) : post_flags(p_post_flags){};
 };

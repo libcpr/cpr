@@ -342,7 +342,7 @@ void Session::Impl::SetNTLM(const NTLM& auth) {
 
 void Session::Impl::SetRedirect(const Redirect& redirect) {
     curl_easy_setopt(curl_->handle, CURLOPT_FOLLOWLOCATION, redirect.follow ? 1L : 0L);
-    curl_easy_setopt(curl_->handle, CURLOPT_MAXREDIRS, redirect.max);
+    curl_easy_setopt(curl_->handle, CURLOPT_MAXREDIRS, redirect.maximum);
 
     // NOLINTNEXTLINE (google-runtime-int)
     long mask = 0;
