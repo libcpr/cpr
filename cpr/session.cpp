@@ -515,7 +515,7 @@ Response Session::Impl::Delete() {
 
 Response Session::Impl::Download(const WriteCallback& write) {
     curl_easy_setopt(curl_->handle, CURLOPT_NOBODY, 0L);
-    curl_easy_setopt(curl_->handle, CURLOPT_CUSTOMREQUEST, "GET");
+    curl_easy_setopt(curl_->handle, CURLOPT_HTTPGET, 1);
 
     SetWriteCallback(write);
 
@@ -524,7 +524,7 @@ Response Session::Impl::Download(const WriteCallback& write) {
 
 Response Session::Impl::Download(std::ofstream& file) {
     curl_easy_setopt(curl_->handle, CURLOPT_NOBODY, 0L);
-    curl_easy_setopt(curl_->handle, CURLOPT_CUSTOMREQUEST, "GET");
+    curl_easy_setopt(curl_->handle, CURLOPT_HTTPGET, 1);
     curl_easy_setopt(curl_->handle, CURLOPT_WRITEFUNCTION, cpr::util::writeFileFunction);
     curl_easy_setopt(curl_->handle, CURLOPT_WRITEDATA, &file);
 
