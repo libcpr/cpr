@@ -18,7 +18,7 @@ TEST(MultipleGetTests, PoolBasicMultipleGetTest) {
     server->ResetConnectionCount();
 
     // Without shared connection pool
-    for (int i = 0; i < NUM_REQUESTS; ++i) {
+    for (size_t i = 0; i < NUM_REQUESTS; ++i) {
         Response response = cpr::Get(url);
         EXPECT_EQ(std::string{"Hello world!"}, response.text);
         EXPECT_EQ(url, response.url);
@@ -29,7 +29,7 @@ TEST(MultipleGetTests, PoolBasicMultipleGetTest) {
 
     // With shared connection pool
     server->ResetConnectionCount();
-    for (int i = 0; i < NUM_REQUESTS; ++i) {
+    for (size_t i = 0; i < NUM_REQUESTS; ++i) {
         Response response = cpr::Get(url, pool);
         EXPECT_EQ(std::string{"Hello world!"}, response.text);
         EXPECT_EQ(url, response.url);
@@ -47,7 +47,7 @@ TEST(MultipleGetTests, PoolAsyncGetMultipleTest) {
 
     // Without shared connection pool
     responses.reserve(NUM_REQUESTS);
-    for (int i = 0; i < NUM_REQUESTS; ++i) {
+    for (size_t i = 0; i < NUM_REQUESTS; ++i) {
         responses.emplace_back(cpr::GetAsync(url));
     }
     for (AsyncResponse& future : responses) {
@@ -62,7 +62,7 @@ TEST(MultipleGetTests, PoolAsyncGetMultipleTest) {
     // With shared connection pool
     server->ResetConnectionCount();
     responses.clear();
-    for (int i = 0; i < NUM_REQUESTS; ++i) {
+    for (size_t i = 0; i < NUM_REQUESTS; ++i) {
         responses.emplace_back(cpr::GetAsync(url, pool));
     }
     for (AsyncResponse& future : responses) {

@@ -8,11 +8,11 @@ ConnectionPool::ConnectionPool() {
     // Force mutex initalization
     this->connection_mutex_->lock();
     this->connection_mutex_->unlock();
-    auto lock_f = +[](CURL* handle, curl_lock_data data, curl_lock_access access, void* userptr) {
+    auto lock_f = +[](__attribute__((unused)) CURL* handle, __attribute__((unused)) curl_lock_data data, __attribute__((unused)) curl_lock_access access, void* userptr) {
         std::mutex* lock = static_cast<std::mutex*>(userptr);
         lock->lock();
     };
-    auto unlock_f = +[](CURL* handle, curl_lock_data data, void* userptr) {
+    auto unlock_f = +[](__attribute__((unused)) CURL* handle, __attribute__((unused)) curl_lock_data data, void* userptr) {
         std::mutex* lock = static_cast<std::mutex*>(userptr);
         lock->unlock();
     };
