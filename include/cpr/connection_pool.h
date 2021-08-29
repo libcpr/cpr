@@ -14,8 +14,8 @@ class ConnectionPool {
     void SetupHandler(CURL* easy_handler) const;
 
   private:
-    std::shared_ptr<CURLSH> curl_sh_;
     std::shared_ptr<std::mutex> connection_mutex_;
+    std::shared_ptr<CURLSH> curl_sh_;
 };
 } // namespace cpr
 #endif
