@@ -14,12 +14,12 @@ long Timeout::Milliseconds() const {
 
     // No way around since curl uses a long here.
     // NOLINTNEXTLINE(google-runtime-int)
-    if (ms.count() > std::numeric_limits<long>::max()) {
+    if (ms.count() > static_cast<std::chrono::milliseconds::rep>(std::numeric_limits<long>::max())) {
         throw std::overflow_error("cpr::Timeout: timeout value overflow: " + std::to_string(ms.count()) + " ms.");
     }
     // No way around since curl uses a long here.
     // NOLINTNEXTLINE(google-runtime-int)
-    if (ms.count() < std::numeric_limits<long>::min()) {
+    if (ms.count() < static_cast<std::chrono::milliseconds::rep>(std::numeric_limits<long>::min())) {
         throw std::underflow_error("cpr::Timeout: timeout value underflow: " + std::to_string(ms.count()) + " ms.");
     }
 
