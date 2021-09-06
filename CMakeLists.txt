@@ -243,7 +243,7 @@ if(CPR_BUILD_TESTS)
 
         FetchContent_Declare(googletest
                              URL                    https://github.com/google/googletest/archive/release-1.11.0.tar.gz
-                             URL_HASH               SHA256=b4870bf121ff7795ba20d20bcdd8627b8e088f2d1dab299a031c1034eddc93d5 # the file hash for release-1.10.0.tar.gz
+                             URL_HASH               SHA256=b4870bf121ff7795ba20d20bcdd8627b8e088f2d1dab299a031c1034eddc93d5 # the file hash for release-1.11.0.tar.gz
                              USES_TERMINAL_DOWNLOAD TRUE)   # <---- This is needed only for Ninja to show download progress
         FetchContent_MakeAvailable(googletest)
 
