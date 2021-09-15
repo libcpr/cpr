@@ -1,11 +1,12 @@
 # C++ Requests: Curl for People <img align="right" height="40" src="http://i.imgur.com/d9Xtyts.png">
 
-[![Documentation](https://img.shields.io/badge/docs-online-informational?style=flat&link=https://whoshuu.github.io/cpr/)](https://whoshuu.github.io/cpr/)
-![CI](https://github.com/whoshuu/cpr/workflows/CI/badge.svg)
+[![Documentation](https://img.shields.io/badge/docs-online-informational?style=flat&link=https://libcpr.github.io/docs/)](https://libcpr.github.io/docs/)
+![CI](https://github.com/libcpr/cpr/workflows/CI/badge.svg)
 
 ## Announcements
 
-The cpr project has new maintainers: [Fabian Sauter](https://github.com/com8) and [Tim Stack](https://github.com/tstack).
+* Like you probably have noticed, `cpr` moved to a new home from https://github.com/whoshuu/cpr to https://github.com/libcpr/cpr. Read more [here](https://github.com/libcpr/cpr/issues/636).
+* This project is being maintained by [Fabian Sauter](https://github.com/com8).
 
 ## TLDR
 
@@ -32,8 +33,8 @@ And here's [less functional, more complicated code, without cpr](https://gist.gi
 
 ## Documentation
 
-[![Documentation](https://img.shields.io/badge/docs-online-informational?style=for-the-badge&link=https://whoshuu.github.io/cpr/)](https://whoshuu.github.io/cpr/)  
-You can find the latest documentation [here](https://whoshuu.github.io/cpr). It's a work in progress, but it should give you a better idea of how to use the library than the [tests](https://github.com/whoshuu/cpr/tree/master/test) currently do.
+[![Documentation](https://img.shields.io/badge/docs-online-informational?style=for-the-badge&link=https://libcpr.github.io/docs/)](https://libcpr.github.io/docs/)  
+You can find the latest documentation [here](https://libcpr.github.io/docs/). It's a work in progress, but it should give you a better idea of how to use the library than the [tests](https://github.com/libcpr/cpr/tree/master/test) currently do.
 
 ## Features
 
@@ -64,7 +65,7 @@ C++ Requests currently supports:
 
 ## Planned
 
-For a quick overview about the planed features, have a look at the next [Milestones](https://github.com/whoshuu/cpr/milestones).
+For a quick overview about the planed features, have a look at the next [Milestones](https://github.com/libcpr/cpr/milestones).
 
 ## Usage
 
@@ -76,7 +77,7 @@ Add the following to your `CMakeLists.txt`.
 
 ```cmake
 include(FetchContent)
-FetchContent_Declare(cpr GIT_REPOSITORY https://github.com/whoshuu/cpr.git GIT_TAG f4622efcb59d84071ae11404ae61bd821c1c344b) # the commit hash for 1.6.2
+FetchContent_Declare(cpr GIT_REPOSITORY https://github.com/libcpr/cpr.git GIT_TAG f4622efcb59d84071ae11404ae61bd821c1c344b) # the commit hash for 1.6.2
 FetchContent_MakeAvailable(cpr)
 ```
 
