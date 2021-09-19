@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <fstream>
 #include <functional>
+#include <stdexcept>
 #include <string>
 
 #include <curl/curl.h>
@@ -13,7 +14,6 @@
 
 
 namespace cpr {
-
 // Ignored here since libcurl reqires a long:
 // NOLINTNEXTLINE(google-runtime-int)
 constexpr long ON = 1L;
@@ -65,6 +65,7 @@ class Session::Impl {
     void SetVerbose(const Verbose& verbose);
     void SetSslOptions(const SslOptions& options);
     void SetInterface(const Interface& iface);
+    void SetHttpVersion(const HttpVersion& version);
 
     cpr_off_t GetDownloadFileLength();
     Response Delete();
@@ -197,6 +198,50 @@ void Session::Impl::SetConnectTimeout(const ConnectTimeout& timeout) {
 
 void Session::Impl::SetVerbose(const Verbose& verbose) {
     curl_easy_setopt(curl_->handle, CURLOPT_VERBOSE, verbose.verbose ? ON : OFF);
+}
+
+void Session::Impl::SetHttpVersion(const HttpVersion& version) {
+    switch (version.code) {
+        case HttpVersionCode::VERSION_NONE:
+            curl_easy_setopt(curl_->handle, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_NONE);
+            break;
+
+        case HttpVersionCode::VERSION_1_0:
+            curl_easy_setopt(curl_->handle, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_0);
+            break;
+
+        case HttpVersionCode::VERSION_1_1:
+            curl_easy_setopt(curl_->handle, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
+            break;
+
+#if LIBCURL_VERSION_NUM >= 0x072100 // 7.33.0
+        case HttpVersionCode::VERSION_2_0:
+            curl_easy_setopt(curl_->handle, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_2_0);
+            break;
+#endif
+
+#if LIBCURL_VERSION_NUM >= 0x072F00 // 7.47.0
+        case HttpVersionCode::VERSION_2_0_TLS:
+            curl_easy_setopt(curl_->handle, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_2TLS);
+            break;
+#endif
+
+#if LIBCURL_VERSION_NUM >= 0x073100 // 7.49.0
+        case HttpVersionCode::VERSION_2_0_PRIOR_KNOWLEDGE:
+            curl_easy_setopt(curl_->handle, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_2_PRIOR_KNOWLEDGE);
+            break;
+#endif
+
+#if LIBCURL_VERSION_NUM >= 0x074200 // 7.66.0
+        case HttpVersionCode::VERSION_3_0:
+            curl_easy_setopt(curl_->handle, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_3);
+            break;
+#endif
+
+        default: // Should not happen
+            throw std::invalid_argument("Invalid/Unknown HTTP version type.");
+            break;
+    }
 }
 
 void Session::Impl::SetAuth(const Authentication& auth) {
@@ -785,6 +830,7 @@ void Session::SetUnixSocket(const UnixSocket& unix_socket) { pimpl_->SetUnixSock
 void Session::SetSslOptions(const SslOptions& options) { pimpl_->SetSslOptions(options); }
 void Session::SetVerbose(const Verbose& verbose) { pimpl_->SetVerbose(verbose); }
 void Session::SetInterface(const Interface& iface) { pimpl_->SetInterface(iface); }
+void Session::SetHttpVersion(const HttpVersion& version) { pimpl_->SetHttpVersion(version); }
 void Session::SetOption(const ReadCallback& read) { pimpl_->SetReadCallback(read); }
 void Session::SetOption(const HeaderCallback& header) { pimpl_->SetHeaderCallback(header); }
 void Session::SetOption(const WriteCallback& write) { pimpl_->SetWriteCallback(write); }
@@ -824,6 +870,7 @@ void Session::SetOption(const Verbose& verbose) { pimpl_->SetVerbose(verbose); }
 void Session::SetOption(const UnixSocket& unix_socket) { pimpl_->SetUnixSocket(unix_socket); }
 void Session::SetOption(const SslOptions& options) { pimpl_->SetSslOptions(options); }
 void Session::SetOption(const Interface& iface) { pimpl_->SetInterface(iface); }
+void Session::SetOption(const HttpVersion& version) { pimpl_->SetHttpVersion(version); }
 
 cpr_off_t Session::GetDownloadFileLength() { return pimpl_->GetDownloadFileLength(); }
 Response Session::Delete() { return pimpl_->Delete(); }

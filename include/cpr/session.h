@@ -14,6 +14,7 @@
 #include "cpr/cprtypes.h"
 #include "cpr/curlholder.h"
 #include "cpr/digest.h"
+#include "cpr/http_version.h"
 #include "cpr/interface.h"
 #include "cpr/limit_rate.h"
 #include "cpr/low_speed.h"
@@ -78,6 +79,7 @@ class Session {
     void SetDebugCallback(const DebugCallback& debug);
     void SetVerbose(const Verbose& verbose);
     void SetInterface(const Interface& iface);
+    void SetHttpVersion(const HttpVersion& version);
 
     // Used in templated functions
     void SetOption(const Url& url);
@@ -119,6 +121,7 @@ class Session {
     void SetOption(const UnixSocket& unix_socket);
     void SetOption(const SslOptions& options);
     void SetOption(const Interface& iface);
+    void SetOption(const HttpVersion& version);
 
     cpr_off_t GetDownloadFileLength();
     Response Delete();
