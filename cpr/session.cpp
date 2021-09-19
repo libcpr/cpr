@@ -130,12 +130,8 @@ Session::Impl::Impl() : curl_(new CurlHolder()) {
     curl_easy_setopt(curl_->handle, CURLOPT_NOSIGNAL, 1L);
 #endif
 
-#if LIBCURL_VERSION_MAJOR >= 7
-#if LIBCURL_VERSION_MINOR >= 25
-#if LIBCURL_VERSION_PATCH >= 0
+#if LIBCURL_VERSION_NUM >= 0x071900
     curl_easy_setopt(curl_->handle, CURLOPT_TCP_KEEPALIVE, 1L);
-#endif
-#endif
 #endif
 }
 
