@@ -241,48 +241,6 @@ jobs:
         run-test: true
         ctest-options: -V
         configure-options: -DBUILD_SHARED_LIBS=OFF
-
-  ubuntu-16-gcc-shared-ssl:
-    runs-on: ubuntu-16.04
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v2.2.0
-      with:
-        submodules: true
-    - name: Install libssl-dev
-      run: sudo apt install libssl-dev
-    - name: "[Release g++] Build & Test"
-      uses: ashutoshvarma/action-cmake-build@master
-      with:
-        build-dir: ${{github.workspace}}/build
-        source-dir: ${{github.workspace}}
-        cc: gcc
-        cxx: g++
-        build-type: Release
-        run-test: true
-        ctest-options: -V
-        configure-options: -DBUILD_SHARED_LIBS=ON
-
-  ubuntu-16-gcc-static-ssl:
-    runs-on: ubuntu-16.04
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v2.2.0
-      with:
-        submodules: true
-    - name: Install libssl-dev
-      run: sudo apt install libssl-dev
-    - name: "[Release g++] Build & Test"
-      uses: ashutoshvarma/action-cmake-build@master
-      with:
-        build-dir: ${{github.workspace}}/build
-        source-dir: ${{github.workspace}}
-        cc: gcc
-        cxx: g++
-        build-type: Release
-        run-test: true
-        ctest-options: -V
-        configure-options: -DBUILD_SHARED_LIBS=OFF
     
   windows-msvc-shared-ssl:
     runs-on: windows-latest
