@@ -13,6 +13,8 @@ jobs:
       uses: actions/checkout@v2.2.0
       with:
         submodules: true
+    - name: Update package list
+      run: sudo apt update
     - name: Install libssl-dev
       run: sudo apt install libssl-dev
     - name: "[Release g++] Build & Test"
@@ -34,6 +36,8 @@ jobs:
       uses: actions/checkout@v2.2.0
       with:
         submodules: true
+    - name: Update package list
+      run: sudo apt update
     - name: Install libssl-dev
       run: sudo apt install libssl-dev
     - name: Install clang-tidy
@@ -57,6 +61,8 @@ jobs:
       uses: actions/checkout@v2.2.0
       with:
         submodules: true
+    - name: Update package list
+      run: sudo apt update
     - name: Install libssl-dev
       run: sudo apt install libssl-dev
     - name: "[Release g++] Build & Test"
@@ -78,6 +84,8 @@ jobs:
       uses: actions/checkout@v2.2.0
       with:
         submodules: true
+    - name: Update package list
+      run: sudo apt update
     - name: Install libssl-dev
       run: sudo apt install libssl-dev
     - name: "[Release g++] Build & Test"
@@ -99,6 +107,8 @@ jobs:
       uses: actions/checkout@v2.2.0
       with:
         submodules: true
+    - name: Update package list
+      run: sudo apt update
     - name: Install libssl-dev
       run: sudo apt install libssl-dev
     - name: "[Release g++] Build & Test"
@@ -120,6 +130,8 @@ jobs:
       uses: actions/checkout@v2.2.0
       with:
         submodules: true
+    - name: Update package list
+      run: sudo apt update
     - name: Install libssl-dev
       run: sudo apt install libcurl4-openssl-dev
     - name: "[Release g++] Build & Test"
@@ -141,6 +153,8 @@ jobs:
       uses: actions/checkout@v2.2.0
       with:
         submodules: true
+    - name: Update package list
+      run: sudo apt update
     - name: Install libssl-dev
       run: sudo apt install libcurl4-openssl-dev
     - name: "[Release g++] Build & Test"
@@ -162,6 +176,8 @@ jobs:
       uses: actions/checkout@v2.2.0
       with:
         submodules: true
+    - name: Update package list
+      run: sudo apt update
     - name: Install libssl-dev
       run: sudo apt install libssl-dev
     - name: Install sanitizer
@@ -185,6 +201,8 @@ jobs:
       uses: actions/checkout@v2.2.0
       with:
         submodules: true
+    - name: Update package list
+      run: sudo apt update
     - name: Install libssl-dev
       run: sudo apt install libssl-dev
     - name: Install sanitizer
@@ -207,6 +225,8 @@ jobs:
       uses: actions/checkout@v2.2.0
       with:
         submodules: true
+    - name: Update package list
+      run: sudo apt update
     - name: Install libssl-dev
       run: sudo apt install libssl-dev
     - name: "[Release g++] Build & Test"
@@ -228,6 +248,8 @@ jobs:
       uses: actions/checkout@v2.2.0
       with:
         submodules: true
+    - name: Update package list
+      run: sudo apt update
     - name: Install libssl-dev
       run: sudo apt install libssl-dev
     - name: "[Release g++] Build & Test"
