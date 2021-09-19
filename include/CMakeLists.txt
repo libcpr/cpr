@@ -33,6 +33,7 @@ target_sources(cpr PRIVATE
     cpr/verbose.h
     cpr/interface.h
     cpr/redirect.h
+    cpr/http_version.h
 )
 
 install(DIRECTORY cpr DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
