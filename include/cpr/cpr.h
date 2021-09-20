@@ -4,6 +4,7 @@
 #include "cpr/api.h"
 #include "cpr/auth.h"
 #include "cpr/cprtypes.h"
+#include "cpr/exceptions.h"
 #include "cpr/interface.h"
 #include "cpr/redirect.h"
 #include "cpr/response.h"

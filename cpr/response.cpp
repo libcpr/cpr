@@ -43,4 +43,17 @@ std::vector<std::string> Response::GetCertInfo() {
 
     return info;
 }
+
+void Response::ThrowForStatus(){
+    std::string err_msg = "";
+    if (400 <= status_code && status_code < 500) {
+        err_msg = "Client error : " + std::to_string(status_code) + " with content : " + text;
+    } else if (500 <= status_code && status_code < 600) {
+        err_msg = "Server error : " + std::to_string(status_code) + " with content : " + text;
+    }
+
+    if (err_msg.size()>0)
+        throw cpr::Exception::BadResponse(err_msg, status_code);
+}
+
 } // namespace cpr

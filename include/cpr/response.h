@@ -8,10 +8,12 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <string>
 
 #include "cpr/cookies.h"
 #include "cpr/cprtypes.h"
 #include "cpr/error.h"
+#include "cpr/exceptions.h"
 #include "cpr/ssl_options.h"
 #include "cpr/util.h"
 
@@ -44,6 +46,7 @@ class Response {
     Response(std::shared_ptr<CurlHolder> curl, std::string&& p_text, std::string&& p_header_string,
              Cookies&& p_cookies, Error&& p_error);
     std::vector<std::string> GetCertInfo();
+    void ThrowForStatus();
     Response(const Response& other) = default;
     Response(Response&& old) noexcept = default;
     ~Response() noexcept = default;
