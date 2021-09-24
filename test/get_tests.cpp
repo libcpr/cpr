@@ -5,6 +5,7 @@
 
 #include "cpr/cpr.h"
 #include "cpr/cprtypes.h"
+#include "cpr/redirect.h"
 #include "cpr/session.h"
 #include "httpServer.hpp"
 
@@ -1213,6 +1214,18 @@ TEST(GetRedirectTests, ZeroMaxRedirectsTest) {
     std::string expected_text{"Hello world!"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
+TEST(GetRedirectTests, BasicAuthenticationRedirectSuccessTest) {
+    Url url{server->GetBaseUrl() + "/temporary_redirect.html"};
+    Response response = cpr::Get(url, Authentication{"user", "password"}, Header{{"RedirectLocation", "basic_auth.html"}}, Redirect(true, true));
+    std::string expected_text{"Header reflect GET"};
+    EXPECT_EQ(expected_text, response.text);
+    std::string resultUrl = "http://user:password@127.0.0.1:" + std::to_string(server->GetPort()) + "/basic_auth.html";
+    EXPECT_EQ(response.url, resultUrl);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
     EXPECT_EQ(ErrorCode::OK, response.error.code);
