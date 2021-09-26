@@ -30,11 +30,10 @@ set_target_properties(cpr
      VERSION ${${PROJECT_NAME}_VERSION}
      SOVERSION ${${PROJECT_NAME}_VERSION_MAJOR})
 
+# Import GNU common install directory variables
+include(GNUInstallDirs)
 
 if(CPR_FORCE_USE_SYSTEM_CURL)
-    # Import GNU common install directory variables
-    include(GNUInstallDirs)
-
     install(TARGETS cpr
             EXPORT cprTargets
             ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
