@@ -30,4 +30,31 @@ set_target_properties(cpr
      VERSION ${${PROJECT_NAME}_VERSION}
      SOVERSION ${${PROJECT_NAME}_VERSION_MAJOR})
 
-install(TARGETS cpr)
+# Import GNU common install directory variables
+include(GNUInstallDirs)
+
+install(TARGETS cpr
+        EXPORT cprTargets
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
+
+# Include CMake helpers for package config files
+# Follow this installation guideline: https://cmake.org/cmake/help/latest/manual/cmake-packages.7.html
+include(CMakePackageConfigHelpers)
+
+write_basic_package_version_file(
+        "${CMAKE_BINARY_DIR}/cpr/cprConfigVersion.cmake"
+        VERSION ${${PROJECT_NAME}_VERSION}
+        COMPATIBILITY ExactVersion)
+
+configure_package_config_file(${CMAKE_SOURCE_DIR}/cmake/cprConfig.cmake.in
+                              "${CMAKE_BINARY_DIR}/cpr/cprConfig.cmake"
+                              INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/cpr)
+
+install(EXPORT cprTargets
+        FILE cprTargets.cmake
+        NAMESPACE cpr::
+        DESTINATION lib/cmake/cpr)
+
+install(FILES ${CMAKE_BINARY_DIR}/cpr/cprConfig.cmake
+        ${CMAKE_BINARY_DIR}/cpr/cprConfigVersion.cmake DESTINATION lib/cmake/cpr)
