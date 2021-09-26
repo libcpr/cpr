@@ -30,31 +30,38 @@ set_target_properties(cpr
      VERSION ${${PROJECT_NAME}_VERSION}
      SOVERSION ${${PROJECT_NAME}_VERSION_MAJOR})
 
-# Import GNU common install directory variables
-include(GNUInstallDirs)
 
-install(TARGETS cpr
-        EXPORT cprTargets
-        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
+if(CPR_FORCE_USE_SYSTEM_CURL)
+    # Import GNU common install directory variables
+    include(GNUInstallDirs)
 
-# Include CMake helpers for package config files
-# Follow this installation guideline: https://cmake.org/cmake/help/latest/manual/cmake-packages.7.html
-include(CMakePackageConfigHelpers)
+    install(TARGETS cpr
+            EXPORT cprTargets
+            ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+            LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
-write_basic_package_version_file(
-        "${CMAKE_BINARY_DIR}/cpr/cprConfigVersion.cmake"
-        VERSION ${${PROJECT_NAME}_VERSION}
-        COMPATIBILITY ExactVersion)
+    # Include CMake helpers for package config files
+    # Follow this installation guideline: https://cmake.org/cmake/help/latest/manual/cmake-packages.7.html
+    include(CMakePackageConfigHelpers)
 
-configure_package_config_file(${CMAKE_SOURCE_DIR}/cmake/cprConfig.cmake.in
-                              "${CMAKE_BINARY_DIR}/cpr/cprConfig.cmake"
-                              INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/cpr)
+    write_basic_package_version_file(
+            "${CMAKE_BINARY_DIR}/cpr/cprConfigVersion.cmake"
+            VERSION ${${PROJECT_NAME}_VERSION}
+            COMPATIBILITY ExactVersion)
 
-install(EXPORT cprTargets
-        FILE cprTargets.cmake
-        NAMESPACE cpr::
-        DESTINATION lib/cmake/cpr)
+    configure_package_config_file(${CMAKE_SOURCE_DIR}/cmake/cprConfig.cmake.in
+                                  "${CMAKE_BINARY_DIR}/cpr/cprConfig.cmake"
+                                  INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/cpr)
 
-install(FILES ${CMAKE_BINARY_DIR}/cpr/cprConfig.cmake
-        ${CMAKE_BINARY_DIR}/cpr/cprConfigVersion.cmake DESTINATION lib/cmake/cpr)
+    install(EXPORT cprTargets
+            FILE cprTargets.cmake
+            NAMESPACE cpr::
+            DESTINATION lib/cmake/cpr)
+
+    install(FILES ${CMAKE_BINARY_DIR}/cpr/cprConfig.cmake
+            ${CMAKE_BINARY_DIR}/cpr/cprConfigVersion.cmake DESTINATION lib/cmake/cpr)
+else()
+    install(TARGETS cpr
+            ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+            LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
+endif()
