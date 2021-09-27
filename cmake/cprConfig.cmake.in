@@ -1,0 +1,8 @@
+include(CMakeFindDependencyMacro)
+@PACKAGE_INIT@
+
+find_dependency(CURL REQUIRED)
+
+include(${CMAKE_CURRENT_LIST_DIR}/cprTargets.cmake)
+
+check_required_components(cpr)
