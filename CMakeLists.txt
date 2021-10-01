@@ -221,10 +221,10 @@ endif()
 
 # GTest configuration
 if(CPR_BUILD_TESTS)
-    if(USE_SYSTEM_GTEST)
+    if(CPR_USE_SYSTEM_GTEST)
         find_package(GTest)
     endif()
-    if(NOT USE_SYSTEM_GTEST OR NOT GTEST_FOUND)
+    if(NOT CPR_USE_SYSTEM_GTEST OR NOT GTEST_FOUND)
         message(STATUS "Not using system gtest, using built-in googletest project instead.")
         if(MSVC)
             # By default, GTest compiles on Windows in CRT static linkage mode. We use this
