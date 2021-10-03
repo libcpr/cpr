@@ -176,25 +176,28 @@ else()
     if (CPR_ENABLE_SSL)
         set(SSL_ENABLED ON CACHE INTERNAL "" FORCE)
         set(CURL_CA_PATH "auto" CACHE INTERNAL "" FORCE)
+
+        if(SSL_BACKEND_USED STREQUAL "WinSSL")
+            set(CMAKE_USE_SCHANNEL ON CACHE INTERNAL "" FORCE)
+        endif()
+
+        if(SSL_BACKEND_USED STREQUAL "OpenSSL")
+            set(CMAKE_USE_OPENSSL ON CACHE INTERNAL "" FORCE)
+        endif()
+
+        if(SSL_BACKEND_USED STREQUAL "DarwinSSL")
+            set(CMAKE_USE_SECTRANSP ON CACHE INTERNAL "" FORCE)
+        endif()
+
         message(STATUS "Enabled curl SSL")
     else()
         set(SSL_ENABLED OFF CACHE INTERNAL "" FORCE)
         set(CURL_CA_PATH "none" CACHE INTERNAL "" FORCE)
+        set(CMAKE_USE_SCHANNEL OFF CACHE INTERNAL "" FORCE)
+        set(CMAKE_USE_OPENSSL OFF CACHE INTERNAL "" FORCE)
+        set(CMAKE_USE_SECTRANSP OFF CACHE INTERNAL "" FORCE)
         message(STATUS "Disabled curl SSL")
     endif()
-
-    if(SSL_BACKEND_USED STREQUAL "WinSSL")
-        set(CMAKE_USE_SCHANNEL ON CACHE INTERNAL "" FORCE)
-    endif()
-
-    if(SSL_BACKEND_USED STREQUAL "OpenSSL")
-        set(CMAKE_USE_OPENSSL ON CACHE INTERNAL "" FORCE)
-    endif()
-
-    if(SSL_BACKEND_USED STREQUAL "DarwinSSL")
-        set(CMAKE_USE_SECTRANSP ON CACHE INTERNAL "" FORCE)
-    endif()
-
     # Disable linting for curl
     clear_variable(DESTINATION CMAKE_CXX_CLANG_TIDY BACKUP CMAKE_CXX_CLANG_TIDY_BKP)
 
