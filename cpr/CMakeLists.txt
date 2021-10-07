@@ -44,12 +44,12 @@ if(CPR_FORCE_USE_SYSTEM_CURL)
     include(CMakePackageConfigHelpers)
 
     write_basic_package_version_file(
-            "${CMAKE_BINARY_DIR}/cpr/cprConfigVersion.cmake"
+            "${PROJECT_BINARY_DIR}/cpr/cprConfigVersion.cmake"
             VERSION ${${PROJECT_NAME}_VERSION}
             COMPATIBILITY ExactVersion)
 
-    configure_package_config_file(${CMAKE_SOURCE_DIR}/cmake/cprConfig.cmake.in
-                                  "${CMAKE_BINARY_DIR}/cpr/cprConfig.cmake"
+    configure_package_config_file(${PROJECT_SOURCE_DIR}/cmake/cprConfig.cmake.in
+                                  "${PROJECT_BINARY_DIR}/cpr/cprConfig.cmake"
                                   INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/cpr)
 
     install(EXPORT cprTargets
@@ -58,7 +58,8 @@ if(CPR_FORCE_USE_SYSTEM_CURL)
 	    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/cpr)
 
     install(FILES ${CMAKE_BINARY_DIR}/cpr/cprConfig.cmake
-	    ${CMAKE_BINARY_DIR}/cpr/cprConfigVersion.cmake DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/cpr)
+	   ${PROJECT_BINARY_DIR}/cpr/cprConfigVersion.cmake DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/cpr)
+     
 else()
     install(TARGETS cpr
             ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}

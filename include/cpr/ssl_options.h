@@ -87,6 +87,8 @@ class CertFile {
     // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
     CertFile(std::string&& p_filename) : filename(std::move(p_filename)) {}
 
+    virtual ~CertFile() = default;
+
     const std::string filename;
 
     virtual const char* GetCertType() const {
@@ -100,6 +102,8 @@ class DerCert : public CertFile {
   public:
     // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
     DerCert(std::string&& p_filename) : CertFile(std::move(p_filename)) {}
+
+    virtual ~DerCert() = default;
 
     const char* GetCertType() const override {
         return "DER";
@@ -115,6 +119,8 @@ class KeyFile {
     template <typename FileType, typename PassType>
     KeyFile(FileType&& p_filename, PassType p_password)
             : filename(std::forward<FileType>(p_filename)), password(std::move(p_password)) {}
+
+    virtual ~KeyFile() = default;
 
     std::string filename;
     std::string password;
@@ -134,6 +140,8 @@ class DerKey : public KeyFile {
     template <typename FileType, typename PassType>
     DerKey(FileType&& p_filename, PassType p_password)
             : KeyFile(std::forward<FileType>(p_filename), std::move(p_password)) {}
+
+    virtual ~DerKey() = default;
 
     const char* GetKeyType() const override {
         return "DER";
