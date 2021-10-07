@@ -57,7 +57,7 @@ if(CPR_FORCE_USE_SYSTEM_CURL)
             NAMESPACE cpr::
 	    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/cpr)
 
-    install(FILES ${CMAKE_BINARY_DIR}/cpr/cprConfig.cmake
+    install(FILES ${PROJECT_BINARY_DIR}/cpr/cprConfig.cmake
             ${PROJECT_BINARY_DIR}/cpr/cprConfigVersion.cmake DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/cpr)
      
 else()
