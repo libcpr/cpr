@@ -55,10 +55,11 @@ if(CPR_FORCE_USE_SYSTEM_CURL)
     install(EXPORT cprTargets
             FILE cprTargets.cmake
             NAMESPACE cpr::
-            DESTINATION lib/cmake/cpr)
+	    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/cpr)
 
-    install(FILES ${PROJECT_BINARY_DIR}/cpr/cprConfig.cmake
-            ${PROJECT_BINARY_DIR}/cpr/cprConfigVersion.cmake DESTINATION lib/cmake/cpr)
+    install(FILES ${CMAKE_BINARY_DIR}/cpr/cprConfig.cmake
+	   ${PROJECT_BINARY_DIR}/cpr/cprConfigVersion.cmake DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/cpr)
+     
 else()
     install(TARGETS cpr
             ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
