@@ -202,8 +202,8 @@ else()
     clear_variable(DESTINATION CMAKE_CXX_CLANG_TIDY BACKUP CMAKE_CXX_CLANG_TIDY_BKP)
 
     FetchContent_Declare(curl
-                         URL                    https://github.com/curl/curl/releases/download/curl-7_75_0/curl-7.75.0.tar.xz
-                         URL_HASH               SHA256=fe0c49d8468249000bda75bcfdf9e30ff7e9a86d35f1a21f428d79c389d55675 # the file hash for curl-7.75.0.tar.xz
+                         URL                    https://github.com/curl/curl/releases/download/curl-7_79_1/curl-7.79.1.tar.xz
+                         URL_HASH               SHA256=0606f74b1182ab732a17c11613cbbaf7084f2e6cca432642d0e3ad7c224c3689 # the file hash for curl-7.79.1.tar.xz
                          USES_TERMINAL_DOWNLOAD TRUE)   # <---- This is needed only for Ninja to show download progress
     FetchContent_MakeAvailable(curl)
 
