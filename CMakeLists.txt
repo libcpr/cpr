@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 3.15)
-project(cpr VERSION 1.6 LANGUAGES CXX)
+project(cpr VERSION 1.7.0 LANGUAGES CXX)
+
+math(EXPR cpr_VERSION_NUM "${cpr_VERSION_MAJOR} * 0x10000 + ${cpr_VERSION_MINOR} * 0x100 + ${cpr_VERSION_PATCH}" OUTPUT_FORMAT HEXADECIMAL)
+configure_file("${cpr_SOURCE_DIR}/cmake/cprver.h.in" "${cpr_BINARY_DIR}/cpr_generated_includes/cpr/cprver.h")
 
 # Only change the folder behaviour if cpr is not a subproject
 if(${CMAKE_PROJECT_NAME} STREQUAL ${PROJECT_NAME})
