@@ -1208,7 +1208,7 @@ TEST(GetRedirectTests, RedirectTest) {
     EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
-TEST(GetRedirectTests, ZeroMaxRedirectsTest) {
+TEST(GetRedirectTests, ZeroMaxRedirectsSuccessTest) {
     Url url{server->GetBaseUrl() + "/hello.html"};
     Response response = cpr::Get(url, Redirect(0L));
     std::string expected_text{"Hello world!"};
@@ -1217,6 +1217,16 @@ TEST(GetRedirectTests, ZeroMaxRedirectsTest) {
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
     EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
+TEST(GetRedirectTests, ZeroMaxRedirectsFailureTest) {
+    Url url{server->GetBaseUrl() + "/permanent_redirect.html"};
+    Response response = cpr::Get(url, Redirect(0L));
+    EXPECT_EQ(std::string{}, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{}, response.header["content-type"]);
+    EXPECT_EQ(301, response.status_code);
+    EXPECT_EQ(ErrorCode::TOO_MANY_REDIRECTS, response.error.code);
 }
 
 TEST(GetRedirectTests, BasicAuthenticationRedirectSuccessTest) {
