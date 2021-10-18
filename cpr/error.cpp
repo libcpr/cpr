@@ -59,7 +59,7 @@ ErrorCode Error::getErrorCodeForCurlError(std::int32_t curl_code) {
         case CURLE_SSL_ISSUER_ERROR:
             return ErrorCode::SSL_CACERT_ERROR;
         case CURLE_TOO_MANY_REDIRECTS:
-            return ErrorCode::OK;
+            return ErrorCode::TOO_MANY_REDIRECTS;
         default:
             return ErrorCode::INTERNAL_ERROR;
     }

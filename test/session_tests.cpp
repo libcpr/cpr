@@ -90,7 +90,7 @@ TEST(MaxRedirectsTests, ZeroMaxRedirectsFailureTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{}, response.header["content-type"]);
     EXPECT_EQ(301, response.status_code);
-    EXPECT_EQ(ErrorCode::OK, response.error.code);
+    EXPECT_EQ(ErrorCode::TOO_MANY_REDIRECTS, response.error.code);
 }
 
 TEST(MaxRedirectsTests, OneMaxRedirectsSuccessTest) {
@@ -117,7 +117,7 @@ TEST(MaxRedirectsTests, OneMaxRedirectsFailureTest) {
     EXPECT_EQ(Url{server->GetBaseUrl() + "/permanent_redirect.html"}, response.url);
     EXPECT_EQ(std::string{}, response.header["content-type"]);
     EXPECT_EQ(301, response.status_code);
-    EXPECT_EQ(ErrorCode::OK, response.error.code);
+    EXPECT_EQ(ErrorCode::TOO_MANY_REDIRECTS, response.error.code);
 }
 
 TEST(MaxRedirectsTests, TwoMaxRedirectsSuccessTest) {
