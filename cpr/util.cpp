@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <fstream>
 #include <iomanip>
+#include <ios>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -105,7 +106,7 @@ size_t writeFunction(char* ptr, size_t size, size_t nmemb, std::string* data) {
 
 size_t writeFileFunction(char* ptr, size_t size, size_t nmemb, std::ofstream* file) {
     size *= nmemb;
-    file->write(ptr, size);
+    file->write(ptr, static_cast<std::streamsize>(size));
     return size;
 }
 
