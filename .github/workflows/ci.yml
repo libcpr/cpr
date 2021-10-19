@@ -18,6 +18,8 @@ jobs:
     - name: Install libssl-dev
       run: sudo apt install libssl-dev
     - name: "[Release g++] Build & Test"
+      env:
+        CPR_BUILD_TESTS: ON
       uses: ashutoshvarma/action-cmake-build@master
       with:
         build-dir: ${{github.workspace}}/build
@@ -43,6 +45,8 @@ jobs:
     - name: Install clang-tidy
       run: sudo apt install clang-tidy
     - name: "[Release g++] Build & Test"
+      env:
+        CPR_BUILD_TESTS: ON
       uses: ashutoshvarma/action-cmake-build@master
       with:
         build-dir: ${{github.workspace}}/build
@@ -66,6 +70,8 @@ jobs:
     - name: Install libssl-dev
       run: sudo apt install libssl-dev
     - name: "[Release g++] Build & Test"
+      env:
+        CPR_BUILD_TESTS: ON
       uses: ashutoshvarma/action-cmake-build@master
       with:
         build-dir: ${{github.workspace}}/build
@@ -89,6 +95,8 @@ jobs:
     - name: Install libssl-dev
       run: sudo apt install libssl-dev
     - name: "[Release g++] Build & Test"
+      env:
+        CPR_BUILD_TESTS: ON
       uses: ashutoshvarma/action-cmake-build@master
       with:
         build-dir: ${{github.workspace}}/build
@@ -112,6 +120,8 @@ jobs:
     - name: Install libssl-dev
       run: sudo apt install libssl-dev
     - name: "[Release g++] Build & Test"
+      env:
+        CPR_BUILD_TESTS: ON
       uses: ashutoshvarma/action-cmake-build@master
       with:
         build-dir: ${{github.workspace}}/build
@@ -135,6 +145,8 @@ jobs:
     - name: Install libssl-dev
       run: sudo apt install libcurl4-openssl-dev
     - name: "[Release g++] Build & Test"
+      env:
+        CPR_BUILD_TESTS: ON
       uses: ashutoshvarma/action-cmake-build@master
       with:
         build-dir: ${{github.workspace}}/build
@@ -158,6 +170,8 @@ jobs:
     - name: Install libssl-dev
       run: sudo apt install libcurl4-openssl-dev
     - name: "[Release g++] Build & Test"
+      env:
+        CPR_BUILD_TESTS: ON
       uses: ashutoshvarma/action-cmake-build@master
       with:
         build-dir: ${{github.workspace}}/build
@@ -183,6 +197,8 @@ jobs:
     - name: Install sanitizer
       run: sudo apt install libasan5 libubsan1 liblsan0 libtsan0
     - name: "[Release g++] Build & Test"
+      env:
+        CPR_BUILD_TESTS: ON
       uses: ashutoshvarma/action-cmake-build@master
       with:
         build-dir: ${{github.workspace}}/build
@@ -208,6 +224,8 @@ jobs:
     - name: Install sanitizer
       run: sudo apt install libasan5 libubsan1 liblsan0 libtsan0
     - name: "[Release g++] Build & Test"
+      env:
+        CPR_BUILD_TESTS: ON
       uses: ashutoshvarma/action-cmake-build@master
       with:
         build-dir: ${{github.workspace}}/build
@@ -230,6 +248,8 @@ jobs:
     - name: Install libssl-dev
       run: sudo apt install libssl-dev
     - name: "[Release g++] Build & Test"
+      env:
+        CPR_BUILD_TESTS: ON
       uses: ashutoshvarma/action-cmake-build@master
       with:
         build-dir: ${{github.workspace}}/build
@@ -253,6 +273,8 @@ jobs:
     - name: Install libssl-dev
       run: sudo apt install libssl-dev
     - name: "[Release g++] Build & Test"
+      env:
+        CPR_BUILD_TESTS: ON
       uses: ashutoshvarma/action-cmake-build@master
       with:
         build-dir: ${{github.workspace}}/build
@@ -274,6 +296,7 @@ jobs:
     - name: "[Release msvc] Build & Test"
       env:
         CMAKE_GENERATOR: "Visual Studio 16 2019"
+        CPR_BUILD_TESTS: ON
         CPR_BUILD_TESTS_SSL: OFF
       uses: ashutoshvarma/action-cmake-build@master
       with:
@@ -295,6 +318,7 @@ jobs:
     - name: "[Release msvc] Build & Test"
       env:
         CMAKE_GENERATOR: "Visual Studio 16 2019"
+        CPR_BUILD_TESTS: ON
         CPR_BUILD_TESTS_SSL: OFF
         CPR_FORCE_WINSSL_BACKEND: ON
       uses: ashutoshvarma/action-cmake-build@master
@@ -317,6 +341,7 @@ jobs:
     - name: "[Release msvc] Build & Test"
       env:
         CMAKE_GENERATOR: "Visual Studio 16 2019"
+        CPR_BUILD_TESTS: ON
         CPR_BUILD_TESTS_SSL: OFF
       uses: ashutoshvarma/action-cmake-build@master
       with:
@@ -340,6 +365,7 @@ jobs:
     - name: "[Release msvc] Build & Test"
       env:
         CMAKE_GENERATOR: "Visual Studio 16 2019"
+        CPR_BUILD_TESTS: ON
         CPR_FORCE_OPENSSL_BACKEND: ON
       uses: ashutoshvarma/action-cmake-build@master
       with:
@@ -363,6 +389,7 @@ jobs:
     - name: "[Release msvc] Build & Test"
       env:
         CMAKE_GENERATOR: "Visual Studio 16 2019"
+        CPR_BUILD_TESTS: ON
         CPR_FORCE_OPENSSL_BACKEND: ON
       uses: ashutoshvarma/action-cmake-build@master
       with:
@@ -388,6 +415,7 @@ jobs:
         source ~/.bash_profile
     - name: "[Release clang++] Build & Test"
       env:
+        CPR_BUILD_TESTS: ON
         OPENSSL_ROOT_DIR: "/usr/local/opt/openssl"
         OPENSSL_LIBRARIES: "/usr/local/opt/openssl/lib"
       uses: ashutoshvarma/action-cmake-build@master
@@ -415,6 +443,7 @@ jobs:
         source ~/.bash_profile
     - name: "[Release clang++] Build & Test"
       env:
+        CPR_BUILD_TESTS: ON
         OPENSSL_ROOT_DIR: "/usr/local/opt/openssl"
         OPENSSL_LIBRARIES: "/usr/local/opt/openssl/lib"
       uses: ashutoshvarma/action-cmake-build@master
@@ -436,6 +465,8 @@ jobs:
       with:
         submodules: true
     - name: "[Release clang++] Build & Test"
+      env:
+        CPR_BUILD_TESTS: ON
       uses: ashutoshvarma/action-cmake-build@master
       with:
         build-dir: ${{github.workspace}}/build
@@ -455,6 +486,8 @@ jobs:
       with:
         submodules: true
     - name: "[Release clang++] Build & Test"
+      env:
+        CPR_BUILD_TESTS: ON
       uses: ashutoshvarma/action-cmake-build@master
       with:
         build-dir: ${{github.workspace}}/build
