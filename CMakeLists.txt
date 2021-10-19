@@ -212,11 +212,6 @@ else()
 
     restore_variable(DESTINATION CMAKE_CXX_CLANG_TIDY BACKUP CMAKE_CXX_CLANG_TIDY_BKP)
 
-    add_library(curl_int INTERFACE)
-    target_link_libraries(curl_int INTERFACE libcurl)
-    target_include_directories(curl_int INTERFACE ${curl_SOURCE_DIR}/include ${curl_BINARY_DIR}/include/curl)
-    add_library(CURL::libcurl ALIAS curl_int)
-
     # Group under the "external" project folder in IDEs such as Visual Studio.
     if(BUILD_CURL_EXE)
         set_property(TARGET curl PROPERTY FOLDER "external")
