@@ -6,7 +6,7 @@
 ## Announcements
 
 * Like you probably have noticed, `cpr` moved to a new home from https://github.com/whoshuu/cpr to https://github.com/libcpr/cpr. Read more [here](https://github.com/libcpr/cpr/issues/636).
-* This project is being maintained by [Fabian Sauter](https://github.com/com8).
+* This project is being maintained by [Fabian Sauter](https://github.com/com8) and [Kilian Traub](https://github.com/KingKili).
 
 ## TLDR
 
