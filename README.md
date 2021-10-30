@@ -131,6 +131,9 @@ add_executable(${PROJECT_NAME} main.cpp)
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake) # Include Conan-generated file
 conan_basic_setup(TARGETS) # Introduce Conan-generated targets
 
+# depending on your conan and cmake configuration, you may need to set the used ABI:
+# add_definitions(-D_GLIBCXX_USE_CXX11_ABI=0)  # uncomment/add this line if the build fails or you get a runtime error
+
 target_link_libraries(${PROJECT_NAME} CONAN_PKG::cpr)
 ```
 Create `conanfile.txt` in your source dir:
