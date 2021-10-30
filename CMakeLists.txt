@@ -128,8 +128,8 @@ else ()
     foreach(TYPE ${ALLOWED_BUILD_TYPES})
     if (NOT ${TYPE} IN_LIST CMAKE_CONFIGURATION_TYPES)
         list(APPEND CMAKE_CONFIGURATION_TYPES ${TYPE})
-    endif()  
-    endforeach()  
+    endif()
+    endforeach()
 endif()
 
 # Curl configuration
@@ -178,7 +178,8 @@ else()
 
     if (CPR_ENABLE_SSL)
         set(SSL_ENABLED ON CACHE INTERNAL "" FORCE)
-        set(CURL_CA_PATH "auto" CACHE INTERNAL "" FORCE)
+        set(CURL_CA_PATH "auto" CACHE INTERNAL "")
+        set(CURL_CA_BUNDLE "auto" CACHE INTERNAL "")
 
         if(SSL_BACKEND_USED STREQUAL "WinSSL")
             set(CMAKE_USE_SCHANNEL ON CACHE INTERNAL "" FORCE)
