@@ -58,6 +58,21 @@ jobs:
         ctest-options: -V
         configure-options: -DCPR_ENABLE_LINTING=ON
 
+  cppcheck:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2.2.0
+      with:
+        submodules: true
+    - name: Update package list
+      run: sudo apt update
+    - name: Install cppcheck
+      run: sudo apt install cppcheck
+    - name: "Run cppcheck"
+      run: |
+        cppcheck --error-exitcode=1 --enable=warning,style --suppressions-list=cppcheck-suppressions.txt -f -j 4 -x c++ -I include/ cpr/ test/
+
   ubuntu-20-static-gcc-ssl:
     runs-on: ubuntu-20.04
     steps:
