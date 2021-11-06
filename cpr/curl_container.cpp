@@ -9,6 +9,8 @@ CurlContainer<T>::CurlContainer(const std::initializer_list<T>& containerList)
 template <class T>
 void CurlContainer<T>::Add(const std::initializer_list<T>& containerList) {
     for (const T& element : containerList) {
+        // To use std::transform like suggested we would have to upgrade to cpp17
+        // cppcheck-suppress useStlAlgorithm
         containerList_.push_back(std::move(element));
     }
 }
