@@ -69,9 +69,9 @@ jobs:
       run: sudo apt update
     - name: Install cppcheck
       run: sudo apt install cppcheck
-    - name: "[Release g++] Build & Test"
+    - name: "[Release g++] Build"
       env:
-        CPR_BUILD_TESTS: ON
+        CPR_ENABLE_CPPCHECK: ON
       uses: ashutoshvarma/action-cmake-build@master
       with:
         build-dir: ${{github.workspace}}/build
@@ -79,9 +79,7 @@ jobs:
         cc: gcc
         cxx: g++
         build-type: Release
-        run-test: true
-        ctest-options: -V
-        configure-options: -DCPR_ENABLE_CPPCHECK=ON
+        run-test: false
 
   ubuntu-20-static-gcc-ssl:
     runs-on: ubuntu-20.04
