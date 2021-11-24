@@ -43,6 +43,7 @@ cpr_option(CPR_FORCE_OPENSSL_BACKEND "Force to use the OpenSSL backend. If CPR_F
 cpr_option(CPR_FORCE_WINSSL_BACKEND "Force to use the WinSSL backend. If CPR_FORCE_OPENSSL_BACKEND, CPR_FORCE_DARWINSSL_BACKEND, and CPR_FORCE_WINSSL_BACKEND are set to to OFF, cpr will try to automatically detect the best available SSL backend (WinSSL - Windows, OpenSSL - Linux, DarwinSSL - Mac ...)." OFF)
 cpr_option(CPR_FORCE_DARWINSSL_BACKEND "Force to use the DarwinSSL backend. If CPR_FORCE_OPENSSL_BACKEND, CPR_FORCE_DARWINSSL_BACKEND, and CPR_FORCE_WINSSL_BACKEND are set to to OFF, cpr will try to automatically detect the best available SSL backend (WinSSL - Windows, OpenSSL - Linux, DarwinSSL - Mac ...)." OFF)
 cpr_option(CPR_ENABLE_LINTING "Set to ON to enable clang linting." OFF)
+cpr_option(CPR_ENABLE_CPPCHECK "Set to ON to enable Cppcheck static analysis. Requires CPR_BUILD_TESTS and CPR_BUILD_TESTS_SSL to be OFF to prevent checking google tests source code." OFF)
 cpr_option(CPR_BUILD_TESTS "Set to ON to build cpr tests." OFF)
 cpr_option(CPR_BUILD_TESTS_SSL "Set to ON to build cpr ssl tests" ${CPR_BUILD_TESTS})
 message(STATUS "=======================================================")
@@ -56,6 +57,14 @@ include(cmake/clear_variable.cmake)
 # Linting
 if(CPR_ENABLE_LINTING)
     include(cmake/clang-tidy.cmake)
+endif()
+
+# Cppcheck
+if(CPR_ENABLE_CPPCHECK)
+    if(CPR_BUILD_TESTS OR CPR_BUILD_TESTS_SSL)
+        message(FATAL_ERROR "Cppcheck is incompatible with building tests. Make sure to disable CPR_ENABLE_CPPCHECK or disable tests by setting CPR_BUILD_TESTS and CPR_BUILD_TESTS_SSL to OFF. This is because Cppcheck would try to check the google tests source code and then fail. ")
+    endif()
+    include(cmake/cppcheck.cmake)
 endif()
 
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")

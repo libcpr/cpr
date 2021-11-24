@@ -58,6 +58,29 @@ jobs:
         ctest-options: -V
         configure-options: -DCPR_ENABLE_LINTING=ON
 
+  cppcheck:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2.2.0
+      with:
+        submodules: true
+    - name: Update package list
+      run: sudo apt update
+    - name: Install cppcheck
+      run: sudo apt install cppcheck
+    - name: "[Release g++] Build"
+      env:
+        CPR_ENABLE_CPPCHECK: ON
+      uses: ashutoshvarma/action-cmake-build@master
+      with:
+        build-dir: ${{github.workspace}}/build
+        source-dir: ${{github.workspace}}
+        cc: gcc
+        cxx: g++
+        build-type: Release
+        run-test: false
+
   ubuntu-20-static-gcc-ssl:
     runs-on: ubuntu-20.04
     steps:

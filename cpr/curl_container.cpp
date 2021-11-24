@@ -1,4 +1,6 @@
 #include "cpr/curl_container.h"
+#include <algorithm>
+#include <iterator>
 
 
 namespace cpr {
@@ -8,9 +10,7 @@ CurlContainer<T>::CurlContainer(const std::initializer_list<T>& containerList)
 
 template <class T>
 void CurlContainer<T>::Add(const std::initializer_list<T>& containerList) {
-    for (const T& element : containerList) {
-        containerList_.push_back(std::move(element));
-    }
+    std::transform(containerList.begin(), containerList.end(), std::back_inserter(containerList_), [](const T& elem) { return std::move(elem); });
 }
 
 template <class T>
