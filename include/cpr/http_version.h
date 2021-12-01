@@ -59,7 +59,7 @@ class HttpVersion {
     HttpVersionCode code = HttpVersionCode::VERSION_NONE;
 
     HttpVersion() = default;
-    explicit HttpVersion(HttpVersionCode code) : code(code) {}
+    explicit HttpVersion(HttpVersionCode _code) : code(_code) {}
 };
 
 } // namespace cpr

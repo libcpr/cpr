@@ -14,8 +14,8 @@ class ReadCallback {
     // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
     ReadCallback(std::function<bool(char* buffer, size_t& size, intptr_t userdata)> p_callback, intptr_t p_userdata = 0) : userdata(p_userdata), size{-1}, callback{std::move(p_callback)} {}
     ReadCallback(cpr_off_t p_size, std::function<bool(char* buffer, size_t& size, intptr_t userdata)> p_callback, intptr_t p_userdata = 0) : userdata(p_userdata), size{p_size}, callback{std::move(p_callback)} {}
-    bool operator()(char* buffer, size_t& size) const {
-        return callback(buffer, size, userdata);
+    bool operator()(char* buffer, size_t& buffer_size) const {
+        return callback(buffer, buffer_size, userdata);
     }
 
     intptr_t userdata;
@@ -59,7 +59,7 @@ class ProgressCallback {
     }
 
     intptr_t userdata;
-    std::function<bool(size_t downloadTotal, size_t downloadNow, size_t uploadTotal, size_t uploadNow, intptr_t userdata)> callback;
+    std::function<bool(cpr_off_t downloadTotal, cpr_off_t downloadNow, cpr_off_t uploadTotal, cpr_off_t uploadNow, intptr_t userdata)> callback;
 };
 
 class DebugCallback {
