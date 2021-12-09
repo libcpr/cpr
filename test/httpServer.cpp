@@ -609,6 +609,32 @@ void HttpServer::OnRequestPatchNotAllowed(mg_connection* conn, http_message* msg
     }
 }
 
+void HttpServer::OnRequestDownloadGzip(mg_connection* conn, http_message* msg) {
+    if (std::string{msg->method.p, msg->method.len} == std::string{"DOWNLOAD"}) {
+        mg_http_send_error(conn, 405, "Method Not Allowed");
+    } else {
+        std::string encoding;
+        for (size_t i = 0; i < sizeof(msg->header_names) / sizeof(mg_str); i++) {
+            if (!msg->header_names[i].p) {
+                continue;
+            }
+
+            std::string name = std::string(msg->header_names[i].p, msg->header_names[i].len);
+            if (std::string{"Accept-Encoding"} == name) {
+                encoding = std::string(msg->header_values[i].p, msg->header_values[i].len);
+                break;
+            }
+        }
+        if (encoding.find("gzip") == std::string::npos) {
+            mg_http_send_error(conn, 405, ("Invalid encoding: " + encoding).c_str());
+        } else {
+            std::string response = "Download!";
+            mg_send_head(conn, 200, static_cast<int>(response.length()), "");
+            mg_send(conn, response.c_str(), static_cast<int>(response.length()));
+        }
+    }
+}
+
 void HttpServer::OnRequest(mg_connection* conn, http_message* msg) {
     std::string uri = std::string(msg->uri.p, msg->uri.len);
     if (uri == "/") {
@@ -671,6 +697,8 @@ void HttpServer::OnRequest(mg_connection* conn, http_message* msg) {
         OnRequestPatch(conn, msg);
     } else if (uri == "/patch_unallowed.html") {
         OnRequestPatchNotAllowed(conn, msg);
+    } else if (uri == "/download_gzip.html") {
+        OnRequestDownloadGzip(conn, msg);
     } else {
         OnRequestNotFound(conn, msg);
     }

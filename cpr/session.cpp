@@ -675,6 +675,10 @@ std::shared_ptr<CurlHolder> Session::Impl::GetCurlHolder() {
 
 Response Session::Impl::makeDownloadRequest() {
     assert(curl_->handle);
+
+    // Set Header:
+    SetHeaderInternal();
+
     const std::string parametersContent = parameters_.GetContent(*curl_);
     if (!parametersContent.empty()) {
         Url new_url{url_ + "?" + parametersContent};

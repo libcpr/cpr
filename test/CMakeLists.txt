@@ -56,6 +56,7 @@ add_cpr_test(structures)
 add_cpr_test(encoded_auth)
 add_cpr_test(proxy_auth)
 add_cpr_test(version)
+add_cpr_test(download)
 
 if (ENABLE_SSL_TESTS)
     add_cpr_test(ssl)

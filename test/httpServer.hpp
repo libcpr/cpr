@@ -50,10 +50,10 @@ class HttpServer : public AbstractServer {
     static void OnRequestPutNotAllowed(mg_connection* conn, http_message* msg);
     static void OnRequestPatch(mg_connection* conn, http_message* msg);
     static void OnRequestPatchNotAllowed(mg_connection* conn, http_message* msg);
+    static void OnRequestDownloadGzip(mg_connection* conn, http_message* msg);
 
   protected:
-    mg_connection* initServer(mg_mgr* mgr,
-                              MG_CB(mg_event_handler_t event_handler, void* user_data)) override;
+    mg_connection* initServer(mg_mgr* mgr, MG_CB(mg_event_handler_t event_handler, void* user_data)) override;
 };
 } // namespace cpr
 
