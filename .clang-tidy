@@ -27,6 +27,6 @@ Checks: '*,
 -llvmlibc-implementation-in-namespace,
 -llvmlibc-restrict-system-libc-headers
 '
-WarningsAsErrors: '*'
+WarningsAsErrors: ''
 HeaderFilterRegex: 'src/*.hpp'
 FormatStyle: file
