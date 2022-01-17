@@ -144,7 +144,7 @@ endif()
 # Curl configuration
 if(CPR_FORCE_USE_SYSTEM_CURL)
     if(CPR_ENABLE_SSL)
-        find_package(CURL COMPONENTS HTTP HTTPS SSL)
+        find_package(CURL COMPONENTS HTTP HTTPS)
         if(CURL_FOUND)
             message(STATUS "Curl ${CURL_VERSION_STRING} found on this system.")
             # To be able to load certificates under Windows when using OpenSSL:
