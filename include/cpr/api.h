@@ -211,6 +211,16 @@ Response Download(std::ofstream& file, Ts&&... ts) {
     return session.Download(file);
 }
 
+// Download async method
+template <typename... Ts>
+AsyncResponse DownloadAsync(std::string local_path, Ts... ts) {
+    return std::async(
+            std::launch::async, [](std::string local_path, Ts... ts) {
+                std::ofstream f(local_path);
+                return Download(f, std::move(ts)...);
+            }, std::move(local_path), std::move(ts)...);
+}
+
 // Download with user callback
 template <typename... Ts>
 Response Download(const WriteCallback& write, Ts&&... ts) {
