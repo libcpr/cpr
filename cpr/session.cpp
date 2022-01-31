@@ -486,6 +486,17 @@ void Session::Impl::SetSslOptions(const SslOptions& options) {
         if (!options.key_pass.empty()) {
             curl_easy_setopt(curl_->handle, CURLOPT_KEYPASSWD, options.key_pass.c_str());
         }
+    } else if (!options.key_blob.empty()) {
+      struct curl_blob blob;
+      blob.data = const_cast<char *>(options.key_blob.c_str());
+      blob.len = options.key_blob.length();
+      curl_easy_setopt(curl_->handle, CURLOPT_SSLKEY_BLOB, &blob);
+      if (!options.key_type.empty()) {
+          curl_easy_setopt(curl_->handle, CURLOPT_SSLKEYTYPE, options.key_type.c_str());
+      }
+      if (!options.key_pass.empty()) {
+          curl_easy_setopt(curl_->handle, CURLOPT_KEYPASSWD, options.key_pass.c_str());
+      }
     }
     if (!options.pinned_public_key.empty()) {
         curl_easy_setopt(curl_->handle, CURLOPT_PINNEDPUBLICKEY, options.pinned_public_key.c_str());
