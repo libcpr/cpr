@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cstdlib>
+#include <cstring>
 #include <fstream>
 #include <functional>
 #include <stdexcept>
@@ -487,16 +488,35 @@ void Session::Impl::SetSslOptions(const SslOptions& options) {
             curl_easy_setopt(curl_->handle, CURLOPT_KEYPASSWD, options.key_pass.c_str());
         }
     } else if (!options.key_blob.empty()) {
-      struct curl_blob blob;
-      blob.data = const_cast<char *>(options.key_blob.c_str());
-      blob.len = options.key_blob.length();
-      curl_easy_setopt(curl_->handle, CURLOPT_SSLKEY_BLOB, &blob);
-      if (!options.key_type.empty()) {
-          curl_easy_setopt(curl_->handle, CURLOPT_SSLKEYTYPE, options.key_type.c_str());
-      }
-      if (!options.key_pass.empty()) {
-          curl_easy_setopt(curl_->handle, CURLOPT_KEYPASSWD, options.key_pass.c_str());
-      }
+        struct ScopedCharArray {
+            char* array;
+          #ifdef _WIN32
+            explicit ScopedCharArray(const std::string& init) : array(_strdup(init.c_str())) {}
+          #else
+            explicit ScopedCharArray(const std::string& init) : array(strdup(init.c_str())) {}
+          #endif // _WIN32
+            ScopedCharArray(const ScopedCharArray& array) = delete;
+            ScopedCharArray(const ScopedCharArray&& array) = delete;
+            ScopedCharArray operator = (const ScopedCharArray& obj) = delete;
+            ScopedCharArray operator = (const ScopedCharArray&& obj) = delete;
+            ~ScopedCharArray() {
+                // NOLINTNEXTLINE(cppcoreguidelines-no-malloc, hicpp-no-malloc)
+                free(array);
+                array = nullptr;
+            }
+        };
+
+        ScopedCharArray key_blob(options.key_blob);
+        curl_blob blob {};
+        blob.data = key_blob.array;
+        blob.len = options.key_blob.length();
+        curl_easy_setopt(curl_->handle, CURLOPT_SSLKEY_BLOB, &blob);
+        if (!options.key_type.empty()) {
+            curl_easy_setopt(curl_->handle, CURLOPT_SSLKEYTYPE, options.key_type.c_str());
+        }
+        if (!options.key_pass.empty()) {
+            curl_easy_setopt(curl_->handle, CURLOPT_KEYPASSWD, options.key_pass.c_str());
+        }
     }
     if (!options.pinned_public_key.empty()) {
         curl_easy_setopt(curl_->handle, CURLOPT_PINNEDPUBLICKEY, options.pinned_public_key.c_str());
