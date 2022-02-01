@@ -66,6 +66,7 @@ class Session::Impl {
     void SetSslOptions(const SslOptions& options);
     void SetInterface(const Interface& iface);
     void SetHttpVersion(const HttpVersion& version);
+    void SetRange(const Range& range);
 
     cpr_off_t GetDownloadFileLength();
     Response Delete();
@@ -537,6 +538,15 @@ void Session::Impl::SetSslOptions(const SslOptions& options) {
 #endif
 }
 
+void Session::Impl::SetRange(const Range &range) {
+    curl_off_t resume_from = range.resume_from;
+    curl_off_t finish_at = range.finish_at;
+    std::string range_str = std::to_string(resume_from) + "-" + std::to_string(finish_at);
+    curl_easy_setopt(curl_->handle, CURLOPT_RANGE, range_str.c_str());
+    curl_easy_setopt(curl_->handle, CURLOPT_RESUME_FROM_LARGE, resume_from);
+    curl_easy_setopt(curl_->handle, CURLOPT_INFILESIZE_LARGE, finish_at);
+}
+
 void Session::Impl::PrepareDelete() {
     curl_easy_setopt(curl_->handle, CURLOPT_HTTPGET, 0L);
     curl_easy_setopt(curl_->handle, CURLOPT_NOBODY, 0L);
@@ -661,6 +671,7 @@ Response Session::Impl::Post() {
 void Session::Impl::PreparePut() {
     curl_easy_setopt(curl_->handle, CURLOPT_NOBODY, 0L);
     curl_easy_setopt(curl_->handle, CURLOPT_CUSTOMREQUEST, "PUT");
+    curl_easy_setopt(curl_->handle, CURLOPT_RANGE, nullptr);
     prepareCommon();
 }
 
@@ -836,6 +847,7 @@ void Session::SetSslOptions(const SslOptions& options) { pimpl_->SetSslOptions(o
 void Session::SetVerbose(const Verbose& verbose) { pimpl_->SetVerbose(verbose); }
 void Session::SetInterface(const Interface& iface) { pimpl_->SetInterface(iface); }
 void Session::SetHttpVersion(const HttpVersion& version) { pimpl_->SetHttpVersion(version); }
+void Session::SetRange(const Range& range) { pimpl_->SetRange(range); }
 void Session::SetOption(const ReadCallback& read) { pimpl_->SetReadCallback(read); }
 void Session::SetOption(const HeaderCallback& header) { pimpl_->SetHeaderCallback(header); }
 void Session::SetOption(const WriteCallback& write) { pimpl_->SetWriteCallback(write); }
@@ -876,6 +888,7 @@ void Session::SetOption(const UnixSocket& unix_socket) { pimpl_->SetUnixSocket(u
 void Session::SetOption(const SslOptions& options) { pimpl_->SetSslOptions(options); }
 void Session::SetOption(const Interface& iface) { pimpl_->SetInterface(iface); }
 void Session::SetOption(const HttpVersion& version) { pimpl_->SetHttpVersion(version); }
+void Session::SetOption(const Range& range) { pimpl_->SetRange(range); }
 
 cpr_off_t Session::GetDownloadFileLength() { return pimpl_->GetDownloadFileLength(); }
 Response Session::Delete() { return pimpl_->Delete(); }
