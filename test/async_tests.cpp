@@ -11,6 +11,10 @@ using namespace cpr;
 
 static HttpServer* server = new HttpServer();
 
+bool write_data(std::string /*data*/, intptr_t /*userdata*/) {
+    return true;
+}
+
 TEST(UrlEncodedPostTests, AsyncGetTest) {
     Url url{server->GetBaseUrl() + "/hello.html"};
     cpr::AsyncResponse future = cpr::GetAsync(url);
@@ -56,6 +60,20 @@ TEST(UrlEncodedPostTests, AsyncGetMultipleReflectTest) {
         EXPECT_EQ(200, response.status_code);
         ++i;
     }
+}
+
+TEST(UrlEncodedPostTests, AsyncDownloadTest) {
+    cpr::Url url{server->GetBaseUrl() + "/download_gzip.html"};
+    cpr::AsyncResponse future = cpr::DownloadAsync(
+        "/tmp/aync_download",
+        url,
+        cpr::Header{{"Accept-Encoding", "gzip"}},
+        cpr::WriteCallback{write_data, 0}
+    );
+    cpr::Response response = future.get();
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(cpr::ErrorCode::OK, response.error.code);
 }
 
 int main(int argc, char** argv) {
