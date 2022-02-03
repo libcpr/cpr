@@ -29,6 +29,45 @@ TEST(DownloadTests, DownloadGzip) {
     EXPECT_EQ(cpr::ErrorCode::OK, response.error.code);
 }
 
+TEST(DownloadTests, RangeTestWholeFile) {
+    const int64_t download_size = 9;
+    cpr::Url url{server->GetBaseUrl() + "/download_gzip.html"};
+    cpr::Session session;
+    session.SetUrl(url);
+    session.SetHeader(cpr::Header{{"Accept-Encoding", "gzip"}});
+    session.SetRange(cpr::Range{0, -1});
+    cpr::Response response = session.Download(cpr::WriteCallback{write_data, 0});
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(cpr::ErrorCode::OK, response.error.code);
+    EXPECT_EQ(download_size, response.downloaded_bytes);
+}
+
+TEST(DownloadTests, RangeTestLowerLimit) {
+    const int64_t download_size = 8;
+    cpr::Url url{server->GetBaseUrl() + "/download_gzip.html"};
+    cpr::Session session;
+    session.SetUrl(url);
+    session.SetHeader(cpr::Header{{"Accept-Encoding", "gzip"}});
+    session.SetRange(cpr::Range{1, -1});
+    cpr::Response response = session.Download(cpr::WriteCallback{write_data, 0});
+    EXPECT_EQ(206, response.status_code);
+    EXPECT_EQ(cpr::ErrorCode::OK, response.error.code);
+    EXPECT_EQ(download_size, response.downloaded_bytes);
+}
+
+TEST(DownloadTests, RangeTestUpperLimit) {
+    const int64_t download_size = 6;
+    cpr::Url url{server->GetBaseUrl() + "/download_gzip.html"};
+    cpr::Session session;
+    session.SetUrl(url);
+    session.SetHeader(cpr::Header{{"Accept-Encoding", "gzip"}});
+    session.SetRange(cpr::Range{0, download_size - 1});
+    cpr::Response response = session.Download(cpr::WriteCallback{write_data, 0});
+    EXPECT_EQ(206, response.status_code);
+    EXPECT_EQ(cpr::ErrorCode::OK, response.error.code);
+    EXPECT_EQ(download_size, response.downloaded_bytes);
+}
+
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
     ::testing::AddGlobalTestEnvironment(server);
