@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cstdlib>
+#include <cstring>
 #include <fstream>
 #include <functional>
 #include <stdexcept>
@@ -481,6 +482,18 @@ void Session::Impl::SetSslOptions(const SslOptions& options) {
     }
     if (!options.key_file.empty()) {
         curl_easy_setopt(curl_->handle, CURLOPT_SSLKEY, options.key_file.c_str());
+        if (!options.key_type.empty()) {
+            curl_easy_setopt(curl_->handle, CURLOPT_SSLKEYTYPE, options.key_type.c_str());
+        }
+        if (!options.key_pass.empty()) {
+            curl_easy_setopt(curl_->handle, CURLOPT_KEYPASSWD, options.key_pass.c_str());
+        }
+    } else if (!options.key_blob.empty()) {
+        std::string key_blob(options.key_blob);
+        curl_blob blob {};
+        blob.data = &key_blob[0];
+        blob.len = key_blob.length();
+        curl_easy_setopt(curl_->handle, CURLOPT_SSLKEY_BLOB, &blob);
         if (!options.key_type.empty()) {
             curl_easy_setopt(curl_->handle, CURLOPT_SSLKEYTYPE, options.key_type.c_str());
         }

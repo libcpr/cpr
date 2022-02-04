@@ -130,6 +130,25 @@ class KeyFile {
     }
 };
 
+class KeyBlob {
+  public:
+    // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
+    KeyBlob(std::string&& p_blob) : blob(std::move(p_blob)) {}
+
+    template <typename BlobType, typename PassType>
+    KeyBlob(BlobType&& p_blob, PassType p_password)
+            : blob(std::forward<BlobType>(p_blob)), password(std::move(p_password)) {}
+
+    virtual ~KeyBlob() = default;
+
+    std::string blob;
+    std::string password;
+
+    virtual const char* GetKeyType() const {
+        return "PEM";
+    }
+};
+
 using PemKey = KeyFile;
 
 class DerKey : public KeyFile {
@@ -378,6 +397,7 @@ struct SslOptions {
     std::string cert_file;
     std::string cert_type;
     std::string key_file;
+    std::string key_blob;
     std::string key_type;
     std::string key_pass;
     std::string pinned_public_key;
@@ -414,6 +434,11 @@ struct SslOptions {
     }
     void SetOption(const ssl::KeyFile& opt) {
         key_file = opt.filename;
+        key_type = opt.GetKeyType();
+        key_pass = opt.password;
+    }
+    void SetOption(const ssl::KeyBlob& opt) {
+        key_blob = opt.blob;
         key_type = opt.GetKeyType();
         key_pass = opt.password;
     }
