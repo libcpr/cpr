@@ -148,7 +148,7 @@ if(CPR_FORCE_USE_SYSTEM_CURL)
         if(CURL_FOUND)
             message(STATUS "Curl ${CURL_VERSION_STRING} found on this system.")
             # To be able to load certificates under Windows when using OpenSSL:
-            if(CMAKE_USE_OPENSSL AND WIN32 AND (NOT (CURL_VERSION_STRING VERSION_GREATER_EQUAL "7.71.0")))
+            if(CURL_USE_OPENSSL AND WIN32 AND (NOT (CURL_VERSION_STRING VERSION_GREATER_EQUAL "7.71.0")))
                 message(FATAL_ERROR "Your system curl version (${CURL_VERSION_STRING}) is too old to support OpenSSL on Windows which requires curl >= 7.71.0. Update your curl version, use WinSSL, disable SSL or use the build in version of curl.")
             endif()
         else()
@@ -195,7 +195,7 @@ else()
         endif()
 
         if(SSL_BACKEND_USED STREQUAL "OpenSSL")
-            set(CMAKE_USE_OPENSSL ON CACHE INTERNAL "" FORCE)
+            set(CURL_USE_OPENSSL ON CACHE INTERNAL "" FORCE)
         endif()
 
         if(SSL_BACKEND_USED STREQUAL "DarwinSSL")
@@ -207,7 +207,7 @@ else()
         set(SSL_ENABLED OFF CACHE INTERNAL "" FORCE)
         set(CURL_CA_PATH "none" CACHE INTERNAL "" FORCE)
         set(CMAKE_USE_SCHANNEL OFF CACHE INTERNAL "" FORCE)
-        set(CMAKE_USE_OPENSSL OFF CACHE INTERNAL "" FORCE)
+        set(CURL_USE_OPENSSL OFF CACHE INTERNAL "" FORCE)
         set(CMAKE_USE_SECTRANSP OFF CACHE INTERNAL "" FORCE)
         message(STATUS "Disabled curl SSL")
     endif()
@@ -215,8 +215,8 @@ else()
     clear_variable(DESTINATION CMAKE_CXX_CLANG_TIDY BACKUP CMAKE_CXX_CLANG_TIDY_BKP)
 
     FetchContent_Declare(curl
-                         URL                    https://github.com/curl/curl/releases/download/curl-7_79_1/curl-7.79.1.tar.xz
-                         URL_HASH               SHA256=0606f74b1182ab732a17c11613cbbaf7084f2e6cca432642d0e3ad7c224c3689 # the file hash for curl-7.79.1.tar.xz
+                         URL                    https://github.com/curl/curl/releases/download/curl-7_81_0/curl-7.81.0.tar.xz
+                         URL_HASH               SHA256=a067b688d1645183febc31309ec1f3cdce9213d02136b6a6de3d50f69c95a7d3 # the file hash for curl-7.81.0.tar.xz
                          USES_TERMINAL_DOWNLOAD TRUE)   # <---- This is needed only for Ninja to show download progress
     FetchContent_MakeAvailable(curl)
 
