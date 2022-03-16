@@ -191,7 +191,7 @@ else()
         set(CURL_CA_BUNDLE "auto" CACHE INTERNAL "")
 
         if(SSL_BACKEND_USED STREQUAL "WinSSL")
-            set(CMAKE_USE_SCHANNEL ON CACHE INTERNAL "" FORCE)
+            set(CURL_USE_SCHANNEL ON CACHE INTERNAL "" FORCE)
         endif()
 
         if(SSL_BACKEND_USED STREQUAL "OpenSSL")
@@ -199,16 +199,16 @@ else()
         endif()
 
         if(SSL_BACKEND_USED STREQUAL "DarwinSSL")
-            set(CMAKE_USE_SECTRANSP ON CACHE INTERNAL "" FORCE)
+            set(CURL_USE_SECTRANSP ON CACHE INTERNAL "" FORCE)
         endif()
 
         message(STATUS "Enabled curl SSL")
     else()
         set(SSL_ENABLED OFF CACHE INTERNAL "" FORCE)
         set(CURL_CA_PATH "none" CACHE INTERNAL "" FORCE)
-        set(CMAKE_USE_SCHANNEL OFF CACHE INTERNAL "" FORCE)
+        set(CURL_USE_SCHANNEL OFF CACHE INTERNAL "" FORCE)
         set(CURL_USE_OPENSSL OFF CACHE INTERNAL "" FORCE)
-        set(CMAKE_USE_SECTRANSP OFF CACHE INTERNAL "" FORCE)
+        set(CURL_USE_SECTRANSP OFF CACHE INTERNAL "" FORCE)
         message(STATUS "Disabled curl SSL")
     endif()
     # Disable linting for curl
