@@ -318,7 +318,7 @@ jobs:
         submodules: true
     - name: "[Release msvc] Build & Test"
       env:
-        CMAKE_GENERATOR: "Visual Studio 16 2019"
+        CMAKE_GENERATOR: "Visual Studio 17 2022"
         CPR_BUILD_TESTS: ON
         CPR_BUILD_TESTS_SSL: OFF
       uses: ashutoshvarma/action-cmake-build@master
@@ -340,7 +340,7 @@ jobs:
         submodules: true
     - name: "[Release msvc] Build & Test"
       env:
-        CMAKE_GENERATOR: "Visual Studio 16 2019"
+        CMAKE_GENERATOR: "Visual Studio 17 2022"
         CPR_BUILD_TESTS: ON
         CPR_BUILD_TESTS_SSL: OFF
         CPR_FORCE_WINSSL_BACKEND: ON
@@ -363,7 +363,7 @@ jobs:
         submodules: true
     - name: "[Release msvc] Build & Test"
       env:
-        CMAKE_GENERATOR: "Visual Studio 16 2019"
+        CMAKE_GENERATOR: "Visual Studio 17 2022"
         CPR_BUILD_TESTS: ON
         CPR_BUILD_TESTS_SSL: OFF
       uses: ashutoshvarma/action-cmake-build@master
@@ -387,7 +387,7 @@ jobs:
       run: choco install openssl
     - name: "[Release msvc] Build & Test"
       env:
-        CMAKE_GENERATOR: "Visual Studio 16 2019"
+        CMAKE_GENERATOR: "Visual Studio 17 2022"
         CPR_BUILD_TESTS: ON
         CPR_FORCE_OPENSSL_BACKEND: ON
       uses: ashutoshvarma/action-cmake-build@master
@@ -411,7 +411,7 @@ jobs:
       run: choco install openssl
     - name: "[Release msvc] Build & Test"
       env:
-        CMAKE_GENERATOR: "Visual Studio 16 2019"
+        CMAKE_GENERATOR: "Visual Studio 17 2022"
         CPR_BUILD_TESTS: ON
         CPR_FORCE_OPENSSL_BACKEND: ON
       uses: ashutoshvarma/action-cmake-build@master
