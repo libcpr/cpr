@@ -70,6 +70,7 @@ class Session::Impl {
     void SetRange(const Range& range);
 
     cpr_off_t GetDownloadFileLength();
+    void ResponseStringReserve(size_t size);
     Response Delete();
     Response Download(const WriteCallback& write);
     Response Download(std::ofstream& file);
@@ -112,6 +113,7 @@ class Session::Impl {
     WriteCallback writecb_;
     ProgressCallback progresscb_;
     DebugCallback debugcb_;
+    size_t response_string_reserve_size_{0};
     std::string response_string_;
     std::string header_string_;
 
@@ -490,7 +492,7 @@ void Session::Impl::SetSslOptions(const SslOptions& options) {
         }
     } else if (!options.key_blob.empty()) {
         std::string key_blob(options.key_blob);
-        curl_blob blob {};
+        curl_blob blob{};
         blob.data = &key_blob[0];
         blob.len = key_blob.length();
         curl_easy_setopt(curl_->handle, CURLOPT_SSLKEY_BLOB, &blob);
@@ -551,7 +553,7 @@ void Session::Impl::SetSslOptions(const SslOptions& options) {
 #endif
 }
 
-void Session::Impl::SetRange(const Range &range) {
+void Session::Impl::SetRange(const Range& range) {
     curl_off_t resume_from = range.resume_from;
     curl_off_t finish_at = range.finish_at;
     std::string range_str = std::to_string(resume_from) + "-" + std::to_string(finish_at);
@@ -586,6 +588,10 @@ cpr_off_t Session::Impl::GetDownloadFileLength() {
         curl_easy_getinfo(curl_->handle, CURLINFO_CONTENT_LENGTH_DOWNLOAD_T, &downloadFileLenth);
     }
     return downloadFileLenth;
+}
+
+void Session::Impl::ResponseStringReserve(size_t size) {
+    response_string_reserve_size_ = size;
 }
 
 Response Session::Impl::Delete() {
@@ -788,6 +794,9 @@ void Session::Impl::prepareCommon() {
     curl_->error[0] = '\0';
 
     response_string_.clear();
+    if (response_string_reserve_size_ > 0) {
+        response_string_.reserve(response_string_reserve_size_);
+    }
     header_string_.clear();
     if (!this->writecb_.callback) {
         curl_easy_setopt(curl_->handle, CURLOPT_WRITEFUNCTION, cpr::util::writeFunction);
@@ -904,6 +913,7 @@ void Session::SetOption(const HttpVersion& version) { pimpl_->SetHttpVersion(ver
 void Session::SetOption(const Range& range) { pimpl_->SetRange(range); }
 
 cpr_off_t Session::GetDownloadFileLength() { return pimpl_->GetDownloadFileLength(); }
+void Session::ResponseStringReserve(size_t size) { pimpl_->ResponseStringReserve(size); }
 Response Session::Delete() { return pimpl_->Delete(); }
 Response Session::Download(const WriteCallback& write) { return pimpl_->Download(write); }
 Response Session::Download(std::ofstream& file) { return pimpl_->Download(file); }
