@@ -905,7 +905,7 @@ TEST(BasicTests, ReserveResponseString) {
     Response response = session.Get();
     std::string expected_text{"Hello world!"};
     EXPECT_EQ(expected_text, response.text);
-    EXPECT_EQ(4096, response.text.capacity());
+    EXPECT_GE(response.text.capacity(), 4096);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
