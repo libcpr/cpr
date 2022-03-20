@@ -127,6 +127,17 @@ class Session {
     void SetOption(const Range& range);
 
     cpr_off_t GetDownloadFileLength();
+    /**
+     * Attempt to preallocate enough memory for specified number of characters in the response string.
+     * Pass 0 to disable this behavior and let the response string be allocated dynamically on demand.
+     *
+     * Example:
+     * cpr::Session session;
+     * session.SetUrl(cpr::Url{"http://xxx/file"});
+     * session.ResponseStringReserve(1024 * 512); // Reserve space for at least 1024 * 512 characters
+     * cpr::Response r = session.Get();
+     **/
+    void ResponseStringReserve(size_t size);
     Response Delete();
     Response Download(const WriteCallback& write);
     Response Download(std::ofstream& file);
