@@ -1,7 +1,7 @@
 #ifndef CPR_CPR_TYPES_H
 #define CPR_CPR_TYPES_H
 
-#include <curl/curl.h>
+#include <curl/system.h>
 #include <initializer_list>
 #include <map>
 #include <memory>
