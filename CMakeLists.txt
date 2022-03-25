@@ -205,7 +205,10 @@ else()
         else()
             set(CURL_CA_PATH "auto" CACHE INTERNAL "")
         endif()
-        set(CURL_CA_BUNDLE "auto" CACHE INTERNAL "")
+
+        if(NOT DEFINED CURL_CA_BUNDLE)
+            set(CURL_CA_BUNDLE "auto" CACHE INTERNAL "")
+        endif()
 
         if(SSL_BACKEND_USED STREQUAL "WinSSL")
             set(CURL_USE_SCHANNEL ON CACHE INTERNAL "" FORCE)
