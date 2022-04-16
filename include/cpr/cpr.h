@@ -25,6 +25,7 @@
 #include "cpr/proxyauth.h"
 #include "cpr/range.h"
 #include "cpr/redirect.h"
+#include "cpr/reserve_size.h"
 #include "cpr/response.h"
 #include "cpr/session.h"
 #include "cpr/ssl_options.h"

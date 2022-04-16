@@ -870,6 +870,7 @@ void Session::SetVerbose(const Verbose& verbose) { pimpl_->SetVerbose(verbose); 
 void Session::SetInterface(const Interface& iface) { pimpl_->SetInterface(iface); }
 void Session::SetHttpVersion(const HttpVersion& version) { pimpl_->SetHttpVersion(version); }
 void Session::SetRange(const Range& range) { pimpl_->SetRange(range); }
+void Session::SetReserveSize(const ReserveSize& reserve_size) { pimpl_->ResponseStringReserve(reserve_size.size); }
 void Session::SetOption(const ReadCallback& read) { pimpl_->SetReadCallback(read); }
 void Session::SetOption(const HeaderCallback& header) { pimpl_->SetHeaderCallback(header); }
 void Session::SetOption(const WriteCallback& write) { pimpl_->SetWriteCallback(write); }
@@ -911,6 +912,7 @@ void Session::SetOption(const SslOptions& options) { pimpl_->SetSslOptions(optio
 void Session::SetOption(const Interface& iface) { pimpl_->SetInterface(iface); }
 void Session::SetOption(const HttpVersion& version) { pimpl_->SetHttpVersion(version); }
 void Session::SetOption(const Range& range) { pimpl_->SetRange(range); }
+void Session::SetOption(const ReserveSize& reserve_size) { pimpl_->ResponseStringReserve(reserve_size.size); }
 
 cpr_off_t Session::GetDownloadFileLength() { return pimpl_->GetDownloadFileLength(); }
 void Session::ResponseStringReserve(size_t size) { pimpl_->ResponseStringReserve(size); }

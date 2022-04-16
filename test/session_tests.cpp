@@ -901,7 +901,7 @@ TEST(BasicTests, ReserveResponseString) {
     Url url{server->GetBaseUrl() + "/hello.html"};
     Session session;
     session.SetUrl(url);
-    session.ResponseStringReserve(4096);
+    session.SetReserveSize(4096);
     Response response = session.Get();
     std::string expected_text{"Hello world!"};
     EXPECT_EQ(expected_text, response.text);
