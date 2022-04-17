@@ -68,6 +68,7 @@ class Session::Impl {
     void SetInterface(const Interface& iface);
     void SetHttpVersion(const HttpVersion& version);
     void SetRange(const Range& range);
+    void SetResolve(const std::string& host, const std::string& address);
 
     cpr_off_t GetDownloadFileLength();
     void ResponseStringReserve(size_t size);
@@ -142,6 +143,13 @@ Session::Impl::Impl() : curl_(new CurlHolder()) {
 
 void Session::Impl::SetUrl(const Url& url) {
     url_ = url;
+}
+
+void Session::Impl::SetResolve(const std::string& host, const std::string& addr) {
+    struct curl_slist *curlSlist = NULL;
+    curlSlist = curl_slist_append(NULL, (host + ":443:" + addr).c_str());
+    curl_slist_append(curlSlist, (host + ":80:" + addr).c_str());
+    curl_easy_setopt(curl_->handle, CURLOPT_RESOLVE, curlSlist);
 }
 
 void Session::Impl::SetParameters(const Parameters& parameters) {

@@ -239,6 +239,8 @@ else()
     # Disable linting for curl
     clear_variable(DESTINATION CMAKE_CXX_CLANG_TIDY BACKUP CMAKE_CXX_CLANG_TIDY_BKP)
 
+    set(CMAKE_USE_LIBSSH2 0)
+    set(CMAKE_USE_OPENSSL 0)
     FetchContent_Declare(curl
                          URL                    https://github.com/curl/curl/releases/download/curl-7_81_0/curl-7.81.0.tar.xz
                          URL_HASH               SHA256=a067b688d1645183febc31309ec1f3cdce9213d02136b6a6de3d50f69c95a7d3 # the file hash for curl-7.81.0.tar.xz

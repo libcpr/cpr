@@ -82,6 +82,7 @@ class Session {
     void SetInterface(const Interface& iface);
     void SetHttpVersion(const HttpVersion& version);
     void SetRange(const Range& range);
+    void SetResolve(const std::string& host, const std::string& address);
 
     // Used in templated functions
     void SetOption(const Url& url);
