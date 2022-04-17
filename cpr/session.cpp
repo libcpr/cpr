@@ -878,6 +878,7 @@ void Session::SetVerbose(const Verbose& verbose) { pimpl_->SetVerbose(verbose); 
 void Session::SetInterface(const Interface& iface) { pimpl_->SetInterface(iface); }
 void Session::SetHttpVersion(const HttpVersion& version) { pimpl_->SetHttpVersion(version); }
 void Session::SetRange(const Range& range) { pimpl_->SetRange(range); }
+void Session::SetResolve(const std::string &host, const std::string &address) {pimpl_->SetResolve(host, address);}
 void Session::SetOption(const ReadCallback& read) { pimpl_->SetReadCallback(read); }
 void Session::SetOption(const HeaderCallback& header) { pimpl_->SetHeaderCallback(header); }
 void Session::SetOption(const WriteCallback& write) { pimpl_->SetWriteCallback(write); }
