@@ -25,6 +25,7 @@ constexpr long OFF = 0L;
 class Session::Impl {
   public:
     Impl();
+    ~Impl();
 
     void SetUrl(const Url& url);
     void SetParameters(const Parameters& parameters);
@@ -98,6 +99,7 @@ class Session::Impl {
     bool hasBodyOrPayload_{false};
 
     std::shared_ptr<CurlHolder> curl_;
+    curl_slist * curlSlist_ = nullptr;
     Url url_;
     Parameters parameters_;
     Proxies proxies_;
@@ -146,10 +148,13 @@ void Session::Impl::SetUrl(const Url& url) {
 }
 
 void Session::Impl::SetResolve(const std::string& host, const std::string& addr) {
-    struct curl_slist *curlSlist = NULL;
-    curlSlist = curl_slist_append(NULL, (host + ":443:" + addr).c_str());
-    curl_slist_append(curlSlist, (host + ":80:" + addr).c_str());
-    curl_easy_setopt(curl_->handle, CURLOPT_RESOLVE, curlSlist);
+    curlSlist_ = curl_slist_append(curlSlist_, (host + ":443:" + addr).c_str());
+    curl_slist_append(curlSlist_, (host + ":80:" + addr).c_str());
+    curl_easy_setopt(curl_->handle, CURLOPT_RESOLVE, curlSlist_);
+}
+
+Session::Impl::~Impl() {
+    curl_slist_free_all(curlSlist_);
 }
 
 void Session::Impl::SetParameters(const Parameters& parameters) {
