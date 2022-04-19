@@ -24,8 +24,9 @@
 #include "cpr/payload.h"
 #include "cpr/proxies.h"
 #include "cpr/proxyauth.h"
-#include "cpr/redirect.h"
 #include "cpr/range.h"
+#include "cpr/redirect.h"
+#include "cpr/reserve_size.h"
 #include "cpr/response.h"
 #include "cpr/ssl_options.h"
 #include "cpr/timeout.h"
@@ -82,6 +83,7 @@ class Session {
     void SetInterface(const Interface& iface);
     void SetHttpVersion(const HttpVersion& version);
     void SetRange(const Range& range);
+    void SetReserveSize(const ReserveSize& reserve_size);
 
     // Used in templated functions
     void SetOption(const Url& url);
@@ -125,6 +127,7 @@ class Session {
     void SetOption(const Interface& iface);
     void SetOption(const HttpVersion& version);
     void SetOption(const Range& range);
+    void SetOption(const ReserveSize& reserve_size);
 
     cpr_off_t GetDownloadFileLength();
     /**

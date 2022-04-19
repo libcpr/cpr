@@ -68,6 +68,7 @@ class Session::Impl {
     void SetInterface(const Interface& iface);
     void SetHttpVersion(const HttpVersion& version);
     void SetRange(const Range& range);
+    void SetReserveSize(const ReserveSize& reserve_size);
 
     cpr_off_t GetDownloadFileLength();
     void ResponseStringReserve(size_t size);
@@ -562,6 +563,10 @@ void Session::Impl::SetRange(const Range& range) {
     curl_easy_setopt(curl_->handle, CURLOPT_INFILESIZE_LARGE, finish_at);
 }
 
+void Session::Impl::SetReserveSize(const ReserveSize& reserve_size) {
+    ResponseStringReserve(reserve_size.size);
+}
+
 void Session::Impl::PrepareDelete() {
     curl_easy_setopt(curl_->handle, CURLOPT_HTTPGET, 0L);
     curl_easy_setopt(curl_->handle, CURLOPT_NOBODY, 0L);
@@ -870,6 +875,7 @@ void Session::SetVerbose(const Verbose& verbose) { pimpl_->SetVerbose(verbose); 
 void Session::SetInterface(const Interface& iface) { pimpl_->SetInterface(iface); }
 void Session::SetHttpVersion(const HttpVersion& version) { pimpl_->SetHttpVersion(version); }
 void Session::SetRange(const Range& range) { pimpl_->SetRange(range); }
+void Session::SetReserveSize(const ReserveSize& reserve_size) { pimpl_->SetReserveSize(reserve_size); }
 void Session::SetOption(const ReadCallback& read) { pimpl_->SetReadCallback(read); }
 void Session::SetOption(const HeaderCallback& header) { pimpl_->SetHeaderCallback(header); }
 void Session::SetOption(const WriteCallback& write) { pimpl_->SetWriteCallback(write); }
@@ -911,6 +917,7 @@ void Session::SetOption(const SslOptions& options) { pimpl_->SetSslOptions(optio
 void Session::SetOption(const Interface& iface) { pimpl_->SetInterface(iface); }
 void Session::SetOption(const HttpVersion& version) { pimpl_->SetHttpVersion(version); }
 void Session::SetOption(const Range& range) { pimpl_->SetRange(range); }
+void Session::SetOption(const ReserveSize& reserve_size) { pimpl_->SetReserveSize(reserve_size.size); }
 
 cpr_off_t Session::GetDownloadFileLength() { return pimpl_->GetDownloadFileLength(); }
 void Session::ResponseStringReserve(size_t size) { pimpl_->ResponseStringReserve(size); }
