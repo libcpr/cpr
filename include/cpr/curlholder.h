@@ -17,9 +17,12 @@ struct CurlHolder {
      * https://curl.haxx.se/libcurl/c/curl_easy_init.html
      * https://curl.haxx.se/libcurl/c/threadsafe.html
      **/
-    // It does not make sense to make a std::mutex const.
-    // NOLINTNEXTLINE (cppcoreguidelines-avoid-non-const-global-variables)    
-    static std::mutex curl_easy_init_mutex_;
+
+    // Avoids initalization order problems in a static build
+    static std::mutex& curl_easy_init_mutex_() {
+        static std::mutex curl_easy_init_mutex_;
+        return curl_easy_init_mutex_;
+    }
 
   public:
     CURL* handle{nullptr};
