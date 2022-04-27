@@ -215,19 +215,23 @@ else()
         endif()
 
         if(SSL_BACKEND_USED STREQUAL "WinSSL")
-            set(CURL_USE_SCHANNEL ON CACHE INTERNAL "" FORCE)
+            set(CURL_USE_SCHANNEL ON CACHE INTERNAL "" FORCE) # <= curl  1.80.0
+            set(CMAKE_USE_SCHANNEL ON CACHE INTERNAL "" FORCE) # > curl  1.80.0
         endif()
 
         if(SSL_BACKEND_USED STREQUAL "OpenSSL")
-            set(CURL_USE_OPENSSL ON CACHE INTERNAL "" FORCE)
+            set(CURL_USE_OPENSSL ON CACHE INTERNAL "" FORCE) # <= curl  1.80.0
+            set(CMAKE_USE_OPENSSL ON CACHE INTERNAL "" FORCE) # > curl  1.80.0
         endif()
 
         if(SSL_BACKEND_USED STREQUAL "DarwinSSL")
-            set(CURL_USE_SECTRANSP ON CACHE INTERNAL "" FORCE)
+            set(CURL_USE_SECTRANSP ON CACHE INTERNAL "" FORCE) # <= curl  1.80.0
+            set(CMAKE_USE_SECTRANSP ON CACHE INTERNAL "" FORCE) # > curl  1.80.0
         endif()
 
         if(SSL_BACKEND_USED STREQUAL "MbedTLS")
-            set(CURL_USE_MBEDTLS ON CACHE INTERNAL "" FORCE)
+            set(CURL_USE_MBEDTLS ON CACHE INTERNAL "" FORCE) # <= curl  1.80.0
+            set(CMAKE_USE_MBEDTLS ON CACHE INTERNAL "" FORCE) # > curl  1.80.0
         endif()
 
         message(STATUS "Enabled curl SSL")
