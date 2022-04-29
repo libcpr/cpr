@@ -82,6 +82,7 @@ class Session {
     void SetVerbose(const Verbose& verbose);
     void SetInterface(const Interface& iface);
     void SetLocalPort(int port);
+    void SetLocalPortRange(int port_range);
     void SetHttpVersion(const HttpVersion& version);
     void SetRange(const Range& range);
     void SetReserveSize(const ReserveSize& reserve_size);
