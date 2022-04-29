@@ -66,6 +66,7 @@ class Session::Impl {
     void SetVerbose(const Verbose& verbose);
     void SetSslOptions(const SslOptions& options);
     void SetInterface(const Interface& iface);
+    void SetLocalPort(int port);
     void SetHttpVersion(const HttpVersion& version);
     void SetRange(const Range& range);
     void SetReserveSize(const ReserveSize& reserve_size);
@@ -261,6 +262,10 @@ void Session::Impl::SetInterface(const Interface& iface) {
     } else {
         curl_easy_setopt(curl_->handle, CURLOPT_INTERFACE, iface.c_str());
     }
+}
+
+void Session::Impl::SetLocalPort(int port) {
+    curl_easy_setopt(curl_->handle, CURLOPT_LOCALPORT, port);
 }
 
 // Only supported with libcurl >= 7.61.0.
@@ -873,6 +878,7 @@ void Session::SetUnixSocket(const UnixSocket& unix_socket) { pimpl_->SetUnixSock
 void Session::SetSslOptions(const SslOptions& options) { pimpl_->SetSslOptions(options); }
 void Session::SetVerbose(const Verbose& verbose) { pimpl_->SetVerbose(verbose); }
 void Session::SetInterface(const Interface& iface) { pimpl_->SetInterface(iface); }
+void Session::SetLocalPort(int port) { pimpl_->SetLocalPort(port); }
 void Session::SetHttpVersion(const HttpVersion& version) { pimpl_->SetHttpVersion(version); }
 void Session::SetRange(const Range& range) { pimpl_->SetRange(range); }
 void Session::SetReserveSize(const ReserveSize& reserve_size) { pimpl_->SetReserveSize(reserve_size); }

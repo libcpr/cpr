@@ -81,6 +81,7 @@ class Session {
     void SetDebugCallback(const DebugCallback& debug);
     void SetVerbose(const Verbose& verbose);
     void SetInterface(const Interface& iface);
+    void SetLocalPort(int port);
     void SetHttpVersion(const HttpVersion& version);
     void SetRange(const Range& range);
     void SetReserveSize(const ReserveSize& reserve_size);
