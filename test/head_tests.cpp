@@ -77,7 +77,7 @@ TEST(HeadTests, ParameterHeadTest) {
 
 TEST(HeadTests, AuthenticationSuccessHeadTest) {
     Url url{server->GetBaseUrl() + "/basic_auth.html"};
-    Response response = cpr::Head(url, Authentication{"user", "password"});
+    Response response = cpr::Head(url, Authentication{"user", "password", AuthMode::BASIC});
     EXPECT_EQ(std::string{}, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
@@ -97,7 +97,7 @@ TEST(HeadTests, AuthenticationNullFailureHeadTest) {
 
 TEST(HeadTests, AuthenticationFailureHeadTest) {
     Url url{server->GetBaseUrl() + "/basic_auth.html"};
-    Response response = cpr::Head(url, Authentication{"user", "bad_password"});
+    Response response = cpr::Head(url, Authentication{"user", "bad_password", AuthMode::BASIC});
     EXPECT_EQ(std::string{}, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ("text/plain", response.header["content-type"]);
@@ -121,7 +121,7 @@ TEST(HeadTests, BearerSuccessHeadTest) {
 
 TEST(HeadTests, DigestSuccessHeadTest) {
     Url url{server->GetBaseUrl() + "/digest_auth.html"};
-    Response response = cpr::Head(url, Digest{"user", "password"});
+    Response response = cpr::Head(url, Authentication{"user", "password", AuthMode::DIGEST});
     EXPECT_EQ(std::string{}, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
