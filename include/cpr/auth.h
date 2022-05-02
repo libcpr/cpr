@@ -20,7 +20,7 @@ class Authentication {
     Authentication& operator=(Authentication&& old) noexcept = default;
     Authentication& operator=(const Authentication& other) = default;
 
-    virtual const char* GetAuthString() const noexcept;
+    const char* GetAuthString() const noexcept;
     AuthMode GetAuthMode() const noexcept;
 
   protected:
