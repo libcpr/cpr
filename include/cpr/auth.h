@@ -21,7 +21,7 @@ class Authentication {
     Authentication& operator=(const Authentication& other) = default;
 
     virtual const char* GetAuthString() const noexcept;
-    virtual AuthMode GetAuthMode() const noexcept;
+    AuthMode GetAuthMode() const noexcept;
 
   protected:
     std::string auth_string_;
