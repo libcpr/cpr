@@ -251,8 +251,20 @@ void Session::Impl::SetHttpVersion(const HttpVersion& version) {
 
 void Session::Impl::SetAuth(const Authentication& auth) {
     // Ignore here since this has been defined by libcurl.
-    curl_easy_setopt(curl_->handle, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-    curl_easy_setopt(curl_->handle, CURLOPT_USERPWD, auth.GetAuthString());
+    switch (auth.GetAuthMode()) {
+        case AuthMode::BASIC:
+            curl_easy_setopt(curl_->handle, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+            curl_easy_setopt(curl_->handle, CURLOPT_USERPWD, auth.GetAuthString());
+            break;
+        case AuthMode::DIGEST:
+            curl_easy_setopt(curl_->handle, CURLOPT_HTTPAUTH, CURLAUTH_DIGEST);
+            curl_easy_setopt(curl_->handle, CURLOPT_USERPWD, auth.GetAuthString());
+            break;
+        case AuthMode::NTLM:
+            curl_easy_setopt(curl_->handle, CURLOPT_HTTPAUTH, CURLAUTH_NTLM);
+            curl_easy_setopt(curl_->handle, CURLOPT_USERPWD, auth.GetAuthString());
+            break;
+    }
 }
 
 void Session::Impl::SetInterface(const Interface& iface) {
