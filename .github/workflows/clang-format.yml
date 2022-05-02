@@ -9,4 +9,4 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v3
     - name: Check format
-      uses: yshui/git-clang-format-lint@master
+      uses: RafikFarhad/clang-format-github-action@v2.1.0
