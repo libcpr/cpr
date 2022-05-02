@@ -72,8 +72,7 @@ TEST(BodyPostTests, UrlEncodedManyPostTest) {
 
 TEST(BodyPostTests, CustomHeaderNumberPostTest) {
     Url url{server->GetBaseUrl() + "/json_post.html"};
-    Response response =
-            cpr::Post(url, Body{"{\"x\":5}"}, Header{{"Content-Type", "application/json"}});
+    Response response = cpr::Post(url, Body{"{\"x\":5}"}, Header{{"Content-Type", "application/json"}});
     std::string expected_text{"{\"x\":5}"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
@@ -84,8 +83,7 @@ TEST(BodyPostTests, CustomHeaderNumberPostTest) {
 
 TEST(BodyPostTests, CustomHeaderTextPostTest) {
     Url url{server->GetBaseUrl() + "/json_post.html"};
-    Response response = cpr::Post(url, Body{"{\"x\":\"hello world!!~\"}"},
-                                  Header{{"Content-Type", "application/json"}});
+    Response response = cpr::Post(url, Body{"{\"x\":\"hello world!!~\"}"}, Header{{"Content-Type", "application/json"}});
     std::string expected_text{"{\"x\":\"hello world!!~\"}"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);

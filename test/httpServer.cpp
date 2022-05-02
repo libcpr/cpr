@@ -632,7 +632,7 @@ void HttpServer::OnRequestDownloadGzip(mg_connection* conn, http_message* msg) {
         if (encoding.find("gzip") == std::string::npos) {
             mg_http_send_error(conn, 405, ("Invalid encoding: " + encoding).c_str());
         } else {
-            if ( !range.empty() ) {
+            if (!range.empty()) {
                 std::string::size_type eq_pos = range.find('=');
                 if (eq_pos == std::string::npos) {
                     mg_http_send_error(conn, 405, ("Invalid range header: " + range).c_str());
@@ -671,7 +671,7 @@ void HttpServer::OnRequestDownloadGzip(mg_connection* conn, http_message* msg) {
                 if (srange >= resp_len) {
                     response.clear();
                     status_code = 206;
-                } else if (erange == -1 || erange >= resp_len ) {
+                } else if (erange == -1 || erange >= resp_len) {
                     response = response.substr(srange);
                     status_code = srange > 0 ? 206 : 200;
                 } else {

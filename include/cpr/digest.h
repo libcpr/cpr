@@ -6,8 +6,7 @@
 namespace cpr {
 class Digest : public Authentication {
   public:
-    Digest(const std::string& username, const std::string& password)
-            : Authentication{username, password} {}
+    Digest(const std::string& username, const std::string& password) : Authentication{username, password} {}
 };
 
 } // namespace cpr
