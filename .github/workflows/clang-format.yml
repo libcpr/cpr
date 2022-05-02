@@ -6,5 +6,7 @@ jobs:
   clang-format:
     runs-on: ubuntu-latest
     steps:
-    uses: actions/checkout@v3
-    - uses: yshui/git-clang-format-lint@master
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Check format
+      uses: yshui/git-clang-format-lint@master
