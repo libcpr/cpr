@@ -38,8 +38,7 @@ class AbstractServer : public testing::Environment {
     void Run();
 
   protected:
-    virtual mg_connection* initServer(mg_mgr* mgr,
-                                      MG_CB(mg_event_handler_t event_handler, void* user_data)) = 0;
+    virtual mg_connection* initServer(mg_mgr* mgr, MG_CB(mg_event_handler_t event_handler, void* user_data)) = 0;
 
     static std::string Base64Decode(const std::string& in);
 };

@@ -7,12 +7,8 @@
 
 #include <utility>
 
-#define __LIBCURL_VERSION_GTE(major, minor) \
-    ((LIBCURL_VERSION_MAJOR > (major)) ||   \
-     ((LIBCURL_VERSION_MAJOR == (major)) && (LIBCURL_VERSION_MINOR >= (minor))))
-#define __LIBCURL_VERSION_LT(major, minor) \
-    ((LIBCURL_VERSION_MAJOR < (major)) ||  \
-     ((LIBCURL_VERSION_MAJOR == (major)) && (LIBCURL_VERSION_MINOR < (minor))))
+#define __LIBCURL_VERSION_GTE(major, minor) ((LIBCURL_VERSION_MAJOR > (major)) || ((LIBCURL_VERSION_MAJOR == (major)) && (LIBCURL_VERSION_MINOR >= (minor))))
+#define __LIBCURL_VERSION_LT(major, minor) ((LIBCURL_VERSION_MAJOR < (major)) || ((LIBCURL_VERSION_MAJOR == (major)) && (LIBCURL_VERSION_MINOR < (minor))))
 
 #ifndef SUPPORT_ALPN
 #define SUPPORT_ALPN __LIBCURL_VERSION_GTE(7, 36)
@@ -117,8 +113,7 @@ class KeyFile {
     KeyFile(std::string&& p_filename) : filename(std::move(p_filename)) {}
 
     template <typename FileType, typename PassType>
-    KeyFile(FileType&& p_filename, PassType p_password)
-            : filename(std::forward<FileType>(p_filename)), password(std::move(p_password)) {}
+    KeyFile(FileType&& p_filename, PassType p_password) : filename(std::forward<FileType>(p_filename)), password(std::move(p_password)) {}
 
     virtual ~KeyFile() = default;
 
@@ -136,8 +131,7 @@ class KeyBlob {
     KeyBlob(std::string&& p_blob) : blob(std::move(p_blob)) {}
 
     template <typename BlobType, typename PassType>
-    KeyBlob(BlobType&& p_blob, PassType p_password)
-            : blob(std::forward<BlobType>(p_blob)), password(std::move(p_password)) {}
+    KeyBlob(BlobType&& p_blob, PassType p_password) : blob(std::forward<BlobType>(p_blob)), password(std::move(p_password)) {}
 
     virtual ~KeyBlob() = default;
 
@@ -157,8 +151,7 @@ class DerKey : public KeyFile {
     DerKey(std::string&& p_filename) : KeyFile(std::move(p_filename)) {}
 
     template <typename FileType, typename PassType>
-    DerKey(FileType&& p_filename, PassType p_password)
-            : KeyFile(std::forward<FileType>(p_filename), std::move(p_password)) {}
+    DerKey(FileType&& p_filename, PassType p_password) : KeyFile(std::forward<FileType>(p_filename), std::move(p_password)) {}
 
     virtual ~DerKey() = default;
 
@@ -379,7 +372,7 @@ class SslFastStart {
 #endif
 
 class NoRevoke {
-public:
+  public:
     NoRevoke() = default;
     // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
     NoRevoke(bool p_enabled) : enabled(p_enabled) {}
