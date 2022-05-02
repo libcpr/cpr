@@ -23,7 +23,7 @@ class Authentication {
     const char* GetAuthString() const noexcept;
     AuthMode GetAuthMode() const noexcept;
 
-  protected:
+  private:
     std::string auth_string_;
     AuthMode auth_mode_;
 };
