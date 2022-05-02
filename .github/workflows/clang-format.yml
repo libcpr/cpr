@@ -1,0 +1,16 @@
+name: "Test Clang Format"
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: DoozyX/clang-format-lint-action@v0.13
+      with:
+        source: '.'
+        extensions: 'c,h,cpp,hpp'
+        clangFormatVersion: 13
+        style: file
