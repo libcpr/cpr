@@ -24,10 +24,31 @@ using AsyncResponse = std::future<Response>;
 
 namespace priv {
 
+template <bool processed_header, typename CurrentType>
+void set_option_internal(Session& session, CurrentType&& current_option) {
+    session.SetOption(std::forward<CurrentType>(current_option));
+}
+
+template <>
+inline void set_option_internal<true, Header>(Session& session, Header&& current_option) {
+    // Header option was already provided -> Update previous header
+    session.UpdateHeader(std::forward<Header>(current_option));
+}
+
+template <bool processed_header, typename CurrentType, typename... Ts>
+void set_option_internal(Session& session, CurrentType&& current_option, Ts&&... ts) {
+    set_option_internal<processed_header, CurrentType>(session, std::forward<CurrentType>(current_option));
+
+    if (std::is_same<CurrentType, Header>::value) {
+        set_option_internal<true, Ts...>(session, std::forward<Ts>(ts)...);
+    } else {
+        set_option_internal<processed_header, Ts...>(session, std::forward<Ts>(ts)...);
+    }
+}
+
 template <typename... Ts>
 void set_option(Session& session, Ts&&... ts) {
-    std::initializer_list<int> ignore = {(session.SetOption(std::forward<Ts>(ts)), 0)...};
-    (void) ignore;
+    set_option_internal<false, Ts...>(session, std::forward<Ts>(ts)...);
 }
 
 } // namespace priv
