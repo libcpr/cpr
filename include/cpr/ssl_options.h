@@ -59,6 +59,9 @@
 #ifndef SUPPORT_SSL_NO_REVOKE
 #define SUPPORT_SSL_NO_REVOKE __LIBCURL_VERSION_GTE(7, 44)
 #endif
+#ifndef SUPPORT_CURLOPT_SSLKEY_BLOB
+#define SUPPORT_CURLOPT_SSLKEY_BLOB __LIBCURL_VERSION_GTE(7, 71)
+#endif
 
 namespace cpr {
 
@@ -125,6 +128,7 @@ class KeyFile {
     }
 };
 
+#if SUPPORT_CURLOPT_SSLKEY_BLOB
 class KeyBlob {
   public:
     // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
@@ -142,6 +146,7 @@ class KeyBlob {
         return "PEM";
     }
 };
+#endif
 
 using PemKey = KeyFile;
 
@@ -390,7 +395,9 @@ struct SslOptions {
     std::string cert_file;
     std::string cert_type;
     std::string key_file;
+#if SUPPORT_CURLOPT_SSLKEY_BLOB
     std::string key_blob;
+#endif
     std::string key_type;
     std::string key_pass;
     std::string pinned_public_key;
@@ -430,11 +437,13 @@ struct SslOptions {
         key_type = opt.GetKeyType();
         key_pass = opt.password;
     }
+#if SUPPORT_CURLOPT_SSLKEY_BLOB
     void SetOption(const ssl::KeyBlob& opt) {
         key_blob = opt.blob;
         key_type = opt.GetKeyType();
         key_pass = opt.password;
     }
+#endif
     void SetOption(const ssl::PinnedPublicKey& opt) {
         pinned_public_key = opt.pinned_public_key;
     }
