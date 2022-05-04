@@ -13,13 +13,12 @@ protected:
     ~GlobalThreadPool() {}
 };
 
-/*
- * return a future, calling future.get() will wait task done and return RetType.
+/**
+ * Return a future, calling future.get() will wait task done and return RetType.
  * async(fn, args...)
  * async(std::bind(&Class::mem_fn, &obj))
  * async(std::mem_fn(&Class::mem_fn, &obj))
- *
- */
+ **/
 template<class Fn, class... Args>
 auto async(Fn&& fn, Args&&... args) -> std::future<decltype(fn(args...))> {
     return GlobalThreadPool::instance()->commit(std::forward<Fn>(fn), std::forward<Args>(args)...);
@@ -27,9 +26,9 @@ auto async(Fn&& fn, Args&&... args) -> std::future<decltype(fn(args...))> {
 
 class async {
 public:
-    static void startup(int min_threads = DEFAULT_THREAD_POOL_MIN_THREAD_NUM,
-                 int max_threads = DEFAULT_THREAD_POOL_MAX_THREAD_NUM,
-                 int max_idle_ms = DEFAULT_THREAD_POOL_MAX_IDLE_TIME) {
+    static void startup(int min_threads = CPR_DEFAULT_THREAD_POOL_MIN_THREAD_NUM,
+                 int max_threads = CPR_DEFAULT_THREAD_POOL_MAX_THREAD_NUM,
+                 int max_idle_ms = CPR_DEFAULT_THREAD_POOL_MAX_IDLE_TIME) {
         GlobalThreadPool* gtp = GlobalThreadPool::instance();
         if (gtp->isStarted()) return;
         gtp->setMinThreadNum(min_threads);
