@@ -434,6 +434,20 @@ TEST(UrlEncodedPostTests, PostReflectPayloadTest) {
     EXPECT_EQ(200, response.status_code);
 }
 
+TEST(UrlEncodedPostTests, InjectMultipleHeadersTest) {
+    std::string uri = server->GetBaseUrl() + "/reflect_post.html";
+    std::string key_1 = "key_1";
+    std::string val_1 = "value_1";
+    std::string key_2 = "key_2";
+    std::string val_2 = "value_2";
+    cpr::Response response = cpr::Post(cpr::Url{uri}, cpr::Header{{key_1, val_1}}, cpr::Header{{key_2, val_2}});
+
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(val_1, response.header[key_1]);
+    EXPECT_EQ(val_2, response.header[key_2]);
+}
+
 TEST(PostRedirectTests, TempRedirectTest) {
     Url url{server->GetBaseUrl() + "/temporary_redirect.html"};
     Response response = cpr::Post(url, Payload{{"x", "5"}}, Header{{"RedirectLocation", "url_post.html"}});

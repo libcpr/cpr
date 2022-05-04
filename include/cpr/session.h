@@ -13,13 +13,11 @@
 #include "cpr/cookies.h"
 #include "cpr/cprtypes.h"
 #include "cpr/curlholder.h"
-#include "cpr/digest.h"
 #include "cpr/http_version.h"
 #include "cpr/interface.h"
 #include "cpr/limit_rate.h"
 #include "cpr/low_speed.h"
 #include "cpr/multipart.h"
-#include "cpr/ntlm.h"
 #include "cpr/parameters.h"
 #include "cpr/payload.h"
 #include "cpr/proxies.h"
@@ -55,7 +53,6 @@ class Session {
     void SetTimeout(const Timeout& timeout);
     void SetConnectTimeout(const ConnectTimeout& timeout);
     void SetAuth(const Authentication& auth);
-    void SetDigest(const Digest& auth);
     void SetUserAgent(const UserAgent& ua);
     void SetPayload(Payload&& payload);
     void SetPayload(const Payload& payload);
@@ -65,7 +62,6 @@ class Session {
     void SetProxyAuth(const ProxyAuthentication& proxy_auth);
     void SetMultipart(Multipart&& multipart);
     void SetMultipart(const Multipart& multipart);
-    void SetNTLM(const NTLM& auth);
     void SetRedirect(const Redirect& redirect);
     void SetCookies(const Cookies& cookies);
     void SetBody(Body&& body);
@@ -98,7 +94,6 @@ class Session {
 #if LIBCURL_VERSION_NUM >= 0x073D00
     void SetOption(const Bearer& auth);
 #endif
-    void SetOption(const Digest& auth);
     void SetOption(const UserAgent& ua);
     void SetOption(Payload&& payload);
     void SetOption(const Payload& payload);
@@ -109,7 +104,6 @@ class Session {
     void SetOption(const ProxyAuthentication& proxy_auth);
     void SetOption(Multipart&& multipart);
     void SetOption(const Multipart& multipart);
-    void SetOption(const NTLM& auth);
     void SetOption(const Redirect& redirect);
     void SetOption(const Cookies& cookies);
     void SetOption(Body&& body);
