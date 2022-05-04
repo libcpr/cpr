@@ -16,11 +16,9 @@ target_sources(cpr PRIVATE
     cpr/cprtypes.h
     cpr/curlholder.h
     cpr/curlholder.h
-    cpr/digest.h
     cpr/error.h
     cpr/limit_rate.h
     cpr/multipart.h
-    cpr/ntlm.h
     cpr/parameters.h
     cpr/payload.h
     cpr/proxies.h
