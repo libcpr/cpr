@@ -26,12 +26,9 @@ class Cookies {
 
     // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
     Cookies(bool p_encode = true) : encode(p_encode) {}
-    Cookies(const std::initializer_list<std::pair<const std::string, std::string>>& pairs,
-            bool p_encode = true)
-            : encode(p_encode), map_{pairs} {}
+    Cookies(const std::initializer_list<std::pair<const std::string, std::string>>& pairs, bool p_encode = true) : encode(p_encode), map_{pairs} {}
     // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
-    Cookies(const std::map<std::string, std::string>& map, bool p_encode = true)
-            : encode(p_encode), map_{map} {}
+    Cookies(const std::map<std::string, std::string>& map, bool p_encode = true) : encode(p_encode), map_{map} {}
 
     std::string& operator[](const std::string& key);
     std::string GetEncoded(const CurlHolder& holder) const;

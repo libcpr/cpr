@@ -9,10 +9,8 @@ namespace cpr {
 
 class Authentication {
   public:
-    Authentication(const std::string& username, const std::string& password)
-            : auth_string_{username + ":" + password} {}
-    Authentication(std::string&& username, std::string&& password)
-            : auth_string_{std::move(username) + ":" + std::move(password)} {}
+    Authentication(const std::string& username, const std::string& password) : auth_string_{username + ":" + password} {}
+    Authentication(std::string&& username, std::string&& password) : auth_string_{std::move(username) + ":" + std::move(password)} {}
     Authentication(const Authentication& other) = default;
     Authentication(Authentication&& old) noexcept = default;
     virtual ~Authentication() noexcept = default;

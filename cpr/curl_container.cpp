@@ -5,8 +5,7 @@
 
 namespace cpr {
 template <class T>
-CurlContainer<T>::CurlContainer(const std::initializer_list<T>& containerList)
-        : containerList_(containerList) {}
+CurlContainer<T>::CurlContainer(const std::initializer_list<T>& containerList) : containerList_(containerList) {}
 
 template <class T>
 void CurlContainer<T>::Add(const std::initializer_list<T>& containerList) {
