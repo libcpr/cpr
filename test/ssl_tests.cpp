@@ -20,11 +20,7 @@ TEST(SslTests, HelloWorldTestSimpel) {
 
     Url url{server->GetBaseUrl() + "/hello.html"};
     std::string baseDirPath = server->getBaseDirPath();
-    SslOptions sslOpts =
-            Ssl(ssl::CaPath{baseDirPath + "ca.cer"}, ssl::CertFile{baseDirPath + "client.cer"},
-                ssl::KeyFile{baseDirPath + "client.key"}, ssl::VerifyPeer{false},
-                ssl::PinnedPublicKey{baseDirPath + "server.pubkey"},
-                ssl::VerifyHost{false}, ssl::VerifyStatus{false});
+    SslOptions sslOpts = Ssl(ssl::CaPath{baseDirPath + "ca.cer"}, ssl::CertFile{baseDirPath + "client.cer"}, ssl::KeyFile{baseDirPath + "client.key"}, ssl::VerifyPeer{false}, ssl::PinnedPublicKey{baseDirPath + "server.pubkey"}, ssl::VerifyHost{false}, ssl::VerifyStatus{false});
     Response response = cpr::Get(url, sslOpts, Timeout{5000}, Verbose{});
     std::string expected_text = "Hello world!";
     EXPECT_EQ(expected_text, response.text);
@@ -39,11 +35,7 @@ TEST(SslTests, HelloWorldTestFull) {
 
     Url url{server->GetBaseUrl() + "/hello.html"};
     std::string baseDirPath = server->getBaseDirPath();
-    SslOptions sslOpts = Ssl(
-            ssl::TLSv1{}, ssl::ALPN{false}, ssl::NPN{false}, ssl::CaPath{baseDirPath + "ca.cer"},
-            ssl::CertFile{baseDirPath + "client.cer"}, ssl::KeyFile{baseDirPath + "client.key"},
-            ssl::PinnedPublicKey{baseDirPath + "server.pubkey"},
-            ssl::VerifyPeer{false}, ssl::VerifyHost{false}, ssl::VerifyStatus{false});
+    SslOptions sslOpts = Ssl(ssl::TLSv1{}, ssl::ALPN{false}, ssl::NPN{false}, ssl::CaPath{baseDirPath + "ca.cer"}, ssl::CertFile{baseDirPath + "client.cer"}, ssl::KeyFile{baseDirPath + "client.key"}, ssl::PinnedPublicKey{baseDirPath + "server.pubkey"}, ssl::VerifyPeer{false}, ssl::VerifyHost{false}, ssl::VerifyStatus{false});
     Response response = cpr::Get(url, sslOpts, Timeout{5000}, Verbose{});
     std::string expected_text = "Hello world!";
     EXPECT_EQ(expected_text, response.text);
@@ -58,10 +50,7 @@ TEST(SslTests, GetCertInfo) {
 
     Url url{server->GetBaseUrl() + "/hello.html"};
     std::string baseDirPath = server->getBaseDirPath();
-    SslOptions sslOpts =
-            Ssl(ssl::CaPath{baseDirPath + "ca.cer"}, ssl::CertFile{baseDirPath + "client.cer"},
-                ssl::KeyFile{baseDirPath + "client.key"}, ssl::VerifyPeer{false},
-                ssl::VerifyHost{false}, ssl::VerifyStatus{false});
+    SslOptions sslOpts = Ssl(ssl::CaPath{baseDirPath + "ca.cer"}, ssl::CertFile{baseDirPath + "client.cer"}, ssl::KeyFile{baseDirPath + "client.key"}, ssl::VerifyPeer{false}, ssl::VerifyHost{false}, ssl::VerifyStatus{false});
     Response response = cpr::Get(url, sslOpts, Timeout{5000}, Verbose{});
     std::string expected_text = "Hello world!";
     EXPECT_EQ(expected_text, response.text);
@@ -99,8 +88,7 @@ int main(int argc, char** argv) {
     std::string baseDirPath = getBasePath(argv[0]);
     std::string serverCertPath = baseDirPath + "server.cer";
     std::string serverKeyPath = baseDirPath + "server.key";
-    server = new HttpsServer(std::move(baseDirPath), std::move(serverCertPath),
-                             std::move(serverKeyPath));
+    server = new HttpsServer(std::move(baseDirPath), std::move(serverCertPath), std::move(serverKeyPath));
     ::testing::AddGlobalTestEnvironment(server);
 
     return RUN_ALL_TESTS();

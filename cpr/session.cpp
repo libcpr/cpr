@@ -491,6 +491,7 @@ void Session::Impl::SetSslOptions(const SslOptions& options) {
         if (!options.key_pass.empty()) {
             curl_easy_setopt(curl_->handle, CURLOPT_KEYPASSWD, options.key_pass.c_str());
         }
+#if SUPPORT_CURLOPT_SSLKEY_BLOB
     } else if (!options.key_blob.empty()) {
         std::string key_blob(options.key_blob);
         curl_blob blob{};
@@ -503,6 +504,7 @@ void Session::Impl::SetSslOptions(const SslOptions& options) {
         if (!options.key_pass.empty()) {
             curl_easy_setopt(curl_->handle, CURLOPT_KEYPASSWD, options.key_pass.c_str());
         }
+#endif
     }
     if (!options.pinned_public_key.empty()) {
         curl_easy_setopt(curl_->handle, CURLOPT_PINNEDPUBLICKEY, options.pinned_public_key.c_str());
