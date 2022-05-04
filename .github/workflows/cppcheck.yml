@@ -1,6 +1,6 @@
 name: "Test cppcheck"
 
-on: [push]
+on: [push, pull_request]
 
 jobs:
   cppcheck:
