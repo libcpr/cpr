@@ -18,8 +18,12 @@ ThreadPool::~ThreadPool() {
 int ThreadPool::start(int start_threads) {
     if (status != STOP) { return -1; }
     status = RUNNING;
-    if (start_threads < min_thread_num) start_threads = min_thread_num;
-    if (start_threads > max_thread_num) start_threads = max_thread_num;
+    if (start_threads < min_thread_num) {
+        start_threads = min_thread_num;
+    }
+    if (start_threads > max_thread_num) {
+        start_threads = max_thread_num;
+    }
     for (int i = 0; i < start_threads; ++i) {
         createThread();
     }
@@ -56,7 +60,7 @@ int ThreadPool::resume() {
 }
 
 int ThreadPool::wait() {
-    while (1) {
+    while (true) {
         if (status == STOP || (tasks.empty() && idle_thread_num == cur_thread_num)) {
             break;
         }
@@ -66,7 +70,7 @@ int ThreadPool::wait() {
 }
 
 bool ThreadPool::createThread() {
-    if (cur_thread_num >= max_thread_num) return false;
+    if (cur_thread_num >= max_thread_num) { return false; }
     std::thread* thread = new std::thread([this] {
         while (status != STOP) {
             while (status == PAUSE) {
@@ -79,7 +83,7 @@ bool ThreadPool::createThread() {
                 task_cond.wait_for(locker, std::chrono::milliseconds(max_idle_time), [this]() {
                     return status == STOP || !tasks.empty();
                 });
-                if (status == STOP) return;
+                if (status == STOP) { return; }
                 if (tasks.empty()) {
                     if (cur_thread_num > min_thread_num) {
                         delThread(std::this_thread::get_id());
