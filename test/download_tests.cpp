@@ -68,6 +68,21 @@ TEST(DownloadTests, RangeTestUpperLimit) {
     EXPECT_EQ(download_size, response.downloaded_bytes);
 }
 
+TEST(DownloadTests, RangeTestLowerAndUpperLimit) {
+    const int64_t download_size = 2;
+    const int64_t start_from = 2;
+    const int64_t finish_at = start_from + download_size - 1;
+    cpr::Url url{server->GetBaseUrl() + "/download_gzip.html"};
+    cpr::Session session;
+    session.SetUrl(url);
+    session.SetHeader(cpr::Header{{"Accept-Encoding", "gzip"}});
+    session.SetRange(cpr::Range{start_from, finish_at});
+    cpr::Response response = session.Download(cpr::WriteCallback{write_data, 0});
+    EXPECT_EQ(206, response.status_code);
+    EXPECT_EQ(cpr::ErrorCode::OK, response.error.code);
+    EXPECT_EQ(download_size, response.downloaded_bytes);
+}
+
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
     ::testing::AddGlobalTestEnvironment(server);
