@@ -349,6 +349,34 @@ TEST(ParameterTests, ParameterMultipleTest) {
     EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
+TEST(FullRequestUrlTest, GetFullRequestUrlNoParametersTest) {
+    Url url{server->GetBaseUrl() + "/hello.html"};
+    Session session;
+    session.SetUrl(url);
+    std::string expected_text{server->GetBaseUrl() + "/hello.html"};
+    EXPECT_EQ(expected_text, session.GetFullRequestUrl());
+}
+
+TEST(FullRequestUrlTest, GetFullRequestUrlOneParameterTest) {
+    Url url{server->GetBaseUrl() + "/hello.html"};
+    Session session;
+    session.SetUrl(url);
+    Parameters parameters{{"hello", "world"}};
+    session.SetParameters(parameters);
+    std::string expected_text{server->GetBaseUrl() + "/hello.html" + "?hello=world"};
+    EXPECT_EQ(expected_text, session.GetFullRequestUrl());
+}
+
+TEST(FullRequestUrlTest, GetFullRequestUrlMultipleParametersTest) {
+    Url url{server->GetBaseUrl() + "/hello.html"};
+    Session session;
+    session.SetUrl(url);
+    Parameters parameters{{"hello", "world"}, {"key", "value"}};
+    session.SetParameters(parameters);
+    std::string expected_text{server->GetBaseUrl() + "/hello.html" + "?hello=world&key=value"};
+    EXPECT_EQ(expected_text, session.GetFullRequestUrl());
+}
+
 TEST(TimeoutTests, SetTimeoutTest) {
     Url url{server->GetBaseUrl() + "/hello.html"};
     Session session;
