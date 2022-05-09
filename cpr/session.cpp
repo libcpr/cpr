@@ -81,6 +81,7 @@ class Session::Impl {
     Response Put();
 
     std::shared_ptr<CurlHolder> GetCurlHolder();
+    std::string GetFullRequestUrl();
 
     void PrepareDelete();
     void PrepareGet();
@@ -708,6 +709,11 @@ std::shared_ptr<CurlHolder> Session::Impl::GetCurlHolder() {
     return curl_;
 }
 
+std::string Session::Impl::GetFullRequestUrl() {
+    const std::string parametersContent = parameters_.GetContent(*curl_);
+    return url_.str() + (parametersContent.empty() ? "" : "?") + parametersContent;
+}
+
 Response Session::Impl::makeDownloadRequest() {
     assert(curl_->handle);
 
@@ -928,6 +934,7 @@ Response Session::Post() { return pimpl_->Post(); }
 Response Session::Put() { return pimpl_->Put(); }
 
 std::shared_ptr<CurlHolder> Session::GetCurlHolder() { return pimpl_->GetCurlHolder(); }
+std::string Session::GetFullRequestUrl() { return pimpl_->GetFullRequestUrl(); }
 
 void Session::PrepareDelete() { return pimpl_->PrepareDelete(); }
 void Session::PrepareGet() { return pimpl_->PrepareGet(); }

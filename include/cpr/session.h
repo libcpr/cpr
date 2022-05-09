@@ -146,6 +146,7 @@ class Session {
     Response Put();
 
     std::shared_ptr<CurlHolder> GetCurlHolder();
+    std::string GetFullRequestUrl();
 
     void PrepareDelete();
     void PrepareGet();
