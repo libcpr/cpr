@@ -11,6 +11,10 @@ class Range {
 
     std::int64_t resume_from = 0;
     std::int64_t finish_at = 0;
+
+    const std::string str() const {
+        return std::to_string(resume_from) + "-" + std::to_string(finish_at);
+    }
 };
 
 } // namespace cpr

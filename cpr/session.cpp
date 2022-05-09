@@ -556,9 +556,7 @@ void Session::Impl::SetSslOptions(const SslOptions& options) {
 }
 
 void Session::Impl::SetRange(const Range& range) {
-    curl_off_t resume_from = range.resume_from;
-    curl_off_t finish_at = range.finish_at;
-    std::string range_str = std::to_string(resume_from) + "-" + std::to_string(finish_at);
+    std::string range_str = range.str();
     curl_easy_setopt(curl_->handle, CURLOPT_RANGE, range_str.c_str());
 }
 
