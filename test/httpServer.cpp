@@ -615,8 +615,8 @@ void HttpServer::OnRequestDownloadGzip(mg_connection* conn, http_message* msg) {
     } else {
         std::string encoding;
         std::string range;
-        int64_t srange = 0;
-        int64_t erange = -1;
+        std::vector<std::pair<int64_t, int64_t>> ranges;
+
         for (size_t i = 0; i < sizeof(msg->header_names) / sizeof(mg_str); i++) {
             if (!msg->header_names[i].p) {
                 continue;
@@ -631,67 +631,125 @@ void HttpServer::OnRequestDownloadGzip(mg_connection* conn, http_message* msg) {
         }
         if (encoding.find("gzip") == std::string::npos) {
             mg_http_send_error(conn, 405, ("Invalid encoding: " + encoding).c_str());
-        } else {
-            if (!range.empty()) {
-                std::string::size_type eq_pos = range.find('=');
-                if (eq_pos == std::string::npos) {
-                    mg_http_send_error(conn, 405, ("Invalid range header: " + range).c_str());
-                    return;
-                }
-                std::string::size_type sep_pos = range.find('-', eq_pos + 1);
+            return;
+        }
+        if (!range.empty()) {
+            std::string::size_type eq_pos = range.find('=');
+            if (eq_pos == std::string::npos) {
+                mg_http_send_error(conn, 405, ("Invalid range header: " + range).c_str());
+                return;
+            }
+
+            int64_t current_start_index = eq_pos + 1;
+            int64_t current_end_index;
+            std::string::size_type sep_pos;
+            bool more_ranges_exists{true};
+
+            while (more_ranges_exists) {
+                current_end_index = std::min(range.find(',', current_start_index) - 1, range.length() - 1);
+                int64_t current_srange = 0;
+                int64_t current_erange = -1;
+
+                sep_pos = range.find('-', current_start_index);
                 if (sep_pos == std::string::npos) {
                     mg_http_send_error(conn, 405, ("Invalid range format " + range).c_str());
                     return;
                 }
-                if (sep_pos != std::string::npos) {
-                    if (sep_pos == eq_pos + 1) {
-                        mg_http_send_error(conn, 405, ("Suffix ranage not supported: " + range).c_str());
+                if (sep_pos == eq_pos + 1) {
+                    mg_http_send_error(conn, 405, ("Suffix ranage not supported: " + range).c_str());
+                    return;
+                }
+
+                current_srange = std::strtoll(range.substr(current_start_index, sep_pos - 1).c_str(), nullptr, 10);
+                if (current_srange == LLONG_MAX || current_srange == LLONG_MIN) {
+                    mg_http_send_error(conn, 405, ("Start range is invalid number: " + range).c_str());
+                    return;
+                }
+
+                std::string er_str = range.substr(sep_pos + 1, current_end_index);
+                if (!er_str.empty()) {
+                    current_erange = std::strtoll(er_str.c_str(), nullptr, 10);
+                    if (current_erange == 0 || current_erange == LLONG_MAX || current_erange == LLONG_MIN) {
+                        mg_http_send_error(conn, 405, ("End range is invalid number: " + range).c_str());
                         return;
                     }
-                    srange = std::strtoll(range.substr(eq_pos + 1, sep_pos - eq_pos - 1).c_str(), nullptr, 10);
-                    if (srange == LLONG_MAX || srange == LLONG_MIN) {
-                        mg_http_send_error(conn, 405, ("Start range is invalid number: " + range).c_str());
-                        return;
-                    }
-                    std::string::size_type coma_pos = range.find(',', sep_pos + 1);
-                    std::string er_str = range.substr(sep_pos + 1, coma_pos);
-                    if (!er_str.empty()) {
-                        erange = std::strtoll(er_str.c_str(), nullptr, 10);
-                        if (erange == 0 || erange == LLONG_MAX || erange == LLONG_MIN) {
-                            mg_http_send_error(conn, 405, ("End range is invalid number: " + range).c_str());
-                            return;
-                        }
+                }
+
+                ranges.push_back(std::pair<int64_t, int64_t>{current_srange, current_erange});
+
+                if (current_end_index >= (int64_t)(range.length() - 1)) {
+                    more_ranges_exists = false;
+                } else {
+                    current_start_index = current_end_index + 2;
+                }
+            }
+        }
+
+        std::string response = "Download!";
+        int status_code = 200;
+        std::string headers;
+
+        if (!ranges.empty()) {
+            std::vector<std::string> responses;
+            std::int64_t resp_len = response.length();
+            int64_t srange;
+            int64_t erange;
+
+            for (std::pair<int64_t, int64_t> range : ranges) {
+                srange = range.first;
+                erange = range.second;
+
+                if (srange >= 0) {
+                    if (srange >= resp_len) {
+                        responses.push_back("");
+                    } else if (erange == -1 || erange >= resp_len) {
+                        responses.push_back(response.substr(srange));
+                    } else {
+                        responses.push_back(response.substr(srange, erange - srange + 1));
                     }
                 }
             }
-            std::string response = "Download!";
-            int status_code = 200;
-            if (srange >= 0) {
-                int64_t resp_len = response.length();
-                if (srange >= resp_len) {
-                    response.clear();
-                    status_code = 206;
-                } else if (erange == -1 || erange >= resp_len) {
-                    response = response.substr(srange);
+
+            if (responses.size() > 1) {
+                std::string boundary = "3d6b6a416f9b5";
+                status_code = 206;
+                response.clear();
+
+                for (size_t i{0}; i < responses.size(); ++i) {
+                    response += "--" + boundary + "\n";
+                    response += "Content-Range: bytes " + std::to_string(ranges.at(i).first) + "-";
+                    if (ranges.at(i).second > 0) {
+                        response += std::to_string(ranges.at(i).second);
+                    } else {
+                        response += std::to_string(responses.at(i).length());
+                    }
+                    response += "/" + std::to_string(responses.at(i).length()) + "\n\n";
+                    response += responses.at(i) + "\n";
+                }
+
+                response += "--" + boundary + "--";
+            } else {
+                if (ranges.at(0).second == -1 || ranges.at(0).second >= resp_len) {
                     status_code = srange > 0 ? 206 : 200;
                 } else {
-                    response = response.substr(srange, erange - srange + 1);
                     status_code = 206;
                 }
-            }
-            std::string headers;
-            if (status_code == 206) {
-                headers = "Content-Range: bytes " + std::to_string(srange) + "-";
-                if (erange > 0) {
-                    headers += std::to_string(erange);
-                } else {
-                    headers += std::to_string(response.length());
+                response = responses.at(0);
+
+                if (status_code == 206) {
+                    headers = "Content-Range: bytes " + std::to_string(ranges.at(0).first) + "-";
+                    if (ranges.at(0).second > 0) {
+                        headers += std::to_string(ranges.at(0).second);
+                    } else {
+                        headers += std::to_string(response.length());
+                    }
+                    headers += "/" + std::to_string(response.length());
                 }
-                headers += "/" + std::to_string(response.length());
             }
-            mg_send_head(conn, status_code, static_cast<int>(response.length()), headers.c_str());
-            mg_send(conn, response.c_str(), static_cast<int>(response.length()));
         }
+
+        mg_send_head(conn, status_code, static_cast<int>(response.length()), headers.c_str());
+        mg_send(conn, response.c_str(), static_cast<int>(response.length()));
     }
 }
 
