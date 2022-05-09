@@ -79,6 +79,7 @@ class Session {
     void SetInterface(const Interface& iface);
     void SetHttpVersion(const HttpVersion& version);
     void SetRange(const Range& range);
+    void SetMultiRange(const MultiRange& multi_range);
     void SetReserveSize(const ReserveSize& reserve_size);
 
     // Used in templated functions
@@ -121,6 +122,7 @@ class Session {
     void SetOption(const Interface& iface);
     void SetOption(const HttpVersion& version);
     void SetOption(const Range& range);
+    void SetOption(const MultiRange& multi_range);
     void SetOption(const ReserveSize& reserve_size);
 
     cpr_off_t GetDownloadFileLength();
