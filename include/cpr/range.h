@@ -17,6 +17,22 @@ class Range {
     }
 };
 
+class MultiRange {
+  public:
+    MultiRange(std::initializer_list<Range> rs) : ranges{rs} {}
+
+    const std::string str() const {
+        std::string multi_range_string{};
+        for (Range range : ranges) {
+            multi_range_string += ((multi_range_string.empty()) ? "" : ",") + range.str();
+        }
+        return multi_range_string;
+    }
+
+  private:
+    std::vector<Range> ranges;
+}; // namespace cpr
+
 } // namespace cpr
 
 #endif
