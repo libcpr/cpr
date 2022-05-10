@@ -679,9 +679,9 @@ void HttpServer::OnRequestDownloadGzip(mg_connection* conn, http_message* msg) {
                 if (current_end_index >= (int64_t)(range.length() - 1)) {
                     more_ranges_exists = false;
                 } else {
-                    // Multiple ranges are separated by ','
+                    // Multiple ranges are separated by ', '
                     more_ranges_exists = true;
-                    current_start_index = current_end_index + 2;
+                    current_start_index = current_end_index + 3;
                 }
             } while (more_ranges_exists);
         }

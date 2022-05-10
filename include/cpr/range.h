@@ -26,7 +26,7 @@ class MultiRange {
     const std::string str() const {
         std::string multi_range_string{};
         for (Range range : ranges) {
-            multi_range_string += ((multi_range_string.empty()) ? "" : ",") + range.str();
+            multi_range_string += ((multi_range_string.empty()) ? "" : ", ") + range.str();
         }
         return multi_range_string;
     }
