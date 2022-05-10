@@ -13,7 +13,9 @@ class Range {
     std::int64_t finish_at = 0;
 
     const std::string str() const {
-        return std::to_string(resume_from) + "-" + std::to_string(finish_at);
+        std::string from_str = (resume_from == -1) ? "" : std::to_string(resume_from);
+        std::string to_str = (finish_at == -1) ? "" : std::to_string(finish_at);
+        return from_str + "-" + to_str;
     }
 };
 
