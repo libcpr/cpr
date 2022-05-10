@@ -642,11 +642,19 @@ void HttpServer::OnRequestDownloadGzip(mg_connection* conn, http_message* msg) {
 
             int64_t current_start_index = eq_pos + 1;
             int64_t current_end_index;
+            std::string::size_type range_len = range.length();
+            std::string::size_type com_pos;
             std::string::size_type sep_pos;
             bool more_ranges_exists;
 
             do {
-                current_end_index = std::min(range.find(',', current_start_index) - 1, range.length() - 1);
+                com_pos = range.find(',', current_start_index);
+                if (com_pos < range_len) {
+                    current_end_index = com_pos - 1;
+                } else {
+                    current_end_index = range_len - 1;
+                }
+
                 std::pair<int64_t, int64_t> current_range{0, -1};
 
                 sep_pos = range.find('-', current_start_index);
