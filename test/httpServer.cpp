@@ -643,46 +643,47 @@ void HttpServer::OnRequestDownloadGzip(mg_connection* conn, http_message* msg) {
             int64_t current_start_index = eq_pos + 1;
             int64_t current_end_index;
             std::string::size_type sep_pos;
-            bool more_ranges_exists{true};
+            bool more_ranges_exists;
 
-            while (more_ranges_exists) {
+            do {
                 current_end_index = std::min(range.find(',', current_start_index) - 1, range.length() - 1);
-                int64_t current_srange = 0;
-                int64_t current_erange = -1;
+                std::pair<int64_t, int64_t> current_range{0, -1};
 
                 sep_pos = range.find('-', current_start_index);
                 if (sep_pos == std::string::npos) {
-                    mg_http_send_error(conn, 405, ("Invalid range format " + range).c_str());
+                    mg_http_send_error(conn, 405, ("Invalid range format " + range.substr(current_start_index, current_end_index)).c_str());
                     return;
                 }
                 if (sep_pos == eq_pos + 1) {
-                    mg_http_send_error(conn, 405, ("Suffix ranage not supported: " + range).c_str());
+                    mg_http_send_error(conn, 405, ("Suffix ranage not supported: " + range.substr(current_start_index, current_end_index)).c_str());
                     return;
                 }
 
-                current_srange = std::strtoll(range.substr(current_start_index, sep_pos - 1).c_str(), nullptr, 10);
-                if (current_srange == LLONG_MAX || current_srange == LLONG_MIN) {
-                    mg_http_send_error(conn, 405, ("Start range is invalid number: " + range).c_str());
+                current_range.first = std::strtoll(range.substr(current_start_index, sep_pos - 1).c_str(), nullptr, 10);
+                if (current_range.first == LLONG_MAX || current_range.first == LLONG_MIN) {
+                    mg_http_send_error(conn, 405, ("Start range is invalid number: " + range.substr(current_start_index, current_end_index)).c_str());
                     return;
                 }
 
                 std::string er_str = range.substr(sep_pos + 1, current_end_index);
                 if (!er_str.empty()) {
-                    current_erange = std::strtoll(er_str.c_str(), nullptr, 10);
-                    if (current_erange == 0 || current_erange == LLONG_MAX || current_erange == LLONG_MIN) {
-                        mg_http_send_error(conn, 405, ("End range is invalid number: " + range).c_str());
+                    current_range.second = std::strtoll(er_str.c_str(), nullptr, 10);
+                    if (current_range.second == 0 || current_range.second == LLONG_MAX || current_range.second == LLONG_MIN) {
+                        mg_http_send_error(conn, 405, ("End range is invalid number: " + range.substr(current_start_index, current_end_index)).c_str());
                         return;
                     }
                 }
 
-                ranges.push_back(std::pair<int64_t, int64_t>{current_srange, current_erange});
+                ranges.push_back(current_range);
 
                 if (current_end_index >= (int64_t)(range.length() - 1)) {
                     more_ranges_exists = false;
                 } else {
+                    // Multiple ranges are separated by ','
+                    more_ranges_exists = true;
                     current_start_index = current_end_index + 2;
                 }
-            }
+            } while (more_ranges_exists);
         }
 
         std::string response = "Download!";
@@ -690,27 +691,22 @@ void HttpServer::OnRequestDownloadGzip(mg_connection* conn, http_message* msg) {
         std::string headers;
 
         if (!ranges.empty()) {
+            // Create response parts
             std::vector<std::string> responses;
-            std::int64_t resp_len = response.length();
-            int64_t srange;
-            int64_t erange;
-
             for (std::pair<int64_t, int64_t> range : ranges) {
-                srange = range.first;
-                erange = range.second;
-
-                if (srange >= 0) {
-                    if (srange >= resp_len) {
+                if (range.first >= 0) {
+                    if (range.first >= (int64_t) response.length()) {
                         responses.push_back("");
-                    } else if (erange == -1 || erange >= resp_len) {
-                        responses.push_back(response.substr(srange));
+                    } else if (range.second == -1 || range.second >= (int64_t) response.length()) {
+                        responses.push_back(response.substr(range.first));
                     } else {
-                        responses.push_back(response.substr(srange, erange - srange + 1));
+                        responses.push_back(response.substr(range.first, range.second - range.first + 1));
                     }
                 }
             }
 
             if (responses.size() > 1) {
+                // Create mime multipart response
                 std::string boundary = "3d6b6a416f9b5";
                 status_code = 206;
                 response.clear();
@@ -726,11 +722,10 @@ void HttpServer::OnRequestDownloadGzip(mg_connection* conn, http_message* msg) {
                     response += "/" + std::to_string(responses.at(i).length()) + "\n\n";
                     response += responses.at(i) + "\n";
                 }
-
                 response += "--" + boundary + "--";
             } else {
-                if (ranges.at(0).second == -1 || ranges.at(0).second >= resp_len) {
-                    status_code = srange > 0 ? 206 : 200;
+                if (ranges.at(0).second == -1 || ranges.at(0).second >= (int64_t) response.length()) {
+                    status_code = ranges.at(0).first > 0 ? 206 : 200;
                 } else {
                     status_code = 206;
                 }
