@@ -66,6 +66,7 @@ class Session::Impl {
     void SetInterface(const Interface& iface);
     void SetHttpVersion(const HttpVersion& version);
     void SetRange(const Range& range);
+    void SetMultiRange(const MultiRange& multi_range);
     void SetReserveSize(const ReserveSize& reserve_size);
 
     cpr_off_t GetDownloadFileLength();
@@ -556,12 +557,13 @@ void Session::Impl::SetSslOptions(const SslOptions& options) {
 }
 
 void Session::Impl::SetRange(const Range& range) {
-    curl_off_t resume_from = range.resume_from;
-    curl_off_t finish_at = range.finish_at;
-    std::string range_str = std::to_string(resume_from) + "-" + std::to_string(finish_at);
+    std::string range_str = range.str();
     curl_easy_setopt(curl_->handle, CURLOPT_RANGE, range_str.c_str());
-    curl_easy_setopt(curl_->handle, CURLOPT_RESUME_FROM_LARGE, resume_from);
-    curl_easy_setopt(curl_->handle, CURLOPT_INFILESIZE_LARGE, finish_at);
+}
+
+void Session::Impl::SetMultiRange(const MultiRange& multi_range) {
+    std::string multi_range_str = multi_range.str();
+    curl_easy_setopt(curl_->handle, CURLOPT_RANGE, multi_range_str.c_str());
 }
 
 void Session::Impl::SetReserveSize(const ReserveSize& reserve_size) {
@@ -879,6 +881,7 @@ void Session::SetVerbose(const Verbose& verbose) { pimpl_->SetVerbose(verbose); 
 void Session::SetInterface(const Interface& iface) { pimpl_->SetInterface(iface); }
 void Session::SetHttpVersion(const HttpVersion& version) { pimpl_->SetHttpVersion(version); }
 void Session::SetRange(const Range& range) { pimpl_->SetRange(range); }
+void Session::SetMultiRange(const MultiRange& multi_range) { pimpl_->SetMultiRange(multi_range); }
 void Session::SetReserveSize(const ReserveSize& reserve_size) { pimpl_->SetReserveSize(reserve_size); }
 void Session::SetOption(const ReadCallback& read) { pimpl_->SetReadCallback(read); }
 void Session::SetOption(const HeaderCallback& header) { pimpl_->SetHeaderCallback(header); }
@@ -919,6 +922,7 @@ void Session::SetOption(const SslOptions& options) { pimpl_->SetSslOptions(optio
 void Session::SetOption(const Interface& iface) { pimpl_->SetInterface(iface); }
 void Session::SetOption(const HttpVersion& version) { pimpl_->SetHttpVersion(version); }
 void Session::SetOption(const Range& range) { pimpl_->SetRange(range); }
+void Session::SetOption(const MultiRange& multi_range) { pimpl_->SetMultiRange(multi_range); }
 void Session::SetOption(const ReserveSize& reserve_size) { pimpl_->SetReserveSize(reserve_size.size); }
 
 cpr_off_t Session::GetDownloadFileLength() { return pimpl_->GetDownloadFileLength(); }
