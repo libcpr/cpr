@@ -95,7 +95,7 @@ class Session::Impl {
     void PreparePut();
     Response Complete(CURLcode curl_error);
 
-    void AddInterceptor(std::shared_ptr<Interceptor> pinterceptor);
+    void AddInterceptor(const std::shared_ptr<Interceptor>& pinterceptor);
     Response makeRequest();
     void prepareCommon();
 
@@ -855,7 +855,7 @@ Response Session::Impl::Complete(CURLcode curl_error) {
     return Response(curl_, std::move(response_string_), std::move(header_string_), std::move(cookies), Error(curl_error, std::move(errorMsg)));
 }
 
-void Session::Impl::AddInterceptor(std::shared_ptr<Interceptor> pinterceptor) {
+void Session::Impl::AddInterceptor(const std::shared_ptr<Interceptor>& pinterceptor) {
     interceptors.push(pinterceptor);
 }
 
@@ -966,7 +966,7 @@ void Session::PreparePost() { return pimpl_->PreparePost(); }
 void Session::PreparePut() { return pimpl_->PreparePut(); }
 Response Session::Complete( CURLcode curl_error ) { return pimpl_->Complete(curl_error); }
 
-void Session::AddInterceptor(const std::shared_ptr<Interceptor> pinterceptor) { return pimpl_->AddInterceptor(std::move(pinterceptor)); }
+void Session::AddInterceptor(const std::shared_ptr<Interceptor>& pinterceptor) { return pimpl_->AddInterceptor(pinterceptor); }
 // clang-format on
 
 Response Session::proceed() {

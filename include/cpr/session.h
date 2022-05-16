@@ -161,7 +161,7 @@ class Session {
     void PreparePut();
     Response Complete(CURLcode curl_error);
 
-    void AddInterceptor(const std::shared_ptr<Interceptor> pinterceptor);
+    void AddInterceptor(const std::shared_ptr<Interceptor>& pinterceptor);
 
   private:
     class Impl;
