@@ -26,7 +26,7 @@ constexpr long OFF = 0L;
 
 class Session::Impl {
   public:
-    Impl(Session* psession);
+    explicit Impl(Session* psession);
 
     void SetUrl(const Url& url);
     void SetParameters(const Parameters& parameters);
