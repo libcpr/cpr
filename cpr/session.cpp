@@ -836,10 +836,10 @@ Response Session::Impl::makeRequest() {
         std::shared_ptr<Interceptor> interceptor = interceptors.front();
         interceptors.pop();
         return interceptor->intercept(psession_);
-    } else {
-        CURLcode curl_error = curl_easy_perform(curl_->handle);
-        return Complete(curl_error);
     }
+
+    CURLcode curl_error = curl_easy_perform(curl_->handle);
+    return Complete(curl_error);
 }
 
 Response Session::Impl::Complete(CURLcode curl_error) {
