@@ -966,7 +966,7 @@ void Session::PreparePost() { return pimpl_->PreparePost(); }
 void Session::PreparePut() { return pimpl_->PreparePut(); }
 Response Session::Complete( CURLcode curl_error ) { return pimpl_->Complete(curl_error); }
 
-void Session::AddInterceptor(std::shared_ptr<Interceptor> pinterceptor) { return pimpl_->AddInterceptor(pinterceptor); }
+void Session::AddInterceptor(std::shared_ptr<Interceptor> pinterceptor) { return pimpl_->AddInterceptor(std::move(pinterceptor)); }
 // clang-format on
 
 Response Session::proceed() {
