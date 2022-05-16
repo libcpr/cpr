@@ -5,12 +5,14 @@
 #include <cstring>
 #include <fstream>
 #include <functional>
+#include <queue>
 #include <stdexcept>
 #include <string>
 
 #include <curl/curl.h>
 
 #include "cpr/cprtypes.h"
+#include "cpr/interceptor.h"
 #include "cpr/util.h"
 
 
@@ -24,7 +26,7 @@ constexpr long OFF = 0L;
 
 class Session::Impl {
   public:
-    Impl();
+    Impl(Session* psession);
 
     void SetUrl(const Url& url);
     void SetParameters(const Parameters& parameters);
@@ -93,6 +95,10 @@ class Session::Impl {
     void PreparePut();
     Response Complete(CURLcode curl_error);
 
+    void AddInterceptor(std::shared_ptr<Interceptor> pinterceptor);
+    Response makeRequest();
+    void prepareCommon();
+
   private:
     void SetHeaderInternal();
     bool hasBodyOrPayload_{false};
@@ -117,13 +123,13 @@ class Session::Impl {
     size_t response_string_reserve_size_{0};
     std::string response_string_;
     std::string header_string_;
+    std::queue<std::shared_ptr<Interceptor>> interceptors;
+    Session* psession_;
 
     Response makeDownloadRequest();
-    Response makeRequest();
-    void prepareCommon();
 };
 
-Session::Impl::Impl() : curl_(new CurlHolder()) {
+Session::Impl::Impl(Session* psession) : curl_(new CurlHolder()), psession_{psession} {
     // Set up some sensible defaults
     curl_version_info_data* version_info = curl_version_info(CURLVERSION_NOW);
     std::string version = "curl/" + std::string{version_info->version};
@@ -825,8 +831,15 @@ void Session::Impl::prepareCommon() {
 }
 
 Response Session::Impl::makeRequest() {
-    CURLcode curl_error = curl_easy_perform(curl_->handle);
-    return Complete(curl_error);
+    if (!interceptors.empty()) {
+        // At least one interceptor exists -> Ececute its intercept function
+        std::shared_ptr<Interceptor> interceptor = interceptors.front();
+        interceptors.pop();
+        return interceptor->intercept(psession_);
+    } else {
+        CURLcode curl_error = curl_easy_perform(curl_->handle);
+        return Complete(curl_error);
+    }
 }
 
 Response Session::Impl::Complete(CURLcode curl_error) {
@@ -842,8 +855,12 @@ Response Session::Impl::Complete(CURLcode curl_error) {
     return Response(curl_, std::move(response_string_), std::move(header_string_), std::move(cookies), Error(curl_error, std::move(errorMsg)));
 }
 
+void Session::Impl::AddInterceptor(std::shared_ptr<Interceptor> pinterceptor) {
+    interceptors.push(pinterceptor);
+}
+
 // clang-format off
-Session::Session() : pimpl_(new Impl()) {}
+Session::Session() : pimpl_(new Impl(this)) {}
 Session::Session(Session&& /*old*/) noexcept = default;
 Session::~Session() = default;
 Session& Session::operator=(Session&& old) noexcept = default;
@@ -949,5 +966,12 @@ void Session::PreparePost() { return pimpl_->PreparePost(); }
 void Session::PreparePut() { return pimpl_->PreparePut(); }
 Response Session::Complete( CURLcode curl_error ) { return pimpl_->Complete(curl_error); }
 
+void Session::AddInterceptor(std::shared_ptr<Interceptor> pinterceptor) { return pimpl_->AddInterceptor(pinterceptor); }
 // clang-format on
+
+Response Session::proceed() {
+    pimpl_->prepareCommon();
+    return pimpl_->makeRequest();
+}
+
 } // namespace cpr

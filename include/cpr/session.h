@@ -34,6 +34,8 @@
 
 namespace cpr {
 
+class Interceptor;
+
 class Session {
   public:
     Session();
@@ -159,9 +161,14 @@ class Session {
     void PreparePut();
     Response Complete(CURLcode curl_error);
 
+    void AddInterceptor(std::shared_ptr<Interceptor> pinterceptor);
+
   private:
     class Impl;
     std::unique_ptr<Impl> pimpl_;
+
+    Response proceed();
+    friend Interceptor;
 };
 
 } // namespace cpr
