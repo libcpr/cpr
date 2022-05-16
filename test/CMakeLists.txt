@@ -36,6 +36,7 @@ macro(add_cpr_test _TEST_NAME)
     endif()
 endmacro()
 
+add_cpr_test(interceptor)
 add_cpr_test(get)
 add_cpr_test(post)
 add_cpr_test(session)
