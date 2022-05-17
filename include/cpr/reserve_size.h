@@ -7,8 +7,7 @@ namespace cpr {
 
 class ReserveSize {
   public:
-      ReserveSize(const size_t _size)
-            : size(_size) {}
+    ReserveSize(const size_t _size) : size(_size) {}
 
     size_t size = 0;
 };

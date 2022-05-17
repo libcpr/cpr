@@ -1,11 +1,7 @@
 #include "cpr/response.h"
 
 namespace cpr {
-Response::Response(std::shared_ptr<CurlHolder> curl, std::string&& p_text,
-                   std::string&& p_header_string, Cookies&& p_cookies = Cookies{},
-                   Error&& p_error = Error{})
-        : curl_(std::move(curl)), text(std::move(p_text)), cookies(std::move(p_cookies)),
-          error(std::move(p_error)), raw_header(std::move(p_header_string)) {
+Response::Response(std::shared_ptr<CurlHolder> curl, std::string&& p_text, std::string&& p_header_string, Cookies&& p_cookies = Cookies{}, Error&& p_error = Error{}) : curl_(std::move(curl)), text(std::move(p_text)), cookies(std::move(p_cookies)), error(std::move(p_error)), raw_header(std::move(p_header_string)) {
     header = cpr::util::parseHeader(raw_header, &status_line, &reason);
     assert(curl_);
     assert(curl_->handle);

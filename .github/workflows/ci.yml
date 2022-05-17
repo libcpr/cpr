@@ -30,56 +30,6 @@ jobs:
         run-test: true
         ctest-options: -V
         configure-options: -DBUILD_SHARED_LIBS=ON
-  
-  clang-tidy:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-      with:
-        submodules: true
-    - name: Update package list
-      run: sudo apt update
-    - name: Install libssl-dev
-      run: sudo apt install libssl-dev
-    - name: Install clang-tidy
-      run: sudo apt install clang-tidy
-    - name: "[Release g++] Build & Test"
-      env:
-        CPR_BUILD_TESTS: ON
-      uses: ashutoshvarma/action-cmake-build@master
-      with:
-        build-dir: ${{github.workspace}}/build
-        source-dir: ${{github.workspace}}
-        cc: clang
-        cxx: clang++
-        build-type: Release
-        run-test: true
-        ctest-options: -V
-        configure-options: -DCPR_ENABLE_LINTING=ON
-
-  cppcheck:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-      with:
-        submodules: true
-    - name: Update package list
-      run: sudo apt update
-    - name: Install cppcheck
-      run: sudo apt install cppcheck
-    - name: "[Release g++] Build"
-      env:
-        CPR_ENABLE_CPPCHECK: ON
-      uses: ashutoshvarma/action-cmake-build@master
-      with:
-        build-dir: ${{github.workspace}}/build
-        source-dir: ${{github.workspace}}
-        cc: gcc
-        cxx: g++
-        build-type: Release
-        run-test: false
 
   ubuntu-20-static-gcc-mbedtls:
     runs-on: ubuntu-20.04

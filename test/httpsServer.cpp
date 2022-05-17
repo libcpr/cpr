@@ -2,10 +2,7 @@
 #include <system_error>
 
 namespace cpr {
-HttpsServer::HttpsServer(std::string&& baseDirPath, std::string&& sslCertFileName,
-                         std::string&& sslKeyFileName)
-        : baseDirPath(std::move(baseDirPath)), sslCertFileName(std::move(sslCertFileName)),
-          sslKeyFileName(std::move(sslKeyFileName)) {}
+HttpsServer::HttpsServer(std::string&& baseDirPath, std::string&& sslCertFileName, std::string&& sslKeyFileName) : baseDirPath(std::move(baseDirPath)), sslCertFileName(std::move(sslCertFileName)), sslKeyFileName(std::move(sslKeyFileName)) {}
 
 std::string HttpsServer::GetBaseUrl() {
     return "https://127.0.0.1:" + std::to_string(GetPort());
@@ -16,8 +13,7 @@ uint16_t HttpsServer::GetPort() {
     return 61937;
 }
 
-mg_connection* HttpsServer::initServer(mg_mgr* mgr,
-                                       MG_CB(mg_event_handler_t event_handler, void* user_data)) {
+mg_connection* HttpsServer::initServer(mg_mgr* mgr, MG_CB(mg_event_handler_t event_handler, void* user_data)) {
     // https://cesanta.com/docs/http/ssl.html
     mg_mgr_init(mgr, this);
 
@@ -42,11 +38,11 @@ void HttpsServer::OnRequest(mg_connection* conn, http_message* msg) {
     }
 }
 
-void HttpsServer::OnRequestNotFound(mg_connection* conn, http_message*  /*msg*/) {
+void HttpsServer::OnRequestNotFound(mg_connection* conn, http_message* /*msg*/) {
     mg_http_send_error(conn, 404, "Not Found");
 }
 
-void HttpsServer::OnRequestHello(mg_connection* conn, http_message*  /*msg*/) {
+void HttpsServer::OnRequestHello(mg_connection* conn, http_message* /*msg*/) {
     std::string response{"Hello world!"};
     std::string headers = "Content-Type: text/html";
     mg_send_head(conn, 200, response.length(), headers.c_str());

@@ -46,8 +46,7 @@ TEST(ErrorTests, ConnectTimeoutFailure) {
     Response response = cpr::Get(url, cpr::ConnectTimeout{1});
     EXPECT_EQ(0, response.status_code);
     // Sometimes a CONNECTION_FAILURE happens before the OPERATION_TIMEDOUT:
-    EXPECT_TRUE(response.error.code == ErrorCode::OPERATION_TIMEDOUT ||
-                response.error.code == ErrorCode::CONNECTION_FAILURE);
+    EXPECT_TRUE(response.error.code == ErrorCode::OPERATION_TIMEDOUT || response.error.code == ErrorCode::CONNECTION_FAILURE);
 }
 
 TEST(ErrorTests, ChronoConnectTimeoutFailure) {
@@ -55,8 +54,7 @@ TEST(ErrorTests, ChronoConnectTimeoutFailure) {
     Response response = cpr::Get(url, cpr::ConnectTimeout{std::chrono::milliseconds{1}});
     EXPECT_EQ(0, response.status_code);
     // Sometimes a CONNECTION_FAILURE happens before the OPERATION_TIMEDOUT:
-    EXPECT_TRUE(response.error.code == ErrorCode::OPERATION_TIMEDOUT ||
-                response.error.code == ErrorCode::CONNECTION_FAILURE);
+    EXPECT_TRUE(response.error.code == ErrorCode::OPERATION_TIMEDOUT || response.error.code == ErrorCode::CONNECTION_FAILURE);
 }
 
 TEST(ErrorTests, LowSpeedTimeFailure) {

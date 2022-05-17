@@ -1,0 +1,12 @@
+name: "Test Clang Format"
+
+on: [push, pull_request]
+
+jobs:
+  clang-format:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Check format
+      uses: RafikFarhad/clang-format-github-action@v2.1.0

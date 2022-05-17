@@ -16,8 +16,7 @@ class HttpsServer : public AbstractServer {
     const std::string sslKeyFileName;
 
   public:
-    explicit HttpsServer(std::string&& baseDirPath, std::string&& sslCertFileName,
-                         std::string&& sslKeyFileName);
+    explicit HttpsServer(std::string&& baseDirPath, std::string&& sslCertFileName, std::string&& sslKeyFileName);
     ~HttpsServer() override = default;
 
     std::string GetBaseUrl() override;
@@ -32,8 +31,7 @@ class HttpsServer : public AbstractServer {
     const std::string& getSslKeyFileName() const;
 
   protected:
-    mg_connection* initServer(mg_mgr* mgr,
-                              MG_CB(mg_event_handler_t event_handler, void* user_data)) override;
+    mg_connection* initServer(mg_mgr* mgr, MG_CB(mg_event_handler_t event_handler, void* user_data)) override;
 };
 } // namespace cpr
 

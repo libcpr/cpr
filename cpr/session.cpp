@@ -39,7 +39,6 @@ class Session::Impl {
 #if LIBCURL_VERSION_NUM >= 0x073D00
     void SetBearer(const Bearer& token);
 #endif
-    void SetDigest(const Digest& auth);
     void SetUserAgent(const UserAgent& ua);
     void SetPayload(Payload&& payload);
     void SetPayload(const Payload& payload);
@@ -49,7 +48,6 @@ class Session::Impl {
     void SetProxyAuth(const ProxyAuthentication& proxy_auth);
     void SetMultipart(Multipart&& multipart);
     void SetMultipart(const Multipart& multipart);
-    void SetNTLM(const NTLM& auth);
     void SetRedirect(const Redirect& redirect);
     void SetCookies(const Cookies& cookies);
     void SetBody(Body&& body);
@@ -70,6 +68,7 @@ class Session::Impl {
     void SetLocalPortRange(int port_range);
     void SetHttpVersion(const HttpVersion& version);
     void SetRange(const Range& range);
+    void SetMultiRange(const MultiRange& multi_range);
     void SetReserveSize(const ReserveSize& reserve_size);
 
     cpr_off_t GetDownloadFileLength();
@@ -85,6 +84,7 @@ class Session::Impl {
     Response Put();
 
     std::shared_ptr<CurlHolder> GetCurlHolder();
+    std::string GetFullRequestUrl();
 
     void PrepareDelete();
     void PrepareGet();
@@ -253,8 +253,20 @@ void Session::Impl::SetHttpVersion(const HttpVersion& version) {
 
 void Session::Impl::SetAuth(const Authentication& auth) {
     // Ignore here since this has been defined by libcurl.
-    curl_easy_setopt(curl_->handle, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-    curl_easy_setopt(curl_->handle, CURLOPT_USERPWD, auth.GetAuthString());
+    switch (auth.GetAuthMode()) {
+        case AuthMode::BASIC:
+            curl_easy_setopt(curl_->handle, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+            curl_easy_setopt(curl_->handle, CURLOPT_USERPWD, auth.GetAuthString());
+            break;
+        case AuthMode::DIGEST:
+            curl_easy_setopt(curl_->handle, CURLOPT_HTTPAUTH, CURLAUTH_DIGEST);
+            curl_easy_setopt(curl_->handle, CURLOPT_USERPWD, auth.GetAuthString());
+            break;
+        case AuthMode::NTLM:
+            curl_easy_setopt(curl_->handle, CURLOPT_HTTPAUTH, CURLAUTH_NTLM);
+            curl_easy_setopt(curl_->handle, CURLOPT_USERPWD, auth.GetAuthString());
+            break;
+    }
 }
 
 void Session::Impl::SetInterface(const Interface& iface) {
@@ -282,12 +294,6 @@ void Session::Impl::SetBearer(const Bearer& token) {
     curl_easy_setopt(curl_->handle, CURLOPT_XOAUTH2_BEARER, token.GetToken());
 }
 #endif
-
-void Session::Impl::SetDigest(const Digest& auth) {
-    // Ignore here since this has been defined by libcurl.
-    curl_easy_setopt(curl_->handle, CURLOPT_HTTPAUTH, CURLAUTH_DIGEST);
-    curl_easy_setopt(curl_->handle, CURLOPT_USERPWD, auth.GetAuthString());
-}
 
 void Session::Impl::SetUserAgent(const UserAgent& ua) {
     curl_easy_setopt(curl_->handle, CURLOPT_USERAGENT, ua.c_str());
@@ -388,12 +394,6 @@ void Session::Impl::SetMultipart(const Multipart& multipart) {
 void Session::Impl::SetLimitRate(const LimitRate& limit_rate) {
     curl_easy_setopt(curl_->handle, CURLOPT_MAX_RECV_SPEED_LARGE, limit_rate.downrate);
     curl_easy_setopt(curl_->handle, CURLOPT_MAX_SEND_SPEED_LARGE, limit_rate.uprate);
-}
-
-void Session::Impl::SetNTLM(const NTLM& auth) {
-    // Ignore here since this has been defined by libcurl.
-    curl_easy_setopt(curl_->handle, CURLOPT_HTTPAUTH, CURLAUTH_NTLM);
-    curl_easy_setopt(curl_->handle, CURLOPT_USERPWD, auth.GetAuthString());
 }
 
 void Session::Impl::SetRedirect(const Redirect& redirect) {
@@ -501,6 +501,7 @@ void Session::Impl::SetSslOptions(const SslOptions& options) {
         if (!options.key_pass.empty()) {
             curl_easy_setopt(curl_->handle, CURLOPT_KEYPASSWD, options.key_pass.c_str());
         }
+#if SUPPORT_CURLOPT_SSLKEY_BLOB
     } else if (!options.key_blob.empty()) {
         std::string key_blob(options.key_blob);
         curl_blob blob{};
@@ -513,6 +514,7 @@ void Session::Impl::SetSslOptions(const SslOptions& options) {
         if (!options.key_pass.empty()) {
             curl_easy_setopt(curl_->handle, CURLOPT_KEYPASSWD, options.key_pass.c_str());
         }
+#endif
     }
     if (!options.pinned_public_key.empty()) {
         curl_easy_setopt(curl_->handle, CURLOPT_PINNEDPUBLICKEY, options.pinned_public_key.c_str());
@@ -565,12 +567,13 @@ void Session::Impl::SetSslOptions(const SslOptions& options) {
 }
 
 void Session::Impl::SetRange(const Range& range) {
-    curl_off_t resume_from = range.resume_from;
-    curl_off_t finish_at = range.finish_at;
-    std::string range_str = std::to_string(resume_from) + "-" + std::to_string(finish_at);
+    std::string range_str = range.str();
     curl_easy_setopt(curl_->handle, CURLOPT_RANGE, range_str.c_str());
-    curl_easy_setopt(curl_->handle, CURLOPT_RESUME_FROM_LARGE, resume_from);
-    curl_easy_setopt(curl_->handle, CURLOPT_INFILESIZE_LARGE, finish_at);
+}
+
+void Session::Impl::SetMultiRange(const MultiRange& multi_range) {
+    std::string multi_range_str = multi_range.str();
+    curl_easy_setopt(curl_->handle, CURLOPT_RANGE, multi_range_str.c_str());
 }
 
 void Session::Impl::SetReserveSize(const ReserveSize& reserve_size) {
@@ -718,6 +721,11 @@ std::shared_ptr<CurlHolder> Session::Impl::GetCurlHolder() {
     return curl_;
 }
 
+std::string Session::Impl::GetFullRequestUrl() {
+    const std::string parametersContent = parameters_.GetContent(*curl_);
+    return url_.str() + (parametersContent.empty() ? "" : "?") + parametersContent;
+}
+
 Response Session::Impl::makeDownloadRequest() {
     assert(curl_->handle);
 
@@ -862,7 +870,6 @@ void Session::UpdateHeader(const Header& header) { pimpl_->UpdateHeader(header);
 void Session::SetTimeout(const Timeout& timeout) { pimpl_->SetTimeout(timeout); }
 void Session::SetConnectTimeout(const ConnectTimeout& timeout) { pimpl_->SetConnectTimeout(timeout); }
 void Session::SetAuth(const Authentication& auth) { pimpl_->SetAuth(auth); }
-void Session::SetDigest(const Digest& auth) { pimpl_->SetDigest(auth); }
 void Session::SetUserAgent(const UserAgent& ua) { pimpl_->SetUserAgent(ua); }
 void Session::SetPayload(const Payload& payload) { pimpl_->SetPayload(payload); }
 void Session::SetPayload(Payload&& payload) { pimpl_->SetPayload(std::move(payload)); }
@@ -872,7 +879,6 @@ void Session::SetProxyAuth(ProxyAuthentication&& proxy_auth) { pimpl_->SetProxyA
 void Session::SetProxyAuth(const ProxyAuthentication& proxy_auth) { pimpl_->SetProxyAuth(proxy_auth); }
 void Session::SetMultipart(const Multipart& multipart) { pimpl_->SetMultipart(multipart); }
 void Session::SetMultipart(Multipart&& multipart) { pimpl_->SetMultipart(std::move(multipart)); }
-void Session::SetNTLM(const NTLM& auth) { pimpl_->SetNTLM(auth); }
 void Session::SetRedirect(const Redirect& redirect) { pimpl_->SetRedirect(redirect); }
 void Session::SetCookies(const Cookies& cookies) { pimpl_->SetCookies(cookies); }
 void Session::SetBody(const Body& body) { pimpl_->SetBody(body); }
@@ -887,6 +893,7 @@ void Session::SetLocalPort(int port) { pimpl_->SetLocalPort(port); }
 void Session::SetLocalPortRange(int port_range) { pimpl_->SetLocalPortRange(port_range); }
 void Session::SetHttpVersion(const HttpVersion& version) { pimpl_->SetHttpVersion(version); }
 void Session::SetRange(const Range& range) { pimpl_->SetRange(range); }
+void Session::SetMultiRange(const MultiRange& multi_range) { pimpl_->SetMultiRange(multi_range); }
 void Session::SetReserveSize(const ReserveSize& reserve_size) { pimpl_->SetReserveSize(reserve_size); }
 void Session::SetOption(const ReadCallback& read) { pimpl_->SetReadCallback(read); }
 void Session::SetOption(const HeaderCallback& header) { pimpl_->SetHeaderCallback(header); }
@@ -906,7 +913,6 @@ void Session::SetOption(const LimitRate& limit_rate) { pimpl_->SetLimitRate(limi
 #if LIBCURL_VERSION_NUM >= 0x073D00
 void Session::SetOption(const Bearer& auth) { pimpl_->SetBearer(auth); }
 #endif
-void Session::SetOption(const Digest& auth) { pimpl_->SetDigest(auth); }
 void Session::SetOption(const UserAgent& ua) { pimpl_->SetUserAgent(ua); }
 void Session::SetOption(const Payload& payload) { pimpl_->SetPayload(payload); }
 void Session::SetOption(Payload&& payload) { pimpl_->SetPayload(std::move(payload)); }
@@ -916,7 +922,6 @@ void Session::SetOption(ProxyAuthentication&& proxy_auth) { pimpl_->SetProxyAuth
 void Session::SetOption(const ProxyAuthentication& proxy_auth) { pimpl_->SetProxyAuth(proxy_auth); }
 void Session::SetOption(const Multipart& multipart) { pimpl_->SetMultipart(multipart); }
 void Session::SetOption(Multipart&& multipart) { pimpl_->SetMultipart(std::move(multipart)); }
-void Session::SetOption(const NTLM& auth) { pimpl_->SetNTLM(auth); }
 void Session::SetOption(const Redirect& redirect) { pimpl_->SetRedirect(redirect); }
 void Session::SetOption(const Cookies& cookies) { pimpl_->SetCookies(cookies); }
 void Session::SetOption(const Body& body) { pimpl_->SetBody(body); }
@@ -929,6 +934,7 @@ void Session::SetOption(const SslOptions& options) { pimpl_->SetSslOptions(optio
 void Session::SetOption(const Interface& iface) { pimpl_->SetInterface(iface); }
 void Session::SetOption(const HttpVersion& version) { pimpl_->SetHttpVersion(version); }
 void Session::SetOption(const Range& range) { pimpl_->SetRange(range); }
+void Session::SetOption(const MultiRange& multi_range) { pimpl_->SetMultiRange(multi_range); }
 void Session::SetOption(const ReserveSize& reserve_size) { pimpl_->SetReserveSize(reserve_size.size); }
 
 cpr_off_t Session::GetDownloadFileLength() { return pimpl_->GetDownloadFileLength(); }
@@ -944,6 +950,7 @@ Response Session::Post() { return pimpl_->Post(); }
 Response Session::Put() { return pimpl_->Put(); }
 
 std::shared_ptr<CurlHolder> Session::GetCurlHolder() { return pimpl_->GetCurlHolder(); }
+std::string Session::GetFullRequestUrl() { return pimpl_->GetFullRequestUrl(); }
 
 void Session::PrepareDelete() { return pimpl_->PrepareDelete(); }
 void Session::PrepareGet() { return pimpl_->PrepareGet(); }

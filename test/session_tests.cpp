@@ -273,7 +273,7 @@ TEST(MultipleGetTests, BasicAuthenticationMultipleGetTest) {
     Url url{server->GetBaseUrl() + "/basic_auth.html"};
     Session session;
     session.SetUrl(url);
-    session.SetAuth(Authentication{"user", "password"});
+    session.SetAuth(Authentication{"user", "password", AuthMode::BASIC});
     for (size_t i = 0; i < 100; ++i) {
         Response response = session.Get();
         std::string expected_text{"Header reflect GET"};
@@ -289,7 +289,7 @@ TEST(MultipleGetTests, BasicAuthenticationChangeMultipleGetTest) {
     Url url{server->GetBaseUrl() + "/basic_auth.html"};
     Session session;
     session.SetUrl(url);
-    session.SetAuth(Authentication{"user", "password"});
+    session.SetAuth(Authentication{"user", "password", AuthMode::BASIC});
     {
         Response response = session.Get();
         std::string expected_text{"Header reflect GET"};
@@ -299,7 +299,7 @@ TEST(MultipleGetTests, BasicAuthenticationChangeMultipleGetTest) {
         EXPECT_EQ(200, response.status_code);
         EXPECT_EQ(ErrorCode::OK, response.error.code);
     }
-    session.SetAuth(Authentication{"user", "bad_password"});
+    session.SetAuth(Authentication{"user", "bad_password", AuthMode::BASIC});
     {
         Response response = session.Get();
         EXPECT_EQ(std::string{"Unauthorized"}, response.text);
@@ -308,7 +308,7 @@ TEST(MultipleGetTests, BasicAuthenticationChangeMultipleGetTest) {
         EXPECT_EQ(401, response.status_code);
         EXPECT_EQ(ErrorCode::OK, response.error.code);
     }
-    session.SetAuth(Authentication{"bad_user", "password"});
+    session.SetAuth(Authentication{"bad_user", "password", AuthMode::BASIC});
     {
         Response response = session.Get();
         EXPECT_EQ(std::string{"Unauthorized"}, response.text);
@@ -347,6 +347,34 @@ TEST(ParameterTests, ParameterMultipleTest) {
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
     EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
+TEST(FullRequestUrlTest, GetFullRequestUrlNoParametersTest) {
+    Url url{server->GetBaseUrl() + "/hello.html"};
+    Session session;
+    session.SetUrl(url);
+    std::string expected_text{server->GetBaseUrl() + "/hello.html"};
+    EXPECT_EQ(expected_text, session.GetFullRequestUrl());
+}
+
+TEST(FullRequestUrlTest, GetFullRequestUrlOneParameterTest) {
+    Url url{server->GetBaseUrl() + "/hello.html"};
+    Session session;
+    session.SetUrl(url);
+    Parameters parameters{{"hello", "world"}};
+    session.SetParameters(parameters);
+    std::string expected_text{server->GetBaseUrl() + "/hello.html" + "?hello=world"};
+    EXPECT_EQ(expected_text, session.GetFullRequestUrl());
+}
+
+TEST(FullRequestUrlTest, GetFullRequestUrlMultipleParametersTest) {
+    Url url{server->GetBaseUrl() + "/hello.html"};
+    Session session;
+    session.SetUrl(url);
+    Parameters parameters{{"hello", "world"}, {"key", "value"}};
+    session.SetParameters(parameters);
+    std::string expected_text{server->GetBaseUrl() + "/hello.html" + "?hello=world&key=value"};
+    EXPECT_EQ(expected_text, session.GetFullRequestUrl());
 }
 
 TEST(TimeoutTests, SetTimeoutTest) {
@@ -595,7 +623,7 @@ TEST(DigestTests, SetDigestTest) {
     Url url{server->GetBaseUrl() + "/digest_auth.html"};
     Session session;
     session.SetUrl(url);
-    session.SetDigest({"user", "password"});
+    session.SetAuth({"user", "password", AuthMode::DIGEST});
     Response response = session.Get();
     std::string expected_text{"Header reflect GET"};
     EXPECT_EQ(expected_text, response.text);
