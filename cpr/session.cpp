@@ -835,7 +835,7 @@ Response Session::Impl::makeRequest() {
         // At least one interceptor exists -> Ececute its intercept function
         std::shared_ptr<Interceptor> interceptor = interceptors.front();
         interceptors.pop();
-        return interceptor->intercept(psession_);
+        return interceptor->intercept(*psession_);
     }
 
     CURLcode curl_error = curl_easy_perform(curl_->handle);
