@@ -10,19 +10,16 @@ static HttpServer* server = new HttpServer();
 
 class HiddenHelloWorldRedirectInterceptor : public Interceptor {
   public:
-    Response intercept(Chain chain) {
-        // Get current session
-        Session* session = chain.session();
-
+    Response intercept(Session& session) override {
         // Save original url
-        Url old_url = session->GetFullRequestUrl();
+        Url old_url = session.GetFullRequestUrl();
 
         // Rewrite the url
         Url url{server->GetBaseUrl() + "/hello.html"};
-        session->SetUrl(url);
+        session.SetUrl(url);
 
         // Procceed the chain
-        Response response = chain.proceed();
+        Response response = session.proceed();
 
         // Restore the url again
         response.url = old_url;
