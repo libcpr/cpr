@@ -13,6 +13,7 @@
 #include "cpr/cookies.h"
 #include "cpr/cprtypes.h"
 #include "cpr/curlholder.h"
+#include "cpr/accept_encoding.h"
 #include "cpr/http_version.h"
 #include "cpr/interface.h"
 #include "cpr/limit_rate.h"
@@ -87,6 +88,8 @@ class Session {
     void SetRange(const Range& range);
     void SetMultiRange(const MultiRange& multi_range);
     void SetReserveSize(const ReserveSize& reserve_size);
+    void SetAcceptEncoding(const AcceptEncoding& accept_encoding);
+    void SetAcceptEncoding(AcceptEncoding&& accept_encoding);
 
     // Used in templated functions
     void SetOption(const Url& url);
@@ -132,6 +135,8 @@ class Session {
     void SetOption(const Range& range);
     void SetOption(const MultiRange& multi_range);
     void SetOption(const ReserveSize& reserve_size);
+    void SetOption(const AcceptEncoding& accept_encoding);
+    void SetOption(AcceptEncoding&& accept_encoding);
 
     cpr_off_t GetDownloadFileLength();
     /**

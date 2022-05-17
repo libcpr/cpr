@@ -76,6 +76,8 @@ class Session::Impl {
     void SetRange(const Range& range);
     void SetMultiRange(const MultiRange& multi_range);
     void SetReserveSize(const ReserveSize& reserve_size);
+    void SetAcceptEncoding(AcceptEncoding&& accept_encoding);
+    void SetAcceptEncoding(const AcceptEncoding& accept_encoding);
 
     cpr_off_t GetDownloadFileLength();
     void ResponseStringReserve(size_t size);
@@ -115,6 +117,7 @@ class Session::Impl {
     Proxies proxies_;
     ProxyAuthentication proxyAuth_;
     Header header_;
+    AcceptEncoding acceptEncoding_;
     /**
      * Will be set by the read callback.
      * Ensures that the "Transfer-Encoding" is set to "chunked", if not overriden in header_.
@@ -600,6 +603,14 @@ void Session::Impl::SetReserveSize(const ReserveSize& reserve_size) {
     ResponseStringReserve(reserve_size.size);
 }
 
+void Session::Impl::SetAcceptEncoding(const AcceptEncoding& accept_encoding) {
+    acceptEncoding_ = accept_encoding;
+}
+
+void Session::Impl::SetAcceptEncoding(AcceptEncoding&& accept_encoding) {
+    acceptEncoding_ = std::move(accept_encoding);
+}
+
 void Session::Impl::PrepareDelete() {
     curl_easy_setopt(curl_->handle, CURLOPT_HTTPGET, 0L);
     curl_easy_setopt(curl_->handle, CURLOPT_NOBODY, 0L);
@@ -830,8 +841,13 @@ void Session::Impl::prepareCommon() {
 
 #if LIBCURL_VERSION_MAJOR >= 7
 #if LIBCURL_VERSION_MINOR >= 21
-    /* enable all supported built-in compressions */
-    curl_easy_setopt(curl_->handle, CURLOPT_ACCEPT_ENCODING, "");
+    if (acceptEncoding_.empty()) {
+        /* enable all supported built-in compressions */
+        curl_easy_setopt(curl_->handle, CURLOPT_ACCEPT_ENCODING, "");
+    }
+    else {
+        curl_easy_setopt(curl_->handle, CURLOPT_ACCEPT_ENCODING, acceptEncoding_.getString().c_str());
+    }
 #endif
 #endif
 
@@ -934,6 +950,8 @@ void Session::SetHttpVersion(const HttpVersion& version) { pimpl_->SetHttpVersio
 void Session::SetRange(const Range& range) { pimpl_->SetRange(range); }
 void Session::SetMultiRange(const MultiRange& multi_range) { pimpl_->SetMultiRange(multi_range); }
 void Session::SetReserveSize(const ReserveSize& reserve_size) { pimpl_->SetReserveSize(reserve_size); }
+void Session::SetAcceptEncoding(const AcceptEncoding& accept_encoding) { pimpl_->SetAcceptEncoding(accept_encoding); }
+void Session::SetAcceptEncoding(AcceptEncoding&& accept_encoding) { pimpl_->SetAcceptEncoding(std::move(accept_encoding)); }
 void Session::SetOption(const ReadCallback& read) { pimpl_->SetReadCallback(read); }
 void Session::SetOption(const HeaderCallback& header) { pimpl_->SetHeaderCallback(header); }
 void Session::SetOption(const WriteCallback& write) { pimpl_->SetWriteCallback(write); }
@@ -977,6 +995,8 @@ void Session::SetOption(const HttpVersion& version) { pimpl_->SetHttpVersion(ver
 void Session::SetOption(const Range& range) { pimpl_->SetRange(range); }
 void Session::SetOption(const MultiRange& multi_range) { pimpl_->SetMultiRange(multi_range); }
 void Session::SetOption(const ReserveSize& reserve_size) { pimpl_->SetReserveSize(reserve_size.size); }
+void Session::SetOption(const AcceptEncoding& accept_encoding) { pimpl_->SetAcceptEncoding(accept_encoding); }
+void Session::SetOption(AcceptEncoding&& accept_encoding) { pimpl_->SetAcceptEncoding(std::move(accept_encoding)); }
 
 cpr_off_t Session::GetDownloadFileLength() { return pimpl_->GetDownloadFileLength(); }
 void Session::ResponseStringReserve(size_t size) { pimpl_->ResponseStringReserve(size); }

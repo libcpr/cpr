@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.15)
 
 add_library(cpr
+    accept_encoding.cpp
     async.cpp
     auth.cpp
     bearer.cpp
