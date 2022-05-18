@@ -95,6 +95,20 @@ class CertFile {
     }
 };
 
+class CertBuffer {
+  public:
+    // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
+    CertBuffer(std::shared_ptr<std::vector<char>>&& p_certBuffer) : certBuffer(std::move(p_certBuffer)) {}
+
+    virtual ~CertBuffer() = default;
+
+    const std::shared_ptr<std::vector<char>> certBuffer;
+
+    virtual const char* GetCertType() const {
+        return "PEM";
+    }
+};
+
 using PemCert = CertFile;
 
 class DerCert : public CertFile {
@@ -393,6 +407,7 @@ class NoRevoke {
 
 struct SslOptions {
     std::string cert_file;
+    std::shared_ptr<std::vector<char>> cert_buffer;
     std::string cert_type;
     std::string key_file;
 #if SUPPORT_CURLOPT_SSLKEY_BLOB
@@ -430,6 +445,10 @@ struct SslOptions {
 
     void SetOption(const ssl::CertFile& opt) {
         cert_file = opt.filename;
+        cert_type = opt.GetCertType();
+    }
+    void SetOption(const ssl::CertBuffer& opt) {
+        cert_buffer = opt.certBuffer;
         cert_type = opt.GetCertType();
     }
     void SetOption(const ssl::KeyFile& opt) {
