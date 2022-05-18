@@ -889,8 +889,8 @@ void Session::SetUnixSocket(const UnixSocket& unix_socket) { pimpl_->SetUnixSock
 void Session::SetSslOptions(const SslOptions& options) { pimpl_->SetSslOptions(options); }
 void Session::SetVerbose(const Verbose& verbose) { pimpl_->SetVerbose(verbose); }
 void Session::SetInterface(const Interface& iface) { pimpl_->SetInterface(iface); }
-void Session::SetLocalPort(int port) { pimpl_->SetLocalPort(port); }
-void Session::SetLocalPortRange(int port_range) { pimpl_->SetLocalPortRange(port_range); }
+void Session::SetLocalPort(const LocalPort& local_port) { pimpl_->SetLocalPort(local_port); }
+void Session::SetLocalPortRange(const LocalPortRange& local_port_range) { pimpl_->SetLocalPortRange(local_port_range); }
 void Session::SetHttpVersion(const HttpVersion& version) { pimpl_->SetHttpVersion(version); }
 void Session::SetRange(const Range& range) { pimpl_->SetRange(range); }
 void Session::SetMultiRange(const MultiRange& multi_range) { pimpl_->SetMultiRange(multi_range); }
