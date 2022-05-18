@@ -2,7 +2,7 @@
 
 namespace cpr {
 
-ThreadPool::ThreadPool(int min_threads, int max_threads, int max_idle_ms)
+ThreadPool::ThreadPool(size_t min_threads, size_t max_threads, std::chrono::milliseconds max_idle_ms)
     : min_thread_num(min_threads)
     , max_thread_num(max_threads)
     , max_idle_time(max_idle_ms)
@@ -12,10 +12,10 @@ ThreadPool::ThreadPool(int min_threads, int max_threads, int max_idle_ms)
 {}
 
 ThreadPool::~ThreadPool() {
-    stop();
+    Stop();
 }
 
-int ThreadPool::start(int start_threads) {
+int ThreadPool::Start(size_t start_threads) {
     if (status != STOP) { return -1; }
     status = RUNNING;
     if (start_threads < min_thread_num) {
@@ -24,13 +24,13 @@ int ThreadPool::start(int start_threads) {
     if (start_threads > max_thread_num) {
         start_threads = max_thread_num;
     }
-    for (int i = 0; i < start_threads; ++i) {
+    for (size_t i = 0; i < start_threads; ++i) {
         createThread();
     }
     return 0;
 }
 
-int ThreadPool::stop() {
+int ThreadPool::Stop() {
     if (status == STOP) { return -1; }
     status = STOP;
     task_cond.notify_all();
@@ -45,21 +45,21 @@ int ThreadPool::stop() {
     return 0;
 }
 
-int ThreadPool::pause() {
+int ThreadPool::Pause() {
     if (status == RUNNING) {
         status = PAUSE;
     }
     return 0;
 }
 
-int ThreadPool::resume() {
+int ThreadPool::Resume() {
     if (status == PAUSE) {
         status = RUNNING;
     }
     return 0;
 }
 
-int ThreadPool::wait() {
+int ThreadPool::Wait() {
     while (true) {
         if (status == STOP || (tasks.empty() && idle_thread_num == cur_thread_num)) {
             break;

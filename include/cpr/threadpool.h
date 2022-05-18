@@ -13,59 +13,60 @@
 #include <thread>
 #include <utility>
 
-#define CPR_DEFAULT_THREAD_POOL_MIN_THREAD_NUM  1
-#define CPR_DEFAULT_THREAD_POOL_MAX_THREAD_NUM  std::thread::hardware_concurrency()
-#define CPR_DEFAULT_THREAD_POOL_MAX_IDLE_TIME   60000 // ms
+#define CPR_DEFAULT_THREAD_POOL_MAX_THREAD_NUM std::thread::hardware_concurrency()
+
+constexpr size_t CPR_DEFAULT_THREAD_POOL_MIN_THREAD_NUM  = 1;
+constexpr std::chrono::milliseconds CPR_DEFAULT_THREAD_POOL_MAX_IDLE_TIME{60000};
 
 namespace cpr {
 
 class ThreadPool {
-public:
+  public:
     using Task = std::function<void()>;
 
-    ThreadPool( int min_threads = CPR_DEFAULT_THREAD_POOL_MIN_THREAD_NUM,
-                int max_threads = CPR_DEFAULT_THREAD_POOL_MAX_THREAD_NUM,
-                int max_idle_ms = CPR_DEFAULT_THREAD_POOL_MAX_IDLE_TIME );
+    ThreadPool( size_t min_threads = CPR_DEFAULT_THREAD_POOL_MIN_THREAD_NUM,
+                size_t max_threads = CPR_DEFAULT_THREAD_POOL_MAX_THREAD_NUM,
+                std::chrono::milliseconds max_idle_ms = CPR_DEFAULT_THREAD_POOL_MAX_IDLE_TIME );
 
     virtual ~ThreadPool();
 
-    void setMinThreadNum(int min_threads) {
+    void SetMinThreadNum(size_t min_threads) {
         min_thread_num = min_threads;
     }
-    void setMaxThreadNum(int max_threads) {
+    void SetMaxThreadNum(size_t max_threads) {
         max_thread_num = max_threads;
     }
-    void setMaxIdleTime(int ms) {
+    void SetMaxIdleTime(std::chrono::milliseconds ms) {
         max_idle_time = ms;
     }
-    int currentThreadNum() {
+    size_t GetCurrentThreadNum() {
         return cur_thread_num;
     }
-    int idleThreadNum() {
+    size_t GetIdleThreadNum() {
         return idle_thread_num;
     }
-    bool isStarted() {
+    bool IsStarted() {
         return status != STOP;
     }
-    bool isStopped() {
+    bool IsStopped() {
         return status == STOP;
     }
 
-    int start(int start_threads = 0);
-    int stop();
-    int pause();
-    int resume();
-    int wait();
+    int Start(size_t start_threads = 0);
+    int Stop();
+    int Pause();
+    int Resume();
+    int Wait();
 
     /**
      * Return a future, calling future.get() will wait task done and return RetType.
-     * commit(fn, args...)
-     * commit(std::bind(&Class::mem_fn, &obj))
-     * commit(std::mem_fn(&Class::mem_fn, &obj))
+     * Submit(fn, args...)
+     * Submit(std::bind(&Class::mem_fn, &obj))
+     * Submit(std::mem_fn(&Class::mem_fn, &obj))
      **/
     template<class Fn, class... Args>
-    auto commit(Fn&& fn, Args&&... args) -> std::future<decltype(fn(args...))> {
-        if (status == STOP) { start(); }
+    auto Submit(Fn&& fn, Args&&... args) -> std::future<decltype(fn(args...))> {
+        if (status == STOP) { Start(); }
         if (idle_thread_num == 0 && cur_thread_num < max_thread_num) {
             createThread();
         }
@@ -84,17 +85,17 @@ public:
         return future;
     }
 
-private:
+  private:
     bool createThread();
     void addThread(std::thread* thread);
     void delThread(std::thread::id id);
 
-public:
-    int min_thread_num;
-    int max_thread_num;
-    int max_idle_time;
+  public:
+    size_t min_thread_num;
+    size_t max_thread_num;
+    std::chrono::milliseconds max_idle_time;
 
-private:
+  private:
     enum Status {
         STOP,
         RUNNING,
@@ -108,8 +109,8 @@ private:
         time_t          stop_time;
     };
     std::atomic<Status>     status;
-    std::atomic<int>        cur_thread_num;
-    std::atomic<int>        idle_thread_num;
+    std::atomic<size_t>     cur_thread_num;
+    std::atomic<size_t>     idle_thread_num;
     std::list<ThreadData>   threads;
     std::mutex              thread_mutex;
     std::queue<Task>        tasks;

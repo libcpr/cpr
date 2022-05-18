@@ -7,8 +7,8 @@
 namespace cpr {
 
 class GlobalThreadPool : public ThreadPool {
-    SINGLETON_DECL(GlobalThreadPool)
-protected:
+    CPR_SINGLETON_DECL(GlobalThreadPool)
+  protected:
     GlobalThreadPool() : ThreadPool() {}
     ~GlobalThreadPool() {}
 };
@@ -21,24 +21,24 @@ protected:
  **/
 template<class Fn, class... Args>
 auto async(Fn&& fn, Args&&... args) -> std::future<decltype(fn(args...))> {
-    return GlobalThreadPool::instance()->commit(std::forward<Fn>(fn), std::forward<Args>(args)...);
+    return GlobalThreadPool::GetInstance()->Submit(std::forward<Fn>(fn), std::forward<Args>(args)...);
 }
 
 class async {
-public:
-    static void startup(int min_threads = CPR_DEFAULT_THREAD_POOL_MIN_THREAD_NUM,
-                 int max_threads = CPR_DEFAULT_THREAD_POOL_MAX_THREAD_NUM,
-                 int max_idle_ms = CPR_DEFAULT_THREAD_POOL_MAX_IDLE_TIME) {
-        GlobalThreadPool* gtp = GlobalThreadPool::instance();
-        if (gtp->isStarted()) return;
-        gtp->setMinThreadNum(min_threads);
-        gtp->setMaxThreadNum(max_threads);
-        gtp->setMaxIdleTime(max_idle_ms);
-        gtp->start();
+  public:
+    static void startup(size_t min_threads = CPR_DEFAULT_THREAD_POOL_MIN_THREAD_NUM,
+                 size_t max_threads = CPR_DEFAULT_THREAD_POOL_MAX_THREAD_NUM,
+                 std::chrono::milliseconds max_idle_ms = CPR_DEFAULT_THREAD_POOL_MAX_IDLE_TIME) {
+        GlobalThreadPool* gtp = GlobalThreadPool::GetInstance();
+        if (gtp->IsStarted()) return;
+        gtp->SetMinThreadNum(min_threads);
+        gtp->SetMaxThreadNum(max_threads);
+        gtp->SetMaxIdleTime(max_idle_ms);
+        gtp->Start();
     }
 
     static void cleanup() {
-        GlobalThreadPool::exitInstance();
+        GlobalThreadPool::ExitInstance();
     }
 };
 

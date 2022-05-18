@@ -3,23 +3,28 @@
 
 #include <mutex>
 
-#define DISABLE_COPY(Class) \
+#ifndef CPR_DISABLE_COPY
+#define CPR_DISABLE_COPY(Class) \
     Class(const Class&) = delete; \
     Class& operator=(const Class&) = delete;
+#endif
 
-#define SINGLETON_DECL(Class) \
+#ifndef CPR_SINGLETON_DECL
+#define CPR_SINGLETON_DECL(Class) \
     public: \
-        static Class* instance(); \
-        static void exitInstance(); \
+        static Class* GetInstance(); \
+        static void ExitInstance(); \
     private: \
-        DISABLE_COPY(Class) \
+        CPR_DISABLE_COPY(Class) \
         static Class* s_pInstance; \
         static std::mutex s_mutex;
+#endif
 
-#define SINGLETON_IMPL(Class) \
+#ifndef CPR_SINGLETON_IMPL
+#define CPR_SINGLETON_IMPL(Class) \
     Class* Class::s_pInstance = nullptr; \
     std::mutex Class::s_mutex; \
-    Class* Class::instance() { \
+    Class* Class::GetInstance() { \
         if (s_pInstance == nullptr) { \
             s_mutex.lock(); \
             if (s_pInstance == nullptr) { \
@@ -29,7 +34,7 @@
         } \
         return s_pInstance; \
     } \
-    void Class::exitInstance() { \
+    void Class::ExitInstance() { \
         s_mutex.lock(); \
         if (s_pInstance) {  \
             delete s_pInstance; \
@@ -37,5 +42,6 @@
         }   \
         s_mutex.unlock(); \
     }
+#endif
 
 #endif

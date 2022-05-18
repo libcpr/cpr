@@ -2,6 +2,6 @@
 
 namespace cpr {
 
-SINGLETON_IMPL(GlobalThreadPool)
+CPR_SINGLETON_IMPL(GlobalThreadPool)
 
 } // namespace cpr
