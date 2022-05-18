@@ -29,6 +29,7 @@ target_sources(cpr PRIVATE
     cpr/response.h
     cpr/session.h
     cpr/singleton.h
+    cpr/ssl_ctx.h
     cpr/ssl_options.h
     cpr/threadpool.h
     cpr/timeout.h
