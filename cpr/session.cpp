@@ -13,6 +13,7 @@
 
 #include "cpr/cprtypes.h"
 #include "cpr/interceptor.h"
+#include "cpr/ssl_ctx.h"
 #include "cpr/util.h"
 
 
@@ -497,6 +498,13 @@ void Session::Impl::SetUnixSocket(const UnixSocket& unix_socket) {
 void Session::Impl::SetSslOptions(const SslOptions& options) {
     if (!options.cert_file.empty()) {
         curl_easy_setopt(curl_->handle, CURLOPT_SSLCERT, options.cert_file.c_str());
+        if (!options.cert_type.empty()) {
+            curl_easy_setopt(curl_->handle, CURLOPT_SSLCERTTYPE, options.cert_type.c_str());
+        }
+    }
+    if (options.cert_buffer) {
+        curl_easy_setopt(curl_->handle, CURLOPT_SSL_CTX_FUNCTION, sslctx_function);
+        curl_easy_setopt(curl_->handle, CURLOPT_SSL_CTX_DATA, options.cert_buffer);
         if (!options.cert_type.empty()) {
             curl_easy_setopt(curl_->handle, CURLOPT_SSLCERTTYPE, options.cert_type.c_str());
         }
