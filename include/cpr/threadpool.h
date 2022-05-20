@@ -68,7 +68,7 @@ class ThreadPool {
     auto Submit(Fn&& fn, Args&&... args) -> std::future<decltype(fn(args...))> {
         if (status == STOP) { Start(); }
         if (idle_thread_num == 0 && cur_thread_num < max_thread_num) {
-            createThread();
+            CreateThread();
         }
         using RetType = decltype(fn(args...));
         auto task = std::make_shared<std::packaged_task<RetType()> >(
@@ -86,9 +86,9 @@ class ThreadPool {
     }
 
   private:
-    bool createThread();
-    void addThread(std::thread* thread);
-    void delThread(std::thread::id id);
+    bool CreateThread();
+    void AddThread(std::thread* thread);
+    void DelThread(std::thread::id id);
 
   public:
     size_t min_thread_num;

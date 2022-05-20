@@ -25,7 +25,7 @@ int ThreadPool::Start(size_t start_threads) {
         start_threads = max_thread_num;
     }
     for (size_t i = 0; i < start_threads; ++i) {
-        createThread();
+        CreateThread();
     }
     return 0;
 }
@@ -69,7 +69,7 @@ int ThreadPool::Wait() {
     return 0;
 }
 
-bool ThreadPool::createThread() {
+bool ThreadPool::CreateThread() {
     if (cur_thread_num >= max_thread_num) { return false; }
     std::thread* thread = new std::thread([this] {
         while (status != STOP) {
@@ -86,7 +86,7 @@ bool ThreadPool::createThread() {
                 if (status == STOP) { return; }
                 if (tasks.empty()) {
                     if (cur_thread_num > min_thread_num) {
-                        delThread(std::this_thread::get_id());
+                        DelThread(std::this_thread::get_id());
                         return;
                     }
                     continue;
@@ -101,11 +101,11 @@ bool ThreadPool::createThread() {
             }
         }
     });
-    addThread(thread);
+    AddThread(thread);
     return true;
 }
 
-void ThreadPool::addThread(std::thread* thread) {
+void ThreadPool::AddThread(std::thread* thread) {
     thread_mutex.lock();
     ++cur_thread_num;
     ++idle_thread_num;
@@ -119,7 +119,7 @@ void ThreadPool::addThread(std::thread* thread) {
     thread_mutex.unlock();
 }
 
-void ThreadPool::delThread(std::thread::id id) {
+void ThreadPool::DelThread(std::thread::id id) {
     time_t now = time(nullptr);
     thread_mutex.lock();
     --cur_thread_num;
