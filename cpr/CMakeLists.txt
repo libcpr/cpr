@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.15)
 
 add_library(cpr
+    async.cpp
     auth.cpp
     bearer.cpp
     cookies.cpp
@@ -14,6 +15,7 @@ add_library(cpr
     proxies.cpp
     proxyauth.cpp
     session.cpp
+    threadpool.cpp
     timeout.cpp
     unix_socket.cpp
     util.cpp
