@@ -64,8 +64,8 @@ class Session::Impl {
     void SetVerbose(const Verbose& verbose);
     void SetSslOptions(const SslOptions& options);
     void SetInterface(const Interface& iface);
-    void SetLocalPort(long port);
-    void SetLocalPortRange(long port_range);
+    void SetLocalPort(const LocalPort& local_port);
+    void SetLocalPortRange(const LocalPortRange& local_port_range);
     void SetHttpVersion(const HttpVersion& version);
     void SetRange(const Range& range);
     void SetMultiRange(const MultiRange& multi_range);
@@ -277,12 +277,12 @@ void Session::Impl::SetInterface(const Interface& iface) {
     }
 }
 
-void Session::Impl::SetLocalPort(long port) {
-    curl_easy_setopt(curl_->handle, CURLOPT_LOCALPORT, port);
+void Session::Impl::SetLocalPort(const LocalPort& local_port) {
+    curl_easy_setopt(curl_->handle, CURLOPT_LOCALPORT, local_port);
 }
 
-void Session::Impl::SetLocalPortRange(long port_range) {
-    curl_easy_setopt(curl_->handle, CURLOPT_LOCALPORTRANGE, port_range);
+void Session::Impl::SetLocalPortRange(const LocalPortRange& local_port_range) {
+    curl_easy_setopt(curl_->handle, CURLOPT_LOCALPORTRANGE, local_port_range);
 }
 
 // Only supported with libcurl >= 7.61.0.
