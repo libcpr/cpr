@@ -64,6 +64,69 @@ class SetUnsupportedProtocolErrorInterceptor : public Interceptor {
     }
 };
 
+class ChangeRequestMethodToGetInterceptor : public Interceptor {
+  public:
+    Response intercept(Session& session) override {
+        return proceed(session, Interceptor::ProceedHttpMethod::GET);
+    }
+};
+
+class ChangeRequestMethodToPostInterceptor : public Interceptor {
+  public:
+    Response intercept(Session& session) override {
+        session.SetOption(Payload{{"x", "5"}});
+        return proceed(session, Interceptor::ProceedHttpMethod::POST);
+    }
+};
+
+class ChangeRequestMethodToPutInterceptor : public Interceptor {
+  public:
+    Response intercept(Session& session) override {
+        session.SetOption(Payload{{"x", "5"}});
+        return proceed(session, Interceptor::ProceedHttpMethod::PUT);
+    }
+};
+
+class ChangeRequestMethodToDeleteInterceptor : public Interceptor {
+  public:
+    Response intercept(Session& session) override {
+        return proceed(session, Interceptor::ProceedHttpMethod::DELETE);
+    }
+};
+
+bool write_data(std::string /*data*/, intptr_t /*userdata*/) {
+    return true;
+}
+
+class ChangeRequestMethodToDownloadCallbackInterceptor : public Interceptor {
+  public:
+    Response intercept(Session& session) override {
+        return proceed(session, Interceptor::ProceedHttpMethod::DOWNLOAD_CALLBACK, WriteCallback{write_data, 0});
+    }
+};
+
+class ChangeRequestMethodToHeadInterceptor : public Interceptor {
+  public:
+    Response intercept(Session& session) override {
+        return proceed(session, Interceptor::ProceedHttpMethod::HEAD);
+    }
+};
+
+class ChangeRequestMethodToOptionsInterceptor : public Interceptor {
+  public:
+    Response intercept(Session& session) override {
+        return proceed(session, Interceptor::ProceedHttpMethod::OPTIONS);
+    }
+};
+
+class ChangeRequestMethodToPatchInterceptor : public Interceptor {
+  public:
+    Response intercept(Session& session) override {
+        session.SetOption(Payload{{"x", "5"}});
+        return proceed(session, Interceptor::ProceedHttpMethod::PATCH);
+    }
+};
+
 TEST(InterceptorTest, HiddenUrlRewriteInterceptorTest) {
     Url url{server->GetBaseUrl() + "/basic.json"};
     Session session;
@@ -88,6 +151,20 @@ TEST(InterceptorTest, ChangeStatusCodeInterceptorTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(expected_status_code, response.status_code);
     EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
+TEST(InterceptorTest, DownloadChangeStatusCodeInterceptorTest) {
+    cpr::Url url{server->GetBaseUrl() + "/download_gzip.html"};
+    cpr::Session session;
+    session.SetHeader(cpr::Header{{"Accept-Encoding", "gzip"}});
+    session.SetUrl(url);
+    session.AddInterceptor(std::make_shared<ChangeStatusCodeInterceptor>());
+    Response response = session.Download(cpr::WriteCallback{write_data, 0});
+
+    long expected_status_code{12345};
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(expected_status_code, response.status_code);
+    EXPECT_EQ(cpr::ErrorCode::OK, response.error.code);
 }
 
 TEST(InterceptorTest, SetBasicAuthInterceptorTest) {
@@ -119,6 +196,134 @@ TEST(InterceptorTest, SetUnsupportedProtocolErrorInterceptorTest) {
     EXPECT_EQ(200, response.status_code);
     EXPECT_EQ(expected_error_message, response.error.message);
     EXPECT_EQ(expected_error_code, response.error.code);
+}
+
+TEST(InterceptorTest, ChangeRequestMethodToGetInterceptorTest) {
+    Url url{server->GetBaseUrl() + "/hello.html"};
+    Session session;
+    session.SetUrl(url);
+    session.AddInterceptor(std::make_shared<ChangeRequestMethodToGetInterceptor>());
+    Response response = session.Head();
+
+    std::string expected_text{"Hello world!"};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
+TEST(InterceptorTest, ChangeRequestMethodToPostInterceptorTest) {
+    Url url{server->GetBaseUrl() + "/url_post.html"};
+    Session session;
+    session.SetUrl(url);
+    session.AddInterceptor(std::make_shared<ChangeRequestMethodToPostInterceptor>());
+    Response response = session.Head();
+
+    std::string expected_text{
+            "{\n"
+            "  \"x\": 5\n"
+            "}"};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
+    EXPECT_EQ(201, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
+TEST(InterceptorTest, ChangeRequestMethodToPutInterceptorTest) {
+    Url url{server->GetBaseUrl() + "/put.html"};
+    Session session;
+    session.SetUrl(url);
+    session.AddInterceptor(std::make_shared<ChangeRequestMethodToPutInterceptor>());
+    Response response = session.Get();
+
+    std::string expected_text{
+            "{\n"
+            "  \"x\": 5\n"
+            "}"};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
+TEST(InterceptorTest, ChangeRequestMethodToPatchInterceptorTest) {
+    Url url{server->GetBaseUrl() + "/patch.html"};
+    Session session;
+    session.SetUrl(url);
+    session.AddInterceptor(std::make_shared<ChangeRequestMethodToPatchInterceptor>());
+    Response response = session.Get();
+
+    std::string expected_text{
+            "{\n"
+            "  \"x\": 5\n"
+            "}"};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
+TEST(InterceptorTest, ChangeRequestMethodToOptionsInterceptorTest) {
+    Url url{server->GetBaseUrl() + "/"};
+    Session session;
+    session.SetUrl(url);
+    session.AddInterceptor(std::make_shared<ChangeRequestMethodToOptionsInterceptor>());
+    Response response = session.Get();
+
+    std::string expected_text{""};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"GET, POST, PUT, DELETE, PATCH, OPTIONS"}, response.header["Access-Control-Allow-Methods"]);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
+TEST(InterceptorTest, ChangeRequestMethodToHeadInterceptorTest) {
+    Url url{server->GetBaseUrl() + "/hello.html"};
+    Session session;
+    session.SetUrl(url);
+    session.AddInterceptor(std::make_shared<ChangeRequestMethodToHeadInterceptor>());
+    Response response = session.Get();
+
+    EXPECT_EQ(std::string{}, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
+TEST(InterceptorTest, ChangeRequestMethodToDownloadCallbackInterceptorTest) {
+    Url url{server->GetBaseUrl() + "/download_gzip.html"};
+    Session session;
+    session.SetUrl(url);
+    session.SetHeader(cpr::Header{{"Accept-Encoding", "gzip"}});
+    session.SetTimeout(Timeout{2000});
+    session.AddInterceptor(std::make_shared<ChangeRequestMethodToDownloadCallbackInterceptor>());
+    Response response = session.Put();
+
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(cpr::ErrorCode::OK, response.error.code);
+}
+
+TEST(InterceptorTest, ChangeRequestMethodToDeleteInterceptorTest) {
+    Url url{server->GetBaseUrl() + "/delete.html"};
+    Session session;
+    session.SetUrl(url);
+    session.AddInterceptor(std::make_shared<ChangeRequestMethodToDeleteInterceptor>());
+    Response response = session.Get();
+
+
+    std::string expected_text{"Delete success"};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 TEST(InterceptorTest, TwoInterceptorsTest) {
