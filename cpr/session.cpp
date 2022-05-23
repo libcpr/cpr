@@ -96,10 +96,10 @@ class Session::Impl {
     Response Complete(CURLcode curl_error);
 
     void AddInterceptor(const std::shared_ptr<Interceptor>& pinterceptor);
-    Response makeRequest();
-    void prepareCommon();
 
   private:
+    friend Session;
+
     void SetHeaderInternal();
     bool hasBodyOrPayload_{false};
 
@@ -127,6 +127,8 @@ class Session::Impl {
     Session* psession_;
 
     Response makeDownloadRequest();
+    Response makeRequest();
+    void prepareCommon();
 };
 
 Session::Impl::Impl(Session* psession) : curl_(new CurlHolder()), psession_{psession} {
