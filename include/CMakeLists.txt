@@ -8,6 +8,7 @@ target_include_directories(cpr PUBLIC
 target_sources(cpr PRIVATE
      # Header files (useful in IDEs)
     cpr/api.h
+    cpr/async.h
     cpr/auth.h
     cpr/bearer.h
     cpr/body.h
@@ -25,7 +26,9 @@ target_sources(cpr PRIVATE
     cpr/proxyauth.h
     cpr/response.h
     cpr/session.h
+    cpr/singleton.h
     cpr/ssl_options.h
+    cpr/threadpool.h
     cpr/timeout.h
     cpr/unix_socket.h
     cpr/util.h
