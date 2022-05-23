@@ -14,12 +14,12 @@ class Interceptor {
     virtual Response intercept(Session& session) = 0;
 
   protected:
-    Response proceed(Session& session);
+    static Response proceed(Session& session);
 
-    Response proceed(Session& session, ProceedHttpMethod httpMethod);
+    static Response proceed(Session& session, ProceedHttpMethod httpMethod);
 
     template <typename T>
-    Response proceed(Session& session, ProceedHttpMethod httpMethod, T&& arg);
+    static Response proceed(Session& session, ProceedHttpMethod httpMethod, T&& arg);
 };
 
 } // namespace cpr
