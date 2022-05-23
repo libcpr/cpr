@@ -10,14 +10,14 @@ class Interceptor {
   public:
     enum class ProceedHttpMethod {
         GET = 0,
-        POST,
-        PUT,
-        DELETE,
-        PATCH,
-        HEAD,
-        OPTIONS,
-        DOWNLOAD_CALLBACK,
-        DOWNLOAD_FILE,
+        POST = 1,
+        PUT = 2,
+        DELETE = 3,
+        PATCH = 4,
+        HEAD = 5,
+        OPTIONS = 6,
+        DOWNLOAD_CALLBACK = 7,
+        DOWNLOAD_FILE = 8,
     };
 
     virtual ~Interceptor() = default;
