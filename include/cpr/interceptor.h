@@ -8,7 +8,17 @@ namespace cpr {
 
 class Interceptor {
   public:
-    enum class ProceedHttpMethod { DELETE, DOWNLOAD_CALLBACK, DOWNLOAD_FILE, GET, HEAD, OPTIONS, PATCH, POST, PUT };
+    enum class ProceedHttpMethod {
+        GET = 0,
+        POST,
+        PUT,
+        DELETE,
+        PATCH,
+        HEAD,
+        OPTIONS,
+        DOWNLOAD_CALLBACK,
+        DOWNLOAD_FILE,
+    };
 
     virtual ~Interceptor() = default;
     virtual Response intercept(Session& session) = 0;
