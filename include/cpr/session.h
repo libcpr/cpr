@@ -163,9 +163,12 @@ class Session {
 
     void AddInterceptor(const std::shared_ptr<Interceptor>& pinterceptor);
 
+  private:
+    // Interceptors should be able to call the private procceed() function
+    friend Interceptor;
+
     Response proceed();
 
-  private:
     class Impl;
     std::unique_ptr<Impl> pimpl_;
 };

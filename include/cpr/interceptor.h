@@ -10,6 +10,11 @@ class Interceptor {
   public:
     virtual ~Interceptor() = default;
     virtual Response intercept(Session& session) = 0;
+
+  protected:
+    Response proceed(Session& session) {
+        return session.proceed();
+    }
 };
 
 } // namespace cpr
