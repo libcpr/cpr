@@ -618,6 +618,7 @@ Response Session::Impl::Delete() {
 Response Session::Impl::Download(const WriteCallback& write) {
     curl_easy_setopt(curl_->handle, CURLOPT_NOBODY, 0L);
     curl_easy_setopt(curl_->handle, CURLOPT_HTTPGET, 1);
+    curl_easy_setopt(curl_->handle, CURLOPT_CUSTOMREQUEST, nullptr);
 
     SetWriteCallback(write);
 
@@ -629,6 +630,7 @@ Response Session::Impl::Download(std::ofstream& file) {
     curl_easy_setopt(curl_->handle, CURLOPT_HTTPGET, 1);
     curl_easy_setopt(curl_->handle, CURLOPT_WRITEFUNCTION, cpr::util::writeFileFunction);
     curl_easy_setopt(curl_->handle, CURLOPT_WRITEDATA, &file);
+    curl_easy_setopt(curl_->handle, CURLOPT_CUSTOMREQUEST, nullptr);
 
     return makeDownloadRequest();
 }
@@ -726,6 +728,12 @@ std::string Session::Impl::GetFullRequestUrl() {
 
 Response Session::Impl::makeDownloadRequest() {
     assert(curl_->handle);
+
+    if (!interceptors.empty()) {
+        std::shared_ptr<Interceptor> interceptor = interceptors.front();
+        interceptors.pop();
+        return interceptor->intercept(*psession_);
+    }
 
     // Set Header:
     SetHeaderInternal();
