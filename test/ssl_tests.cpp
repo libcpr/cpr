@@ -11,9 +11,23 @@
 
 #include "httpsServer.hpp"
 
+#include <fstream>
+#include <iostream>
+
 using namespace cpr;
 
 static HttpsServer* server;
+
+std::shared_ptr<std::vector<char>> loadCertificateIntoBuffer(const std::string certPath) {
+    std::ifstream certFile(certPath, std::ios::binary | std::ios::ate);
+    std::streamsize size = certFile.tellg();
+    certFile.seekg(0, std::ios::beg);
+    std::vector<char> buffer(size);
+    if (certFile.read(buffer.data(), size)) {
+        return std::make_shared<std::vector<char>>(buffer.begin(), buffer.end());
+    }
+    return nullptr;
+}
 
 TEST(SslTests, HelloWorldTestSimpel) {
     std::this_thread::sleep_for(std::chrono::seconds(1));
@@ -63,6 +77,37 @@ TEST(SslTests, GetCertInfo) {
     EXPECT_EQ(certInfo.size(), 1);
     std::string expected_certInfo = "Subject:C = XX, L = Default City, O = Default Company Ltd";
     EXPECT_EQ(certInfo[0], expected_certInfo);
+}
+
+TEST(SslTests, LoadCertFromBufferTestSimpel) {
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+
+    Url url{server->GetBaseUrl() + "/hello.html"};
+    std::string baseDirPath = server->getBaseDirPath();
+    std::cout << "baseDirPath: " << baseDirPath << "\n";
+
+    std::shared_ptr<std::vector<char>> clientCertBuffer = loadCertificateIntoBuffer(baseDirPath + "client.cer");
+    EXPECT_TRUE(clientCertBuffer != nullptr);
+
+
+    std::cout << "Clint certificate at: " << clientCertBuffer << "\n";
+    for (char c : *clientCertBuffer)
+        std::cout << c;
+
+    cpr::SslOptions sslOpts = cpr::Ssl(ssl::CertBuffer{std::move(clientCertBuffer)}, ssl::KeyFile{baseDirPath + "client.key"});
+    cpr::Response r = cpr::Get(cpr::Url{"https://www.httpbin.org/get"}, sslOpts);
+    std::cout << r.text << "\n";
+    std::cout << r.status_code << "\n";
+    std::cout << (int) r.error.code << "\n";
+
+    SslOptions sslOpts_2 = Ssl(ssl::CaPath{baseDirPath + "ca.cer"}, ssl::CertBuffer{std::move(clientCertBuffer)}, ssl::KeyFile{baseDirPath + "client.key"}, ssl::VerifyPeer{false}, ssl::PinnedPublicKey{baseDirPath + "server.pubkey"}, ssl::VerifyHost{false}, ssl::VerifyStatus{false});
+    Response response = cpr::Get(url, sslOpts_2, Timeout{5000}, Verbose{});
+    std::string expected_text = "Hello world!";
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code) << response.error.message;
 }
 
 /**
