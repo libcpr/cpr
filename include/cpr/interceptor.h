@@ -9,15 +9,15 @@ namespace cpr {
 class Interceptor {
   public:
     enum class ProceedHttpMethod {
-        GET = 0,
-        POST = 1,
-        PUT = 2,
-        DELETE = 3,
-        PATCH = 4,
-        HEAD = 5,
-        OPTIONS = 6,
-        DOWNLOAD_CALLBACK = 7,
-        DOWNLOAD_FILE = 8,
+        GET_REQUEST = 0,
+        POST_REQUEST = 1,
+        PUT_REQUEST = 2,
+        DELETE_REQUEST = 3,
+        PATCH_REQUEST = 4,
+        HEAD_REQUEST = 5,
+        OPTIONS_REQUEST = 6,
+        DOWNLOAD_CALLBACK_REQUEST = 7,
+        DOWNLOAD_FILE_REQUEST = 8,
     };
 
     virtual ~Interceptor() = default;

@@ -10,19 +10,19 @@ Response Interceptor::proceed(Session& session) {
 
 Response Interceptor::proceed(Session& session, ProceedHttpMethod httpMethod) {
     switch (httpMethod) {
-        case ProceedHttpMethod::DELETE:
+        case ProceedHttpMethod::DELETE_REQUEST:
             return session.Delete();
-        case ProceedHttpMethod::GET:
+        case ProceedHttpMethod::GET_REQUEST:
             return session.Get();
-        case ProceedHttpMethod::HEAD:
+        case ProceedHttpMethod::HEAD_REQUEST:
             return session.Head();
-        case ProceedHttpMethod::OPTIONS:
+        case ProceedHttpMethod::OPTIONS_REQUEST:
             return session.Options();
-        case ProceedHttpMethod::PATCH:
+        case ProceedHttpMethod::PATCH_REQUEST:
             return session.Patch();
-        case ProceedHttpMethod::POST:
+        case ProceedHttpMethod::POST_REQUEST:
             return session.Post();
-        case ProceedHttpMethod::PUT:
+        case ProceedHttpMethod::PUT_REQUEST:
             return session.Put();
         default:
             throw std::invalid_argument{"Can't procceed the session with the provided http method!"};
@@ -30,14 +30,14 @@ Response Interceptor::proceed(Session& session, ProceedHttpMethod httpMethod) {
 }
 
 Response Interceptor::proceed(Session& session, ProceedHttpMethod httpMethod, std::ofstream& file) {
-    if (httpMethod == ProceedHttpMethod::DOWNLOAD_FILE) {
+    if (httpMethod == ProceedHttpMethod::DOWNLOAD_FILE_REQUEST) {
         return session.Download(file);
     }
     throw std::invalid_argument{"std::ofstream argument is only valid for ProceedHttpMethod::DOWNLOAD_FILE!"};
 }
 
 Response Interceptor::proceed(Session& session, ProceedHttpMethod httpMethod, const WriteCallback& write) {
-    if (httpMethod == ProceedHttpMethod::DOWNLOAD_CALLBACK) {
+    if (httpMethod == ProceedHttpMethod::DOWNLOAD_CALLBACK_REQUEST) {
         return session.Download(write);
     }
     throw std::invalid_argument{"WriteCallback argument is only valid for ProceedHttpMethod::DOWNLOAD_CALLBACK!"};

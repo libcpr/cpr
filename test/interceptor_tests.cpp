@@ -67,7 +67,7 @@ class SetUnsupportedProtocolErrorInterceptor : public Interceptor {
 class ChangeRequestMethodToGetInterceptor : public Interceptor {
   public:
     Response intercept(Session& session) override {
-        return proceed(session, Interceptor::ProceedHttpMethod::GET);
+        return proceed(session, Interceptor::ProceedHttpMethod::GET_REQUEST);
     }
 };
 
@@ -75,7 +75,7 @@ class ChangeRequestMethodToPostInterceptor : public Interceptor {
   public:
     Response intercept(Session& session) override {
         session.SetOption(Payload{{"x", "5"}});
-        return proceed(session, Interceptor::ProceedHttpMethod::POST);
+        return proceed(session, Interceptor::ProceedHttpMethod::POST_REQUEST);
     }
 };
 
@@ -83,14 +83,14 @@ class ChangeRequestMethodToPutInterceptor : public Interceptor {
   public:
     Response intercept(Session& session) override {
         session.SetOption(Payload{{"x", "5"}});
-        return proceed(session, Interceptor::ProceedHttpMethod::PUT);
+        return proceed(session, Interceptor::ProceedHttpMethod::PUT_REQUEST);
     }
 };
 
 class ChangeRequestMethodToDeleteInterceptor : public Interceptor {
   public:
     Response intercept(Session& session) override {
-        return proceed(session, Interceptor::ProceedHttpMethod::DELETE);
+        return proceed(session, Interceptor::ProceedHttpMethod::DELETE_REQUEST);
     }
 };
 
@@ -101,21 +101,21 @@ bool write_data(std::string /*data*/, intptr_t /*userdata*/) {
 class ChangeRequestMethodToDownloadCallbackInterceptor : public Interceptor {
   public:
     Response intercept(Session& session) override {
-        return proceed(session, Interceptor::ProceedHttpMethod::DOWNLOAD_CALLBACK, WriteCallback{write_data, 0});
+        return proceed(session, Interceptor::ProceedHttpMethod::DOWNLOAD_CALLBACK_REQUEST, WriteCallback{write_data, 0});
     }
 };
 
 class ChangeRequestMethodToHeadInterceptor : public Interceptor {
   public:
     Response intercept(Session& session) override {
-        return proceed(session, Interceptor::ProceedHttpMethod::HEAD);
+        return proceed(session, Interceptor::ProceedHttpMethod::HEAD_REQUEST);
     }
 };
 
 class ChangeRequestMethodToOptionsInterceptor : public Interceptor {
   public:
     Response intercept(Session& session) override {
-        return proceed(session, Interceptor::ProceedHttpMethod::OPTIONS);
+        return proceed(session, Interceptor::ProceedHttpMethod::OPTIONS_REQUEST);
     }
 };
 
@@ -123,7 +123,7 @@ class ChangeRequestMethodToPatchInterceptor : public Interceptor {
   public:
     Response intercept(Session& session) override {
         session.SetOption(Payload{{"x", "5"}});
-        return proceed(session, Interceptor::ProceedHttpMethod::PATCH);
+        return proceed(session, Interceptor::ProceedHttpMethod::PATCH_REQUEST);
     }
 };
 
