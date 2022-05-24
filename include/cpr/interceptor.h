@@ -25,11 +25,9 @@ class Interceptor {
 
   protected:
     static Response proceed(Session& session);
-
     static Response proceed(Session& session, ProceedHttpMethod httpMethod);
-
-    template <typename T>
-    static Response proceed(Session& session, ProceedHttpMethod httpMethod, T&& arg);
+    static Response proceed(Session& session, ProceedHttpMethod httpMethod, std::ofstream& file);
+    static Response proceed(Session& session, ProceedHttpMethod httpMethod, const WriteCallback& write);
 };
 
 } // namespace cpr

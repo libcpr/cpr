@@ -29,18 +29,20 @@ Response Interceptor::proceed(Session& session, ProceedHttpMethod httpMethod) {
     }
 }
 
-template <typename T>
-Response Interceptor::proceed(Session& session, ProceedHttpMethod httpMethod, T&& arg) {
-    switch (httpMethod) {
-        case ProceedHttpMethod::DOWNLOAD_CALLBACK:
-        case ProceedHttpMethod::DOWNLOAD_FILE:
-            return session.Download(arg);
-        default:
-            throw std::invalid_argument{"Provided argument for non DOWNLOAD http method!"};
+Response Interceptor::proceed(Session& session, ProceedHttpMethod httpMethod, std::ofstream& file) {
+    if (httpMethod == ProceedHttpMethod::DOWNLOAD_FILE) {
+        return session.Download(file);
+    } else {
+        throw std::invalid_argument{"std::ofstream argument is only valid for ProceedHttpMethod::DOWNLOAD_FILE!"};
     }
 }
 
-template Response Interceptor::proceed<WriteCallback>(Session& session, ProceedHttpMethod httpMethod, WriteCallback&& arg);
-template Response Interceptor::proceed<std::ofstream>(Session& session, ProceedHttpMethod httpMethod, std::ofstream&& arg);
+Response Interceptor::proceed(Session& session, ProceedHttpMethod httpMethod, const WriteCallback& write) {
+    if (httpMethod == ProceedHttpMethod::DOWNLOAD_CALLBACK) {
+        return session.Download(write);
+    } else {
+        throw std::invalid_argument{"WriteCallback argument is only valid for ProceedHttpMethod::DOWNLOAD_CALLBACK!"};
+    }
+}
 
 } // namespace cpr
