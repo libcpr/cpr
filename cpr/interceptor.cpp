@@ -32,17 +32,15 @@ Response Interceptor::proceed(Session& session, ProceedHttpMethod httpMethod) {
 Response Interceptor::proceed(Session& session, ProceedHttpMethod httpMethod, std::ofstream& file) {
     if (httpMethod == ProceedHttpMethod::DOWNLOAD_FILE) {
         return session.Download(file);
-    } else {
-        throw std::invalid_argument{"std::ofstream argument is only valid for ProceedHttpMethod::DOWNLOAD_FILE!"};
     }
+    throw std::invalid_argument{"std::ofstream argument is only valid for ProceedHttpMethod::DOWNLOAD_FILE!"};
 }
 
 Response Interceptor::proceed(Session& session, ProceedHttpMethod httpMethod, const WriteCallback& write) {
     if (httpMethod == ProceedHttpMethod::DOWNLOAD_CALLBACK) {
         return session.Download(write);
-    } else {
-        throw std::invalid_argument{"WriteCallback argument is only valid for ProceedHttpMethod::DOWNLOAD_CALLBACK!"};
     }
+    throw std::invalid_argument{"WriteCallback argument is only valid for ProceedHttpMethod::DOWNLOAD_CALLBACK!"};
 }
 
 } // namespace cpr
