@@ -13,6 +13,7 @@
 #include "cpr/curlholder.h"
 #include "cpr/error.h"
 #include "cpr/http_version.h"
+#include "cpr/interceptor.h"
 #include "cpr/interface.h"
 #include "cpr/limit_rate.h"
 #include "cpr/low_speed.h"

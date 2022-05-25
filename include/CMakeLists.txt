@@ -36,6 +36,7 @@ target_sources(cpr PRIVATE
     cpr/interface.h
     cpr/redirect.h
     cpr/http_version.h
+    cpr/interceptor.h
     ${PROJECT_BINARY_DIR}/cpr_generated_includes/cpr/cprver.h
 )
 
