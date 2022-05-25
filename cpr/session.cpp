@@ -509,7 +509,7 @@ void Session::Impl::SetSslOptions(const SslOptions& options) {
 #if defined OPENSSL
     if (options.cert_buffer) {
         curl_easy_setopt(curl_->handle, CURLOPT_SSL_CTX_FUNCTION, sslctx_function);
-        curl_easy_setopt(curl_->handle, CURLOPT_SSL_CTX_DATA, options.cert_buffer.c_str());
+        curl_easy_setopt(curl_->handle, CURLOPT_SSL_CTX_DATA, options.cert_buffer->data());
         if (!options.cert_type.empty()) {
             curl_easy_setopt(curl_->handle, CURLOPT_SSLCERTTYPE, options.cert_type.c_str());
         }
