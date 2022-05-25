@@ -925,6 +925,42 @@ TEST(CurlHolderManipulateTests, CustomOptionTest) {
     }
 }
 
+TEST(LocalPortTests, SetLocalPortTest) {
+    Url url{server->GetBaseUrl() + "/local_port.html"};
+    Session session;
+    session.SetUrl(url);
+    std::uint16_t const local_port = 60250; // beware of HttpServer::GetPort when changing
+    std::uint16_t const local_port_range = 50;
+    session.SetLocalPort(local_port);
+    session.SetLocalPortRange(local_port_range);
+    // expected response: body contains port number in specified range
+    // TODO: if the ports are already used, the request cannot be made, which means
+    // this feature works as expected.
+    Response response = session.Get();
+    unsigned long port_from_response = std::strtoul(response.text.c_str(), nullptr, 10);
+    EXPECT_EQ(errno, 0);
+    EXPECT_GE(port_from_response, local_port);
+    EXPECT_LE(port_from_response, local_port + local_port_range);
+}
+
+TEST(LocalPortTests, SetOptionTest) {
+    Url url{server->GetBaseUrl() + "/local_port.html"};
+    Session session;
+    session.SetUrl(url);
+    std::uint16_t const local_port = 60550; // beware of HttpServer::GetPort when changing
+    std::uint16_t const local_port_range = 50;
+    session.SetOption(LocalPort(local_port));
+    session.SetOption(LocalPortRange(local_port_range));
+    // expected response: body contains port number in specified range
+    // TODO: if the ports are already used, the request cannot be made, which means
+    // this feature works as expected.
+    Response response = session.Get();
+    unsigned long port_from_response = std::strtoul(response.text.c_str(), nullptr, 10);
+    EXPECT_EQ(errno, 0);
+    EXPECT_GE(port_from_response, local_port);
+    EXPECT_LE(port_from_response, local_port + local_port_range);
+}
+
 TEST(BasicTests, ReserveResponseString) {
     Url url{server->GetBaseUrl() + "/hello.html"};
     Session session;
