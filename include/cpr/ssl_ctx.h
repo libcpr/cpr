@@ -6,7 +6,7 @@
 
 namespace cpr {
 
-CURLcode sslctx_function(CURL* curl, void* sslctx, void* certBuffer);
+CURLcode sslctx_function(CURL* curl, void* sslctx, void* parm);
 
 } // Namespace cpr
 #endif
