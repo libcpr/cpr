@@ -17,7 +17,7 @@ CURLcode sslctx_function(CURL* /*curl*/, void* sslctx, void* parm) {
     /* use it to read the PEM formatted certificate from memory into an
      * X509 structure that SSL can use
      */
-    PEM_read_bio_X509(bio, &cert, 0, nullptr);
+    PEM_read_bio_X509(bio, &cert, nullptr, nullptr);
     if (cert == nullptr) {
         printf("PEM_read_bio_X509 failed...\n");
     }
