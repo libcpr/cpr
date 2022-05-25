@@ -6,44 +6,34 @@
 
 namespace cpr {
 
-// Implementation from: https://curl.se/libcurl/c/cacertinmem.html
-CURLcode sslctx_function(CURL* curl, void* sslctx, void* certBuffer) {
-    CURLcode rv = CURLE_ABORTED_BY_CALLBACK;
+// Implementation from: https://curl.se/libcurl/c/CURLOPT_SSL_CTX_DATA.html
+CURLcode sslctx_function(CURL* /*curl*/, void* sslctx, void* parm) {
+    X509_STORE* store = nullptr;
+    X509* cert = nullptr;
+    BIO* bio = nullptr;
+    char* mypem = static_cast<char*>(parm);
+    /* get a BIO */
+    bio = BIO_new_mem_buf(mypem, -1);
+    /* use it to read the PEM formatted certificate from memory into an
+     * X509 structure that SSL can use
+     */
+    PEM_read_bio_X509(bio, &cert, 0, nullptr);
+    if (cert == nullptr)
+        printf("PEM_read_bio_X509 failed...\n");
 
-    static const char* mypem = (char*) (certBuffer);
+    /* get a pointer to the X509 certificate store (which may be empty) */
+    store = SSL_CTX_get_cert_store(static_cast<SSL_CTX*>(sslctx));
 
-    BIO* cbio = BIO_new_mem_buf(mypem, sizeof(mypem));
-    X509_STORE* cts = SSL_CTX_get_cert_store((SSL_CTX*) sslctx);
-    int i;
-    STACK_OF(X509_INFO) * inf;
-    (void) curl;
+    /* add our certificate to this store */
+    if (X509_STORE_add_cert(store, cert) == 0)
+        printf("error adding certificate\n");
 
-    if (!cts || !cbio) {
-        return rv;
-    }
+    /* decrease reference counts */
+    X509_free(cert);
+    BIO_free(bio);
 
-    inf = PEM_X509_INFO_read_bio(cbio, NULL, NULL, NULL);
-
-    if (!inf) {
-        BIO_free(cbio);
-        return rv;
-    }
-
-    for (i = 0; i < sk_X509_INFO_num(inf); i++) {
-        X509_INFO* itmp = sk_X509_INFO_value(inf, i);
-        if (itmp->x509) {
-            X509_STORE_add_cert(cts, itmp->x509);
-        }
-        if (itmp->crl) {
-            X509_STORE_add_crl(cts, itmp->crl);
-        }
-    }
-
-    sk_X509_INFO_pop_free(inf, X509_INFO_free);
-    BIO_free(cbio);
-
-    rv = CURLE_OK;
-    return rv;
+    /* all set to go */
+    return CURLE_OK;
 }
 
 } // namespace cpr
