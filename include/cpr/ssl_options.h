@@ -95,7 +95,7 @@ class CertFile {
     }
 };
 
-#if OPENSSL_VERSION_NUMBER >= 0x10100000L
+#if defined OPENSSL
 class CertBuffer {
   public:
     // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
@@ -409,7 +409,7 @@ class NoRevoke {
 
 struct SslOptions {
     std::string cert_file;
-#if OPENSSL_VERSION_NUMBER >= 0x10100000L
+#if defined OPENSSL
     std::shared_ptr<std::vector<char>> cert_buffer;
 #endif
     std::string cert_type;
@@ -451,7 +451,7 @@ struct SslOptions {
         cert_file = opt.filename;
         cert_type = opt.GetCertType();
     }
-#if OPENSSL_VERSION_NUMBER >= 0x10100000L
+#if defined OPENSSL
     void SetOption(const ssl::CertBuffer& opt) {
         cert_buffer = opt.certBuffer;
         cert_type = opt.GetCertType();

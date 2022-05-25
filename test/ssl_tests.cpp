@@ -77,7 +77,7 @@ TEST(SslTests, GetCertInfo) {
     EXPECT_EQ(certInfo[0], expected_certInfo);
 }
 
-#if OPENSSL_VERSION_NUMBER >= 0x10100000L
+#if defined OPENSSL
 TEST(SslTests, LoadCertFromBufferTestSimpel) {
     std::this_thread::sleep_for(std::chrono::seconds(1));
 

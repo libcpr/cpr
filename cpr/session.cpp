@@ -16,7 +16,7 @@
 #include "cpr/ssl_ctx.h"
 #include "cpr/util.h"
 
-#if OPENSSL_VERSION_NUMBER >= 0x10100000L
+#if defined OPENSSL
 #include "cpr/ssl_ctx.h"
 #endif
 
@@ -506,7 +506,7 @@ void Session::Impl::SetSslOptions(const SslOptions& options) {
             curl_easy_setopt(curl_->handle, CURLOPT_SSLCERTTYPE, options.cert_type.c_str());
         }
     }
-#if OPENSSL_VERSION_NUMBER >= 0x10100000L
+#if defined OPENSSL
     if (options.cert_buffer) {
         curl_easy_setopt(curl_->handle, CURLOPT_SSL_CTX_FUNCTION, sslctx_function);
         curl_easy_setopt(curl_->handle, CURLOPT_SSL_CTX_DATA, options.cert_buffer);

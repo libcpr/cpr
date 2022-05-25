@@ -1,4 +1,4 @@
-#if OPENSSL_VERSION_NUMBER >= 0x10100000L
+#if defined OPENSSL
 #include "cpr/ssl_ctx.h"
 #include <openssl/err.h>
 #include <openssl/safestack.h>
