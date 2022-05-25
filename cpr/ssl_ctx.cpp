@@ -18,15 +18,17 @@ CURLcode sslctx_function(CURL* /*curl*/, void* sslctx, void* parm) {
      * X509 structure that SSL can use
      */
     PEM_read_bio_X509(bio, &cert, 0, nullptr);
-    if (cert == nullptr)
+    if (cert == nullptr) {
         printf("PEM_read_bio_X509 failed...\n");
+    }
 
     /* get a pointer to the X509 certificate store (which may be empty) */
     store = SSL_CTX_get_cert_store(static_cast<SSL_CTX*>(sslctx));
 
     /* add our certificate to this store */
-    if (X509_STORE_add_cert(store, cert) == 0)
+    if (X509_STORE_add_cert(store, cert) == 0) {
         printf("error adding certificate\n");
+    }
 
     /* decrease reference counts */
     X509_free(cert);
