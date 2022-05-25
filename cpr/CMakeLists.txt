@@ -20,7 +20,8 @@ add_library(cpr
     unix_socket.cpp
     util.cpp
     response.cpp
-    redirect.cpp)
+    redirect.cpp
+    interceptor.cpp)
 
 add_library(cpr::cpr ALIAS cpr)
 
