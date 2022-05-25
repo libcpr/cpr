@@ -1,3 +1,4 @@
+#if OPENSSL_VERSION_NUMBER >= 0x10100000L
 #include "cpr/ssl_ctx.h"
 #include <openssl/err.h>
 #include <openssl/safestack.h>
@@ -46,3 +47,4 @@ CURLcode sslctx_function(CURL* curl, void* sslctx, void* certBuffer) {
 }
 
 } // namespace cpr
+#endif

@@ -95,6 +95,7 @@ class CertFile {
     }
 };
 
+#if OPENSSL_VERSION_NUMBER >= 0x10100000L
 class CertBuffer {
   public:
     // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
@@ -108,6 +109,7 @@ class CertBuffer {
         return "PEM";
     }
 };
+#endif
 
 using PemCert = CertFile;
 
@@ -407,7 +409,9 @@ class NoRevoke {
 
 struct SslOptions {
     std::string cert_file;
+#if OPENSSL_VERSION_NUMBER >= 0x10100000L
     std::shared_ptr<std::vector<char>> cert_buffer;
+#endif
     std::string cert_type;
     std::string key_file;
 #if SUPPORT_CURLOPT_SSLKEY_BLOB
@@ -447,10 +451,12 @@ struct SslOptions {
         cert_file = opt.filename;
         cert_type = opt.GetCertType();
     }
+#if OPENSSL_VERSION_NUMBER >= 0x10100000L
     void SetOption(const ssl::CertBuffer& opt) {
         cert_buffer = opt.certBuffer;
         cert_type = opt.GetCertType();
     }
+#endif
     void SetOption(const ssl::KeyFile& opt) {
         key_file = opt.filename;
         key_type = opt.GetKeyType();

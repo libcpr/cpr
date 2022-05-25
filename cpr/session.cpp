@@ -16,6 +16,10 @@
 #include "cpr/ssl_ctx.h"
 #include "cpr/util.h"
 
+#if OPENSSL_VERSION_NUMBER >= 0x10100000L
+#include "cpr/ssl_ctx.h"
+#endif
+
 
 namespace cpr {
 // Ignored here since libcurl reqires a long:
@@ -502,6 +506,7 @@ void Session::Impl::SetSslOptions(const SslOptions& options) {
             curl_easy_setopt(curl_->handle, CURLOPT_SSLCERTTYPE, options.cert_type.c_str());
         }
     }
+#if OPENSSL_VERSION_NUMBER >= 0x10100000L
     if (options.cert_buffer) {
         curl_easy_setopt(curl_->handle, CURLOPT_SSL_CTX_FUNCTION, sslctx_function);
         curl_easy_setopt(curl_->handle, CURLOPT_SSL_CTX_DATA, options.cert_buffer);
@@ -509,6 +514,7 @@ void Session::Impl::SetSslOptions(const SslOptions& options) {
             curl_easy_setopt(curl_->handle, CURLOPT_SSLCERTTYPE, options.cert_type.c_str());
         }
     }
+#endif
     if (!options.key_file.empty()) {
         curl_easy_setopt(curl_->handle, CURLOPT_SSLKEY, options.key_file.c_str());
         if (!options.key_type.empty()) {
