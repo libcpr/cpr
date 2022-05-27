@@ -820,9 +820,22 @@ void HttpServer::OnRequest(mg_connection* conn, http_message* msg) {
         OnRequestPatchNotAllowed(conn, msg);
     } else if (uri == "/download_gzip.html") {
         OnRequestDownloadGzip(conn, msg);
+    } else if (uri == "/local_port.html") {
+        OnRequestLocalPort(conn, msg);
     } else {
         OnRequestNotFound(conn, msg);
     }
+}
+
+void HttpServer::OnRequestLocalPort(mg_connection* conn, http_message* /*msg*/) {
+    // send source port number as response for checking SetLocalPort/SetLocalPortRange
+    std::string headers = "Content-Type: text/plain";
+    char portbuf[8];
+    mg_conn_addr_to_str(conn, portbuf, sizeof(portbuf),
+        MG_SOCK_STRINGIFY_PORT | MG_SOCK_STRINGIFY_REMOTE);
+    std::string response = portbuf;
+    mg_send_head(conn, 200, response.length(), headers.c_str());
+    mg_send(conn, response.c_str(), response.length());
 }
 
 } // namespace cpr

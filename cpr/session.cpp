@@ -66,6 +66,8 @@ class Session::Impl {
     void SetVerbose(const Verbose& verbose);
     void SetSslOptions(const SslOptions& options);
     void SetInterface(const Interface& iface);
+    void SetLocalPort(const LocalPort& local_port);
+    void SetLocalPortRange(const LocalPortRange& local_port_range);
     void SetHttpVersion(const HttpVersion& version);
     void SetRange(const Range& range);
     void SetMultiRange(const MultiRange& multi_range);
@@ -281,6 +283,14 @@ void Session::Impl::SetInterface(const Interface& iface) {
     } else {
         curl_easy_setopt(curl_->handle, CURLOPT_INTERFACE, iface.c_str());
     }
+}
+
+void Session::Impl::SetLocalPort(const LocalPort& local_port) {
+    curl_easy_setopt(curl_->handle, CURLOPT_LOCALPORT, local_port);
+}
+
+void Session::Impl::SetLocalPortRange(const LocalPortRange& local_port_range) {
+    curl_easy_setopt(curl_->handle, CURLOPT_LOCALPORTRANGE, local_port_range);
 }
 
 // Only supported with libcurl >= 7.61.0.
@@ -906,6 +916,8 @@ void Session::SetUnixSocket(const UnixSocket& unix_socket) { pimpl_->SetUnixSock
 void Session::SetSslOptions(const SslOptions& options) { pimpl_->SetSslOptions(options); }
 void Session::SetVerbose(const Verbose& verbose) { pimpl_->SetVerbose(verbose); }
 void Session::SetInterface(const Interface& iface) { pimpl_->SetInterface(iface); }
+void Session::SetLocalPort(const LocalPort& local_port) { pimpl_->SetLocalPort(local_port); }
+void Session::SetLocalPortRange(const LocalPortRange& local_port_range) { pimpl_->SetLocalPortRange(local_port_range); }
 void Session::SetHttpVersion(const HttpVersion& version) { pimpl_->SetHttpVersion(version); }
 void Session::SetRange(const Range& range) { pimpl_->SetRange(range); }
 void Session::SetMultiRange(const MultiRange& multi_range) { pimpl_->SetMultiRange(multi_range); }
@@ -947,6 +959,8 @@ void Session::SetOption(const Verbose& verbose) { pimpl_->SetVerbose(verbose); }
 void Session::SetOption(const UnixSocket& unix_socket) { pimpl_->SetUnixSocket(unix_socket); }
 void Session::SetOption(const SslOptions& options) { pimpl_->SetSslOptions(options); }
 void Session::SetOption(const Interface& iface) { pimpl_->SetInterface(iface); }
+void Session::SetOption(const LocalPort& local_port) { pimpl_->SetLocalPort(local_port); }
+void Session::SetOption(const LocalPortRange& local_port_range) { pimpl_->SetLocalPortRange(local_port_range); }
 void Session::SetOption(const HttpVersion& version) { pimpl_->SetHttpVersion(version); }
 void Session::SetOption(const Range& range) { pimpl_->SetRange(range); }
 void Session::SetOption(const MultiRange& multi_range) { pimpl_->SetMultiRange(multi_range); }

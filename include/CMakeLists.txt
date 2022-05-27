@@ -19,6 +19,8 @@ target_sources(cpr PRIVATE
     cpr/curlholder.h
     cpr/error.h
     cpr/limit_rate.h
+    cpr/local_port.h
+    cpr/local_port_range.h
     cpr/multipart.h
     cpr/parameters.h
     cpr/payload.h

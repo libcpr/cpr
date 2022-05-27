@@ -16,6 +16,8 @@
 #include "cpr/http_version.h"
 #include "cpr/interface.h"
 #include "cpr/limit_rate.h"
+#include "cpr/local_port.h"
+#include "cpr/local_port_range.h"
 #include "cpr/low_speed.h"
 #include "cpr/multipart.h"
 #include "cpr/parameters.h"
@@ -79,6 +81,8 @@ class Session {
     void SetDebugCallback(const DebugCallback& debug);
     void SetVerbose(const Verbose& verbose);
     void SetInterface(const Interface& iface);
+    void SetLocalPort(const LocalPort& local_port);
+    void SetLocalPortRange(const LocalPortRange& local_port_range);
     void SetHttpVersion(const HttpVersion& version);
     void SetRange(const Range& range);
     void SetMultiRange(const MultiRange& multi_range);
@@ -122,6 +126,8 @@ class Session {
     void SetOption(const UnixSocket& unix_socket);
     void SetOption(const SslOptions& options);
     void SetOption(const Interface& iface);
+    void SetOption(const LocalPort& local_port);
+    void SetOption(const LocalPortRange& local_port_range);
     void SetOption(const HttpVersion& version);
     void SetOption(const Range& range);
     void SetOption(const MultiRange& multi_range);
