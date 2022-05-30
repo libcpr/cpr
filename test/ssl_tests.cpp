@@ -1,7 +1,6 @@
 #include <gtest/gtest.h>
 
 #include <chrono>
-#include <iostream>
 #include <string>
 #include <thread>
 #include <vector>
@@ -83,12 +82,11 @@ TEST(SslTests, LoadCertFromBufferTestSimpel) {
 
     Url url{server->GetBaseUrl() + "/hello.html"};
     std::string baseDirPath = server->getBaseDirPath();
-    std::cout << "baseDirPath: " << baseDirPath << "\n";
 
-    std::shared_ptr<std::vector<char>> clientCertBuffer = loadCertificateIntoBuffer(baseDirPath + "client.cer");
-    EXPECT_TRUE(clientCertBuffer != nullptr);
+    std::shared_ptr<std::vector<char>> caCertBuffer = loadCertificateIntoBuffer(baseDirPath + "ca.cer");
+    EXPECT_TRUE(caCertBuffer != nullptr);
 
-    SslOptions sslOpts = Ssl(ssl::CaPath{baseDirPath + "ca.cer"}, ssl::CertBuffer{std::move(clientCertBuffer)}, ssl::KeyFile{baseDirPath + "client.key"}, ssl::VerifyPeer{false}, ssl::PinnedPublicKey{baseDirPath + "server.pubkey"}, ssl::VerifyHost{false}, ssl::VerifyStatus{false});
+    SslOptions sslOpts = Ssl(ssl::CaBuffer{std::move(caCertBuffer)}, ssl::CertFile{baseDirPath + "client.cer"}, ssl::KeyFile{baseDirPath + "client.key"}, ssl::VerifyPeer{false}, ssl::VerifyHost{false}, ssl::VerifyStatus{false});
     Response response = cpr::Get(url, sslOpts, Timeout{5000}, Verbose{});
     std::string expected_text = "Hello world!";
     EXPECT_EQ(expected_text, response.text);
