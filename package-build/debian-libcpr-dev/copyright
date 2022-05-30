@@ -1,0 +1,30 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: libcpr
+Source: https://github.com/libcpr/cpr
+#
+# Please double check copyright with the licensecheck(1) command.
+
+Files:     .clang-format
+           .clang-tidy
+           .github/*
+           CMakeLists.txt
+           CODE_OF_CONDUCT.md
+           CONTRIBUTING.md
+           CppCheckSuppressions.txt
+           README.md
+           cmake/*
+           cpr-config.cmake
+           cpr/*
+           include/*
+           debian/*
+Copyright: 2017-2021 Huu Nguyen
+Copyright: 2022 libcpr and many other contributors
+License:   Expat
+
+Files:     test/*
+Copyright: 2022 libcpr and many other contributors
+License:   GPL-3
+ On Debian systems, the full text of the GNU General Public
+ License version 3 can be found in the file
+ `/usr/share/common-licenses/GPL-3'.
+

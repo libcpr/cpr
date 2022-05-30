@@ -1,0 +1,19 @@
+Source: libcpr-dev
+Section: libdevel
+Priority: optional
+Maintainer: Philip Saendig <philip.saendig@gmail.com>
+Build-Depends: cmake, debhelper (>=11~), libcurl4-openssl-dev
+Standards-Version: 4.5.0
+Homepage: https://github.com/libcpr/cpr
+
+Package: libcpr-dev
+Section: libdevel
+Architecture: any
+Multi-Arch: same
+Pre-Depends: ${misc:Pre-Depends}
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Description: C++ Requests is a C++ wrapper around the 
+ libcurl library inspried by the Python Request project. 
+ Using the more expressive language facilities of C++11, 
+ it captures the essence of making network calls into a 
+ few concise idioms
