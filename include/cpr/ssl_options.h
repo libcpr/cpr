@@ -325,9 +325,9 @@ class CaPath {
 class CaBuffer {
   public:
     // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
-    CaBuffer(std::shared_ptr<std::vector<char>>&& p_buffer) : buffer(std::move(p_buffer)) {}
+    CaBuffer(std::string&& p_buffer) : buffer(std::move(p_buffer)) {}
 
-    const std::shared_ptr<std::vector<char>> buffer;
+    const std::string buffer;
 };
 #endif
 
@@ -435,7 +435,7 @@ struct SslOptions {
     std::string ca_info;
     std::string ca_path;
 #if SUPPORT_CURLOPT_SSL_CTX_FUNCTION
-    std::shared_ptr<std::vector<char>> ca_buffer;
+    std::string ca_buffer;
 #endif
     std::string crl_file;
     std::string ciphers;

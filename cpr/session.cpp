@@ -564,9 +564,9 @@ void Session::Impl::SetSslOptions(const SslOptions& options) {
         curl_easy_setopt(curl_->handle, CURLOPT_CAPATH, options.ca_path.c_str());
     }
 #if SUPPORT_CURLOPT_SSL_CTX_FUNCTION
-    if (options.ca_buffer) {
+    if (!options.ca_buffer.empty()) {
         curl_easy_setopt(curl_->handle, CURLOPT_SSL_CTX_FUNCTION, sslctx_function_load_ca_cert_from_buffer);
-        curl_easy_setopt(curl_->handle, CURLOPT_SSL_CTX_DATA, options.ca_buffer->data());
+        curl_easy_setopt(curl_->handle, CURLOPT_SSL_CTX_DATA, options.ca_buffer.c_str());
     }
 #endif
     if (!options.crl_file.empty()) {

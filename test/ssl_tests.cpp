@@ -15,15 +15,11 @@ using namespace cpr;
 
 static HttpsServer* server;
 
-std::shared_ptr<std::vector<char>> loadCertificateIntoBuffer(const std::string certPath) {
-    std::ifstream certFile(certPath, std::ios::binary | std::ios::ate);
-    std::streamsize size = certFile.tellg();
-    certFile.seekg(0, std::ios::beg);
-    std::vector<char> buffer(size);
-    if (certFile.read(buffer.data(), size)) {
-        return std::make_shared<std::vector<char>>(buffer.begin(), buffer.end());
-    }
-    return nullptr;
+std::string loadCertificateFromFile(const std::string certPath) {
+    std::ifstream certFile(certPath);
+    std::stringstream buffer;
+    buffer << certFile.rdbuf();
+    return buffer.str();
 }
 
 TEST(SslTests, HelloWorldTestSimpel) {
@@ -83,10 +79,8 @@ TEST(SslTests, LoadCertFromBufferTestSimpel) {
     Url url{server->GetBaseUrl() + "/hello.html"};
     std::string baseDirPath = server->getBaseDirPath();
 
-    std::shared_ptr<std::vector<char>> caCertBuffer = loadCertificateIntoBuffer(baseDirPath + "ca.cer");
-    EXPECT_TRUE(caCertBuffer != nullptr);
-
-    SslOptions sslOpts = Ssl(ssl::CaBuffer{std::move(caCertBuffer)}, ssl::CertFile{baseDirPath + "client.cer"}, ssl::KeyFile{baseDirPath + "client.key"}, ssl::VerifyPeer{false}, ssl::VerifyHost{false}, ssl::VerifyStatus{false});
+    std::string certBuffer = loadCertificateFromFile(baseDirPath + "ca.cer");
+    SslOptions sslOpts = Ssl(ssl::CaBuffer{std::move(certBuffer)}, ssl::CertFile{baseDirPath + "client.cer"}, ssl::KeyFile{baseDirPath + "client.key"}, ssl::VerifyPeer{false}, ssl::VerifyHost{false}, ssl::VerifyStatus{false});
     Response response = cpr::Get(url, sslOpts, Timeout{5000}, Verbose{});
     std::string expected_text = "Hello world!";
     EXPECT_EQ(expected_text, response.text);
