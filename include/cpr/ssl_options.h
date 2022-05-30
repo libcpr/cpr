@@ -1,7 +1,9 @@
 #ifndef CPR_SSLOPTIONS_H
 #define CPR_SSLOPTIONS_H
 
+#include <memory>
 #include <string>
+#include <vector>
 
 #include <curl/curl.h>
 
@@ -61,6 +63,9 @@
 #endif
 #ifndef SUPPORT_CURLOPT_SSLKEY_BLOB
 #define SUPPORT_CURLOPT_SSLKEY_BLOB __LIBCURL_VERSION_GTE(7, 71)
+#endif
+#ifndef SUPPORT_CURLOPT_SSL_CTX_FUNCTION
+#define SUPPORT_CURLOPT_SSL_CTX_FUNCTION __LIBCURL_VERSION_GTE(7, 11)
 #endif
 
 namespace cpr {
@@ -316,7 +321,7 @@ class CaPath {
     std::string filename;
 };
 
-#if defined OPENSSL
+#if SUPPORT_CURLOPT_SSL_CTX_FUNCTION
 class CaBuffer {
   public:
     // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
@@ -429,7 +434,7 @@ struct SslOptions {
 #endif
     std::string ca_info;
     std::string ca_path;
-#if defined OPENSSL
+#if SUPPORT_CURLOPT_SSL_CTX_FUNCTION
     std::shared_ptr<std::vector<char>> ca_buffer;
 #endif
     std::string crl_file;
@@ -549,7 +554,7 @@ struct SslOptions {
     void SetOption(const ssl::CaPath& opt) {
         ca_path = opt.filename;
     }
-#if defined OPENSSL
+#if SUPPORT_CURLOPT_SSL_CTX_FUNCTION
     void SetOption(const ssl::CaBuffer& opt) {
         ca_buffer = opt.buffer;
     }

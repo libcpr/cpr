@@ -1,6 +1,10 @@
-#if defined OPENSSL
 
 #include "cpr/ssl_ctx.h"
+
+#if SUPPORT_CURLOPT_SSL_CTX_FUNCTION
+
+#ifdef OPENSSL_BACKEND_USED
+
 #include <openssl/err.h>
 #include <openssl/safestack.h>
 #include <openssl/ssl.h>
@@ -61,4 +65,6 @@ CURLcode sslctx_function_load_ca_cert_from_buffer(CURL* /*curl*/, void* sslctx, 
 
 } // namespace cpr
 
-#endif
+#endif // OPENSSL_BACKEND_USED
+
+#endif // SUPPORT_CURLOPT_SSL_CTX_FUNCTION

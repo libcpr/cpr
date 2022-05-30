@@ -16,7 +16,7 @@
 #include "cpr/ssl_ctx.h"
 #include "cpr/util.h"
 
-#if defined OPENSSL
+#if SUPPORT_CURLOPT_SSL_CTX_FUNCTION
 #include "cpr/ssl_ctx.h"
 #endif
 
@@ -563,7 +563,7 @@ void Session::Impl::SetSslOptions(const SslOptions& options) {
     if (!options.ca_path.empty()) {
         curl_easy_setopt(curl_->handle, CURLOPT_CAPATH, options.ca_path.c_str());
     }
-#if defined OPENSSL
+#if SUPPORT_CURLOPT_SSL_CTX_FUNCTION
     if (options.ca_buffer) {
         curl_easy_setopt(curl_->handle, CURLOPT_SSL_CTX_FUNCTION, sslctx_function_load_ca_cert_from_buffer);
         curl_easy_setopt(curl_->handle, CURLOPT_SSL_CTX_DATA, options.ca_buffer->data());

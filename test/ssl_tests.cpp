@@ -76,7 +76,7 @@ TEST(SslTests, GetCertInfo) {
     EXPECT_EQ(certInfo[0], expected_certInfo);
 }
 
-#if defined OPENSSL
+#if SUPPORT_CURLOPT_SSL_CTX_FUNCTION
 TEST(SslTests, LoadCertFromBufferTestSimpel) {
     std::this_thread::sleep_for(std::chrono::seconds(1));
 
