@@ -506,15 +506,6 @@ void Session::Impl::SetSslOptions(const SslOptions& options) {
             curl_easy_setopt(curl_->handle, CURLOPT_SSLCERTTYPE, options.cert_type.c_str());
         }
     }
-#if defined OPENSSL
-    if (options.cert_buffer) {
-        curl_easy_setopt(curl_->handle, CURLOPT_SSL_CTX_FUNCTION, sslctx_function);
-        curl_easy_setopt(curl_->handle, CURLOPT_SSL_CTX_DATA, options.cert_buffer->data());
-        if (!options.cert_type.empty()) {
-            curl_easy_setopt(curl_->handle, CURLOPT_SSLCERTTYPE, options.cert_type.c_str());
-        }
-    }
-#endif
     if (!options.key_file.empty()) {
         curl_easy_setopt(curl_->handle, CURLOPT_SSLKEY, options.key_file.c_str());
         if (!options.key_type.empty()) {
@@ -572,6 +563,12 @@ void Session::Impl::SetSslOptions(const SslOptions& options) {
     if (!options.ca_path.empty()) {
         curl_easy_setopt(curl_->handle, CURLOPT_CAPATH, options.ca_path.c_str());
     }
+#if defined OPENSSL
+    if (options.ca_buffer) {
+        curl_easy_setopt(curl_->handle, CURLOPT_SSL_CTX_FUNCTION, sslctx_function_load_ca_cert_from_buffer);
+        curl_easy_setopt(curl_->handle, CURLOPT_SSL_CTX_DATA, options.ca_buffer->data());
+    }
+#endif
     if (!options.crl_file.empty()) {
         curl_easy_setopt(curl_->handle, CURLOPT_CRLFILE, options.crl_file.c_str());
     }

@@ -95,22 +95,6 @@ class CertFile {
     }
 };
 
-#if defined OPENSSL
-class CertBuffer {
-  public:
-    // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
-    CertBuffer(std::shared_ptr<std::vector<char>>&& p_certBuffer) : certBuffer(std::move(p_certBuffer)) {}
-
-    virtual ~CertBuffer() = default;
-
-    const std::shared_ptr<std::vector<char>> certBuffer;
-
-    virtual const char* GetCertType() const {
-        return "PEM";
-    }
-};
-#endif
-
 using PemCert = CertFile;
 
 class DerCert : public CertFile {
@@ -332,6 +316,16 @@ class CaPath {
     std::string filename;
 };
 
+#if defined OPENSSL
+class CaBuffer {
+  public:
+    // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
+    CaBuffer(std::shared_ptr<std::vector<char>>&& p_buffer) : buffer(std::move(p_buffer)) {}
+
+    const std::shared_ptr<std::vector<char>> buffer;
+};
+#endif
+
 // specify a Certificate Revocation List file
 class Crl {
   public:
@@ -409,9 +403,6 @@ class NoRevoke {
 
 struct SslOptions {
     std::string cert_file;
-#if defined OPENSSL
-    std::shared_ptr<std::vector<char>> cert_buffer;
-#endif
     std::string cert_type;
     std::string key_file;
 #if SUPPORT_CURLOPT_SSLKEY_BLOB
@@ -438,6 +429,9 @@ struct SslOptions {
 #endif
     std::string ca_info;
     std::string ca_path;
+#if defined OPENSSL
+    std::shared_ptr<std::vector<char>> ca_buffer;
+#endif
     std::string crl_file;
     std::string ciphers;
 #if SUPPORT_TLSv13_CIPHERS
@@ -451,12 +445,6 @@ struct SslOptions {
         cert_file = opt.filename;
         cert_type = opt.GetCertType();
     }
-#if defined OPENSSL
-    void SetOption(const ssl::CertBuffer& opt) {
-        cert_buffer = opt.certBuffer;
-        cert_type = opt.GetCertType();
-    }
-#endif
     void SetOption(const ssl::KeyFile& opt) {
         key_file = opt.filename;
         key_type = opt.GetKeyType();
@@ -561,6 +549,11 @@ struct SslOptions {
     void SetOption(const ssl::CaPath& opt) {
         ca_path = opt.filename;
     }
+#if defined OPENSSL
+    void SetOption(const ssl::CaBuffer& opt) {
+        ca_buffer = opt.buffer;
+    }
+#endif
     void SetOption(const ssl::Crl& opt) {
         crl_file = opt.filename;
     }
