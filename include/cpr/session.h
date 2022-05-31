@@ -138,6 +138,7 @@ class Session {
     void SetOption(const ReserveSize& reserve_size);
     void SetOption(const AcceptEncoding& accept_encoding);
     void SetOption(AcceptEncoding&& accept_encoding);
+    void SetOption(const UploadRange& upload_range);
 
     cpr_off_t GetDownloadFileLength();
     /**

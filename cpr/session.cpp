@@ -1005,6 +1005,7 @@ void Session::SetOption(const MultiRange& multi_range) { pimpl_->SetMultiRange(m
 void Session::SetOption(const ReserveSize& reserve_size) { pimpl_->SetReserveSize(reserve_size.size); }
 void Session::SetOption(const AcceptEncoding& accept_encoding) { pimpl_->SetAcceptEncoding(accept_encoding); }
 void Session::SetOption(AcceptEncoding&& accept_encoding) { pimpl_->SetAcceptEncoding(std::move(accept_encoding)); }
+void Session::SetOption(const UploadRange& upload_range) { pimpl_->SetUploadRange(upload_range); }
 
 cpr_off_t Session::GetDownloadFileLength() { return pimpl_->GetDownloadFileLength(); }
 void Session::ResponseStringReserve(size_t size) { pimpl_->ResponseStringReserve(size); }
