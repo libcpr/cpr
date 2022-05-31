@@ -28,11 +28,11 @@ jobs:
       # Build packages of runtime and development library
     - name: "Package build of runtime library"
       env: 
-        VERSION: ${{ github.event.ref }}
+        VERSION: 1.8.3 # ${{ github.event.ref }}
       run: bash cpr/package-build/build-package.sh cpr
     - name: "Package build of development library"
       env: 
-        VERSION: ${{ github.event.ref }}
+        VERSION: 1.8.3 # ${{ github.event.ref }}
       run: bash cpr/package-build/build-dev-package.sh cpr
 
     - name: "Upload deb-packages"
