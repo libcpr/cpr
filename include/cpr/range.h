@@ -45,7 +45,7 @@ class MultiRange {
     std::vector<Range> ranges;
 };
 
-class UploadRange : Range {
+class UploadRange : private Range {
   public:
     UploadRange(const std::int64_t p_resume_from, const std::int64_t p_finish_at) : Range(p_resume_from, p_finish_at) {}
 
