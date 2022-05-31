@@ -5,6 +5,7 @@
 #include <fstream>
 #include <memory>
 
+#include "cpr/accept_encoding.h"
 #include "cpr/auth.h"
 #include "cpr/bearer.h"
 #include "cpr/body.h"
@@ -13,7 +14,6 @@
 #include "cpr/cookies.h"
 #include "cpr/cprtypes.h"
 #include "cpr/curlholder.h"
-#include "cpr/accept_encoding.h"
 #include "cpr/http_version.h"
 #include "cpr/interface.h"
 #include "cpr/limit_rate.h"
@@ -90,6 +90,7 @@ class Session {
     void SetReserveSize(const ReserveSize& reserve_size);
     void SetAcceptEncoding(const AcceptEncoding& accept_encoding);
     void SetAcceptEncoding(AcceptEncoding&& accept_encoding);
+    void SetUploadRange(const UploadRange& upload_range);
 
     // Used in templated functions
     void SetOption(const Url& url);

@@ -78,6 +78,7 @@ class Session::Impl {
     void SetReserveSize(const ReserveSize& reserve_size);
     void SetAcceptEncoding(AcceptEncoding&& accept_encoding);
     void SetAcceptEncoding(const AcceptEncoding& accept_encoding);
+    void SetUploadRange(const UploadRange& upload_range);
 
     cpr_off_t GetDownloadFileLength();
     void ResponseStringReserve(size_t size);
@@ -599,6 +600,13 @@ void Session::Impl::SetMultiRange(const MultiRange& multi_range) {
     curl_easy_setopt(curl_->handle, CURLOPT_RANGE, multi_range_str.c_str());
 }
 
+void Session::Impl::SetUploadRange(const UploadRange& upload_range) {
+    curl_off_t resume_from = upload_range.getResumeFrom();
+    curl_off_t filesize = upload_range.getFilesize();
+    curl_easy_setopt(curl_->handle, CURLOPT_RESUME_FROM_LARGE, resume_from);
+    curl_easy_setopt(curl_->handle, CURLOPT_INFILESIZE_LARGE, filesize);
+}
+
 void Session::Impl::SetReserveSize(const ReserveSize& reserve_size) {
     ResponseStringReserve(reserve_size.size);
 }
@@ -844,8 +852,7 @@ void Session::Impl::prepareCommon() {
     if (acceptEncoding_.empty()) {
         /* enable all supported built-in compressions */
         curl_easy_setopt(curl_->handle, CURLOPT_ACCEPT_ENCODING, "");
-    }
-    else {
+    } else {
         curl_easy_setopt(curl_->handle, CURLOPT_ACCEPT_ENCODING, acceptEncoding_.getString().c_str());
     }
 #endif
@@ -948,6 +955,7 @@ void Session::SetLocalPort(const LocalPort& local_port) { pimpl_->SetLocalPort(l
 void Session::SetLocalPortRange(const LocalPortRange& local_port_range) { pimpl_->SetLocalPortRange(local_port_range); }
 void Session::SetHttpVersion(const HttpVersion& version) { pimpl_->SetHttpVersion(version); }
 void Session::SetRange(const Range& range) { pimpl_->SetRange(range); }
+void Session::SetUploadRange(const UploadRange& upload_range) { pimpl_->SetUploadRange(upload_range); }
 void Session::SetMultiRange(const MultiRange& multi_range) { pimpl_->SetMultiRange(multi_range); }
 void Session::SetReserveSize(const ReserveSize& reserve_size) { pimpl_->SetReserveSize(reserve_size); }
 void Session::SetAcceptEncoding(const AcceptEncoding& accept_encoding) { pimpl_->SetAcceptEncoding(accept_encoding); }
