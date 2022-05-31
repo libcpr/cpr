@@ -9,7 +9,7 @@ DEBIAN_DIR="$LIB_DIR/debian"
 
 ARCHIVE_NAME="$LIB_DIR.tar.gz"
 
-cp $SRC_DIR $LIB_DIR
+cp -r $SRC_DIR $LIB_DIR
 
 tar --exclude-vcs -czf $ARCHIVE_NAME $LIB_DIR
 tar -xzf $ARCHIVE_NAME
