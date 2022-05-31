@@ -2,7 +2,7 @@ Source: libcpr-dev
 Section: libdevel
 Priority: optional
 Maintainer: Philip Saendig <philip.saendig@gmail.com>
-Build-Depends: cmake, debhelper (>=11~), libcurl4-openssl-dev
+Build-Depends: debhelper (>=11~), cmake, libssl-dev, libcurl4-openssl-dev
 Standards-Version: 4.5.0
 Homepage: https://github.com/libcpr/cpr
 
