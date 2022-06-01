@@ -29,6 +29,7 @@
 #include "cpr/reserve_size.h"
 #include "cpr/response.h"
 #include "cpr/session.h"
+#include "cpr/ssl_ctx.h"
 #include "cpr/ssl_options.h"
 #include "cpr/status_codes.h"
 #include "cpr/timeout.h"

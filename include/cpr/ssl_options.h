@@ -1,7 +1,9 @@
 #ifndef CPR_SSLOPTIONS_H
 #define CPR_SSLOPTIONS_H
 
+#include <memory>
 #include <string>
+#include <vector>
 
 #include <curl/curl.h>
 
@@ -61,6 +63,9 @@
 #endif
 #ifndef SUPPORT_CURLOPT_SSLKEY_BLOB
 #define SUPPORT_CURLOPT_SSLKEY_BLOB __LIBCURL_VERSION_GTE(7, 71)
+#endif
+#ifndef SUPPORT_CURLOPT_SSL_CTX_FUNCTION
+#define SUPPORT_CURLOPT_SSL_CTX_FUNCTION __LIBCURL_VERSION_GTE(7, 11)
 #endif
 
 namespace cpr {
@@ -316,6 +321,16 @@ class CaPath {
     std::string filename;
 };
 
+#if SUPPORT_CURLOPT_SSL_CTX_FUNCTION
+class CaBuffer {
+  public:
+    // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
+    CaBuffer(std::string&& p_buffer) : buffer(std::move(p_buffer)) {}
+
+    const std::string buffer;
+};
+#endif
+
 // specify a Certificate Revocation List file
 class Crl {
   public:
@@ -419,6 +434,9 @@ struct SslOptions {
 #endif
     std::string ca_info;
     std::string ca_path;
+#if SUPPORT_CURLOPT_SSL_CTX_FUNCTION
+    std::string ca_buffer;
+#endif
     std::string crl_file;
     std::string ciphers;
 #if SUPPORT_TLSv13_CIPHERS
@@ -536,6 +554,11 @@ struct SslOptions {
     void SetOption(const ssl::CaPath& opt) {
         ca_path = opt.filename;
     }
+#if SUPPORT_CURLOPT_SSL_CTX_FUNCTION
+    void SetOption(const ssl::CaBuffer& opt) {
+        ca_buffer = opt.buffer;
+    }
+#endif
     void SetOption(const ssl::Crl& opt) {
         crl_file = opt.filename;
     }

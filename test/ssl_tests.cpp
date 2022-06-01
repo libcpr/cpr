@@ -1,7 +1,6 @@
 #include <gtest/gtest.h>
 
 #include <chrono>
-#include <iostream>
 #include <string>
 #include <thread>
 #include <vector>
@@ -11,9 +10,17 @@
 
 #include "httpsServer.hpp"
 
+
 using namespace cpr;
 
 static HttpsServer* server;
+
+std::string loadCertificateFromFile(const std::string certPath) {
+    std::ifstream certFile(certPath);
+    std::stringstream buffer;
+    buffer << certFile.rdbuf();
+    return buffer.str();
+}
 
 TEST(SslTests, HelloWorldTestSimpel) {
     std::this_thread::sleep_for(std::chrono::seconds(1));
@@ -64,6 +71,25 @@ TEST(SslTests, GetCertInfo) {
     std::string expected_certInfo = "Subject:C = XX, L = Default City, O = Default Company Ltd";
     EXPECT_EQ(certInfo[0], expected_certInfo);
 }
+
+#if SUPPORT_CURLOPT_SSL_CTX_FUNCTION
+TEST(SslTests, LoadCertFromBufferTestSimpel) {
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+
+    Url url{server->GetBaseUrl() + "/hello.html"};
+    std::string baseDirPath = server->getBaseDirPath();
+
+    std::string certBuffer = loadCertificateFromFile(baseDirPath + "ca.cer");
+    SslOptions sslOpts = Ssl(ssl::CaBuffer{std::move(certBuffer)}, ssl::CertFile{baseDirPath + "client.cer"}, ssl::KeyFile{baseDirPath + "client.key"}, ssl::VerifyPeer{false}, ssl::VerifyHost{false}, ssl::VerifyStatus{false});
+    Response response = cpr::Get(url, sslOpts, Timeout{5000}, Verbose{});
+    std::string expected_text = "Hello world!";
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code) << response.error.message;
+}
+#endif
 
 /**
  * We should replace this with a C++17 filesystem call,
