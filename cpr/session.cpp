@@ -13,7 +13,6 @@
 
 #include "cpr/cprtypes.h"
 #include "cpr/interceptor.h"
-#include "cpr/ssl_ctx.h"
 #include "cpr/util.h"
 
 #if SUPPORT_CURLOPT_SSL_CTX_FUNCTION
