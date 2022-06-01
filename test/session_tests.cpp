@@ -1062,6 +1062,19 @@ TEST(BasicTests, AcceptEncodingTestWithCostomizedStringLValue) {
     EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
+TEST(UploadRangeTests, SimpleUploadRangeTest) {
+    Url url{"http://httpbin.org/put"};
+    Session session;
+    session.SetUrl(url);
+    session.SetPayload({{"x", "5"}, {"y", "42"}});
+    session.SetUploadRange(cpr::UploadRange{0, 3});
+    Response response = session.Put();
+    std::cout << response.text;
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
     ::testing::AddGlobalTestEnvironment(server);
