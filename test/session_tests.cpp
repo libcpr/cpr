@@ -1062,17 +1062,72 @@ TEST(BasicTests, AcceptEncodingTestWithCostomizedStringLValue) {
     EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
-TEST(UploadRangeTests, SimpleUploadRangeTest) {
-    Url url{"http://httpbin.org/put"};
+TEST(UploadRangeTests, UploadSingleFullRangeTest) {
+    Url url{server->GetBaseUrl() + "/header_reflect.html"};
     Session session;
     session.SetUrl(url);
-    session.SetPayload({{"x", "5"}, {"y", "42"}});
-    session.SetUploadRange(cpr::UploadRange{0, 3});
+    session.SetPayload({{"key", "1234"}});
+    session.SetUploadRange(cpr::UploadRange{0, 7});
     Response response = session.Put();
-    std::cout << response.text;
+
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(200, response.status_code);
     EXPECT_EQ(ErrorCode::OK, response.error.code);
+    EXPECT_EQ(std::string{"bytes 0-7/*"}, response.header["Content-Range"]);
+}
+
+TEST(UploadRangeTests, UploadSingleFirstPartRangeTest) {
+    Url url{server->GetBaseUrl() + "/header_reflect.html"};
+    Session session;
+    session.SetUrl(url);
+    session.SetPayload({{"key", "12"}});
+    session.SetUploadRange(cpr::UploadRange{0, 5});
+    Response response = session.Put();
+
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+    EXPECT_EQ(std::string{"bytes 0-5/*"}, response.header["Content-Range"]);
+}
+
+TEST(UploadRangeTests, UploadSingleSecondPartRangeTest) {
+    Url url{server->GetBaseUrl() + "/header_reflect.html"};
+    Session session;
+    session.SetUrl(url);
+    session.SetPayload({{"y", "1234"}});
+    session.SetUploadRange(cpr::UploadRange{2, 7});
+    Response response = session.Put();
+
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+    EXPECT_EQ(std::string{"bytes 2-7/*"}, response.header["Content-Range"]);
+}
+
+TEST(UploadRangeTests, UploadTwoPartsRangeTest) {
+    Url url{server->GetBaseUrl() + "/header_reflect.html"};
+    Session session;
+    session.SetUrl(url);
+
+    // Upload first part
+    session.SetBody("hello ");
+    session.SetUploadRange(cpr::UploadRange{0, 5});
+    Response response = session.Put();
+
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+    EXPECT_EQ(std::string{"bytes 0-5/*"}, response.header["Content-Range"]);
+
+    // Upload second part
+    session.SetBody("world");
+    session.SetUploadRange(cpr::UploadRange{6, 10});
+    response = session.Put();
+
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+    EXPECT_EQ(std::string{"bytes 6-10/*"}, response.header["Content-Range"]);
 }
 
 int main(int argc, char** argv) {
