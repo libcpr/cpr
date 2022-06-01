@@ -133,6 +133,7 @@ class Session::Impl {
     size_t response_string_reserve_size_{0};
     std::string response_string_;
     std::string header_string_;
+    std::string upload_range_header_;
     std::queue<std::shared_ptr<Interceptor>> interceptors;
     Session* psession_;
 
@@ -193,6 +194,10 @@ void Session::Impl::SetHeaderInternal() {
         if (temp) {
             chunk = temp;
         }
+    }
+
+    if (!upload_range_header_.empty()) {
+        chunk = curl_slist_append(chunk, upload_range_header_.c_str());
     }
 
     curl_easy_setopt(curl_->handle, CURLOPT_HTTPHEADER, chunk);
@@ -601,9 +606,21 @@ void Session::Impl::SetMultiRange(const MultiRange& multi_range) {
 }
 
 void Session::Impl::SetUploadRange(const UploadRange& upload_range) {
+    // Get range borders
     curl_off_t resume_from = upload_range.getResumeFrom();
     curl_off_t filesize = upload_range.getFilesize();
-    curl_easy_setopt(curl_->handle, CURLOPT_RESUME_FROM_LARGE, resume_from);
+
+    // Create upload range header
+    char range_header[256];
+    sprintf(range_header,
+            "Content-Range: bytes %" CURL_FORMAT_CURL_OFF_T
+            "-"
+            "%" CURL_FORMAT_CURL_OFF_T "/*",
+            resume_from, filesize - 1);
+    upload_range_header_ = std::string(range_header);
+
+    // Set CURLOPTs
+    // curl_easy_setopt(curl_->handle, CURLOPT_RESUME_FROM_LARGE, resume_from);
     curl_easy_setopt(curl_->handle, CURLOPT_INFILESIZE_LARGE, filesize);
 }
 
