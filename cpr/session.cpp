@@ -611,13 +611,13 @@ void Session::Impl::SetUploadRange(const UploadRange& upload_range) {
     curl_off_t filesize = upload_range.getFilesize();
 
     // Create upload range header
-    char range_header[256];
-    sprintf(range_header,
+    std::array<char, 256> range_header;
+    sprintf(range_header.data(),
             "Content-Range: bytes %" CURL_FORMAT_CURL_OFF_T
             "-"
             "%" CURL_FORMAT_CURL_OFF_T "/*",
             resume_from, filesize - 1);
-    upload_range_header_ = std::string(range_header);
+    upload_range_header_ = std::string(range_header.data());
 
     // Set CURLOPTs
     // curl_easy_setopt(curl_->handle, CURLOPT_RESUME_FROM_LARGE, resume_from);
