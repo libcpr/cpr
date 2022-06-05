@@ -7,6 +7,7 @@ target_include_directories(cpr PUBLIC
 
 target_sources(cpr PRIVATE
      # Header files (useful in IDEs)
+    cpr/accept_encoding.h
     cpr/api.h
     cpr/async.h
     cpr/auth.h
