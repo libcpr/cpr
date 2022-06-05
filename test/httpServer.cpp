@@ -404,10 +404,12 @@ void HttpServer::OnRequestJsonPost(mg_connection* conn, mg_http_message* msg) {
 void HttpServer::OnRequestFormPost(mg_connection* conn, mg_http_message* msg) {
     size_t pos{0};
     std::map<std::string, std::string> forms;
+    std::map<std::string, std::string> filenames;
     struct mg_http_part part {};
 
     while ((pos = mg_http_next_multipart(msg->body, pos, &part)) > 0) {
         forms[std::string(part.name.ptr, part.name.len)] = std::string(part.body.ptr, part.body.len);
+        filenames[std::string(part.name.ptr, part.name.len)] = std::string(part.filename.ptr, part.filename.len);
     }
 
     std::string x = forms["x"];
@@ -415,12 +417,21 @@ void HttpServer::OnRequestFormPost(mg_connection* conn, mg_http_message* msg) {
     std::string headers = "Content-Type: application/json\r\n";
     std::string response;
     if (forms.find("y") == forms.end()) {
-        response = std::string{
-                "{\n"
-                "  \"x\": " +
-                forms["x"] +
-                "\n"
-                "}"};
+        if (!filenames["x"].empty()) {
+            response = std::string{
+                    "{\n"
+                    "  \"x\": " +
+                    filenames["x"] + "=" + forms["x"] +
+                    "\n"
+                    "}"};
+        } else {
+            response = std::string{
+                    "{\n"
+                    "  \"x\": " +
+                    forms["x"] +
+                    "\n"
+                    "}"};
+        }
     } else {
         response = std::string{
                 "{\n"

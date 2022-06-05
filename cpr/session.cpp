@@ -357,6 +357,11 @@ void Session::Impl::SetMultipart(Multipart&& multipart) {
             formdata.push_back({CURLFORM_COPYNAME, part.name.c_str()});
             if (part.is_file) {
                 formdata.push_back({CURLFORM_FILE, part.value.c_str()});
+                if (part.has_filename) {
+                    formdata.push_back({CURLFORM_FILENAME, part.filename.c_str()});
+                } else {
+                    formdata.push_back({CURLFORM_FILENAME, part.value.c_str()});
+                }
             } else {
                 formdata.push_back({CURLFORM_COPYCONTENTS, part.value.c_str()});
             }
@@ -388,6 +393,11 @@ void Session::Impl::SetMultipart(const Multipart& multipart) {
             formdata.push_back({CURLFORM_COPYNAME, part.name.c_str()});
             if (part.is_file) {
                 formdata.push_back({CURLFORM_FILE, part.value.c_str()});
+                if (part.has_filename) {
+                    formdata.push_back({CURLFORM_FILENAME, part.filename.c_str()});
+                } else {
+                    formdata.push_back({CURLFORM_FILENAME, part.value.c_str()});
+                }
             } else {
                 formdata.push_back({CURLFORM_COPYCONTENTS, part.value.c_str()});
             }
@@ -844,8 +854,7 @@ void Session::Impl::prepareCommon() {
     if (acceptEncoding_.empty()) {
         /* enable all supported built-in compressions */
         curl_easy_setopt(curl_->handle, CURLOPT_ACCEPT_ENCODING, "");
-    }
-    else {
+    } else {
         curl_easy_setopt(curl_->handle, CURLOPT_ACCEPT_ENCODING, acceptEncoding_.getString().c_str());
     }
 #endif
