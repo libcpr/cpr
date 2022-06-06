@@ -2,10 +2,10 @@ name: CI
 on:
   push:
       branches: [ build-deb-package ]
-      # tags: [ '[0-9]+.[0-9]+.[0-9]+' ]
+      tags: [ '[0-9]+.[0-9]+.[0-9]+' ]
   pull_request:
       branches: [ build-deb-package ]
-      # tags: [ '[0-9]+.[0-9]+.[0-9]+' ]
+      tags: [ '[0-9]+.[0-9]+.[0-9]+' ]
 
 jobs:
   package-ubuntu-20-amd64:
@@ -28,7 +28,7 @@ jobs:
       # Build package of runtime library
     - name: "Package build of runtime library"
       env: 
-        VERSION: 1.8.3 # ${{ github.event.ref }}
+        VERSION: ${{ github.event.ref }}
       run: bash cpr/package-build/build-package.sh cpr
 
     - name: "Upload deb-packages"
