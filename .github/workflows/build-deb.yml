@@ -25,15 +25,11 @@ jobs:
     - name: "Install building tools"
       run: sudo apt install cmake debmake devscripts
 
-      # Build packages of runtime and development library
+      # Build package of runtime library
     - name: "Package build of runtime library"
       env: 
         VERSION: 1.8.3 # ${{ github.event.ref }}
       run: bash cpr/package-build/build-package.sh cpr
-    - name: "Package build of development library"
-      env: 
-        VERSION: 1.8.3 # ${{ github.event.ref }}
-      run: bash cpr/package-build/build-dev-package.sh cpr
 
     - name: "Upload deb-packages"
       uses: actions/upload-artifact@v3
