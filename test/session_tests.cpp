@@ -1066,21 +1066,21 @@ TEST(UploadRangeTests, UploadSingleFullRangeTest) {
     Url url{server->GetBaseUrl() + "/header_reflect.html"};
     Session session;
     session.SetUrl(url);
-    session.SetPayload({{"key", "1234"}});
-    session.SetUploadRange(cpr::UploadRange{0, 7});
+    session.SetBody("hello world");
+    session.SetUploadRange(cpr::UploadRange{0, 10});
     Response response = session.Put();
 
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(200, response.status_code);
     EXPECT_EQ(ErrorCode::OK, response.error.code);
-    EXPECT_EQ(std::string{"bytes 0-7/*"}, response.header["Content-Range"]);
+    EXPECT_EQ(std::string{"bytes 0-10/*"}, response.header["Content-Range"]);
 }
 
 TEST(UploadRangeTests, UploadSingleFirstPartRangeTest) {
     Url url{server->GetBaseUrl() + "/header_reflect.html"};
     Session session;
     session.SetUrl(url);
-    session.SetPayload({{"key", "12"}});
+    session.SetBody("hello ");
     session.SetUploadRange(cpr::UploadRange{0, 5});
     Response response = session.Put();
 
@@ -1094,14 +1094,14 @@ TEST(UploadRangeTests, UploadSingleSecondPartRangeTest) {
     Url url{server->GetBaseUrl() + "/header_reflect.html"};
     Session session;
     session.SetUrl(url);
-    session.SetPayload({{"y", "1234"}});
-    session.SetUploadRange(cpr::UploadRange{2, 7});
-    Response response = session.Put();
+    session.SetBody("world");
+    session.SetUploadRange(cpr::UploadRange{6, 10});
+    Response response = session.Patch();
 
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(200, response.status_code);
     EXPECT_EQ(ErrorCode::OK, response.error.code);
-    EXPECT_EQ(std::string{"bytes 2-7/*"}, response.header["Content-Range"]);
+    EXPECT_EQ(std::string{"bytes 6-10/*"}, response.header["Content-Range"]);
 }
 
 TEST(UploadRangeTests, UploadTwoPartsRangeTest) {
@@ -1122,7 +1122,7 @@ TEST(UploadRangeTests, UploadTwoPartsRangeTest) {
     // Upload second part
     session.SetBody("world");
     session.SetUploadRange(cpr::UploadRange{6, 10});
-    response = session.Put();
+    response = session.Patch();
 
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(200, response.status_code);
