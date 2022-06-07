@@ -3,8 +3,10 @@
 
 #include <cstdint>
 #include <fstream>
+#include <future>
 #include <memory>
 
+#include "cpr/accept_encoding.h"
 #include "cpr/auth.h"
 #include "cpr/bearer.h"
 #include "cpr/body.h"
@@ -13,7 +15,6 @@
 #include "cpr/cookies.h"
 #include "cpr/cprtypes.h"
 #include "cpr/curlholder.h"
-#include "cpr/accept_encoding.h"
 #include "cpr/http_version.h"
 #include "cpr/interface.h"
 #include "cpr/limit_rate.h"
@@ -36,6 +37,8 @@
 #include "cpr/verbose.h"
 
 namespace cpr {
+
+using AsyncResponse = std::future<Response>;
 
 class Interceptor;
 
@@ -160,6 +163,16 @@ class Session {
     Response Post();
     Response Put();
 
+    AsyncResponse GetAsync();
+    AsyncResponse DeleteAsync();
+    AsyncResponse DownloadAsync(const WriteCallback& write);
+    AsyncResponse DownloadAsync(std::ofstream& file);
+    AsyncResponse HeadAsync();
+    AsyncResponse OptionsAsync();
+    AsyncResponse PatchAsync();
+    AsyncResponse PostAsync();
+    AsyncResponse PutAsync();
+
     std::shared_ptr<CurlHolder> GetCurlHolder();
     std::string GetFullRequestUrl();
 
@@ -181,7 +194,7 @@ class Session {
     Response proceed();
 
     class Impl;
-    std::unique_ptr<Impl> pimpl_;
+    std::shared_ptr<Impl> pimpl_;
 };
 
 } // namespace cpr
