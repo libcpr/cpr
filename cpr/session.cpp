@@ -11,6 +11,7 @@
 
 #include <curl/curl.h>
 
+#include "cpr/async.h"
 #include "cpr/cprtypes.h"
 #include "cpr/interceptor.h"
 #include "cpr/util.h"
@@ -28,7 +29,7 @@ constexpr long ON = 1L;
 // NOLINTNEXTLINE(google-runtime-int)
 constexpr long OFF = 0L;
 
-class Session::Impl {
+class Session::Impl : public std::enable_shared_from_this<Session::Impl> {
   public:
     explicit Impl(Session* psession);
 
@@ -90,6 +91,16 @@ class Session::Impl {
     Response Patch();
     Response Post();
     Response Put();
+
+    AsyncResponse GetAsync();
+    AsyncResponse DeleteAsync();
+    AsyncResponse DownloadAsync(const WriteCallback& write);
+    AsyncResponse DownloadAsync(std::ofstream& file);
+    AsyncResponse HeadAsync();
+    AsyncResponse OptionsAsync();
+    AsyncResponse PatchAsync();
+    AsyncResponse PostAsync();
+    AsyncResponse PutAsync();
 
     std::shared_ptr<CurlHolder> GetCurlHolder();
     std::string GetFullRequestUrl();
@@ -760,6 +771,51 @@ Response Session::Impl::Put() {
     return makeRequest();
 }
 
+AsyncResponse Session::Impl::GetAsync() {
+    auto shared_this = shared_from_this();
+    return async([shared_this]() { return shared_this->Get(); });
+}
+
+AsyncResponse Session::Impl::PostAsync() {
+    auto shared_this = shared_from_this();
+    return async([shared_this]() { return shared_this->Post(); });
+}
+
+AsyncResponse Session::Impl::PutAsync() {
+    auto shared_this = shared_from_this();
+    return async([shared_this]() { return shared_this->Put(); });
+}
+
+AsyncResponse Session::Impl::HeadAsync() {
+    auto shared_this = shared_from_this();
+    return async([shared_this]() { return shared_this->Head(); });
+}
+
+AsyncResponse Session::Impl::DeleteAsync() {
+    auto shared_this = shared_from_this();
+    return async([shared_this]() { return shared_this->Delete(); });
+}
+
+AsyncResponse Session::Impl::OptionsAsync() {
+    auto shared_this = shared_from_this();
+    return async([shared_this]() { return shared_this->Options(); });
+}
+
+AsyncResponse Session::Impl::PatchAsync() {
+    auto shared_this = shared_from_this();
+    return async([shared_this]() { return shared_this->Patch(); });
+}
+
+AsyncResponse Session::Impl::DownloadAsync(std::ofstream& file) {
+    auto shared_this = shared_from_this();
+    return async([shared_this, &file]() { return shared_this->Download(file); });
+}
+
+AsyncResponse Session::Impl::DownloadAsync(const WriteCallback& write) {
+    auto shared_this = shared_from_this();
+    return async([shared_this, &write]() { return shared_this->Download(write); });
+}
+
 std::shared_ptr<CurlHolder> Session::Impl::GetCurlHolder() {
     return curl_;
 }
@@ -1018,6 +1074,16 @@ Response Session::Options() { return pimpl_->Options(); }
 Response Session::Patch() { return pimpl_->Patch(); }
 Response Session::Post() { return pimpl_->Post(); }
 Response Session::Put() { return pimpl_->Put(); }
+
+AsyncResponse Session::GetAsync() { return pimpl_->GetAsync(); }
+AsyncResponse Session::DeleteAsync() { return pimpl_->DeleteAsync(); }
+AsyncResponse Session::DownloadAsync(const WriteCallback& write) { return pimpl_->DownloadAsync(write); }
+AsyncResponse Session::DownloadAsync(std::ofstream& file) { return pimpl_->DownloadAsync(file); }
+AsyncResponse Session::HeadAsync() { return pimpl_->HeadAsync(); }
+AsyncResponse Session::OptionsAsync() { return pimpl_->OptionsAsync(); }
+AsyncResponse Session::PatchAsync() { return pimpl_->PatchAsync(); }
+AsyncResponse Session::PostAsync() { return pimpl_->PostAsync(); }
+AsyncResponse Session::PutAsync() { return pimpl_->PutAsync(); }
 
 std::shared_ptr<CurlHolder> Session::GetCurlHolder() { return pimpl_->GetCurlHolder(); }
 std::string Session::GetFullRequestUrl() { return pimpl_->GetFullRequestUrl(); }
