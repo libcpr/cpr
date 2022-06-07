@@ -1062,6 +1062,61 @@ TEST(BasicTests, AcceptEncodingTestWithCostomizedStringLValue) {
     EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
+TEST(AsyncRequestsTest, AsyncGetTest) {
+    Url url{server->GetBaseUrl() + "/hello.html"};
+    Session session;
+    session.SetUrl(url);
+    cpr::AsyncResponse future = session.GetAsync();
+    std::string expected_text{"Hello world!"};
+    cpr::Response response = future.get();
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+    EXPECT_EQ(200, response.status_code);
+}
+
+TEST(AsyncRequestsTest, AsyncGetMultipleTest) {
+    Url url{server->GetBaseUrl() + "/hello.html"};
+
+    std::vector<AsyncResponse> responses;
+    std::vector<std::shared_ptr<Session>> sessions;
+    for (size_t i = 0; i < 10; ++i) {
+        std::shared_ptr<Session> session = std::make_shared<Session>();
+        session->SetUrl(url);
+        sessions.emplace_back(session);
+        responses.emplace_back(session->GetAsync());
+    }
+
+    for (cpr::AsyncResponse& future : responses) {
+        std::string expected_text{"Hello world!"};
+        cpr::Response response = future.get();
+        EXPECT_EQ(expected_text, response.text);
+        EXPECT_EQ(url, response.url);
+        EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+        EXPECT_EQ(200, response.status_code);
+    }
+}
+
+TEST(AsyncRequestsTest, AsyncGetMultipleTemporarySessionTest) {
+    Url url{server->GetBaseUrl() + "/hello.html"};
+
+    std::vector<AsyncResponse> responses;
+    for (size_t i = 0; i < 10; ++i) {
+        Session session;
+        session.SetUrl(url);
+        responses.emplace_back(session.GetAsync());
+    }
+
+    for (cpr::AsyncResponse& future : responses) {
+        std::string expected_text{"Hello world!"};
+        cpr::Response response = future.get();
+        EXPECT_EQ(expected_text, response.text);
+        EXPECT_EQ(url, response.url);
+        EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+        EXPECT_EQ(200, response.status_code);
+    }
+}
+
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
     ::testing::AddGlobalTestEnvironment(server);
