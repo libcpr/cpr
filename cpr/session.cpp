@@ -5,7 +5,6 @@
 #include <cstring>
 #include <fstream>
 #include <functional>
-#include <queue>
 #include <stdexcept>
 #include <string>
 
@@ -28,128 +27,6 @@ constexpr long ON = 1L;
 // Ignored here since libcurl reqires a long:
 // NOLINTNEXTLINE(google-runtime-int)
 constexpr long OFF = 0L;
-
-class Session::Impl : public std::enable_shared_from_this<Session::Impl> {
-  public:
-    explicit Impl(Session* psession);
-
-    void SetUrl(const Url& url);
-    void SetParameters(const Parameters& parameters);
-    void SetParameters(Parameters&& parameters);
-    void SetHeader(const Header& header);
-    void UpdateHeader(const Header& header);
-    void SetTimeout(const Timeout& timeout);
-    void SetConnectTimeout(const ConnectTimeout& timeout);
-    void SetAuth(const Authentication& auth);
-// Only supported with libcurl >= 7.61.0.
-// As an alternative use SetHeader and add the token manually.
-#if LIBCURL_VERSION_NUM >= 0x073D00
-    void SetBearer(const Bearer& token);
-#endif
-    void SetUserAgent(const UserAgent& ua);
-    void SetPayload(Payload&& payload);
-    void SetPayload(const Payload& payload);
-    void SetProxies(Proxies&& proxies);
-    void SetProxies(const Proxies& proxies);
-    void SetProxyAuth(ProxyAuthentication&& proxy_auth);
-    void SetProxyAuth(const ProxyAuthentication& proxy_auth);
-    void SetMultipart(Multipart&& multipart);
-    void SetMultipart(const Multipart& multipart);
-    void SetRedirect(const Redirect& redirect);
-    void SetCookies(const Cookies& cookies);
-    void SetBody(Body&& body);
-    void SetBody(const Body& body);
-    void SetReadCallback(const ReadCallback& read);
-    void SetHeaderCallback(const HeaderCallback& header);
-    void SetWriteCallback(const WriteCallback& write);
-    void SetProgressCallback(const ProgressCallback& progress);
-    void SetDebugCallback(const DebugCallback& debug);
-    void SetLowSpeed(const LowSpeed& low_speed);
-    void SetVerifySsl(const VerifySsl& verify);
-    void SetLimitRate(const LimitRate& limit_rate);
-    void SetUnixSocket(const UnixSocket& unix_socket);
-    void SetVerbose(const Verbose& verbose);
-    void SetSslOptions(const SslOptions& options);
-    void SetInterface(const Interface& iface);
-    void SetLocalPort(const LocalPort& local_port);
-    void SetLocalPortRange(const LocalPortRange& local_port_range);
-    void SetHttpVersion(const HttpVersion& version);
-    void SetRange(const Range& range);
-    void SetMultiRange(const MultiRange& multi_range);
-    void SetReserveSize(const ReserveSize& reserve_size);
-    void SetAcceptEncoding(AcceptEncoding&& accept_encoding);
-    void SetAcceptEncoding(const AcceptEncoding& accept_encoding);
-
-    cpr_off_t GetDownloadFileLength();
-    void ResponseStringReserve(size_t size);
-    Response Delete();
-    Response Download(const WriteCallback& write);
-    Response Download(std::ofstream& file);
-    Response Get();
-    Response Head();
-    Response Options();
-    Response Patch();
-    Response Post();
-    Response Put();
-
-    AsyncResponse GetAsync();
-    AsyncResponse DeleteAsync();
-    AsyncResponse DownloadAsync(const WriteCallback& write);
-    AsyncResponse DownloadAsync(std::ofstream& file);
-    AsyncResponse HeadAsync();
-    AsyncResponse OptionsAsync();
-    AsyncResponse PatchAsync();
-    AsyncResponse PostAsync();
-    AsyncResponse PutAsync();
-
-    std::shared_ptr<CurlHolder> GetCurlHolder();
-    std::string GetFullRequestUrl();
-
-    void PrepareDelete();
-    void PrepareGet();
-    void PrepareHead();
-    void PrepareOptions();
-    void PreparePatch();
-    void PreparePost();
-    void PreparePut();
-    Response Complete(CURLcode curl_error);
-
-    void AddInterceptor(const std::shared_ptr<Interceptor>& pinterceptor);
-
-  private:
-    friend Session;
-
-    void SetHeaderInternal();
-    bool hasBodyOrPayload_{false};
-
-    std::shared_ptr<CurlHolder> curl_;
-    Url url_;
-    Parameters parameters_;
-    Proxies proxies_;
-    ProxyAuthentication proxyAuth_;
-    Header header_;
-    AcceptEncoding acceptEncoding_;
-    /**
-     * Will be set by the read callback.
-     * Ensures that the "Transfer-Encoding" is set to "chunked", if not overriden in header_.
-     **/
-    bool chunkedTransferEncoding{false};
-
-    ReadCallback readcb_;
-    HeaderCallback headercb_;
-    WriteCallback writecb_;
-    ProgressCallback progresscb_;
-    DebugCallback debugcb_;
-    size_t response_string_reserve_size_{0};
-    std::string response_string_;
-    std::string header_string_;
-    std::queue<std::shared_ptr<Interceptor>> interceptors;
-    Session* psession_;
-
-    Response makeDownloadRequest();
-    Response makeRequest();
-    void prepareCommon();
-};
 
 Session::Impl::Impl(Session* psession) : curl_(new CurlHolder()), psession_{psession} {
     // Set up some sensible defaults

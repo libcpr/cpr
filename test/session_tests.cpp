@@ -11,6 +11,8 @@
 using namespace cpr;
 
 static HttpServer* server = new HttpServer();
+std::chrono::milliseconds sleep_time{50};
+std::chrono::seconds zero{0};
 
 bool write_data(std::string /*data*/, intptr_t /*userdata*/) {
     return true;
@@ -1242,6 +1244,21 @@ TEST(AsyncRequestsTests, AsyncPatchTest) {
     EXPECT_EQ(200, response.status_code);
     EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
+
+TEST(CallbackTests, GetCallbackTest) {
+    Url url{server->GetBaseUrl() + "/hello.html"};
+    Session session;
+    session.SetUrl(url);
+    int status_code = 0;
+    auto future = session.GetCallback([&status_code](Response r) {
+        status_code = r.status_code;
+        return r.status_code;
+    });
+    std::this_thread::sleep_for(sleep_time);
+    EXPECT_EQ(future.wait_for(zero), std::future_status::ready);
+    EXPECT_EQ(status_code, future.get());
+}
+
 
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
