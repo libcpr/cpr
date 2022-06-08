@@ -1066,7 +1066,7 @@ TEST(BasicTests, AcceptEncodingTestWithCostomizedStringLValue) {
     EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
-TEST(AsyncRequestsTest, AsyncGetTest) {
+TEST(AsyncRequestsTests, AsyncGetTest) {
     Url url{server->GetBaseUrl() + "/hello.html"};
     Session session;
     session.SetUrl(url);
@@ -1079,7 +1079,7 @@ TEST(AsyncRequestsTest, AsyncGetTest) {
     EXPECT_EQ(200, response.status_code);
 }
 
-TEST(AsyncRequestsTest, AsyncGetMultipleTest) {
+TEST(AsyncRequestsTests, AsyncGetMultipleTest) {
     Url url{server->GetBaseUrl() + "/hello.html"};
 
     std::vector<AsyncResponse> responses;
@@ -1101,7 +1101,7 @@ TEST(AsyncRequestsTest, AsyncGetMultipleTest) {
     }
 }
 
-TEST(AsyncRequestsTest, AsyncGetMultipleTemporarySessionTest) {
+TEST(AsyncRequestsTests, AsyncGetMultipleTemporarySessionTest) {
     Url url{server->GetBaseUrl() + "/hello.html"};
 
     std::vector<AsyncResponse> responses;
@@ -1121,7 +1121,7 @@ TEST(AsyncRequestsTest, AsyncGetMultipleTemporarySessionTest) {
     }
 }
 
-TEST(AsyncRequestsTest, AsyncGetMultipleReflectTest) {
+TEST(AsyncRequestsTests, AsyncGetMultipleReflectTest) {
     Url url{server->GetBaseUrl() + "/hello.html"};
     std::vector<AsyncResponse> responses;
     for (size_t i = 0; i < 100; ++i) {
@@ -1143,7 +1143,7 @@ TEST(AsyncRequestsTest, AsyncGetMultipleReflectTest) {
     }
 }
 
-TEST(AsyncRequestsTest, AsyncWritebackDownloadTest) {
+TEST(AsyncRequestsTests, AsyncWritebackDownloadTest) {
     Session session;
     cpr::Url url{server->GetBaseUrl() + "/download_gzip.html"};
     session.SetUrl(url);
@@ -1155,7 +1155,7 @@ TEST(AsyncRequestsTest, AsyncWritebackDownloadTest) {
     EXPECT_EQ(cpr::ErrorCode::OK, response.error.code);
 }
 
-TEST(AsyncRequestsTest, AsyncPostTest) {
+TEST(AsyncRequestsTests, AsyncPostTest) {
     Url url{server->GetBaseUrl() + "/url_post.html"};
     Session session;
     session.SetUrl(url);
@@ -1173,7 +1173,7 @@ TEST(AsyncRequestsTest, AsyncPostTest) {
     EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
-TEST(AsyncRequestsTest, AsyncPutTest) {
+TEST(AsyncRequestsTests, AsyncPutTest) {
     Url url{server->GetBaseUrl() + "/put.html"};
     Session session;
     session.SetUrl(url);
@@ -1191,7 +1191,7 @@ TEST(AsyncRequestsTest, AsyncPutTest) {
     EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
-TEST(AsyncRequestsTest, AsyncHeadTest) {
+TEST(AsyncRequestsTests, AsyncHeadTest) {
     Url url{server->GetBaseUrl() + "/header_reflect.html"};
     Session session;
     session.SetUrl(url);
@@ -1204,7 +1204,7 @@ TEST(AsyncRequestsTest, AsyncHeadTest) {
     EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
-TEST(AsyncRequestsTest, AsyncDeleteTest) {
+TEST(AsyncRequestsTests, AsyncDeleteTest) {
     Url url{server->GetBaseUrl() + "/header_reflect.html"};
     Session session;
     session.SetUrl(url);
@@ -1217,7 +1217,7 @@ TEST(AsyncRequestsTest, AsyncDeleteTest) {
     EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
-TEST(AsyncRequestsTest, AsyncOptionsTest) {
+TEST(AsyncRequestsTests, AsyncOptionsTest) {
     Url url{server->GetBaseUrl() + "/header_reflect.html"};
     Session session;
     session.SetUrl(url);
@@ -1230,7 +1230,7 @@ TEST(AsyncRequestsTest, AsyncOptionsTest) {
     EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
-TEST(AsyncRequestsTest, AsyncPatchTest) {
+TEST(AsyncRequestsTests, AsyncPatchTest) {
     Url url{server->GetBaseUrl() + "/header_reflect.html"};
     Session session;
     session.SetUrl(url);
