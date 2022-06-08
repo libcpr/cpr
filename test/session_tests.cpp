@@ -12,6 +12,10 @@ using namespace cpr;
 
 static HttpServer* server = new HttpServer();
 
+bool write_data(std::string /*data*/, intptr_t /*userdata*/) {
+    return true;
+}
+
 TEST(RedirectTests, TemporaryDefaultRedirectTest) {
     Url url{server->GetBaseUrl() + "/temporary_redirect.html"};
     Session session;
@@ -1115,6 +1119,128 @@ TEST(AsyncRequestsTest, AsyncGetMultipleTemporarySessionTest) {
         EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
         EXPECT_EQ(200, response.status_code);
     }
+}
+
+TEST(AsyncRequestsTest, AsyncGetMultipleReflectTest) {
+    Url url{server->GetBaseUrl() + "/hello.html"};
+    std::vector<AsyncResponse> responses;
+    for (size_t i = 0; i < 100; ++i) {
+        Session session;
+        session.SetUrl(url);
+        session.SetParameters({{"key", std::to_string(i)}});
+        responses.emplace_back(session.GetAsync());
+    }
+    int i = 0;
+    for (cpr::AsyncResponse& future : responses) {
+        cpr::Response response = future.get();
+        std::string expected_text{"Hello world!"};
+        Url expected_url{url + "?key=" + std::to_string(i)};
+        EXPECT_EQ(expected_text, response.text);
+        EXPECT_EQ(expected_url, response.url);
+        EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+        EXPECT_EQ(200, response.status_code);
+        ++i;
+    }
+}
+
+TEST(AsyncRequestsTest, AsyncWritebackDownloadTest) {
+    Session session;
+    cpr::Url url{server->GetBaseUrl() + "/download_gzip.html"};
+    session.SetUrl(url);
+    session.SetHeader(cpr::Header{{"Accept-Encoding", "gzip"}});
+    cpr::AsyncResponse future = session.DownloadAsync(cpr::WriteCallback{write_data, 0});
+    cpr::Response response = future.get();
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(cpr::ErrorCode::OK, response.error.code);
+}
+
+TEST(AsyncRequestsTest, AsyncPostTest) {
+    Url url{server->GetBaseUrl() + "/url_post.html"};
+    Session session;
+    session.SetUrl(url);
+    session.SetPayload({{"x", "5"}});
+    cpr::AsyncResponse future = session.PostAsync();
+    cpr::Response response = future.get();
+    std::string expected_text{
+            "{\n"
+            "  \"x\": 5\n"
+            "}"};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
+    EXPECT_EQ(201, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
+TEST(AsyncRequestsTest, AsyncPutTest) {
+    Url url{server->GetBaseUrl() + "/put.html"};
+    Session session;
+    session.SetUrl(url);
+    session.SetPayload({{"x", "5"}});
+    cpr::AsyncResponse future = session.PutAsync();
+    cpr::Response response = future.get();
+    std::string expected_text{
+            "{\n"
+            "  \"x\": 5\n"
+            "}"};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
+TEST(AsyncRequestsTest, AsyncHeadTest) {
+    Url url{server->GetBaseUrl() + "/header_reflect.html"};
+    Session session;
+    session.SetUrl(url);
+    cpr::AsyncResponse future = session.HeadAsync();
+    cpr::Response response = future.get();
+    std::string expected_text{""};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
+TEST(AsyncRequestsTest, AsyncDeleteTest) {
+    Url url{server->GetBaseUrl() + "/header_reflect.html"};
+    Session session;
+    session.SetUrl(url);
+    cpr::AsyncResponse future = session.DeleteAsync();
+    cpr::Response response = future.get();
+    std::string expected_text{"Header reflect DELETE"};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
+TEST(AsyncRequestsTest, AsyncOptionsTest) {
+    Url url{server->GetBaseUrl() + "/header_reflect.html"};
+    Session session;
+    session.SetUrl(url);
+    cpr::AsyncResponse future = session.OptionsAsync();
+    cpr::Response response = future.get();
+    std::string expected_text{"Header reflect OPTIONS"};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
+TEST(AsyncRequestsTest, AsyncPatchTest) {
+    Url url{server->GetBaseUrl() + "/header_reflect.html"};
+    Session session;
+    session.SetUrl(url);
+    cpr::AsyncResponse future = session.PatchAsync();
+    cpr::Response response = future.get();
+    std::string expected_text{"Header reflect PATCH"};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 int main(int argc, char** argv) {
