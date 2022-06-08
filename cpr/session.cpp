@@ -690,7 +690,7 @@ AsyncResponse Session::Impl::DownloadAsync(std::ofstream& file) {
 
 AsyncResponse Session::Impl::DownloadAsync(const WriteCallback& write) {
     auto shared_this = shared_from_this();
-    return async([shared_this, &write]() { return shared_this->Download(write); });
+    return async([shared_this, write]() { return shared_this->Download(write); });
 }
 
 std::shared_ptr<CurlHolder> Session::Impl::GetCurlHolder() {
