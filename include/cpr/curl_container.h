@@ -6,10 +6,14 @@
 #include <string>
 #include <vector>
 
-#include "cpr/curlholder.h"
-
 
 namespace cpr {
+
+/**
+ * Forward declared to prevent too many curl.h includes in header files.
+ * For reference see: https://github.com/libcpr/cpr/issues/752
+ **/
+struct CurlHolder;
 
 struct Parameter {
     Parameter(const std::string& p_key, const std::string& p_value) : key{p_key}, value{p_value} {}

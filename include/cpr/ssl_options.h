@@ -3,11 +3,13 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
+/**
+ * Required for CURL_SSLVERSION_DEFAULT can not be forward declared.
+ **/
 #include <curl/curl.h>
-
-#include <utility>
 
 #define __LIBCURL_VERSION_GTE(major, minor) ((LIBCURL_VERSION_MAJOR > (major)) || ((LIBCURL_VERSION_MAJOR == (major)) && (LIBCURL_VERSION_MINOR >= (minor))))
 #define __LIBCURL_VERSION_LT(major, minor) ((LIBCURL_VERSION_MAJOR < (major)) || ((LIBCURL_VERSION_MAJOR == (major)) && (LIBCURL_VERSION_MINOR < (minor))))

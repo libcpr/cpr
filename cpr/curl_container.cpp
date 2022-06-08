@@ -1,4 +1,5 @@
 #include "cpr/curl_container.h"
+#include "cpr/curlholder.h"
 #include <algorithm>
 #include <iterator>
 

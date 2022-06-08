@@ -5,6 +5,7 @@
 #include <fstream>
 #include <memory>
 
+#include "cpr/accept_encoding.h"
 #include "cpr/auth.h"
 #include "cpr/bearer.h"
 #include "cpr/body.h"
@@ -12,8 +13,6 @@
 #include "cpr/connect_timeout.h"
 #include "cpr/cookies.h"
 #include "cpr/cprtypes.h"
-#include "cpr/curlholder.h"
-#include "cpr/accept_encoding.h"
 #include "cpr/http_version.h"
 #include "cpr/interface.h"
 #include "cpr/limit_rate.h"
@@ -36,6 +35,12 @@
 #include "cpr/verbose.h"
 
 namespace cpr {
+
+/**
+ * Forward declared to prevent too many curl.h includes in header files.
+ * For reference see: https://github.com/libcpr/cpr/issues/752
+ **/
+struct CurlHolder;
 
 class Interceptor;
 

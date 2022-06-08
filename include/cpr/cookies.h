@@ -1,13 +1,18 @@
 #ifndef CPR_COOKIES_H
 #define CPR_COOKIES_H
 
-#include "cpr/curlholder.h"
 #include <initializer_list>
 #include <map>
 #include <sstream>
 #include <string>
 
 namespace cpr {
+
+/**
+ * Forward declared to prevent too many curl.h includes in header files.
+ * For reference see: https://github.com/libcpr/cpr/issues/752
+ **/
+struct CurlHolder;
 
 class Cookies {
   public:

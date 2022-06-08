@@ -1,4 +1,5 @@
 #include "cpr/cookies.h"
+#include "cpr/curlholder.h"
 
 namespace cpr {
 std::string Cookies::GetEncoded(const CurlHolder& holder) const {

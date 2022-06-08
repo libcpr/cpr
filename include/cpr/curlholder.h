@@ -5,6 +5,9 @@
 #include <mutex>
 #include <string>
 
+/**
+ * Required for CURL can not be forward declared.
+ **/
 #include <curl/curl.h>
 
 namespace cpr {

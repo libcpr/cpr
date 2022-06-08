@@ -2,6 +2,9 @@
 #define CPR_SSL_CTX_H
 
 #include "cpr/ssl_options.h"
+/**
+ * Required for CURLcode can not be forward declared.
+ **/
 #include <curl/curl.h>
 
 #if SUPPORT_CURLOPT_SSL_CTX_FUNCTION

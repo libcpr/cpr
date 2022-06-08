@@ -3,6 +3,7 @@
 
 #include <string>
 
+#include <cpr/curlholder.h>
 #include <cpr/parameters.h>
 #include <cpr/payload.h>
 

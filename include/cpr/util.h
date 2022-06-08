@@ -10,9 +10,13 @@
 #include "cpr/cprtypes.h"
 #include "cpr/curlholder.h"
 
+/**
+ * Required for CURL can not be forward declared.
+ **/
+#include <curl/curl.h>
+
 namespace cpr {
 namespace util {
-
 Header parseHeader(const std::string& headers, std::string* status_line = nullptr, std::string* reason = nullptr);
 Cookies parseCookies(curl_slist* raw_cookies);
 size_t readUserFunction(char* ptr, size_t size, size_t nitems, const ReadCallback* read);

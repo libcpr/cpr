@@ -1,6 +1,10 @@
 #include "cpr/proxyauth.h"
+#include "cpr/util.h"
 
 namespace cpr {
+EncodedAuthentication::EncodedAuthentication(const std::string& username, const std::string& password) : auth_string_{cpr::util::urlEncode(username) + ":" + cpr::util::urlEncode(password)} {}
+EncodedAuthentication::EncodedAuthentication(std::string&& username, std::string&& password) : auth_string_{cpr::util::urlEncode(username) + ":" + cpr::util::urlEncode(password)} {}
+
 const char* EncodedAuthentication::GetAuthString() const noexcept {
     return auth_string_.c_str();
 }
