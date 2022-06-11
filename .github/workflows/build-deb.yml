@@ -1,4 +1,4 @@
-name: CI
+name: Build Debian Package
 on:
   push:
       tags: [ '[0-9]+.[0-9]+.[0-9]+' ]
@@ -26,7 +26,7 @@ jobs:
       # Build package of runtime library
     - name: "Package build of runtime library"
       env: 
-        VERSION: ${{ github.event.ref }}
+        VERSION: ${{ github.ref_name }}
       run: bash cpr/package-build/build-package.sh cpr
 
     - name: "Upload deb-packages"
