@@ -22,6 +22,7 @@ debmake -e 'philip.saendig@gmail.com' -f 'Philip Saendig'
 
 echo -e "\n\nCopying prepared debian files to directory\n"
 cp -r package-build/debian-libcpr/* debian/
+sed -i "s/\%VERSION/$VERSION/g" debian/changelog
 
 echo -e "\n\nCalling debuild\n"
 debuild
