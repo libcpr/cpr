@@ -1,6 +1,6 @@
-libcpr (1.8.3-1) UNRELEASED; urgency=low
+libcpr (%VERSION-1) UNRELEASED; urgency=low
 
   [ Philip Saendig ]
-  * First version of the package of libcpr for debian.
+  * First package of libcpr %VERSION for debian.
 
- -- Philip Saendig <philip.saendig@gmail.com>  Tue, 24 May 2022 10:37:24 +0200
+ -- Philip Saendig <philip.saendig@gmail.com>  Sat, 11 Jun 2022 09:32:24 +0200
