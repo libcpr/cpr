@@ -137,6 +137,10 @@ if(CPR_ENABLE_SSL)
     endif()
 endif()
 
+if(SSL_BACKEND_USED STREQUAL "OpenSSL")
+    add_compile_definitions(OPENSSL_BACKEND_USED)
+endif()
+
 get_property(isMultiConfig GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
 if (NOT isMultiConfig)
     set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "${ALLOWED_BUILD_TYPES}")

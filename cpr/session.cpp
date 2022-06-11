@@ -5,13 +5,19 @@
 #include <cstring>
 #include <fstream>
 #include <functional>
+#include <queue>
 #include <stdexcept>
 #include <string>
 
 #include <curl/curl.h>
 
 #include "cpr/cprtypes.h"
+#include "cpr/interceptor.h"
 #include "cpr/util.h"
+
+#if SUPPORT_CURLOPT_SSL_CTX_FUNCTION
+#include "cpr/ssl_ctx.h"
+#endif
 
 
 namespace cpr {
@@ -24,7 +30,7 @@ constexpr long OFF = 0L;
 
 class Session::Impl {
   public:
-    Impl();
+    explicit Impl(Session* psession);
 
     void SetUrl(const Url& url);
     void SetParameters(const Parameters& parameters);
@@ -64,10 +70,14 @@ class Session::Impl {
     void SetVerbose(const Verbose& verbose);
     void SetSslOptions(const SslOptions& options);
     void SetInterface(const Interface& iface);
+    void SetLocalPort(const LocalPort& local_port);
+    void SetLocalPortRange(const LocalPortRange& local_port_range);
     void SetHttpVersion(const HttpVersion& version);
     void SetRange(const Range& range);
     void SetMultiRange(const MultiRange& multi_range);
     void SetReserveSize(const ReserveSize& reserve_size);
+    void SetAcceptEncoding(AcceptEncoding&& accept_encoding);
+    void SetAcceptEncoding(const AcceptEncoding& accept_encoding);
 
     cpr_off_t GetDownloadFileLength();
     void ResponseStringReserve(size_t size);
@@ -93,7 +103,11 @@ class Session::Impl {
     void PreparePut();
     Response Complete(CURLcode curl_error);
 
+    void AddInterceptor(const std::shared_ptr<Interceptor>& pinterceptor);
+
   private:
+    friend Session;
+
     void SetHeaderInternal();
     bool hasBodyOrPayload_{false};
 
@@ -103,6 +117,7 @@ class Session::Impl {
     Proxies proxies_;
     ProxyAuthentication proxyAuth_;
     Header header_;
+    AcceptEncoding acceptEncoding_;
     /**
      * Will be set by the read callback.
      * Ensures that the "Transfer-Encoding" is set to "chunked", if not overriden in header_.
@@ -117,13 +132,15 @@ class Session::Impl {
     size_t response_string_reserve_size_{0};
     std::string response_string_;
     std::string header_string_;
+    std::queue<std::shared_ptr<Interceptor>> interceptors;
+    Session* psession_;
 
     Response makeDownloadRequest();
     Response makeRequest();
     void prepareCommon();
 };
 
-Session::Impl::Impl() : curl_(new CurlHolder()) {
+Session::Impl::Impl(Session* psession) : curl_(new CurlHolder()), psession_{psession} {
     // Set up some sensible defaults
     curl_version_info_data* version_info = curl_version_info(CURLVERSION_NOW);
     std::string version = "curl/" + std::string{version_info->version};
@@ -273,6 +290,14 @@ void Session::Impl::SetInterface(const Interface& iface) {
     } else {
         curl_easy_setopt(curl_->handle, CURLOPT_INTERFACE, iface.c_str());
     }
+}
+
+void Session::Impl::SetLocalPort(const LocalPort& local_port) {
+    curl_easy_setopt(curl_->handle, CURLOPT_LOCALPORT, local_port);
+}
+
+void Session::Impl::SetLocalPortRange(const LocalPortRange& local_port_range) {
+    curl_easy_setopt(curl_->handle, CURLOPT_LOCALPORTRANGE, local_port_range);
 }
 
 // Only supported with libcurl >= 7.61.0.
@@ -540,6 +565,14 @@ void Session::Impl::SetSslOptions(const SslOptions& options) {
     if (!options.ca_path.empty()) {
         curl_easy_setopt(curl_->handle, CURLOPT_CAPATH, options.ca_path.c_str());
     }
+#if SUPPORT_CURLOPT_SSL_CTX_FUNCTION
+#ifdef OPENSSL_BACKEND_USED
+    if (!options.ca_buffer.empty()) {
+        curl_easy_setopt(curl_->handle, CURLOPT_SSL_CTX_FUNCTION, sslctx_function_load_ca_cert_from_buffer);
+        curl_easy_setopt(curl_->handle, CURLOPT_SSL_CTX_DATA, options.ca_buffer.c_str());
+    }
+#endif
+#endif
     if (!options.crl_file.empty()) {
         curl_easy_setopt(curl_->handle, CURLOPT_CRLFILE, options.crl_file.c_str());
     }
@@ -568,6 +601,14 @@ void Session::Impl::SetMultiRange(const MultiRange& multi_range) {
 
 void Session::Impl::SetReserveSize(const ReserveSize& reserve_size) {
     ResponseStringReserve(reserve_size.size);
+}
+
+void Session::Impl::SetAcceptEncoding(const AcceptEncoding& accept_encoding) {
+    acceptEncoding_ = accept_encoding;
+}
+
+void Session::Impl::SetAcceptEncoding(AcceptEncoding&& accept_encoding) {
+    acceptEncoding_ = std::move(accept_encoding);
 }
 
 void Session::Impl::PrepareDelete() {
@@ -610,6 +651,7 @@ Response Session::Impl::Delete() {
 Response Session::Impl::Download(const WriteCallback& write) {
     curl_easy_setopt(curl_->handle, CURLOPT_NOBODY, 0L);
     curl_easy_setopt(curl_->handle, CURLOPT_HTTPGET, 1);
+    curl_easy_setopt(curl_->handle, CURLOPT_CUSTOMREQUEST, nullptr);
 
     SetWriteCallback(write);
 
@@ -621,6 +663,7 @@ Response Session::Impl::Download(std::ofstream& file) {
     curl_easy_setopt(curl_->handle, CURLOPT_HTTPGET, 1);
     curl_easy_setopt(curl_->handle, CURLOPT_WRITEFUNCTION, cpr::util::writeFileFunction);
     curl_easy_setopt(curl_->handle, CURLOPT_WRITEDATA, &file);
+    curl_easy_setopt(curl_->handle, CURLOPT_CUSTOMREQUEST, nullptr);
 
     return makeDownloadRequest();
 }
@@ -719,6 +762,12 @@ std::string Session::Impl::GetFullRequestUrl() {
 Response Session::Impl::makeDownloadRequest() {
     assert(curl_->handle);
 
+    if (!interceptors.empty()) {
+        std::shared_ptr<Interceptor> interceptor = interceptors.front();
+        interceptors.pop();
+        return interceptor->intercept(*psession_);
+    }
+
     // Set Header:
     SetHeaderInternal();
 
@@ -792,8 +841,13 @@ void Session::Impl::prepareCommon() {
 
 #if LIBCURL_VERSION_MAJOR >= 7
 #if LIBCURL_VERSION_MINOR >= 21
-    /* enable all supported built-in compressions */
-    curl_easy_setopt(curl_->handle, CURLOPT_ACCEPT_ENCODING, "");
+    if (acceptEncoding_.empty()) {
+        /* enable all supported built-in compressions */
+        curl_easy_setopt(curl_->handle, CURLOPT_ACCEPT_ENCODING, "");
+    }
+    else {
+        curl_easy_setopt(curl_->handle, CURLOPT_ACCEPT_ENCODING, acceptEncoding_.getString().c_str());
+    }
 #endif
 #endif
 
@@ -825,6 +879,13 @@ void Session::Impl::prepareCommon() {
 }
 
 Response Session::Impl::makeRequest() {
+    if (!interceptors.empty()) {
+        // At least one interceptor exists -> Ececute its intercept function
+        std::shared_ptr<Interceptor> interceptor = interceptors.front();
+        interceptors.pop();
+        return interceptor->intercept(*psession_);
+    }
+
     CURLcode curl_error = curl_easy_perform(curl_->handle);
     return Complete(curl_error);
 }
@@ -842,8 +903,12 @@ Response Session::Impl::Complete(CURLcode curl_error) {
     return Response(curl_, std::move(response_string_), std::move(header_string_), std::move(cookies), Error(curl_error, std::move(errorMsg)));
 }
 
+void Session::Impl::AddInterceptor(const std::shared_ptr<Interceptor>& pinterceptor) {
+    interceptors.push(pinterceptor);
+}
+
 // clang-format off
-Session::Session() : pimpl_(new Impl()) {}
+Session::Session() : pimpl_(new Impl(this)) {}
 Session::Session(Session&& /*old*/) noexcept = default;
 Session::~Session() = default;
 Session& Session::operator=(Session&& old) noexcept = default;
@@ -879,10 +944,14 @@ void Session::SetUnixSocket(const UnixSocket& unix_socket) { pimpl_->SetUnixSock
 void Session::SetSslOptions(const SslOptions& options) { pimpl_->SetSslOptions(options); }
 void Session::SetVerbose(const Verbose& verbose) { pimpl_->SetVerbose(verbose); }
 void Session::SetInterface(const Interface& iface) { pimpl_->SetInterface(iface); }
+void Session::SetLocalPort(const LocalPort& local_port) { pimpl_->SetLocalPort(local_port); }
+void Session::SetLocalPortRange(const LocalPortRange& local_port_range) { pimpl_->SetLocalPortRange(local_port_range); }
 void Session::SetHttpVersion(const HttpVersion& version) { pimpl_->SetHttpVersion(version); }
 void Session::SetRange(const Range& range) { pimpl_->SetRange(range); }
 void Session::SetMultiRange(const MultiRange& multi_range) { pimpl_->SetMultiRange(multi_range); }
 void Session::SetReserveSize(const ReserveSize& reserve_size) { pimpl_->SetReserveSize(reserve_size); }
+void Session::SetAcceptEncoding(const AcceptEncoding& accept_encoding) { pimpl_->SetAcceptEncoding(accept_encoding); }
+void Session::SetAcceptEncoding(AcceptEncoding&& accept_encoding) { pimpl_->SetAcceptEncoding(std::move(accept_encoding)); }
 void Session::SetOption(const ReadCallback& read) { pimpl_->SetReadCallback(read); }
 void Session::SetOption(const HeaderCallback& header) { pimpl_->SetHeaderCallback(header); }
 void Session::SetOption(const WriteCallback& write) { pimpl_->SetWriteCallback(write); }
@@ -920,10 +989,14 @@ void Session::SetOption(const Verbose& verbose) { pimpl_->SetVerbose(verbose); }
 void Session::SetOption(const UnixSocket& unix_socket) { pimpl_->SetUnixSocket(unix_socket); }
 void Session::SetOption(const SslOptions& options) { pimpl_->SetSslOptions(options); }
 void Session::SetOption(const Interface& iface) { pimpl_->SetInterface(iface); }
+void Session::SetOption(const LocalPort& local_port) { pimpl_->SetLocalPort(local_port); }
+void Session::SetOption(const LocalPortRange& local_port_range) { pimpl_->SetLocalPortRange(local_port_range); }
 void Session::SetOption(const HttpVersion& version) { pimpl_->SetHttpVersion(version); }
 void Session::SetOption(const Range& range) { pimpl_->SetRange(range); }
 void Session::SetOption(const MultiRange& multi_range) { pimpl_->SetMultiRange(multi_range); }
 void Session::SetOption(const ReserveSize& reserve_size) { pimpl_->SetReserveSize(reserve_size.size); }
+void Session::SetOption(const AcceptEncoding& accept_encoding) { pimpl_->SetAcceptEncoding(accept_encoding); }
+void Session::SetOption(AcceptEncoding&& accept_encoding) { pimpl_->SetAcceptEncoding(std::move(accept_encoding)); }
 
 cpr_off_t Session::GetDownloadFileLength() { return pimpl_->GetDownloadFileLength(); }
 void Session::ResponseStringReserve(size_t size) { pimpl_->ResponseStringReserve(size); }
@@ -949,5 +1022,12 @@ void Session::PreparePost() { return pimpl_->PreparePost(); }
 void Session::PreparePut() { return pimpl_->PreparePut(); }
 Response Session::Complete( CURLcode curl_error ) { return pimpl_->Complete(curl_error); }
 
+void Session::AddInterceptor(const std::shared_ptr<Interceptor>& pinterceptor) { return pimpl_->AddInterceptor(pinterceptor); }
 // clang-format on
+
+Response Session::proceed() {
+    pimpl_->prepareCommon();
+    return pimpl_->makeRequest();
+}
+
 } // namespace cpr

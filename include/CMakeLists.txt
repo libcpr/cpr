@@ -7,7 +7,9 @@ target_include_directories(cpr PUBLIC
 
 target_sources(cpr PRIVATE
      # Header files (useful in IDEs)
+    cpr/accept_encoding.h
     cpr/api.h
+    cpr/async.h
     cpr/auth.h
     cpr/bearer.h
     cpr/body.h
@@ -18,6 +20,8 @@ target_sources(cpr PRIVATE
     cpr/curlholder.h
     cpr/error.h
     cpr/limit_rate.h
+    cpr/local_port.h
+    cpr/local_port_range.h
     cpr/multipart.h
     cpr/parameters.h
     cpr/payload.h
@@ -25,7 +29,10 @@ target_sources(cpr PRIVATE
     cpr/proxyauth.h
     cpr/response.h
     cpr/session.h
+    cpr/singleton.h
+    cpr/ssl_ctx.h
     cpr/ssl_options.h
+    cpr/threadpool.h
     cpr/timeout.h
     cpr/unix_socket.h
     cpr/util.h
@@ -33,6 +40,7 @@ target_sources(cpr PRIVATE
     cpr/interface.h
     cpr/redirect.h
     cpr/http_version.h
+    cpr/interceptor.h
     ${PROJECT_BINARY_DIR}/cpr_generated_includes/cpr/cprver.h
 )
 

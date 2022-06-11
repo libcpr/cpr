@@ -13,9 +13,12 @@
 #include "cpr/cookies.h"
 #include "cpr/cprtypes.h"
 #include "cpr/curlholder.h"
+#include "cpr/accept_encoding.h"
 #include "cpr/http_version.h"
 #include "cpr/interface.h"
 #include "cpr/limit_rate.h"
+#include "cpr/local_port.h"
+#include "cpr/local_port_range.h"
 #include "cpr/low_speed.h"
 #include "cpr/multipart.h"
 #include "cpr/parameters.h"
@@ -33,6 +36,8 @@
 #include "cpr/verbose.h"
 
 namespace cpr {
+
+class Interceptor;
 
 class Session {
   public:
@@ -77,10 +82,14 @@ class Session {
     void SetDebugCallback(const DebugCallback& debug);
     void SetVerbose(const Verbose& verbose);
     void SetInterface(const Interface& iface);
+    void SetLocalPort(const LocalPort& local_port);
+    void SetLocalPortRange(const LocalPortRange& local_port_range);
     void SetHttpVersion(const HttpVersion& version);
     void SetRange(const Range& range);
     void SetMultiRange(const MultiRange& multi_range);
     void SetReserveSize(const ReserveSize& reserve_size);
+    void SetAcceptEncoding(const AcceptEncoding& accept_encoding);
+    void SetAcceptEncoding(AcceptEncoding&& accept_encoding);
 
     // Used in templated functions
     void SetOption(const Url& url);
@@ -120,10 +129,14 @@ class Session {
     void SetOption(const UnixSocket& unix_socket);
     void SetOption(const SslOptions& options);
     void SetOption(const Interface& iface);
+    void SetOption(const LocalPort& local_port);
+    void SetOption(const LocalPortRange& local_port_range);
     void SetOption(const HttpVersion& version);
     void SetOption(const Range& range);
     void SetOption(const MultiRange& multi_range);
     void SetOption(const ReserveSize& reserve_size);
+    void SetOption(const AcceptEncoding& accept_encoding);
+    void SetOption(AcceptEncoding&& accept_encoding);
 
     cpr_off_t GetDownloadFileLength();
     /**
@@ -159,7 +172,14 @@ class Session {
     void PreparePut();
     Response Complete(CURLcode curl_error);
 
+    void AddInterceptor(const std::shared_ptr<Interceptor>& pinterceptor);
+
   private:
+    // Interceptors should be able to call the private procceed() function
+    friend Interceptor;
+
+    Response proceed();
+
     class Impl;
     std::unique_ptr<Impl> pimpl_;
 };

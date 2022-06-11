@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.15)
 
 add_library(cpr
+    accept_encoding.cpp
+    async.cpp
     auth.cpp
     bearer.cpp
     cookies.cpp
@@ -14,11 +16,14 @@ add_library(cpr
     proxies.cpp
     proxyauth.cpp
     session.cpp
+    threadpool.cpp
     timeout.cpp
     unix_socket.cpp
     util.cpp
     response.cpp
-    redirect.cpp)
+    redirect.cpp
+    interceptor.cpp
+    ssl_ctx.cpp)
 
 add_library(cpr::cpr ALIAS cpr)
 
