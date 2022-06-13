@@ -3,4 +3,4 @@ libcpr (%VERSION-1) UNRELEASED; urgency=low
   [ Philip Saendig ]
   * First package of libcpr %VERSION for debian.
 
- -- Philip Saendig <philip.saendig@gmail.com>  Sat, 11 Jun 2022 09:32:24 +0200
+ -- Philip Saendig <deb@libcpr.org>  %DATE
