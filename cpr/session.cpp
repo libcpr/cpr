@@ -86,12 +86,6 @@ Session::Session() : curl_(new CurlHolder()) {
 #endif
 }
 
-Session::Session(Session&& /*old*/) = default;
-
-Session::~Session() = default;
-
-Session& Session::operator=(Session&& old) noexcept = default;
-
 Response Session::makeDownloadRequest() {
     assert(curl_->handle);
 
