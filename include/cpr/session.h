@@ -46,12 +46,11 @@ class Interceptor;
 class Session : public std::enable_shared_from_this<Session> {
   public:
     Session();
-    Session(Session&& old);
     Session(const Session& other) = delete;
 
-    ~Session();
+    ~Session() = default;
 
-    Session& operator=(Session&& old) noexcept;
+    Session& operator=(Session&& old) noexcept = default;
     Session& operator=(const Session& other) = delete;
 
     void SetUrl(const Url& url);
