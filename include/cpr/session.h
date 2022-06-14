@@ -65,7 +65,7 @@ class Session : public std::enable_shared_from_this<Session> {
 // Only supported with libcurl >= 7.61.0.
 // As an alternative use SetHeader and add the token manually.
 #if LIBCURL_VERSION_NUM >= 0x073D00
-    void SetBearer(const Bearer& auth);
+    void SetBearer(const Bearer& token);
 #endif
     void SetUserAgent(const UserAgent& ua);
     void SetPayload(Payload&& payload);
