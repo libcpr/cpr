@@ -408,23 +408,32 @@ void HttpServer::OnRequestFormPost(mg_connection* conn, http_message* msg) {
     size_t n1 = 0;
     size_t n2 = 0;
     std::map<std::string, std::string> forms;
+    std::map<std::string, std::string> filenames;
 
     while ((n2 = mg_parse_multipart(msg->body.p + n1, msg->body.len - n1, var_name, sizeof(var_name), file_name, sizeof(file_name), &chunk, &chunk_len)) > 0) {
         n1 += n2;
         forms[var_name] = std::string(chunk, chunk_len);
+        filenames[var_name] = std::string(file_name);
     }
-
-    std::string x = forms["x"];
 
     std::string headers = "Content-Type: application/json";
     std::string response;
     if (forms.find("y") == forms.end()) {
-        response = std::string{
-                "{\n"
-                "  \"x\": " +
-                forms["x"] +
-                "\n"
-                "}"};
+        if (!filenames["x"].empty()) {
+            response = std::string{
+                    "{\n"
+                    "  \"x\": " +
+                    filenames["x"] + "=" + forms["x"] +
+                    "\n"
+                    "}"};
+        } else {
+            response = std::string{
+                    "{\n"
+                    "  \"x\": " +
+                    forms["x"] +
+                    "\n"
+                    "}"};
+        }
     } else {
         response = std::string{
                 "{\n"
@@ -684,7 +693,7 @@ void HttpServer::OnRequestDownloadGzip(mg_connection* conn, http_message* msg) {
 
                 ranges.push_back(current_range);
 
-                if (current_end_index >= (int64_t)(range.length() - 1)) {
+                if (current_end_index >= (int64_t) (range.length() - 1)) {
                     more_ranges_exists = false;
                 } else {
                     // Multiple ranges are separated by ', '
@@ -849,8 +858,7 @@ void HttpServer::OnRequestLocalPort(mg_connection* conn, http_message* /*msg*/) 
     // send source port number as response for checking SetLocalPort/SetLocalPortRange
     std::string headers = "Content-Type: text/plain";
     char portbuf[8];
-    mg_conn_addr_to_str(conn, portbuf, sizeof(portbuf),
-        MG_SOCK_STRINGIFY_PORT | MG_SOCK_STRINGIFY_REMOTE);
+    mg_conn_addr_to_str(conn, portbuf, sizeof(portbuf), MG_SOCK_STRINGIFY_PORT | MG_SOCK_STRINGIFY_REMOTE);
     std::string response = portbuf;
     mg_send_head(conn, 200, response.length(), headers.c_str());
     mg_send(conn, response.c_str(), response.length());
