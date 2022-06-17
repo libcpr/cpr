@@ -528,6 +528,33 @@ TEST(UrlEncodedPostTests, InjectMultipleHeadersTest) {
     EXPECT_EQ(val_2, response.header[key_2]);
 }
 
+TEST(UrlEncodedPostTests, PostBodyWithFile) {
+    std::string filename{"test_file"};
+    std::string expected_text(R"({"property1": "value1"})");
+    std::ofstream test_file;
+    test_file.open(filename);
+    test_file << expected_text;
+    test_file.close();
+    Url url{server->GetBaseUrl() + "/reflect_post.html"};
+    cpr::Response response = Post(url, cpr::Header({{"Content-Type", "application/octet-stream"}}), cpr::Body(File("test_file")));
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+    EXPECT_EQ(std::string{"application/octet-stream"}, response.header["content-type"]);
+    EXPECT_EQ(200, response.status_code);
+}
+
+TEST(UrlEncodedPostTests, PostBodyWithBuffer) {
+    Url url{server->GetBaseUrl() + "/reflect_post.html"};
+    std::string expected_text(R"({"property1": "value1"})");
+    cpr::Response response = Post(url, cpr::Header({{"Content-Type", "application/octet-stream"}}), cpr::Body(Buffer{expected_text.begin(), expected_text.end(), "test_file"}));
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"application/octet-stream"}, response.header["content-type"]);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
 TEST(PostRedirectTests, TempRedirectTest) {
     Url url{server->GetBaseUrl() + "/temporary_redirect.html"};
     Response response = cpr::Post(url, Payload{{"x", "5"}}, Header{{"RedirectLocation", "url_post.html"}});
