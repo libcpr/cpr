@@ -1,24 +1,27 @@
 cmake_minimum_required(VERSION 3.15)
 
-target_include_directories(cpr PUBLIC  
-    $<INSTALL_INTERFACE:include>    
+target_include_directories(cpr PUBLIC
+    $<INSTALL_INTERFACE:include>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
     $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/cpr_generated_includes/>)
 
 target_sources(cpr PRIVATE
-     # Header files (useful in IDEs)
+
+    # Header files (useful in IDEs)
     cpr/accept_encoding.h
     cpr/api.h
     cpr/async.h
     cpr/auth.h
     cpr/bearer.h
     cpr/body.h
+    cpr/buffer.h
     cpr/cookies.h
     cpr/cpr.h
     cpr/cprtypes.h
     cpr/curlholder.h
     cpr/curlholder.h
     cpr/error.h
+    cpr/file.h
     cpr/limit_rate.h
     cpr/local_port.h
     cpr/local_port_range.h
