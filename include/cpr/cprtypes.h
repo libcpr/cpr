@@ -7,6 +7,7 @@
 #include <memory>
 #include <numeric>
 #include <string>
+#include <string_view>
 
 namespace cpr {
 
@@ -21,6 +22,7 @@ class StringHolder {
     StringHolder() = default;
     explicit StringHolder(const std::string& str) : str_(str) {}
     explicit StringHolder(std::string&& str) : str_(std::move(str)) {}
+    explicit StringHolder(std::string_view str) : str_(str) {}
     explicit StringHolder(const char* str) : str_(str) {}
     StringHolder(const char* str, size_t len) : str_(str, len) {}
     StringHolder(const std::initializer_list<std::string> args) {
