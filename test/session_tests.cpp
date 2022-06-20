@@ -655,6 +655,22 @@ TEST(UserAgentTests, SetUserAgentTest) {
     EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
+TEST(UserAgentTests, SetUserAgentStringViewTest) {
+    Url url{server->GetBaseUrl() + "/header_reflect.html"};
+    UserAgent userAgent{std::string_view{"Test User Agent"}};
+    Session session;
+    session.SetUrl(url);
+    session.SetUserAgent(userAgent);
+    Response response = session.Get();
+    std::string expected_text{"Header reflect GET"};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+    EXPECT_EQ(userAgent, response.header["User-Agent"]);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
 TEST(CookiesTests, BasicCookiesTest) {
     Url url{server->GetBaseUrl() + "/basic_cookies.html"};
     Session session{};

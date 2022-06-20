@@ -24,10 +24,32 @@ TEST(BasicTests, HelloWorldTest) {
     EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
+TEST(BasicTests, HelloWorldStringViewUrlTest) {
+    Url url{static_cast<std::string_view>(server->GetBaseUrl() + "/hello.html")};
+    Response response = cpr::Get(url);
+    std::string expected_text{"Hello world!"};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
 
 TEST(BasicTests, HelloWorldNoInterfaceTest) {
     Url url{server->GetBaseUrl() + "/hello.html"};
     Interface iface{""}; // Do not specify any specific interface
+    Response response = cpr::Get(url, iface);
+    std::string expected_text{"Hello world!"};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
+TEST(BasicTests, HelloWorldNoInterfaceStringViewTest) {
+    Url url{server->GetBaseUrl() + "/hello.html"};
+    Interface iface{std::string_view{}}; // Do not specify any specific interface
     Response response = cpr::Get(url, iface);
     std::string expected_text{"Hello world!"};
     EXPECT_EQ(expected_text, response.text);
@@ -1244,6 +1266,18 @@ TEST(GetRedirectTests, BasicAuthenticationRedirectSuccessTest) {
 TEST(BasicTests, RequestBodyTest) {
     Url url{server->GetBaseUrl() + "/body_get.html"};
     Body body{"message=abc123"};
+    Response response = cpr::Get(url, body);
+    std::string expected_text{"abc123"};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
+TEST(BasicTests, RequestBodyStringViewTest) {
+    Url url{server->GetBaseUrl() + "/body_get.html"};
+    Body body{static_cast<std::string_view>("message=abc123")};
     Response response = cpr::Get(url, body);
     std::string expected_text{"abc123"};
     EXPECT_EQ(expected_text, response.text);
