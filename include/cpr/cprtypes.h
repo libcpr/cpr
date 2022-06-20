@@ -113,6 +113,8 @@ class Url : public StringHolder<Url> {
     // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
     Url(std::string&& url) : StringHolder<Url>(std::move(url)) {}
     // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
+    Url(std::string_view url) : StringHolder<Url>(url) {}
+    // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
     Url(const char* url) : StringHolder<Url>(url) {}
     Url(const char* str, size_t len) : StringHolder<Url>(std::string(str, len)) {}
     Url(const std::initializer_list<std::string> args) : StringHolder<Url>(args) {}
