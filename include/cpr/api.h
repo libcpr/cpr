@@ -15,6 +15,7 @@
 #include "cpr/payload.h"
 #include "cpr/response.h"
 #include "cpr/session.h"
+#include <cpr/filesystem.h>
 #include <utility>
 
 namespace cpr {
@@ -209,10 +210,10 @@ Response Download(std::ofstream& file, Ts&&... ts) {
 
 // Download async method
 template <typename... Ts>
-AsyncResponse DownloadAsync(std::string local_path, Ts... ts) {
+AsyncResponse DownloadAsync(fs::path local_path, Ts... ts) {
     return std::async(
             std::launch::async,
-            [](std::string local_path, Ts... ts) {
+            [](fs::path local_path, Ts... ts) {
                 std::ofstream f(local_path);
                 return Download(f, std::move(ts)...);
             },
