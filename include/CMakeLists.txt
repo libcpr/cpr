@@ -45,8 +45,14 @@ target_sources(cpr PRIVATE
     cpr/redirect.h
     cpr/http_version.h
     cpr/interceptor.h
+    cpr/filesystem.h
     ${PROJECT_BINARY_DIR}/cpr_generated_includes/cpr/cprver.h
 )
+
+# Filesystem
+if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    target_link_libraries(cpr PUBLIC stdc++fs)
+endif()
 
 install(DIRECTORY cpr DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 install(DIRECTORY ${PROJECT_BINARY_DIR}/cpr_generated_includes/cpr DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
