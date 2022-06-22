@@ -180,19 +180,19 @@ class Session : public std::enable_shared_from_this<Session> {
     AsyncResponse PutAsync();
 
     template <typename Then>
-    auto GetCallback(Then then) -> std::future<decltype(then(Get()))>;
+    auto GetCallback(Then then);
     template <typename Then>
-    auto PostCallback(Then then) -> std::future<decltype(then(Post()))>;
+    auto PostCallback(Then then);
     template <typename Then>
-    auto PutCallback(Then then) -> std::future<decltype(then(Put()))>;
+    auto PutCallback(Then then);
     template <typename Then>
-    auto HeadCallback(Then then) -> std::future<decltype(then(Head()))>;
+    auto HeadCallback(Then then);
     template <typename Then>
-    auto DeleteCallback(Then then) -> std::future<decltype(then(Delete()))>;
+    auto DeleteCallback(Then then);
     template <typename Then>
-    auto OptionsCallback(Then then) -> std::future<decltype(then(Options()))>;
+    auto OptionsCallback(Then then);
     template <typename Then>
-    auto PatchCallback(Then then) -> std::future<decltype(then(Patch()))>;
+    auto PatchCallback(Then then);
 
     std::shared_ptr<CurlHolder> GetCurlHolder();
     std::string GetFullRequestUrl();
@@ -244,37 +244,37 @@ class Session : public std::enable_shared_from_this<Session> {
 };
 
 template <typename Then>
-auto Session::GetCallback(Then then) -> std::future<decltype(then(Get()))> {
+auto Session::GetCallback(Then then) {
     return async([shared_this = GetSharedPtrFromThis()](Then then_inner) { return then_inner(shared_this->Get()); }, std::move(then));
 }
 
 template <typename Then>
-auto Session::PostCallback(Then then) -> std::future<decltype(then(Post()))> {
+auto Session::PostCallback(Then then) {
     return async([shared_this = GetSharedPtrFromThis()](Then then_inner) { return then_inner(shared_this->Post()); }, std::move(then));
 }
 
 template <typename Then>
-auto Session::PutCallback(Then then) -> std::future<decltype(then(Put()))> {
+auto Session::PutCallback(Then then) {
     return async([shared_this = GetSharedPtrFromThis()](Then then_inner) { return then_inner(shared_this->Put()); }, std::move(then));
 }
 
 template <typename Then>
-auto Session::HeadCallback(Then then) -> std::future<decltype(then(Head()))> {
+auto Session::HeadCallback(Then then) {
     return async([shared_this = GetSharedPtrFromThis()](Then then_inner) { return then_inner(shared_this->Head()); }, std::move(then));
 }
 
 template <typename Then>
-auto Session::DeleteCallback(Then then) -> std::future<decltype(then(Delete()))> {
+auto Session::DeleteCallback(Then then) {
     return async([shared_this = GetSharedPtrFromThis()](Then then_inner) { return then_inner(shared_this->Delete()); }, std::move(then));
 }
 
 template <typename Then>
-auto Session::OptionsCallback(Then then) -> std::future<decltype(then(Options()))> {
+auto Session::OptionsCallback(Then then) {
     return async([shared_this = GetSharedPtrFromThis()](Then then_inner) { return then_inner(shared_this->Options()); }, std::move(then));
 }
 
 template <typename Then>
-auto Session::PatchCallback(Then then) -> std::future<decltype(then(Patch()))> {
+auto Session::PatchCallback(Then then) {
     return async([shared_this = GetSharedPtrFromThis()](Then then_inner) { return then_inner(shared_this->Patch()); }, std::move(then));
 }
 

@@ -19,18 +19,17 @@ class GlobalThreadPool : public ThreadPool {
  * async(std::bind(&Class::mem_fn, &obj))
  * async(std::mem_fn(&Class::mem_fn, &obj))
  **/
-template<class Fn, class... Args>
-auto async(Fn&& fn, Args&&... args) -> std::future<decltype(fn(args...))> {
+template <class Fn, class... Args>
+auto async(Fn&& fn, Args&&... args) {
     return GlobalThreadPool::GetInstance()->Submit(std::forward<Fn>(fn), std::forward<Args>(args)...);
 }
 
 class async {
   public:
-    static void startup(size_t min_threads = CPR_DEFAULT_THREAD_POOL_MIN_THREAD_NUM,
-                 size_t max_threads = CPR_DEFAULT_THREAD_POOL_MAX_THREAD_NUM,
-                 std::chrono::milliseconds max_idle_ms = CPR_DEFAULT_THREAD_POOL_MAX_IDLE_TIME) {
+    static void startup(size_t min_threads = CPR_DEFAULT_THREAD_POOL_MIN_THREAD_NUM, size_t max_threads = CPR_DEFAULT_THREAD_POOL_MAX_THREAD_NUM, std::chrono::milliseconds max_idle_ms = CPR_DEFAULT_THREAD_POOL_MAX_IDLE_TIME) {
         GlobalThreadPool* gtp = GlobalThreadPool::GetInstance();
-        if (gtp->IsStarted()) return;
+        if (gtp->IsStarted())
+            return;
         gtp->SetMinThreadNum(min_threads);
         gtp->SetMaxThreadNum(max_threads);
         gtp->SetMaxIdleTime(max_idle_ms);
