@@ -136,7 +136,7 @@ TEST(SslTests, LoadCertFromBufferTestSimpel) {
 #endif
 
 fs::path getBasePath(const std::string& execPath) {
-    return fs::path{execPath}.parent_path().make_preferred();
+    return fs::path(fs::path{execPath}.parent_path().string() + "/").make_preferred();
 }
 
 int main(int argc, char** argv) {
