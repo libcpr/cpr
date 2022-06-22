@@ -6,6 +6,7 @@
 #include <vector>
 
 #include <cpr/cprtypes.h>
+#include <cpr/filesystem.h>
 #include <cpr/ssl_options.h>
 
 #include "httpsServer.hpp"
@@ -134,29 +135,16 @@ TEST(SslTests, LoadCertFromBufferTestSimpel) {
 }
 #endif
 
-/**
- * We should replace this with a C++17 filesystem call,
- * once we have updated to >= C++17.
- **/
-std::string getBasePath(const std::string& execPath) {
-    std::string path = execPath.substr(0, execPath.find_last_of("\\/") + 1);
-
-    // If Windows convert paths from "D:/cpr/build/bin/Release/client.cer" to
-    // "D:\cpr\build\bin\Release\client.cer":
-#ifdef _WIN32
-    std::cout << "Converting Unix path to Windows path...\n";
-    std::replace(path.begin(), path.end(), '\\', '/');
-    std::cout << "Result path: " << path << '\n';
-#endif
-    return path;
+fs::path getBasePath(const std::string& execPath) {
+    return fs::path{execPath}.parent_path().make_preferred();
 }
 
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
-
-    std::string baseDirPath = getBasePath(argv[0]) + "data/";
-
-    server = new HttpsServer(std::move(baseDirPath), baseDirPath + "certificates/server.crt", baseDirPath + "keys/server.key");
+    fs::path baseDirPath = fs::path{getBasePath(argv[0]).string() + "data/"};
+    fs::path serverCertPath = fs::path{baseDirPath}.append("certificates/server.crt");
+    fs::path serverKeyPath = fs::path{baseDirPath}.append("keys/server.key");
+    server = new HttpsServer(std::move(baseDirPath), std::move(serverCertPath), std::move(serverKeyPath));
     ::testing::AddGlobalTestEnvironment(server);
 
     return RUN_ALL_TESTS();
