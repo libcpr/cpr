@@ -2,7 +2,7 @@
 #include <system_error>
 
 namespace cpr {
-HttpsServer::HttpsServer(fs::path&& baseDirPath, fs::path&& sslCertFileName, fs::path&& sslKeyFileName) : baseDirPath(std::move(baseDirPath.make_preferred().string())), sslCertFileName(std::move(sslCertFileName.make_preferred().string())), sslKeyFileName(std::move(sslKeyFileName.make_preferred().string())) {}
+HttpsServer::HttpsServer(fs::path&& baseDirPath, fs::path&& sslCertFileName, fs::path&& sslKeyFileName) : baseDirPath(baseDirPath.make_preferred().string()), sslCertFileName(sslCertFileName.make_preferred().string()), sslKeyFileName(sslKeyFileName.make_preferred().string()) {}
 
 std::string HttpsServer::GetBaseUrl() {
     return "https://127.0.0.1:" + std::to_string(GetPort());
