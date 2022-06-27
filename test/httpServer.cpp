@@ -120,8 +120,7 @@ void HttpServer::OnRequestBasicCookies(mg_connection* conn, mg_http_message* /*m
             cookie +
             "\r\n"
             "Set-Cookie: " +
-            cookie2 +
-            "\r\n";
+            cookie2 + "\r\n";
     std::string response{"Hello world!"};
     mg_http_reply(conn, 200, headers.c_str(), response.c_str());
 }
@@ -140,8 +139,7 @@ void HttpServer::OnRequestEmptyCookies(mg_connection* conn, mg_http_message* /*m
             cookie +
             "\r\n"
             "Set-Cookie: " +
-            cookie2 +
-            "\r\n";
+            cookie2 + "\r\n";
     std::string response{"Hello world!"};
     mg_http_reply(conn, 200, headers.c_str(), response.c_str());
 }
@@ -173,8 +171,7 @@ void HttpServer::OnRequestV1Cookies(mg_connection* conn, mg_http_message* /*msg*
     std::string headers =
             "Content-Type: text/html\r\n"
             "Set-Cookie: " +
-            v1cookie +
-            "\r\n";
+            v1cookie + "\r\n";
     std::string response{"Hello world!"};
     mg_http_reply(conn, 200, headers.c_str(), response.c_str());
 }
@@ -407,7 +404,7 @@ void HttpServer::OnRequestJsonPost(mg_connection* conn, mg_http_message* msg) {
 void HttpServer::OnRequestFormPost(mg_connection* conn, mg_http_message* msg) {
     size_t pos{0};
     std::map<std::string, std::string> forms;
-    struct mg_http_part part{};
+    struct mg_http_part part {};
 
     while ((pos = mg_http_next_multipart(msg->body, pos, &part)) > 0) {
         forms[std::string(part.name.ptr, part.name.len)] = std::string(part.body.ptr, part.body.len);
