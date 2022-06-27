@@ -9,6 +9,7 @@
 #include "httpServer.hpp"
 
 using namespace cpr;
+using namespace std::chrono_literals;
 
 static HttpServer* server = new HttpServer();
 std::chrono::milliseconds sleep_time{50};
@@ -448,6 +449,31 @@ TEST(TimeoutTests, SetChronoTimeoutLongTest) {
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
     EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
+TEST(TimeoutTests, SetChronoLiteralTimeoutTest) {
+    Url url{server->GetBaseUrl() + "/hello.html"};
+    Session session;
+    session.SetUrl(url);
+    session.SetTimeout(2s);
+    Response response = session.Get();
+    std::string expected_text{"Hello world!"};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
+TEST(TimeoutTests, SetChronoLiteralTimeoutLowSpeed) {
+    Url url{server->GetBaseUrl() + "/low_speed_timeout.html"};
+    Session session;
+    session.SetUrl(url);
+    session.SetTimeout(1000ms);
+    Response response = session.Get();
+    EXPECT_EQ(url, response.url);
+    EXPECT_FALSE(response.status_code == 200);
+    EXPECT_EQ(ErrorCode::OPERATION_TIMEDOUT, response.error.code);
 }
 
 TEST(ConnectTimeoutTests, SetConnectTimeoutTest) {
