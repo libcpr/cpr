@@ -25,7 +25,8 @@ class AbstractServer : public testing::Environment {
     virtual std::string GetBaseUrl() = 0;
     virtual uint16_t GetPort() = 0;
 
-    virtual void OnRequest(mg_connection* conn, http_message* msg) = 0;
+    virtual void acceptConnection(mg_connection* conn) = 0;
+    virtual void OnRequest(mg_connection* conn, mg_http_message* msg) = 0;
 
   private:
     std::shared_ptr<std::thread> serverThread{nullptr};
@@ -38,9 +39,11 @@ class AbstractServer : public testing::Environment {
     void Run();
 
   protected:
-    virtual mg_connection* initServer(mg_mgr* mgr, MG_CB(mg_event_handler_t event_handler, void* user_data)) = 0;
+    virtual mg_connection* initServer(mg_mgr* mgr, mg_event_handler_t event_handler) = 0;
 
     static std::string Base64Decode(const std::string& in);
+    static void SendError(mg_connection* conn, int code, std::string& reason);
+
 };
 } // namespace cpr
 
