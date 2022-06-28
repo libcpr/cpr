@@ -1,5 +1,7 @@
 #include "cpr/multiperform.h"
 
+#include <algorithm>
+
 namespace cpr {
 
 MultiPerform::MultiPerform() : multicurl_(new CurlMultiHolder()) {}
@@ -25,12 +27,12 @@ void MultiPerform::RemoveSession(std::shared_ptr<Session>& session) {
     }
 
     // Remove session from sessions_
-    for (auto it = sessions_.begin(); it != sessions_.end(); ++it) {
-        if (session->curl_->handle == (*it)->curl_->handle) {
-            sessions_.erase(it);
-            break;
-        }
+    auto it = std::find_if(sessions_.begin(), sessions_.end(), [&session](const std::shared_ptr<Session>& current_session) { return session->curl_->handle == current_session->curl_->handle; });
+    if (it == sessions_.end()) {
+        fprintf(stderr, "Failed to find session!");
+        return;
     }
+    sessions_.erase(it);
 }
 
 void MultiPerform::DoMultiPerform() {
@@ -66,13 +68,12 @@ std::vector<Response> MultiPerform::ReadMultiInfo() {
 
         if (info) {
             // Find current session
-            std::shared_ptr<Session> current_session;
-            for (std::shared_ptr<Session> session : sessions_) {
-                if (session->curl_->handle == info->easy_handle) {
-                    current_session = session;
-                    break;
-                }
+            auto it = std::find_if(sessions_.begin(), sessions_.end(), [&info](const std::shared_ptr<Session>& session) { return session->curl_->handle == info->easy_handle; });
+            if (it == sessions_.end()) {
+                fprintf(stderr, "Failed to find current session!");
+                break;
             }
+            std::shared_ptr<Session> current_session = *it;
 
             // Add response object
             responses.push_back(current_session->Complete(info->data.result));
