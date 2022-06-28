@@ -9,13 +9,13 @@ organizationName        = "Example"
 commonName              = "Root CA"
 
 [ca_default]
-home                    = .
+home                    = ./${ENV::CA_PATH}
 database                = $home/db/index
 serial                  = $home/db/serial
-certificate             = $home/$name.crt
-private_key             = $home/$name.key
+certificate             = ./${ENV::CRT_PATH}/$name.crt
+private_key             = ./${ENV::KEY_PATH}/$name.key
 RANDFILE                = $home/private/random
-new_certs_dir           = $home/certs
+new_certs_dir           = $home/certificates
 unique_subject          = no
 copy_extensions         = none
 default_days            = 3650
@@ -59,7 +59,6 @@ basicConstraints        = critical,CA:false
 extendedKeyUsage        = clientAuth
 keyUsage                = critical,digitalSignature
 subjectKeyIdentifier    = hash
-
 
 [name_constraints]
 permitted;DNS.0=localhost
