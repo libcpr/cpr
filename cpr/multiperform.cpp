@@ -38,9 +38,8 @@ void MultiPerform::RemoveSession(const std::shared_ptr<Session>& session) {
 void MultiPerform::DoMultiPerform() {
     // Do multi perform until every handle has finished
     int still_running{0};
-    CURLMcode error_code;
     do {
-        error_code = curl_multi_perform(multicurl_->handle, &still_running);
+        CURLMcode error_code = curl_multi_perform(multicurl_->handle, &still_running);
         if (error_code) {
             fprintf(stderr, "curl_multi_perform() failed, code %d.\n", static_cast<int>(error_code));
             break;
