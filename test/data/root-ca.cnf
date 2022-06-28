@@ -53,6 +53,13 @@ extendedKeyUsage        = clientAuth,serverAuth
 keyUsage                = critical,digitalSignature,keyEncipherment
 subjectKeyIdentifier    = hash
 
+[client_ext]
+authorityKeyIdentifier  = keyid:always
+basicConstraints        = critical,CA:false
+extendedKeyUsage        = clientAuth
+keyUsage                = critical,digitalSignature
+subjectKeyIdentifier    = hash
+
 
 [name_constraints]
 permitted;DNS.0=localhost
