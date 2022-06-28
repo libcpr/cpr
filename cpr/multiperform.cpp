@@ -89,7 +89,7 @@ std::vector<Response> MultiPerform::MakeRequest() {
 }
 
 void MultiPerform::PrepareGet() {
-    for (std::shared_ptr<Session> session : sessions_) {
+    for (std::shared_ptr<Session>& session : sessions_) {
         session->PrepareGet();
     }
 }
