@@ -1,0 +1,41 @@
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number:
+            53:0e:31:74:9a:b4:89:e7:ed:77:db:62:b7:dc:a5:f9
+        Signature Algorithm: ED25519
+        Issuer: C=GB, O=Example, CN=Root CA
+        Validity
+            Not Before: Jun 28 19:22:55 2022 GMT
+            Not After : Jun 25 19:22:55 2032 GMT
+        Subject: C=GB, O=Example, CN=Root CA
+        Subject Public Key Info:
+            Public Key Algorithm: ED25519
+                ED25519 Public-Key:
+                pub:
+                    9c:4f:28:66:2b:0e:4c:69:11:a1:e7:18:ce:f2:64:
+                    26:fd:9a:24:ee:7f:2a:bb:2c:5d:ac:44:1a:e6:36:
+                    97:94
+        X509v3 extensions:
+            X509v3 Basic Constraints: critical
+                CA:TRUE
+            X509v3 Key Usage: critical
+                Certificate Sign
+            X509v3 Subject Key Identifier: 
+                AD:06:30:53:A0:26:74:EC:66:2A:6C:0C:77:73:60:BA:F2:35:CA:9A
+    Signature Algorithm: ED25519
+    Signature Value:
+        17:07:f3:ab:2a:e3:a7:fa:1e:63:f9:d0:3c:4b:ce:ed:74:04:
+        60:7c:ae:11:9a:98:31:c8:19:ea:e4:10:b8:67:9a:90:33:ab:
+        09:22:6a:11:c1:c7:48:7c:0b:b8:b9:67:f1:f1:1a:84:ef:dc:
+        3a:b4:dc:66:1e:ba:b7:b1:90:05
+-----BEGIN CERTIFICATE-----
+MIIBYjCCARSgAwIBAgIQUw4xdJq0ieftd9tit9yl+TAFBgMrZXAwMTELMAkGA1UE
+BhMCR0IxEDAOBgNVBAoMB0V4YW1wbGUxEDAOBgNVBAMMB1Jvb3QgQ0EwHhcNMjIw
+NjI4MTkyMjU1WhcNMzIwNjI1MTkyMjU1WjAxMQswCQYDVQQGEwJHQjEQMA4GA1UE
+CgwHRXhhbXBsZTEQMA4GA1UEAwwHUm9vdCBDQTAqMAUGAytlcAMhAJxPKGYrDkxp
+EaHnGM7yZCb9miTufyq7LF2sRBrmNpeUo0IwQDAPBgNVHRMBAf8EBTADAQH/MA4G
+A1UdDwEB/wQEAwICBDAdBgNVHQ4EFgQUrQYwU6AmdOxmKmwMd3NguvI1ypowBQYD
+K2VwA0EAFwfzqyrjp/oeY/nQPEvO7XQEYHyuEZqYMcgZ6uQQuGeakDOrCSJqEcHH
+SHwLuLln8fEahO/cOrTcZh66t7GQBQ==
+-----END CERTIFICATE-----
