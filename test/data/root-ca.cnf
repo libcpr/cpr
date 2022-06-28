@@ -45,3 +45,20 @@ basicConstraints        = critical,CA:true
 keyUsage                = critical,keyCertSign
 subjectKeyIdentifier    = hash
 
+
+[server_ext]
+authorityKeyIdentifier  = keyid:always
+basicConstraints        = critical,CA:false
+extendedKeyUsage        = clientAuth,serverAuth
+keyUsage                = critical,digitalSignature,keyEncipherment
+subjectKeyIdentifier    = hash
+
+
+[name_constraints]
+permitted;DNS.0=localhost
+permitted;IP.1=127.0.0.1/8
+permitted;IP.2=::1/128
+excluded;IP.0=0.0.0.0/0.0.0.0
+excluded;IP.1=0:0:0:0:0:0:0:0/0:0:0:0:0:0:0:0
+
+
