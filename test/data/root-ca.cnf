@@ -1,0 +1,47 @@
+[default]
+name                    = root-ca
+default_ca              = ca_default
+name_opt                = utf8,esc_ctrl,multiline,lname,align
+
+[ca_dn]
+countryName             = "GB"
+organizationName        = "Example"
+commonName              = "Root CA"
+
+[ca_default]
+home                    = .
+database                = $home/db/index
+serial                  = $home/db/serial
+certificate             = $home/$name.crt
+private_key             = $home/$name.key
+RANDFILE                = $home/private/random
+new_certs_dir           = $home/certs
+unique_subject          = no
+copy_extensions         = none
+default_days            = 3650
+default_md              = sha256
+policy                  = policy_cn_supplied
+
+[policy_cn_supplied]
+countryName             = optional
+stateOrProvinceName     = optional
+organizationName        = optional
+organizationalUnitName  = optional
+commonName              = supplied
+emailAddress            = optional
+
+[req]
+default_bits            = 4096
+encrypt_key             = yes
+default_md              = sha256
+utf8                    = yes
+string_mask             = utf8only
+prompt                  = no
+distinguished_name      = ca_dn
+req_extensions          = ca_ext
+
+[ca_ext]
+basicConstraints        = critical,CA:true
+keyUsage                = critical,keyCertSign
+subjectKeyIdentifier    = hash
+
