@@ -59,7 +59,7 @@ void MultiPerform::DoMultiPerform() {
 std::vector<Response> MultiPerform::ReadMultiInfo() {
     // Get infos and create Response objects
     std::vector<Response> responses;
-    struct CURLMsg* info;
+    struct CURLMsg* info{nullptr};
     do {
         int msgq = 0;
 
