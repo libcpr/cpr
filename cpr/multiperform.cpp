@@ -76,6 +76,7 @@ std::vector<Response> MultiPerform::ReadMultiInfo() {
             std::shared_ptr<Session> current_session = *it;
 
             // Add response object
+            // NOLINTNEXTLINE (cppcoreguidelines-pro-type-union-access)
             responses.push_back(current_session->Complete(info->data.result));
         }
     } while (info);
