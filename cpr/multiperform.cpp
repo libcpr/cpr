@@ -18,7 +18,7 @@ void MultiPerform::AddSession(std::shared_ptr<Session>& session) {
     sessions_.push_back(session);
 }
 
-void MultiPerform::RemoveSession(std::shared_ptr<Session>& session) {
+void MultiPerform::RemoveSession(const std::shared_ptr<Session>& session) {
     // Remove easy handle from multihandle
     CURLMcode error_code = curl_multi_remove_handle(multicurl_->handle, session->curl_->handle);
     if (error_code) {
