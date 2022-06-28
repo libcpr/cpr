@@ -46,7 +46,8 @@ void MultiPerform::DoMultiPerform() {
         }
 
         if (still_running) {
-            error_code = curl_multi_poll(multicurl_->handle, nullptr, 0, 1000, nullptr);
+            int timeout_ms = 1000;
+            error_code = curl_multi_poll(multicurl_->handle, nullptr, 0, timeout_ms, nullptr);
             if (error_code) {
                 fprintf(stderr, "curl_multi_poll() failed, code %d.\n", static_cast<int>(error_code));
                 break;
