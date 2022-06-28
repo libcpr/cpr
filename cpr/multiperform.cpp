@@ -8,7 +8,7 @@ void MultiPerform::AddSession(std::shared_ptr<Session>& session) {
     // Add easy handle to multi handle
     CURLMcode error_code = curl_multi_add_handle(multicurl_->handle, session->curl_->handle);
     if (error_code) {
-        fprintf(stderr, "curl_multi_add_handle() failed, code %d.\n", (int) error_code);
+        fprintf(stderr, "curl_multi_add_handle() failed, code %d.\n", static_cast<int>(error_code));
         return;
     }
 
@@ -20,7 +20,7 @@ void MultiPerform::RemoveSession(std::shared_ptr<Session>& session) {
     // Remove easy handle from multihandle
     CURLMcode error_code = curl_multi_remove_handle(multicurl_->handle, session->curl_->handle);
     if (error_code) {
-        fprintf(stderr, "curl_multi_remove_handle() failed, code %d.\n", (int) error_code);
+        fprintf(stderr, "curl_multi_remove_handle() failed, code %d.\n", static_cast<int>(error_code));
         return;
     }
 
@@ -40,14 +40,14 @@ void MultiPerform::DoMultiPerform() {
     do {
         error_code = curl_multi_perform(multicurl_->handle, &still_running);
         if (error_code) {
-            fprintf(stderr, "curl_multi_perform() failed, code %d.\n", (int) error_code);
+            fprintf(stderr, "curl_multi_perform() failed, code %d.\n", static_cast<int>(error_code));
             break;
         }
 
         if (still_running) {
             error_code = curl_multi_poll(multicurl_->handle, NULL, 0, 1000, NULL);
             if (error_code) {
-                fprintf(stderr, "curl_multi_poll() failed, code %d.\n", (int) error_code);
+                fprintf(stderr, "curl_multi_poll() failed, code %d.\n", static_cast<int>(error_code));
                 break;
             }
         }
