@@ -15,7 +15,7 @@ class MultiPerform {
     MultiPerform();
     std::vector<Response> Get();
     void AddSession(std::shared_ptr<Session>& session);
-    void RemoveSession(std::shared_ptr<Session>& session);
+    void RemoveSession(const std::shared_ptr<Session>& session);
 
   private:
     void PrepareGet();
