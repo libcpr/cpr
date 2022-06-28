@@ -42,6 +42,7 @@ namespace cpr {
 using AsyncResponse = std::future<Response>;
 
 class Interceptor;
+class MultiPerform;
 
 class Session : public std::enable_shared_from_this<Session> {
   public:
@@ -211,6 +212,7 @@ class Session : public std::enable_shared_from_this<Session> {
   private:
     // Interceptors should be able to call the private procceed() function
     friend Interceptor;
+    friend MultiPerform;
 
     bool hasBodyOrPayload_{false};
     bool chunkedTransferEncoding_{false};

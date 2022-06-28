@@ -46,6 +46,7 @@ target_sources(cpr PRIVATE
     cpr/interceptor.h
     cpr/filesystem.h
     cpr/curlmultiholder.h
+    cpr/multiperform.h
     ${PROJECT_BINARY_DIR}/cpr_generated_includes/cpr/cprver.h
 )
 

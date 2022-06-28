@@ -25,7 +25,8 @@ add_library(cpr
         redirect.cpp
         interceptor.cpp
         ssl_ctx.cpp
-        curlmultiholder.cpp)
+        curlmultiholder.cpp
+        multiperform.cpp)
 
 add_library(cpr::cpr ALIAS cpr)
 
