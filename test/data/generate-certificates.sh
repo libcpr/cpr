@@ -18,7 +18,11 @@ openssl req -new -config root-ca.cnf -out root-ca.csr -keyout root-ca.key -passo
 # Self-Sign the root certificate
 openssl ca -batch -selfsign -config root-ca.cnf -in root-ca.csr -out root-ca.crt -extensions ca_ext -passin pass:
 
+# Create a Certificate Signing request for a server certificate
+openssl req -new -config server.cnf -out server.csr -keyout server.key -passout pass:
+# Issue the server certificate
+openssl ca -batch -days 1825 -config root-ca.cnf -in server.csr -out server.crt -extensions server_ext -passin pass:
 
-# Clean up:
+# Clean up
 rm -rf db certs *.csr private
 
