@@ -12,6 +12,7 @@
 #include "cpr/bearer.h"
 #include "cpr/cprtypes.h"
 #include "cpr/multipart.h"
+#include "cpr/multiperform.h"
 #include "cpr/payload.h"
 #include "cpr/response.h"
 #include "cpr/session.h"
@@ -49,6 +50,69 @@ void set_option_internal(Session& session, CurrentType&& current_option, Ts&&...
 template <typename... Ts>
 void set_option(Session& session, Ts&&... ts) {
     set_option_internal<false, Ts...>(session, std::forward<Ts>(ts)...);
+}
+
+// This can be removed once the c++ standard has been updated
+// Source: https://gist.github.com/ntessore/dc17769676fb3c6daa1f#file-integer_sequence-hpp
+namespace std14 {
+
+template <typename T, T... Ints>
+struct integer_sequence {
+    typedef T value_type;
+    static constexpr std::size_t size() {
+        return sizeof...(Ints);
+    }
+};
+
+template <std::size_t... Ints>
+using index_sequence = integer_sequence<std::size_t, Ints...>;
+
+template <typename T, std::size_t N, T... Is>
+struct make_integer_sequence : make_integer_sequence<T, N - 1, N - 1, Is...> {};
+
+template <typename T, T... Is>
+struct make_integer_sequence<T, 0, Is...> : integer_sequence<T, Is...> {};
+
+template <std::size_t N>
+using make_index_sequence = make_integer_sequence<std::size_t, N>;
+
+// https://en.cppreference.com/w/cpp/types/decay
+template <class T>
+using decay_t = typename std::decay<T>::type;
+
+} // namespace std14
+
+// Idea: https://stackoverflow.com/a/19060157
+template <typename Tuple, std::size_t... I>
+void apply_set_option_internal(Session& session, Tuple&& t, std14::index_sequence<I...>) {
+    set_option(session, std::get<I>(std::forward<Tuple>(t))...);
+}
+
+// Idea: https://stackoverflow.com/a/19060157
+template <typename Tuple>
+void apply_set_option(Session& session, Tuple&& t) {
+    using Indices = std14::make_index_sequence<std::tuple_size<std14::decay_t<Tuple>>::value>;
+    apply_set_option_internal(session, std::forward<Tuple>(t), Indices());
+}
+
+template <typename T>
+void setup_multiperform_internal(MultiPerform& multiperform, T&& t) {
+    std::shared_ptr<Session> session = std::make_shared<Session>();
+    apply_set_option(*session, t);
+    multiperform.AddSession(session);
+}
+
+template <typename T, typename... Ts>
+void setup_multiperform_internal(MultiPerform& multiperform, T&& t, Ts&&... ts) {
+    std::shared_ptr<Session> session = std::make_shared<Session>();
+    apply_set_option(*session, t);
+    multiperform.AddSession(session);
+    setup_multiperform_internal<Ts...>(multiperform, std::forward<Ts>(ts)...);
+}
+
+template <typename... Ts>
+void setup_multiperform(MultiPerform& multiperform, Ts&&... ts) {
+    setup_multiperform_internal<Ts...>(multiperform, std::forward<Ts>(ts)...);
 }
 
 } // namespace priv
@@ -226,6 +290,14 @@ Response Download(const WriteCallback& write, Ts&&... ts) {
     Session session;
     priv::set_option(session, std::forward<Ts>(ts)...);
     return session.Download(write);
+}
+
+// Multi requests
+template <typename... Ts>
+std::vector<Response> MultiGet(Ts&&... ts) {
+    MultiPerform multiperform;
+    priv::setup_multiperform<Ts...>(multiperform, std::forward<Ts>(ts)...);
+    return multiperform.Get();
 }
 
 } // namespace cpr
