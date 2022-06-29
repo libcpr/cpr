@@ -16,11 +16,14 @@ mkdir -p $KEY_PATH $CRT_PATH $CA_PATH/db $CA_PATH/private $CA_PATH/certificates
 touch $CA_PATH/db/index
 openssl rand -hex 16  > $CA_PATH/db/serial
 
-# Generate all keys
+
+# Generate all private keys
 openssl genpkey -algorithm ed25519 -out $KEY_PATH/root-ca.key
 openssl genpkey -algorithm ed25519 -out $KEY_PATH/server.key
 openssl genpkey -algorithm ed25519 -out $KEY_PATH/client.key
 
+# For the server, we also need the public key
+openssl pkey -in $KEY_PATH/server.key -pubout -out $KEY_PATH/server.pub
 
 
 # Generate a Certificate Signing Request for the Root CA based on a config file
