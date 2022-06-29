@@ -29,10 +29,13 @@ void MultiPerform::RemoveSession(const std::shared_ptr<Session>& session) {
         return;
     }
 
+    // Unock session
+    session->isUsedInMultiPerform = false;
+
     // Remove session from sessions_
     auto it = std::find_if(sessions_.begin(), sessions_.end(), [&session](const std::shared_ptr<Session>& current_session) { return session->curl_->handle == current_session->curl_->handle; });
     if (it == sessions_.end()) {
-        fprintf(stderr, "Failed to find session!");
+        fprintf(stderr, "Failed to find session!\n");
         return;
     }
     sessions_.erase(it);
@@ -73,7 +76,7 @@ std::vector<Response> MultiPerform::ReadMultiInfo() {
             // Find current session
             auto it = std::find_if(sessions_.begin(), sessions_.end(), [&info](const std::shared_ptr<Session>& session) { return session->curl_->handle == info->easy_handle; });
             if (it == sessions_.end()) {
-                fprintf(stderr, "Failed to find current session!");
+                fprintf(stderr, "Failed to find current session!\n");
                 break;
             }
             std::shared_ptr<Session> current_session = *it;
