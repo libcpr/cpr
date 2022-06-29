@@ -1,3 +1,4 @@
+# Based on: https://www.feistyduck.com/library/openssl-cookbook/online/openssl-command-line/private-ca-creating-root.html
 [default]
 name                    = root-ca
 default_ca              = ca_default
@@ -65,5 +66,4 @@ subjectKeyIdentifier    = hash
 permitted;DNS.0=localhost
 permitted;IP.0=127.0.0.1/255.0.0.0
 permitted;IP.1=::1/ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff
-
 
