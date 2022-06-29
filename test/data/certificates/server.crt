@@ -2,45 +2,40 @@ Certificate:
     Data:
         Version: 3 (0x2)
         Serial Number:
-            53:0e:31:74:9a:b4:89:e7:ed:77:db:62:b7:dc:a5:fa
+            28:c2:52:87:1e:c6:2a:62:6a:98:00:6b:0b:f2:88:8f
         Signature Algorithm: ED25519
         Issuer: C=GB, O=Example, CN=Root CA
         Validity
-            Not Before: Jun 28 19:22:55 2022 GMT
-            Not After : Jun 27 19:22:55 2027 GMT
+            Not Before: Jun 29 11:33:07 2022 GMT
+            Not After : Jun 28 11:33:07 2027 GMT
         Subject: CN=test-server
         Subject Public Key Info:
             Public Key Algorithm: ED25519
                 ED25519 Public-Key:
                 pub:
-                    19:71:6b:6a:ab:63:83:a4:ab:d2:cc:77:b7:bd:76:
-                    97:62:79:7e:32:52:78:5e:88:78:7b:81:66:27:fb:
-                    77:02
+                    8e:b8:25:4e:51:8d:f7:44:1b:52:90:33:14:b9:0d:
+                    05:a4:88:69:4a:21:03:bb:c9:ee:26:34:5a:bd:42:
+                    57:93
         X509v3 extensions:
-            X509v3 Authority Key Identifier: 
-                AD:06:30:53:A0:26:74:EC:66:2A:6C:0C:77:73:60:BA:F2:35:CA:9A
-            X509v3 Basic Constraints: critical
-                CA:FALSE
-            X509v3 Extended Key Usage: 
-                TLS Web Client Authentication, TLS Web Server Authentication
-            X509v3 Key Usage: critical
-                Digital Signature, Key Encipherment
+            X509v3 Subject Alternative Name: 
+                DNS:localhost, IP Address:127.0.0.1, IP Address:0:0:0:0:0:0:0:1
             X509v3 Subject Key Identifier: 
-                E2:18:E0:47:EE:58:19:D7:04:63:0B:2D:B4:3A:FC:55:6D:69:35:52
+                39:C1:81:38:01:DC:55:38:E5:2F:4E:7A:D0:4C:84:7B:B7:27:D3:AF
+            X509v3 Authority Key Identifier: 
+                E4:F2:F3:85:0E:B7:85:75:84:76:E3:43:D1:B6:9D:14:B8:E2:A4:B7
     Signature Algorithm: ED25519
     Signature Value:
-        11:1b:fd:2a:c0:62:6d:0c:98:dd:04:4f:60:c4:8e:ac:d8:7d:
-        da:ee:12:7d:28:b6:d6:e4:4c:b6:0b:53:70:17:07:a6:0d:e7:
-        2d:ed:36:fa:44:58:36:31:ef:ba:b4:9e:a3:db:ce:eb:89:14:
-        24:b1:0e:9a:1a:28:c5:f7:37:0a
+        2e:0d:a1:0d:f5:90:77:e9:eb:84:7d:80:63:63:4d:8a:eb:d9:
+        23:57:1f:21:2a:ed:81:b4:a8:58:b9:00:1b:cb:5c:90:1b:33:
+        6b:f6:ec:42:20:63:54:d6:60:ee:37:14:1b:1c:95:0b:33:ea:
+        67:29:d4:cc:d9:7e:34:fd:47:04
 -----BEGIN CERTIFICATE-----
-MIIBhDCCATagAwIBAgIQUw4xdJq0ieftd9tit9yl+jAFBgMrZXAwMTELMAkGA1UE
+MIIBdTCCASegAwIBAgIQKMJShx7GKmJqmABrC/KIjzAFBgMrZXAwMTELMAkGA1UE
 BhMCR0IxEDAOBgNVBAoMB0V4YW1wbGUxEDAOBgNVBAMMB1Jvb3QgQ0EwHhcNMjIw
-NjI4MTkyMjU1WhcNMjcwNjI3MTkyMjU1WjAWMRQwEgYDVQQDDAt0ZXN0LXNlcnZl
-cjAqMAUGAytlcAMhABlxa2qrY4Okq9LMd7e9dpdieX4yUnheiHh7gWYn+3cCo38w
-fTAfBgNVHSMEGDAWgBStBjBToCZ07GYqbAx3c2C68jXKmjAMBgNVHRMBAf8EAjAA
-MB0GA1UdJQQWMBQGCCsGAQUFBwMCBggrBgEFBQcDATAOBgNVHQ8BAf8EBAMCBaAw
-HQYDVR0OBBYEFOIY4EfuWBnXBGMLLbQ6/FVtaTVSMAUGAytlcANBABEb/SrAYm0M
-mN0ET2DEjqzYfdruEn0ottbkTLYLU3AXB6YN5y3tNvpEWDYx77q0nqPbzuuJFCSx
-DpoaKMX3Nwo=
+NjI5MTEzMzA3WhcNMjcwNjI4MTEzMzA3WjAWMRQwEgYDVQQDDAt0ZXN0LXNlcnZl
+cjAqMAUGAytlcAMhAI64JU5RjfdEG1KQMxS5DQWkiGlKIQO7ye4mNFq9QleTo3Aw
+bjAsBgNVHREEJTAjgglsb2NhbGhvc3SHBH8AAAGHEAAAAAAAAAAAAAAAAAAAAAEw
+HQYDVR0OBBYEFDnBgTgB3FU45S9OetBMhHu3J9OvMB8GA1UdIwQYMBaAFOTy84UO
+t4V1hHbjQ9G2nRS44qS3MAUGAytlcANBAC4NoQ31kHfp64R9gGNjTYrr2SNXHyEq
+7YG0qFi5ABvLXJAbM2v27EIgY1TWYO43FBsclQsz6mcp1MzZfjT9RwQ=
 -----END CERTIFICATE-----

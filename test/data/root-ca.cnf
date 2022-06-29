@@ -44,6 +44,7 @@ req_extensions          = ca_ext
 basicConstraints        = critical,CA:true
 keyUsage                = critical,keyCertSign
 subjectKeyIdentifier    = hash
+nameConstraints         = @name_constraints
 
 
 [server_ext]
@@ -62,9 +63,7 @@ subjectKeyIdentifier    = hash
 
 [name_constraints]
 permitted;DNS.0=localhost
-permitted;IP.1=127.0.0.1/8
-permitted;IP.2=::1/128
-excluded;IP.0=0.0.0.0/0.0.0.0
-excluded;IP.1=0:0:0:0:0:0:0:0/0:0:0:0:0:0:0:0
+permitted;IP.0=127.0.0.1/255.0.0.0
+permitted;IP.1=::1/ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff
 
 
