@@ -15,6 +15,11 @@ using namespace cpr;
 
 static HttpsServer* server;
 
+static std::string caCertPath;
+static std::string serverPubKeyPath;
+static std::string clientKeyPath;
+static std::string clientCertPath;
+
 std::string loadCertificateFromFile(const std::string certPath) {
     std::ifstream certFile(certPath);
     std::stringstream buffer;
@@ -26,8 +31,7 @@ TEST(SslTests, HelloWorldTestSimpel) {
     std::this_thread::sleep_for(std::chrono::seconds(1));
 
     Url url{server->GetBaseUrl() + "/hello.html"};
-    std::string baseDirPath = server->getBaseDirPath();
-    SslOptions sslOpts = Ssl(ssl::CaPath{baseDirPath + "ca.cer"}, ssl::CertFile{baseDirPath + "client.cer"}, ssl::KeyFile{baseDirPath + "client.key"}, ssl::VerifyPeer{false}, ssl::PinnedPublicKey{baseDirPath + "server.pubkey"}, ssl::VerifyHost{false}, ssl::VerifyStatus{false});
+    SslOptions sslOpts = Ssl(ssl::CaPath{std::move(caCertPath)}, ssl::CertFile{std::move(clientCertPath)}, ssl::KeyFile{std::move(clientKeyPath)}, ssl::VerifyPeer{false}, ssl::PinnedPublicKey{std::move(serverPubKeyPath)}, ssl::VerifyHost{false}, ssl::VerifyStatus{false});
     Response response = cpr::Get(url, sslOpts, Timeout{5000}, Verbose{});
     std::string expected_text = "Hello world!";
     EXPECT_EQ(expected_text, response.text);
@@ -41,8 +45,7 @@ TEST(SslTests, HelloWorldTestFull) {
     std::this_thread::sleep_for(std::chrono::seconds(1));
 
     Url url{server->GetBaseUrl() + "/hello.html"};
-    std::string baseDirPath = server->getBaseDirPath();
-    SslOptions sslOpts = Ssl(ssl::TLSv1{}, ssl::ALPN{false}, ssl::NPN{false}, ssl::CaPath{baseDirPath + "ca.cer"}, ssl::CertFile{baseDirPath + "client.cer"}, ssl::KeyFile{baseDirPath + "client.key"}, ssl::PinnedPublicKey{baseDirPath + "server.pubkey"}, ssl::VerifyPeer{false}, ssl::VerifyHost{false}, ssl::VerifyStatus{false});
+    SslOptions sslOpts = Ssl(ssl::TLSv1{}, ssl::ALPN{false}, ssl::NPN{false}, ssl::CaPath{std::move(caCertPath)}, ssl::CertFile{std::move(clientCertPath)}, ssl::KeyFile{std::move(clientKeyPath)}, ssl::PinnedPublicKey{std::move(serverPubKeyPath)}, ssl::VerifyPeer{false}, ssl::VerifyHost{false}, ssl::VerifyStatus{false});
     Response response = cpr::Get(url, sslOpts, Timeout{5000}, Verbose{});
     std::string expected_text = "Hello world!";
     EXPECT_EQ(expected_text, response.text);
@@ -56,8 +59,8 @@ TEST(SslTests, GetCertInfo) {
     std::this_thread::sleep_for(std::chrono::seconds(1));
 
     Url url{server->GetBaseUrl() + "/hello.html"};
-    std::string baseDirPath = server->getBaseDirPath();
-    SslOptions sslOpts = Ssl(ssl::CaPath{baseDirPath + "ca.cer"}, ssl::CertFile{baseDirPath + "client.cer"}, ssl::KeyFile{baseDirPath + "client.key"}, ssl::VerifyPeer{false}, ssl::VerifyHost{false}, ssl::VerifyStatus{false});
+
+    SslOptions sslOpts = Ssl(ssl::CaPath{std::move(caCertPath)}, ssl::CertFile{std::move(clientCertPath)}, ssl::KeyFile{std::move(clientKeyPath)}, ssl::VerifyPeer{false}, ssl::VerifyHost{false}, ssl::VerifyStatus{false});
     Response response = cpr::Get(url, sslOpts, Timeout{5000}, Verbose{});
     std::string expected_text = "Hello world!";
     EXPECT_EQ(expected_text, response.text);
@@ -77,10 +80,9 @@ TEST(SslTests, LoadCertFromBufferTestSimpel) {
     std::this_thread::sleep_for(std::chrono::seconds(1));
 
     Url url{server->GetBaseUrl() + "/hello.html"};
-    std::string baseDirPath = server->getBaseDirPath();
 
-    std::string certBuffer = loadCertificateFromFile(baseDirPath + "ca.cer");
-    SslOptions sslOpts = Ssl(ssl::CaBuffer{std::move(certBuffer)}, ssl::CertFile{baseDirPath + "client.cer"}, ssl::KeyFile{baseDirPath + "client.key"}, ssl::VerifyPeer{false}, ssl::VerifyHost{false}, ssl::VerifyStatus{false});
+    std::string certBuffer = loadCertificateFromFile(caCertPath);
+    SslOptions sslOpts = Ssl(ssl::CaBuffer{std::move(certBuffer)}, ssl::CertFile{std::move(clientCertPath)}, ssl::KeyFile{std::move(clientKeyPath)}, ssl::VerifyPeer{false}, ssl::VerifyHost{false}, ssl::VerifyStatus{false});
     Response response = cpr::Get(url, sslOpts, Timeout{5000}, Verbose{});
     std::string expected_text = "Hello world!";
     EXPECT_EQ(expected_text, response.text);
@@ -111,10 +113,16 @@ std::string getBasePath(const std::string& execPath) {
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
 
-    std::string baseDirPath = getBasePath(argv[0]);
-    std::string serverCertPath = baseDirPath + "server.cer";
-    std::string serverKeyPath = baseDirPath + "server.key";
-    server = new HttpsServer(std::move(baseDirPath), std::move(serverCertPath), std::move(serverKeyPath));
+    std::string baseDirPath = getBasePath(argv[0]) + "../test/data/";
+    std::string keyDirPath = baseDirPath + "keys/";
+    std::string certDirPath = baseDirPath + "certificates/";
+
+    caCertPath = baseDirPath + "certificates/root-ca.cer";
+    serverPubKeyPath = keyDirPath + "server.pub";
+    clientKeyPath = keyDirPath + "client.key";
+    clientCertPath = certDirPath + "client.crt";
+
+    server = new HttpsServer(std::move(baseDirPath), certDirPath + "server.crt", keyDirPath + "server.key");
     ::testing::AddGlobalTestEnvironment(server);
 
     return RUN_ALL_TESTS();
