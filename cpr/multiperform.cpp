@@ -14,6 +14,9 @@ void MultiPerform::AddSession(std::shared_ptr<Session>& session) {
         return;
     }
 
+    // Lock session to the multihandle
+    session->isUsedInMultiPerform = true;
+
     // Add session to sessions_
     sessions_.push_back(session);
 }

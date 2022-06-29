@@ -28,6 +28,14 @@ constexpr long ON = 1L;
 // NOLINTNEXTLINE(google-runtime-int)
 constexpr long OFF = 0L;
 
+CURLcode Session::DoEasyPerform() {
+    if (isUsedInMultiPerform) {
+        fprintf(stderr, "curl_easy_perform cannot be executed if the CURL handle is used in a MultiPerform.\n");
+        return CURLcode::CURLE_FAILED_INIT;
+    }
+    return curl_easy_perform(curl_->handle);
+}
+
 void Session::SetHeaderInternal() {
     curl_slist* chunk = nullptr;
     for (const std::pair<const std::string, std::string>& item : header_) {
@@ -126,7 +134,7 @@ Response Session::makeDownloadRequest() {
         curl_easy_setopt(curl_->handle, CURLOPT_HEADERDATA, &header_string);
     }
 
-    CURLcode curl_error = curl_easy_perform(curl_->handle);
+    CURLcode curl_error = DoEasyPerform();
 
     if (!headercb_.callback) {
         curl_easy_setopt(curl_->handle, CURLOPT_HEADERFUNCTION, nullptr);
@@ -212,7 +220,7 @@ Response Session::makeRequest() {
         return interceptor->intercept(*this);
     }
 
-    CURLcode curl_error = curl_easy_perform(curl_->handle);
+    CURLcode curl_error = DoEasyPerform();
     return Complete(curl_error);
 }
 
@@ -655,7 +663,7 @@ cpr_off_t Session::GetDownloadFileLength() {
 
     curl_easy_setopt(curl_->handle, CURLOPT_HTTPGET, 1);
     curl_easy_setopt(curl_->handle, CURLOPT_NOBODY, 1);
-    if (curl_easy_perform(curl_->handle) == CURLE_OK) {
+    if (DoEasyPerform() == CURLE_OK) {
         curl_easy_getinfo(curl_->handle, CURLINFO_CONTENT_LENGTH_DOWNLOAD_T, &downloadFileLenth);
     }
     return downloadFileLenth;

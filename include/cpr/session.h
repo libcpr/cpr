@@ -236,6 +236,7 @@ class Session : public std::enable_shared_from_this<Session> {
     std::string response_string_;
     std::string header_string_;
     std::queue<std::shared_ptr<Interceptor>> interceptors_;
+    bool isUsedInMultiPerform{false};
 
     Response makeDownloadRequest();
     Response makeRequest();
@@ -243,6 +244,7 @@ class Session : public std::enable_shared_from_this<Session> {
     void prepareCommon();
     void SetHeaderInternal();
     std::shared_ptr<Session> GetSharedPtrFromThis();
+    CURLcode DoEasyPerform();
 };
 
 template <typename Then>
