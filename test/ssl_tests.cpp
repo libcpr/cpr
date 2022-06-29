@@ -71,7 +71,7 @@ TEST(SslTests, GetCertInfo) {
 
     std::vector<std::string> certInfo = response.GetCertInfo();
     EXPECT_EQ(certInfo.size(), 1);
-    std::string expected_certInfo = "Subject:C = XX, L = Default City, O = Default Company Ltd";
+    std::string expected_certInfo = "Subject:CN = test-server";
     EXPECT_EQ(certInfo[0], expected_certInfo);
 }
 
