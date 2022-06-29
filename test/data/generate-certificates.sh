@@ -11,7 +11,9 @@ export KEY_PATH=keys
 export CRT_PATH=certificates
 export CA_PATH=ca
 
-# Create environment:
+# Create environment. 
+# $CA_PATH is deleted in the end. 
+# If new certificates need to be issued, this needs to be done before the cleanup in the end.
 mkdir -p $KEY_PATH $CRT_PATH $CA_PATH/db $CA_PATH/private $CA_PATH/certificates
 touch $CA_PATH/db/index
 openssl rand -hex 16  > $CA_PATH/db/serial
@@ -68,5 +70,7 @@ openssl ca -batch \
 
 
 # Clean up
+# IMPORTANT: If new certificates should be issued, $CA_PATH and its files MUST NOT be deleted!
+# New certificates can be created in this script before cleaning up.
 rm -rf *.csr $CA_PATH
 
