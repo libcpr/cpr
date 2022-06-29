@@ -35,7 +35,7 @@ openssl req -new \
 openssl ca -batch \
     -selfsign -config root-ca.cnf \
     -extensions ca_ext \
-    -in root-ca.csr -out $CRT_PATH/root-ca.crt
+    -in root-ca.csr -out $CRT_PATH/root-ca.crt -notext
 
 
 # Create a Certificate Signing request for the server certificate
@@ -49,7 +49,7 @@ openssl ca -batch \
     -config root-ca.cnf \
     -extensions server_ext \
     -extfile server.cnf -extensions ext \
-    -in server.csr -out $CRT_PATH/server.crt \
+    -in server.csr -out $CRT_PATH/server.crt -notext \
     -days 1825
 
 
@@ -62,7 +62,7 @@ openssl req -new \
 openssl ca -batch \
     -config root-ca.cnf \
     -extensions client_ext \
-    -in client.csr -out $CRT_PATH/client.crt \
+    -in client.csr -out $CRT_PATH/client.crt -notext \
     -days 1825
 
 
