@@ -39,11 +39,13 @@ openssl ca -batch \
 openssl req -new \
     -config server.cnf -out server.csr \
     -key $KEY_PATH/server.key
+openssl req -text -in server.csr -noout
 
 # Issue the server certificate
 openssl ca -batch \
     -config root-ca.cnf \
     -extensions server_ext \
+    -extfile server.cnf -extensions ext \
     -in server.csr -out $CRT_PATH/server.crt \
     -days 1825
 

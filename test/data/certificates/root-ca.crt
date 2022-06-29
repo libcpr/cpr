@@ -2,40 +2,47 @@ Certificate:
     Data:
         Version: 3 (0x2)
         Serial Number:
-            53:0e:31:74:9a:b4:89:e7:ed:77:db:62:b7:dc:a5:f9
+            28:c2:52:87:1e:c6:2a:62:6a:98:00:6b:0b:f2:88:8e
         Signature Algorithm: ED25519
         Issuer: C=GB, O=Example, CN=Root CA
         Validity
-            Not Before: Jun 28 19:22:55 2022 GMT
-            Not After : Jun 25 19:22:55 2032 GMT
+            Not Before: Jun 29 11:33:07 2022 GMT
+            Not After : Jun 26 11:33:07 2032 GMT
         Subject: C=GB, O=Example, CN=Root CA
         Subject Public Key Info:
             Public Key Algorithm: ED25519
                 ED25519 Public-Key:
                 pub:
-                    9c:4f:28:66:2b:0e:4c:69:11:a1:e7:18:ce:f2:64:
-                    26:fd:9a:24:ee:7f:2a:bb:2c:5d:ac:44:1a:e6:36:
-                    97:94
+                    9a:b3:6a:e9:8c:2a:e3:26:86:d0:46:6d:2f:94:0a:
+                    b0:a6:5d:b1:9b:fa:54:5c:b8:ee:f5:98:f4:5e:cb:
+                    b1:d7
         X509v3 extensions:
             X509v3 Basic Constraints: critical
                 CA:TRUE
             X509v3 Key Usage: critical
                 Certificate Sign
             X509v3 Subject Key Identifier: 
-                AD:06:30:53:A0:26:74:EC:66:2A:6C:0C:77:73:60:BA:F2:35:CA:9A
+                E4:F2:F3:85:0E:B7:85:75:84:76:E3:43:D1:B6:9D:14:B8:E2:A4:B7
+            X509v3 Name Constraints: 
+                Permitted:
+                  DNS:localhost
+                  IP:127.0.0.1/255.0.0.0
+                  IP:0:0:0:0:0:0:0:1/FFFF:FFFF:FFFF:FFFF:FFFF:FFFF:FFFF:FFFF
     Signature Algorithm: ED25519
     Signature Value:
-        17:07:f3:ab:2a:e3:a7:fa:1e:63:f9:d0:3c:4b:ce:ed:74:04:
-        60:7c:ae:11:9a:98:31:c8:19:ea:e4:10:b8:67:9a:90:33:ab:
-        09:22:6a:11:c1:c7:48:7c:0b:b8:b9:67:f1:f1:1a:84:ef:dc:
-        3a:b4:dc:66:1e:ba:b7:b1:90:05
+        44:90:06:ed:7f:a3:26:9e:62:8b:ae:de:af:a1:55:b2:03:91:
+        08:b2:65:3e:2c:3d:16:1a:ba:d6:59:fb:1a:cd:e0:c9:0d:58:
+        3b:70:2d:e5:49:f9:af:4d:d1:85:3d:bc:3a:4e:be:22:69:bd:
+        73:78:1f:f1:04:07:00:45:dc:00
 -----BEGIN CERTIFICATE-----
-MIIBYjCCARSgAwIBAgIQUw4xdJq0ieftd9tit9yl+TAFBgMrZXAwMTELMAkGA1UE
+MIIBrjCCAWCgAwIBAgIQKMJShx7GKmJqmABrC/KIjjAFBgMrZXAwMTELMAkGA1UE
 BhMCR0IxEDAOBgNVBAoMB0V4YW1wbGUxEDAOBgNVBAMMB1Jvb3QgQ0EwHhcNMjIw
-NjI4MTkyMjU1WhcNMzIwNjI1MTkyMjU1WjAxMQswCQYDVQQGEwJHQjEQMA4GA1UE
-CgwHRXhhbXBsZTEQMA4GA1UEAwwHUm9vdCBDQTAqMAUGAytlcAMhAJxPKGYrDkxp
-EaHnGM7yZCb9miTufyq7LF2sRBrmNpeUo0IwQDAPBgNVHRMBAf8EBTADAQH/MA4G
-A1UdDwEB/wQEAwICBDAdBgNVHQ4EFgQUrQYwU6AmdOxmKmwMd3NguvI1ypowBQYD
-K2VwA0EAFwfzqyrjp/oeY/nQPEvO7XQEYHyuEZqYMcgZ6uQQuGeakDOrCSJqEcHH
-SHwLuLln8fEahO/cOrTcZh66t7GQBQ==
+NjI5MTEzMzA3WhcNMzIwNjI2MTEzMzA3WjAxMQswCQYDVQQGEwJHQjEQMA4GA1UE
+CgwHRXhhbXBsZTEQMA4GA1UEAwwHUm9vdCBDQTAqMAUGAytlcAMhAJqzaumMKuMm
+htBGbS+UCrCmXbGb+lRcuO71mPRey7HXo4GNMIGKMA8GA1UdEwEB/wQFMAMBAf8w
+DgYDVR0PAQH/BAQDAgIEMB0GA1UdDgQWBBTk8vOFDreFdYR240PRtp0UuOKktzBI
+BgNVHR4EQTA/oD0wC4IJbG9jYWxob3N0MAqHCH8AAAH/AAAAMCKHIAAAAAAAAAAA
+AAAAAAAAAAH/////////////////////MAUGAytlcANBAESQBu1/oyaeYouu3q+h
+VbIDkQiyZT4sPRYautZZ+xrN4MkNWDtwLeVJ+a9N0YU9vDpOviJpvXN4H/EEBwBF
+3AA=
 -----END CERTIFICATE-----

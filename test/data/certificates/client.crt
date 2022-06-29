@@ -2,23 +2,23 @@ Certificate:
     Data:
         Version: 3 (0x2)
         Serial Number:
-            53:0e:31:74:9a:b4:89:e7:ed:77:db:62:b7:dc:a5:fb
+            28:c2:52:87:1e:c6:2a:62:6a:98:00:6b:0b:f2:88:90
         Signature Algorithm: ED25519
         Issuer: C=GB, O=Example, CN=Root CA
         Validity
-            Not Before: Jun 28 19:22:56 2022 GMT
-            Not After : Jun 27 19:22:56 2027 GMT
+            Not Before: Jun 29 11:33:07 2022 GMT
+            Not After : Jun 28 11:33:07 2027 GMT
         Subject: CN=test-client
         Subject Public Key Info:
             Public Key Algorithm: ED25519
                 ED25519 Public-Key:
                 pub:
-                    9b:92:6f:39:ec:d2:33:9b:05:de:ec:03:b0:91:d7:
-                    02:4a:58:ce:be:c7:c2:a2:6a:9b:c3:22:c1:17:3e:
-                    43:8b
+                    e1:80:ad:13:75:48:88:9c:63:ab:81:ff:60:91:07:
+                    ae:bc:7c:11:03:4d:06:f5:a0:b7:02:a1:3b:18:41:
+                    eb:61
         X509v3 extensions:
             X509v3 Authority Key Identifier: 
-                AD:06:30:53:A0:26:74:EC:66:2A:6C:0C:77:73:60:BA:F2:35:CA:9A
+                E4:F2:F3:85:0E:B7:85:75:84:76:E3:43:D1:B6:9D:14:B8:E2:A4:B7
             X509v3 Basic Constraints: critical
                 CA:FALSE
             X509v3 Extended Key Usage: 
@@ -26,20 +26,20 @@ Certificate:
             X509v3 Key Usage: critical
                 Digital Signature
             X509v3 Subject Key Identifier: 
-                81:24:07:FF:E0:59:37:46:53:0F:04:5D:7F:E5:D2:A3:A6:23:43:4E
+                6B:94:6A:00:0B:7B:0E:92:4D:F2:21:DC:2E:F4:E3:1F:64:C8:2A:DA
     Signature Algorithm: ED25519
     Signature Value:
-        34:ba:95:1d:15:2a:84:7a:be:1a:e8:6c:9e:97:6f:04:dd:5c:
-        a2:ce:1c:aa:c2:45:e1:95:c7:eb:14:66:a0:dd:b2:bc:3a:94:
-        12:ee:2f:ca:04:47:d6:76:ff:ec:11:0f:b0:39:69:a0:77:78:
-        73:07:9d:3d:30:ee:f4:f9:13:02
+        a7:37:0d:94:8b:93:31:3a:32:ab:25:99:d0:58:71:8a:43:ff:
+        73:64:d2:ea:ee:6a:90:ff:98:1e:07:09:26:4b:c9:d2:b4:53:
+        5e:cd:7a:e2:4e:0b:a6:f9:4c:1b:48:0d:c6:57:b8:cd:fa:00:
+        25:0f:26:00:03:19:71:02:b2:02
 -----BEGIN CERTIFICATE-----
-MIIBejCCASygAwIBAgIQUw4xdJq0ieftd9tit9yl+zAFBgMrZXAwMTELMAkGA1UE
+MIIBejCCASygAwIBAgIQKMJShx7GKmJqmABrC/KIkDAFBgMrZXAwMTELMAkGA1UE
 BhMCR0IxEDAOBgNVBAoMB0V4YW1wbGUxEDAOBgNVBAMMB1Jvb3QgQ0EwHhcNMjIw
-NjI4MTkyMjU2WhcNMjcwNjI3MTkyMjU2WjAWMRQwEgYDVQQDDAt0ZXN0LWNsaWVu
-dDAqMAUGAytlcAMhAJuSbzns0jObBd7sA7CR1wJKWM6+x8KiapvDIsEXPkOLo3Uw
-czAfBgNVHSMEGDAWgBStBjBToCZ07GYqbAx3c2C68jXKmjAMBgNVHRMBAf8EAjAA
+NjI5MTEzMzA3WhcNMjcwNjI4MTEzMzA3WjAWMRQwEgYDVQQDDAt0ZXN0LWNsaWVu
+dDAqMAUGAytlcAMhAOGArRN1SIicY6uB/2CRB668fBEDTQb1oLcCoTsYQetho3Uw
+czAfBgNVHSMEGDAWgBTk8vOFDreFdYR240PRtp0UuOKktzAMBgNVHRMBAf8EAjAA
 MBMGA1UdJQQMMAoGCCsGAQUFBwMCMA4GA1UdDwEB/wQEAwIHgDAdBgNVHQ4EFgQU
-gSQH/+BZN0ZTDwRdf+XSo6YjQ04wBQYDK2VwA0EANLqVHRUqhHq+GuhsnpdvBN1c
-os4cqsJF4ZXH6xRmoN2yvDqUEu4vygRH1nb/7BEPsDlpoHd4cwedPTDu9PkTAg==
+a5RqAAt7DpJN8iHcLvTjH2TIKtowBQYDK2VwA0EApzcNlIuTMToyqyWZ0FhxikP/
+c2TS6u5qkP+YHgcJJkvJ0rRTXs164k4LpvlMG0gNxle4zfoAJQ8mAAMZcQKyAg==
 -----END CERTIFICATE-----
