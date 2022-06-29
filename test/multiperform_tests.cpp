@@ -2,6 +2,7 @@
 
 #include <string>
 
+#include <cpr/api.h>
 #include <cpr/cpr.h>
 #include <curl/curl.h>
 
@@ -118,6 +119,50 @@ TEST(MultiperformTests, MultiperformTenSessionsGetTest) {
         EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
         EXPECT_EQ(200, response.status_code);
         EXPECT_EQ(ErrorCode::OK, response.error.code);
+    }
+}
+
+TEST(MultiperformTests, MultiperformApiSingleGetTest) {
+    std::vector<Response> responses = MultiGet(std::tuple<Url>{Url{server->GetBaseUrl() + "/hello.html"}});
+    EXPECT_EQ(responses.size(), 1);
+    std::string expected_text{"Hello world!"};
+    EXPECT_EQ(expected_text, responses.at(0).text);
+    EXPECT_EQ(Url{server->GetBaseUrl() + "/hello.html"}, responses.at(0).url);
+    EXPECT_EQ(std::string{"text/html"}, responses.at(0).header["content-type"]);
+    EXPECT_EQ(200, responses.at(0).status_code);
+    EXPECT_EQ(ErrorCode::OK, responses.at(0).error.code);
+}
+
+TEST(MultiperformTests, MultiperformApiTwoGetsTest) {
+    std::vector<Response> responses = MultiGet(std::tuple<Url, Timeout>{Url{server->GetBaseUrl() + "/low_speed_timeout.html"}, Timeout{1000}}, std::tuple<Url>{Url{server->GetBaseUrl() + "/error.html"}});
+
+    EXPECT_EQ(responses.size(), 2);
+    std::vector<Url> urls;
+    urls.push_back({server->GetBaseUrl() + "/low_speed_timeout.html"});
+    urls.push_back({server->GetBaseUrl() + "/error.html"});
+
+    std::vector<std::string> expected_texts;
+    expected_texts.push_back("");
+    expected_texts.push_back("Not Found");
+
+    std::vector<std::string> expected_content_types;
+    expected_content_types.push_back("");
+    expected_content_types.push_back("text/plain");
+
+    std::vector<long> expected_status_codes;
+    expected_status_codes.push_back(0);
+    expected_status_codes.push_back(404);
+
+    std::vector<ErrorCode> expected_error_codes;
+    expected_error_codes.push_back(ErrorCode::OPERATION_TIMEDOUT);
+    expected_error_codes.push_back(ErrorCode::OK);
+
+    for (size_t i = 0; i < responses.size(); ++i) {
+        EXPECT_EQ(expected_texts.at(i), responses.at(i).text);
+        EXPECT_EQ(urls.at(i), responses.at(i).url);
+        EXPECT_EQ(expected_content_types.at(i), responses.at(i).header["content-type"]);
+        EXPECT_EQ(expected_status_codes.at(i), responses.at(i).status_code);
+        EXPECT_EQ(expected_error_codes.at(i), responses.at(i).error.code);
     }
 }
 
