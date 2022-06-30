@@ -1,6 +1,5 @@
 #include "httpServer.hpp"
 #include <chrono>
-#include <iostream>
 #include <string>
 #include <system_error>
 #include <thread>
@@ -272,7 +271,6 @@ void HttpServer::OnRequestHeaderReflect(mg_connection* conn, mg_http_message* ms
     if (!hasContentTypeHeader) {
         headers.append("Content-Type: text/html\r\n");
     }
-    std::cout << "HEADERS: " << headers << '\n';
     mg_http_reply(conn, 200, headers.c_str(), response.c_str());
 }
 
