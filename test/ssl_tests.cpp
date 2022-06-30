@@ -117,12 +117,12 @@ int main(int argc, char** argv) {
     std::string keyDirPath = baseDirPath + "keys/";
     std::string certDirPath = baseDirPath + "certificates/";
 
-    caCertPath = baseDirPath + "certificates/root-ca.cer";
+    caCertPath = certDirPath + "root-ca.crt";
     serverPubKeyPath = keyDirPath + "server.pub";
     clientKeyPath = keyDirPath + "client.key";
     clientCertPath = certDirPath + "client.crt";
 
-    server = new HttpsServer(std::move(baseDirPath), certDirPath + "server.crt", keyDirPath + "server.key");
+    server = new HttpsServer(certDirPath + "server.crt", keyDirPath + "server.key");
     ::testing::AddGlobalTestEnvironment(server);
 
     return RUN_ALL_TESTS();
