@@ -11,10 +11,10 @@
 namespace cpr {
 class HttpsServer : public AbstractServer {
   private:
-    const std::string baseDirPath;
-    const std::string sslCertFileName;
-    const std::string sslKeyFileName;
-    struct mg_tls_opts tlsOpts;
+    const std::string baseDirPath_;
+    const std::string sslCertFileName_;
+    const std::string sslKeyFileName_;
+    struct mg_tls_opts tlsOpts_;
 
   public:
     explicit HttpsServer(std::string&& baseDirPath, std::string&& sslCertFileName, std::string&& sslKeyFileName);
