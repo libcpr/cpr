@@ -9,8 +9,7 @@ MultiPerform::MultiPerform() : multicurl_(new CurlMultiHolder()) {}
 void MultiPerform::AddSession(std::shared_ptr<Session>& session, HttpMethod method) {
     // Check if this multiperform is download only
     if ((method != HttpMethod::DOWNLOAD_REQUEST && is_download_multi_perform) && method != HttpMethod::UNDEFINED) {
-        fprintf(stderr, "Failed to add session: Cannot mix download and non-download methods!\n");
-        return;
+        throw std::invalid_argument("Failed to add session: Cannot mix download and non-download methods!");
     }
 
     // Set download only if neccessary
@@ -46,8 +45,7 @@ void MultiPerform::RemoveSession(const std::shared_ptr<Session>& session) {
     // Remove session from sessions_
     auto it = std::find_if(sessions_.begin(), sessions_.end(), [&session](const std::pair<std::shared_ptr<Session>, HttpMethod>& pair) { return session->curl_->handle == pair.first->curl_->handle; });
     if (it == sessions_.end()) {
-        fprintf(stderr, "Failed to find session!\n");
-        return;
+        throw std::invalid_argument("Failed to find session!");
     }
     sessions_.erase(it);
 
