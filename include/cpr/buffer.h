@@ -3,6 +3,8 @@
 
 #include <string>
 
+#include <cpr/filesystem.h>
+
 namespace cpr {
 
 struct Buffer {
