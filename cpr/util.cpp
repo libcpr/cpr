@@ -11,6 +11,12 @@
 #include <string>
 #include <vector>
 
+#if !defined(_Win32)
+#include <cstring>
+#else
+#include <Windows.h>
+#endif
+
 namespace cpr {
 namespace util {
 
@@ -121,7 +127,7 @@ int progressUserFunction(const ProgressCallback* progress, double dltotal, doubl
 int progressUserFunction(const ProgressCallback* progress, curl_off_t dltotal, curl_off_t dlnow, curl_off_t ultotal, curl_off_t ulnow) {
 #endif
     return (*progress)(dltotal, dlnow, ultotal, ulnow) ? 0 : 1;
-}
+} // namespace util
 
 int debugUserFunction(CURL* /*handle*/, curl_infotype type, char* data, size_t size, const DebugCallback* debug) {
     (*debug)(DebugCallback::InfoType(type), std::string(data, size));
@@ -158,5 +164,23 @@ std::string urlDecode(const std::string& s) {
     return holder.urlDecode(s);
 }
 
+/**
+ * Override the content of the provided string to hide sensitve data. The
+ * string content after invocation is undefined. The string size is reset to zero.
+ * impl. based on:
+ * https://github.com/ojeda/secure_clear/blob/master/example-implementation/secure_clear.h
+ **/
+void secureStringClear(std::string& s) {
+#if defined(__linux__) || defined(__unix__)
+    explicit_bzero(&s.front(), s.length());
+#elif defined(_WIN32)
+    SecureZeroMemory(&s.front(), s.length())
+#elif defined(__STDC_LIB_EXT1__)
+    memset_s(&s.front(), s.length(), 0, s.length());
+#else
+#warning "Security: Secure memory erasure not supported on this platform"
+#endif
+    s.clear();
+}
 } // namespace util
 } // namespace cpr
