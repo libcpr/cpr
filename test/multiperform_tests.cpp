@@ -13,7 +13,7 @@ using namespace cpr;
 
 static HttpServer* server = new HttpServer();
 
-TEST(MultiperformTests, MultiperformSingleSessionGetTest) {
+TEST(MultiperformGetTests, MultiperformSingleSessionGetTest) {
     Url url{server->GetBaseUrl() + "/hello.html"};
     std::shared_ptr<Session> session = std::make_shared<Session>();
     session->SetUrl(url);
@@ -30,7 +30,7 @@ TEST(MultiperformTests, MultiperformSingleSessionGetTest) {
     EXPECT_EQ(ErrorCode::OK, responses.at(0).error.code);
 }
 
-TEST(MultiperformTests, MultiperformTwoSessionsGetTest) {
+TEST(MultiperformGetTests, MultiperformTwoSessionsGetTest) {
     MultiPerform multiperform;
     std::vector<Url> urls;
     urls.push_back({server->GetBaseUrl() + "/hello.html"});
@@ -70,7 +70,7 @@ TEST(MultiperformTests, MultiperformTwoSessionsGetTest) {
     }
 }
 
-TEST(MultiperformTests, MultiperformRemoveSessionGetTest) {
+TEST(MultiperformGetTests, MultiperformRemoveSessionGetTest) {
     MultiPerform multiperform;
     std::vector<Url> urls;
     urls.push_back({server->GetBaseUrl() + "/hello.html"});
@@ -98,7 +98,7 @@ TEST(MultiperformTests, MultiperformRemoveSessionGetTest) {
     EXPECT_EQ(ErrorCode::OK, responses.at(0).error.code);
 }
 
-TEST(MultiperformTests, MultiperformTenSessionsGetTest) {
+TEST(MultiperformGetTests, MultiperformTenSessionsGetTest) {
     MultiPerform multiperform;
     std::vector<Url> urls;
     std::vector<std::shared_ptr<Session>> sessions;
@@ -122,7 +122,7 @@ TEST(MultiperformTests, MultiperformTenSessionsGetTest) {
     }
 }
 
-TEST(MultiperformTests, MultiperformApiSingleGetTest) {
+TEST(MultiperformGetTests, MultiperformApiSingleGetTest) {
     std::vector<Response> responses = MultiGet(std::tuple<Url>{Url{server->GetBaseUrl() + "/hello.html"}});
     EXPECT_EQ(responses.size(), 1);
     std::string expected_text{"Hello world!"};
@@ -133,7 +133,7 @@ TEST(MultiperformTests, MultiperformApiSingleGetTest) {
     EXPECT_EQ(ErrorCode::OK, responses.at(0).error.code);
 }
 
-TEST(MultiperformTests, MultiperformApiTwoGetsTest) {
+TEST(MultiperformGetTests, MultiperformApiTwoGetsTest) {
     std::vector<Response> responses = MultiGet(std::tuple<Url, Timeout>{Url{server->GetBaseUrl() + "/low_speed_timeout.html"}, Timeout{1000}}, std::tuple<Url>{Url{server->GetBaseUrl() + "/error.html"}});
 
     EXPECT_EQ(responses.size(), 2);
