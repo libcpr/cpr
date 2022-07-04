@@ -205,7 +205,10 @@ class Session : public std::enable_shared_from_this<Session> {
     void PreparePatch();
     void PreparePost();
     void PreparePut();
+    void PrepareDownload(const WriteCallback& write);
+    void PrepareDownload(std::ofstream& file);
     Response Complete(CURLcode curl_error);
+    Response CompleteDownload(CURLcode curl_error);
 
     void AddInterceptor(const std::shared_ptr<Interceptor>& pinterceptor);
 
@@ -242,6 +245,7 @@ class Session : public std::enable_shared_from_this<Session> {
     Response makeRequest();
     Response proceed();
     void prepareCommon();
+    void prepareCommonDownload();
     void SetHeaderInternal();
     std::shared_ptr<Session> GetSharedPtrFromThis();
     CURLcode DoEasyPerform();
