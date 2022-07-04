@@ -63,6 +63,7 @@ if (ENABLE_SSL_TESTS)
     add_cpr_test(ssl)
     
     # Install all ssl keys and certs:
-    file(INSTALL data/keys DESTINATION data)
-    file(INSTALL data/certificates DESTINATION data)
+    add_custom_command(TARGET ssl_tests POST_BUILD COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:ssl_tests>/data/certificates $<TARGET_FILE_DIR:ssl_tests>/data/keys)
+    add_custom_command(TARGET ssl_tests POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/data/certificates/* $<TARGET_FILE_DIR:ssl_tests>/data/certificates/)
+    add_custom_command(TARGET ssl_tests POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/data/keys/* $<TARGET_FILE_DIR:ssl_tests>/data/keys/)
 endif()

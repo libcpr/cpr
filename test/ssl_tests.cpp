@@ -113,7 +113,7 @@ std::string getBasePath(const std::string& execPath) {
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
 
-    std::string baseDirPath = getBasePath(argv[0]) + "../test/data/";
+    std::string baseDirPath = getBasePath(argv[0]) + "data/";
     std::string keyDirPath = baseDirPath + "keys/";
     std::string certDirPath = baseDirPath + "certificates/";
 
