@@ -147,6 +147,36 @@ void MultiPerform::PrepareSessions() {
     }
 }
 
+void MultiPerform::PrepareDownloadSession(size_t sessions_index, const WriteCallback& write) {
+    if (sessions_index >= sessions_.size()) {
+        return;
+    }
+    std::pair<std::shared_ptr<Session>, HttpMethod>& pair = sessions_[sessions_index];
+    switch (pair.second) {
+        case HttpMethod::DOWNLOAD_REQUEST:
+            pair.first->PrepareDownload(write);
+            break;
+        default:
+            fprintf(stderr, "PrepareSessions failed: Undefined HttpMethod or non download method with arguments!\n");
+            return;
+    }
+}
+
+void MultiPerform::PrepareDownloadSession(size_t sessions_index, std::ofstream& file) {
+    if (sessions_index >= sessions_.size()) {
+        return;
+    }
+    std::pair<std::shared_ptr<Session>, HttpMethod>& pair = sessions_[sessions_index];
+    switch (pair.second) {
+        case HttpMethod::DOWNLOAD_REQUEST:
+            pair.first->PrepareDownload(file);
+            break;
+        default:
+            fprintf(stderr, "PrepareSessions failed: Undefined HttpMethod or non download method with arguments!\n");
+            return;
+    }
+}
+
 void MultiPerform::SetHttpMethod(HttpMethod method) {
     for (std::pair<std::shared_ptr<Session>, HttpMethod>& pair : sessions_) {
         pair.second = method;

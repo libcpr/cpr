@@ -49,6 +49,10 @@ class MultiPerform {
     void PrepareSessions();
     template <typename CurrentDownloadArgType, typename... DownloadArgTypes>
     void PrepareDownloadSessions(size_t sessions_index, CurrentDownloadArgType current_arg, DownloadArgTypes... args);
+    template <typename CurrentDownloadArgType>
+    void PrepareDownloadSessions(size_t sessions_index, CurrentDownloadArgType current_arg);
+    void PrepareDownloadSession(size_t sessions_index, std::ofstream& file);
+    void PrepareDownloadSession(size_t sessions_index, const WriteCallback& write);
 
     void PrepareGet();
     void PrepareDelete();
@@ -71,22 +75,14 @@ class MultiPerform {
     bool is_download_multi_perform{false};
 };
 
+template <typename CurrentDownloadArgType>
+void MultiPerform::PrepareDownloadSessions(size_t sessions_index, CurrentDownloadArgType current_arg) {
+    PrepareDownloadSession(sessions_index, current_arg);
+}
+
 template <typename CurrentDownloadArgType, typename... DownloadArgTypes>
 void MultiPerform::PrepareDownloadSessions(size_t sessions_index, CurrentDownloadArgType current_arg, DownloadArgTypes... args) {
-    if (sessions_index >= sessions_.size()) {
-        return;
-    }
-
-    std::pair<std::shared_ptr<Session>, HttpMethod>& pair = sessions_[sessions_index];
-    switch (pair.second) {
-        case HttpMethod::DOWNLOAD_REQUEST:
-            pair.first->PrepareDownload(current_arg);
-            break;
-        default:
-            fprintf(stderr, "PrepareSessions failed: Undefined HttpMethod or non download method with arguments!\n");
-            return;
-    }
-
+    PrepareDownloadSession(sessions_index, current_arg);
     PrepareDownloadSessions<DownloadArgTypes...>(sessions_index + 1, args...);
 }
 
