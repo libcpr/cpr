@@ -31,6 +31,7 @@ jobs:
         run-test: true
         ctest-options: -V
         configure-options: -DBUILD_SHARED_LIBS=OFF
+        
   ubuntu-20-shared-gcc-ssl:
     runs-on: ubuntu-20.04
     steps:
