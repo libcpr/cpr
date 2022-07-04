@@ -7,7 +7,7 @@
 
 #include <curl/curl.h>
 
-#include "util.h"
+#include "cpr/util.h"
 #include <utility>
 
 #define __LIBCURL_VERSION_GTE(major, minor) ((LIBCURL_VERSION_MAJOR > (major)) || ((LIBCURL_VERSION_MAJOR == (major)) && (LIBCURL_VERSION_MINOR >= (minor))))

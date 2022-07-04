@@ -11,10 +11,10 @@
 #include <string>
 #include <vector>
 
-#if !defined(_Win32)
-#include <cstring>
-#else
+#if defined(_Win32)
 #include <Windows.h>
+#else
+#include <cstring>
 #endif
 
 namespace cpr {
@@ -127,7 +127,7 @@ int progressUserFunction(const ProgressCallback* progress, double dltotal, doubl
 int progressUserFunction(const ProgressCallback* progress, curl_off_t dltotal, curl_off_t dlnow, curl_off_t ultotal, curl_off_t ulnow) {
 #endif
     return (*progress)(dltotal, dlnow, ultotal, ulnow) ? 0 : 1;
-} // namespace util
+}
 
 int debugUserFunction(CURL* /*handle*/, curl_infotype type, char* data, size_t size, const DebugCallback* debug) {
     (*debug)(DebugCallback::InfoType(type), std::string(data, size));
@@ -174,7 +174,7 @@ void secureStringClear(std::string& s) {
 #if defined(__linux__) || defined(__unix__)
     explicit_bzero(&s.front(), s.length());
 #elif defined(_WIN32)
-    SecureZeroMemory(&s.front(), s.length())
+    SecureZeroMemory(&s.front(), s.length());
 #elif defined(__STDC_LIB_EXT1__)
     memset_s(&s.front(), s.length(), 0, s.length());
 #else
