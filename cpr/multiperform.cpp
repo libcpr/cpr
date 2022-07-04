@@ -29,7 +29,7 @@ void MultiPerform::AddSession(std::shared_ptr<Session>& session, HttpMethod meth
     session->isUsedInMultiPerform = true;
 
     // Add session to sessions_
-    sessions_.push_back({session, method});
+    sessions_.emplace_back(session, method);
 }
 
 void MultiPerform::RemoveSession(const std::shared_ptr<Session>& session) {
