@@ -300,6 +300,48 @@ std::vector<Response> MultiGet(Ts&&... ts) {
     return multiperform.Get();
 }
 
+template <typename... Ts>
+std::vector<Response> MultiDelete(Ts&&... ts) {
+    MultiPerform multiperform;
+    priv::setup_multiperform<Ts...>(multiperform, std::forward<Ts>(ts)...);
+    return multiperform.Delete();
+}
+
+template <typename... Ts>
+std::vector<Response> MultiPut(Ts&&... ts) {
+    MultiPerform multiperform;
+    priv::setup_multiperform<Ts...>(multiperform, std::forward<Ts>(ts)...);
+    return multiperform.Put();
+}
+
+template <typename... Ts>
+std::vector<Response> MultiHead(Ts&&... ts) {
+    MultiPerform multiperform;
+    priv::setup_multiperform<Ts...>(multiperform, std::forward<Ts>(ts)...);
+    return multiperform.Head();
+}
+
+template <typename... Ts>
+std::vector<Response> MultiOptions(Ts&&... ts) {
+    MultiPerform multiperform;
+    priv::setup_multiperform<Ts...>(multiperform, std::forward<Ts>(ts)...);
+    return multiperform.Options();
+}
+
+template <typename... Ts>
+std::vector<Response> MultiPatch(Ts&&... ts) {
+    MultiPerform multiperform;
+    priv::setup_multiperform<Ts...>(multiperform, std::forward<Ts>(ts)...);
+    return multiperform.Patch();
+}
+
+template <typename... Ts>
+std::vector<Response> MultiPost(Ts&&... ts) {
+    MultiPerform multiperform;
+    priv::setup_multiperform<Ts...>(multiperform, std::forward<Ts>(ts)...);
+    return multiperform.Post();
+}
+
 } // namespace cpr
 
 #endif
