@@ -3,6 +3,7 @@
 
 #include <functional>
 #include <memory>
+#include <stdexcept>
 #include <vector>
 
 #include "cpr/curlmultiholder.h"
@@ -95,12 +96,18 @@ void MultiPerform::PrepareDownload(DownloadArgTypes... args) {
 
 template <typename... DownloadArgTypes>
 std::vector<Response> MultiPerform::Download(DownloadArgTypes... args) {
+    if (sizeof...(args) != sessions_.size()) {
+        throw std::invalid_argument("Number of download arguments has to match the number of sessions added to the multiperform!");
+    }
     PrepareDownload(args...);
     return MakeDownloadRequest();
 }
 
 template <typename... DownloadArgTypes>
 std::vector<Response> MultiPerform::PerformDownload(DownloadArgTypes... args) {
+    if (sizeof...(args) != sessions_.size()) {
+        throw std::invalid_argument("Number of download arguments has to match the number of sessions added to the multiperform!");
+    }
     PrepareDownloadSessions<DownloadArgTypes...>(0, args...);
     return MakeDownloadRequest();
 }

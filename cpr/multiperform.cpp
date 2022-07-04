@@ -148,9 +148,6 @@ void MultiPerform::PrepareSessions() {
 }
 
 void MultiPerform::PrepareDownloadSession(size_t sessions_index, const WriteCallback& write) {
-    if (sessions_index >= sessions_.size()) {
-        return;
-    }
     std::pair<std::shared_ptr<Session>, HttpMethod>& pair = sessions_[sessions_index];
     switch (pair.second) {
         case HttpMethod::DOWNLOAD_REQUEST:
@@ -163,9 +160,6 @@ void MultiPerform::PrepareDownloadSession(size_t sessions_index, const WriteCall
 }
 
 void MultiPerform::PrepareDownloadSession(size_t sessions_index, std::ofstream& file) {
-    if (sessions_index >= sessions_.size()) {
-        return;
-    }
     std::pair<std::shared_ptr<Session>, HttpMethod>& pair = sessions_[sessions_index];
     switch (pair.second) {
         case HttpMethod::DOWNLOAD_REQUEST:
