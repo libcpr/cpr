@@ -6,7 +6,18 @@ namespace cpr {
 
 MultiPerform::MultiPerform() : multicurl_(new CurlMultiHolder()) {}
 
-void MultiPerform::AddSession(std::shared_ptr<Session>& session) {
+void MultiPerform::AddSession(std::shared_ptr<Session>& session, HttpMethod method) {
+    // Check if this multiperform is download only
+    if ((method != HttpMethod::DOWNLOAD_REQUEST && is_download_multi_perform) && method != HttpMethod::UNDEFINED) {
+        fprintf(stderr, "Failed to add session: Cannot mix download and non-download methods!\n");
+        return;
+    }
+
+    // Set download only if neccessary
+    if (method == HttpMethod::DOWNLOAD_REQUEST) {
+        is_download_multi_perform = true;
+    }
+
     // Add easy handle to multi handle
     CURLMcode error_code = curl_multi_add_handle(multicurl_->handle, session->curl_->handle);
     if (error_code) {
@@ -18,7 +29,7 @@ void MultiPerform::AddSession(std::shared_ptr<Session>& session) {
     session->isUsedInMultiPerform = true;
 
     // Add session to sessions_
-    sessions_.push_back(session);
+    sessions_.push_back({session, method});
 }
 
 void MultiPerform::RemoveSession(const std::shared_ptr<Session>& session) {
@@ -33,12 +44,17 @@ void MultiPerform::RemoveSession(const std::shared_ptr<Session>& session) {
     session->isUsedInMultiPerform = false;
 
     // Remove session from sessions_
-    auto it = std::find_if(sessions_.begin(), sessions_.end(), [&session](const std::shared_ptr<Session>& current_session) { return session->curl_->handle == current_session->curl_->handle; });
+    auto it = std::find_if(sessions_.begin(), sessions_.end(), [&session](const std::pair<std::shared_ptr<Session>, HttpMethod>& pair) { return session->curl_->handle == pair.first->curl_->handle; });
     if (it == sessions_.end()) {
         fprintf(stderr, "Failed to find session!\n");
         return;
     }
     sessions_.erase(it);
+
+    // Reset download only if empty
+    if (sessions_.empty()) {
+        is_download_multi_perform = false;
+    }
 }
 
 void MultiPerform::DoMultiPerform() {
@@ -62,7 +78,7 @@ void MultiPerform::DoMultiPerform() {
     } while (still_running);
 }
 
-std::vector<Response> MultiPerform::ReadMultiInfo(std::function<Response(Session&, CURLcode)> complete_function) {
+std::vector<Response> MultiPerform::ReadMultiInfo(std::function<Response(Session&, CURLcode)>&& complete_function) {
     // Get infos and create Response objects
     std::vector<Response> responses;
     struct CURLMsg* info{nullptr};
@@ -74,12 +90,12 @@ std::vector<Response> MultiPerform::ReadMultiInfo(std::function<Response(Session
 
         if (info) {
             // Find current session
-            auto it = std::find_if(sessions_.begin(), sessions_.end(), [&info](const std::shared_ptr<Session>& session) { return session->curl_->handle == info->easy_handle; });
+            auto it = std::find_if(sessions_.begin(), sessions_.end(), [&info](const std::pair<std::shared_ptr<Session>, HttpMethod>& pair) { return pair.first->curl_->handle == info->easy_handle; });
             if (it == sessions_.end()) {
                 fprintf(stderr, "Failed to find current session!\n");
                 break;
             }
-            std::shared_ptr<Session> current_session = *it;
+            std::shared_ptr<Session> current_session = (*it).first;
 
             // Add response object
             // NOLINTNEXTLINE (cppcoreguidelines-pro-type-union-access)
@@ -100,46 +116,76 @@ std::vector<Response> MultiPerform::MakeDownloadRequest() {
     return ReadMultiInfo([](Session& session, CURLcode curl_error) -> Response { return session.CompleteDownload(curl_error); });
 }
 
-void MultiPerform::PrepareSessions(std::function<void(Session&)> setup_function) {
-    for (std::shared_ptr<Session>& session : sessions_) {
-        setup_function(*session);
+void MultiPerform::PrepareSessions() {
+    for (std::pair<std::shared_ptr<Session>, HttpMethod>& pair : sessions_) {
+        switch (pair.second) {
+            case HttpMethod::GET_REQUEST:
+                pair.first->PrepareGet();
+                break;
+            case HttpMethod::POST_REQUEST:
+                pair.first->PreparePost();
+                break;
+            case HttpMethod::PUT_REQUEST:
+                pair.first->PreparePut();
+                break;
+            case HttpMethod::DELETE_REQUEST:
+                pair.first->PrepareDelete();
+                break;
+            case HttpMethod::PATCH_REQUEST:
+                pair.first->PreparePatch();
+                break;
+            case HttpMethod::HEAD_REQUEST:
+                pair.first->PrepareHead();
+                break;
+            case HttpMethod::OPTIONS_REQUEST:
+                pair.first->PrepareOptions();
+                break;
+            default:
+                fprintf(stderr, "PrepareSessions failed: Undefined HttpMethod or download without arguments!\n");
+                return;
+        }
+    }
+}
+
+void MultiPerform::SetHttpMethod(HttpMethod method) {
+    for (std::pair<std::shared_ptr<Session>, HttpMethod>& pair : sessions_) {
+        pair.second = method;
     }
 }
 
 void MultiPerform::PrepareGet() {
-    PrepareSessions([](Session& session) { session.PrepareGet(); });
+    SetHttpMethod(HttpMethod::GET_REQUEST);
+    PrepareSessions();
 }
 
 void MultiPerform::PrepareDelete() {
-    PrepareSessions([](Session& session) { session.PrepareDelete(); });
-}
-
-void MultiPerform::PrepareDownload(const WriteCallback& write) {
-    PrepareSessions([&write](Session& session) { session.PrepareDownload(write); });
-}
-
-void MultiPerform::PrepareDownload(std::ofstream& file) {
-    PrepareSessions([&file](Session& session) { session.PrepareDownload(file); });
+    SetHttpMethod(HttpMethod::DELETE_REQUEST);
+    PrepareSessions();
 }
 
 void MultiPerform::PreparePut() {
-    PrepareSessions([](Session& session) { session.PreparePut(); });
+    SetHttpMethod(HttpMethod::PUT_REQUEST);
+    PrepareSessions();
 }
 
 void MultiPerform::PreparePatch() {
-    PrepareSessions([](Session& session) { session.PreparePatch(); });
+    SetHttpMethod(HttpMethod::PATCH_REQUEST);
+    PrepareSessions();
 }
 
 void MultiPerform::PrepareHead() {
-    PrepareSessions([](Session& session) { session.PrepareHead(); });
+    SetHttpMethod(HttpMethod::HEAD_REQUEST);
+    PrepareSessions();
 }
 
 void MultiPerform::PrepareOptions() {
-    PrepareSessions([](Session& session) { session.PrepareOptions(); });
+    SetHttpMethod(HttpMethod::OPTIONS_REQUEST);
+    PrepareSessions();
 }
 
 void MultiPerform::PreparePost() {
-    PrepareSessions([](Session& session) { session.PreparePost(); });
+    SetHttpMethod(HttpMethod::POST_REQUEST);
+    PrepareSessions();
 }
 
 std::vector<Response> MultiPerform::Get() {
@@ -150,16 +196,6 @@ std::vector<Response> MultiPerform::Get() {
 std::vector<Response> MultiPerform::Delete() {
     PrepareDelete();
     return MakeRequest();
-}
-
-std::vector<Response> MultiPerform::Download(const WriteCallback& write) {
-    PrepareDownload(write);
-    return MakeDownloadRequest();
-}
-
-std::vector<Response> MultiPerform::Download(std::ofstream& file) {
-    PrepareDownload(file);
-    return MakeDownloadRequest();
 }
 
 std::vector<Response> MultiPerform::Put() {
@@ -184,6 +220,11 @@ std::vector<Response> MultiPerform::Patch() {
 
 std::vector<Response> MultiPerform::Post() {
     PreparePost();
+    return MakeRequest();
+}
+
+std::vector<Response> MultiPerform::Perform() {
+    PrepareSessions();
     return MakeRequest();
 }
 
