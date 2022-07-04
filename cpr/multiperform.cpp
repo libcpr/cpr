@@ -8,7 +8,7 @@ MultiPerform::MultiPerform() : multicurl_(new CurlMultiHolder()) {}
 
 void MultiPerform::AddSession(std::shared_ptr<Session>& session, HttpMethod method) {
     // Check if this multiperform is download only
-    if (((method != HttpMethod::DOWNLOAD_REQUEST && is_download_multi_perform) && method != HttpMethod::UNDEFINED) || (method == HttpMethod::DOWNLOAD_REQUEST && !is_download_multi_perform && sessions_.size() >= 1)) {
+    if (((method != HttpMethod::DOWNLOAD_REQUEST && is_download_multi_perform) && method != HttpMethod::UNDEFINED) || (method == HttpMethod::DOWNLOAD_REQUEST && !is_download_multi_perform && !sessions_.empty())) {
         throw std::invalid_argument("Failed to add session: Cannot mix download and non-download methods!");
     }
 
