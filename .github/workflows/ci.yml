@@ -8,16 +8,22 @@ on:
 jobs:
   ubuntu-22-10-static-gcc-ssl:
     runs-on: ubuntu-latest
-    container: ubuntu:22.10
+    container: ubuntu:22.04
     steps:
+    - name: Update package list
+      run: apt update
+    - name: Install git
+      run: apt install -y git
     - name: Checkout
       uses: actions/checkout@v3
       with:
         submodules: true
-    - name: Update package list
-      run: sudo apt update
     - name: Install libssl-dev
-      run: sudo apt install libssl-dev
+      run: apt install -y libssl-dev
+    - name: Install cmake
+      run: apt install -y cmake
+    - name: Install build-essential
+      run: apt install -y build-essential
     - name: "[Release g++] Build & Test"
       env:
         CPR_BUILD_TESTS: ON
