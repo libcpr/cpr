@@ -62,7 +62,7 @@ void MultiPerform::DoMultiPerform() {
     } while (still_running);
 }
 
-std::vector<Response> MultiPerform::ReadMultiInfo() {
+std::vector<Response> MultiPerform::ReadMultiInfo(std::function<Response(Session&, CURLcode)> complete_function) {
     // Get infos and create Response objects
     std::vector<Response> responses;
     struct CURLMsg* info{nullptr};
@@ -83,7 +83,7 @@ std::vector<Response> MultiPerform::ReadMultiInfo() {
 
             // Add response object
             // NOLINTNEXTLINE (cppcoreguidelines-pro-type-union-access)
-            responses.push_back(current_session->Complete(info->data.result));
+            responses.push_back(complete_function(*current_session, info->data.result));
         }
     } while (info);
 
@@ -92,17 +92,98 @@ std::vector<Response> MultiPerform::ReadMultiInfo() {
 
 std::vector<Response> MultiPerform::MakeRequest() {
     DoMultiPerform();
-    return ReadMultiInfo();
+    return ReadMultiInfo([](Session& session, CURLcode curl_error) -> Response { return session.Complete(curl_error); });
+}
+
+std::vector<Response> MultiPerform::MakeDownloadRequest() {
+    DoMultiPerform();
+    return ReadMultiInfo([](Session& session, CURLcode curl_error) -> Response { return session.CompleteDownload(curl_error); });
+}
+
+void MultiPerform::PrepareSessions(std::function<void(Session&)> setup_function) {
+    for (std::shared_ptr<Session>& session : sessions_) {
+        setup_function(*session);
+    }
 }
 
 void MultiPerform::PrepareGet() {
-    for (std::shared_ptr<Session>& session : sessions_) {
-        session->PrepareGet();
-    }
+    PrepareSessions([](Session& session) { session.PrepareGet(); });
+}
+
+void MultiPerform::PrepareDelete() {
+    PrepareSessions([](Session& session) { session.PrepareDelete(); });
+}
+
+void MultiPerform::PrepareDownload(const WriteCallback& write) {
+    PrepareSessions([&write](Session& session) { session.PrepareDownload(write); });
+}
+
+void MultiPerform::PrepareDownload(std::ofstream& file) {
+    PrepareSessions([&file](Session& session) { session.PrepareDownload(file); });
+}
+
+void MultiPerform::PreparePut() {
+    PrepareSessions([](Session& session) { session.PreparePut(); });
+}
+
+void MultiPerform::PreparePatch() {
+    PrepareSessions([](Session& session) { session.PreparePatch(); });
+}
+
+void MultiPerform::PrepareHead() {
+    PrepareSessions([](Session& session) { session.PrepareHead(); });
+}
+
+void MultiPerform::PrepareOptions() {
+    PrepareSessions([](Session& session) { session.PrepareOptions(); });
+}
+
+void MultiPerform::PreparePost() {
+    PrepareSessions([](Session& session) { session.PreparePost(); });
 }
 
 std::vector<Response> MultiPerform::Get() {
     PrepareGet();
+    return MakeRequest();
+}
+
+std::vector<Response> MultiPerform::Delete() {
+    PrepareDelete();
+    return MakeRequest();
+}
+
+std::vector<Response> MultiPerform::Download(const WriteCallback& write) {
+    PrepareDownload(write);
+    return MakeDownloadRequest();
+}
+
+std::vector<Response> MultiPerform::Download(std::ofstream& file) {
+    PrepareDownload(file);
+    return MakeDownloadRequest();
+}
+
+std::vector<Response> MultiPerform::Put() {
+    PreparePut();
+    return MakeRequest();
+}
+
+std::vector<Response> MultiPerform::Head() {
+    PrepareHead();
+    return MakeRequest();
+}
+
+std::vector<Response> MultiPerform::Options() {
+    PrepareOptions();
+    return MakeRequest();
+}
+
+std::vector<Response> MultiPerform::Patch() {
+    PreparePatch();
+    return MakeRequest();
+}
+
+std::vector<Response> MultiPerform::Post() {
+    PreparePost();
     return MakeRequest();
 }
 
