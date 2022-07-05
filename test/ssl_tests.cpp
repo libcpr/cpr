@@ -15,11 +15,6 @@ using namespace cpr;
 
 static HttpsServer* server;
 
-static std::string caCertPath;
-static std::string serverPubKeyPath;
-static std::string clientKeyPath;
-static std::string clientCertPath;
-
 std::string loadCertificateFromFile(const std::string certPath) {
     std::ifstream certFile(certPath);
     std::stringstream buffer;
