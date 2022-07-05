@@ -34,11 +34,11 @@ class AbstractServer : public testing::Environment {
     std::condition_variable server_start_cv;
     std::condition_variable server_stop_cv;
     std::atomic<bool> should_run{false};
-    mg_mgr mgr{};
 
     void Run();
 
   protected:
+    mg_mgr mgr{};
     virtual mg_connection* initServer(mg_mgr* mgr, mg_event_handler_t event_handler) = 0;
 
     static std::string Base64Decode(const std::string& in);
