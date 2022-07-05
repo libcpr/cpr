@@ -6,6 +6,13 @@ namespace cpr {
 
 MultiPerform::MultiPerform() : multicurl_(new CurlMultiHolder()) {}
 
+MultiPerform::~MultiPerform() {
+    // Unock all sessions
+    for (std::pair<std::shared_ptr<Session>, HttpMethod> pair : sessions_) {
+        pair.first->isUsedInMultiPerform = false;
+    }
+}
+
 void MultiPerform::AddSession(std::shared_ptr<Session>& session, HttpMethod method) {
     // Check if this multiperform is download only
     if (((method != HttpMethod::DOWNLOAD_REQUEST && is_download_multi_perform) && method != HttpMethod::UNDEFINED) || (method == HttpMethod::DOWNLOAD_REQUEST && !is_download_multi_perform && !sessions_.empty())) {

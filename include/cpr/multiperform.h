@@ -27,6 +27,8 @@ class MultiPerform {
     };
 
     MultiPerform();
+    ~MultiPerform();
+
     std::vector<Response> Get();
     std::vector<Response> Delete();
     template <typename... DownloadArgTypes>
