@@ -8,7 +8,7 @@ MultiPerform::MultiPerform() : multicurl_(new CurlMultiHolder()) {}
 
 MultiPerform::~MultiPerform() {
     // Unock all sessions
-    for (std::pair<std::shared_ptr<Session>, HttpMethod> pair : sessions_) {
+    for (std::pair<std::shared_ptr<Session>, HttpMethod>& pair : sessions_) {
         pair.first->isUsedInMultiPerform = false;
     }
 }
