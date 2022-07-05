@@ -72,38 +72,35 @@ void HttpServer::OnRequestTimeout(mg_connection* conn, mg_http_message* msg) {
     OnRequestHello(conn, msg);
 }
 
-void HttpServer::OnRequestLowSpeedTimeout(mg_connection* conn, mg_http_message* /* msg */) {
+void HttpServer::OnRequestLowSpeedTimeout(mg_connection* conn, mg_http_message* /* msg */, mg_mgr* mgr) {
     std::string response{"Hello world!"};
-    std::string headers{"Content-Type: text/html\r\n"};
 
-    // TODO Find way to simulate slow connections
     mg_printf(conn, "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: %d\r\n\r\n", response.length() * 20);
     for (size_t i = 0; i < 20; i++) {
-        mg_send(conn, response.c_str(), response.length());
+        mg_mgr_poll(mgr, 0);
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        mg_send(conn, response.c_str(), response.length());
     }
 }
 
-void HttpServer::OnRequestLowSpeed(mg_connection* conn, mg_http_message* /*msg*/) {
+void HttpServer::OnRequestLowSpeed(mg_connection* conn, mg_http_message* /*msg*/, mg_mgr* mgr) {
     std::string response{"Hello world!"};
-    std::string headers = "Content-Type: text/html\r\n";
-    // TODO Find way to simulate slow connections
+    mg_printf(conn, "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: %d\r\n\r\n", response.length());
+    mg_mgr_poll(mgr, 0);
     std::this_thread::sleep_for(std::chrono::seconds(2));
-    mg_http_reply(conn, 200, headers.c_str(), response.c_str());
-    // mg_send(conn, response.c_str(), response.length());
+    mg_send(conn, response.c_str(), response.length());
 }
 
-void HttpServer::OnRequestLowSpeedBytes(mg_connection* conn, mg_http_message* /*msg*/) {
-    std::string response{'a', 20};
-    std::string headers = "Content-Type: text/html\r\n";
-    // TODO Find way to simulate slow connections
-    std::this_thread::sleep_for(std::chrono::milliseconds(100 * 20));
-    mg_http_reply(conn, 200, headers.c_str(), response.c_str());
-    /*std::this_thread::sleep_for(std::chrono::seconds(2));
+void HttpServer::OnRequestLowSpeedBytes(mg_connection* conn, mg_http_message* /*msg*/, mg_mgr* mgr) {
+    std::string response{'a'};
+    mg_printf(conn, "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: %d\r\n\r\n", response.length() * 20);
+    mg_mgr_poll(mgr, 0);
+    std::this_thread::sleep_for(std::chrono::seconds(2));
     for (size_t i = 0; i < 20; ++i) {
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
         mg_send(conn, response.c_str(), response.length());
-    }*/
+        mg_mgr_poll(mgr, 0);
+    }
 }
 
 void HttpServer::OnRequestBasicCookies(mg_connection* conn, mg_http_message* /*msg*/) {
@@ -790,11 +787,11 @@ void HttpServer::OnRequest(mg_connection* conn, mg_http_message* msg) {
     } else if (uri == "/timeout.html") {
         OnRequestTimeout(conn, msg);
     } else if (uri == "/low_speed_timeout.html") {
-        OnRequestLowSpeedTimeout(conn, msg);
+        OnRequestLowSpeedTimeout(conn, msg, &mgr);
     } else if (uri == "/low_speed.html") {
-        OnRequestLowSpeed(conn, msg);
+        OnRequestLowSpeed(conn, msg, &mgr);
     } else if (uri == "/low_speed_bytes.html") {
-        OnRequestLowSpeedBytes(conn, msg);
+        OnRequestLowSpeedBytes(conn, msg, &mgr);
     } else if (uri == "/basic_cookies.html") {
         OnRequestBasicCookies(conn, msg);
     } else if (uri == "/empty_cookies.html") {
