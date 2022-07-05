@@ -29,9 +29,8 @@ class HttpServer : public AbstractServer {
     static void OnRequestLowSpeedBytes(mg_connection* conn, http_message* msg);
     static void OnRequestBasicCookies(mg_connection* conn, http_message* msg);
     static void OnRequestEmptyCookies(mg_connection* conn, http_message* msg);
-    static void OnRequestCheckCookies(mg_connection* conn, http_message* msg);
-    static void OnRequestV1Cookies(mg_connection* conn, http_message* msg);
-    static void OnRequestCheckV1Cookies(mg_connection* conn, http_message* msg);
+    static void OnRequestCookiesReflect(mg_connection* conn, http_message* msg);
+    static void OnRequestRedirectionWithChangingCookies(mg_connection* conn, http_message* msg);
     static void OnRequestBasicAuth(mg_connection* conn, http_message* msg);
     static void OnRequestBearerAuth(mg_connection* conn, http_message* msg);
     static void OnRequestBasicJson(mg_connection* conn, http_message* msg);
@@ -40,7 +39,7 @@ class HttpServer : public AbstractServer {
     static void OnRequestPermRedirect(mg_connection* conn, http_message* msg);
     static void OnRequestTwoRedirects(mg_connection* conn, http_message* msg);
     static void OnRequestUrlPost(mg_connection* conn, http_message* msg);
-    static void OnRequestReflectPost(mg_connection* conn, http_message* msg);
+    static void OnRequestPostReflect(mg_connection* conn, http_message* msg);
     static void OnRequestBodyGet(mg_connection* conn, http_message* msg);
     static void OnRequestJsonPost(mg_connection* conn, http_message* msg);
     static void OnRequestFormPost(mg_connection* conn, http_message* msg);
