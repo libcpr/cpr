@@ -5,15 +5,10 @@
 
 #include <curl/curl.h>
 
-#include "cpr/util.h"
 #include <utility>
 
-#define __LIBCURL_VERSION_GTE(major, minor) \
-    ((LIBCURL_VERSION_MAJOR > (major)) ||   \
-     ((LIBCURL_VERSION_MAJOR == (major)) && (LIBCURL_VERSION_MINOR >= (minor))))
-#define __LIBCURL_VERSION_LT(major, minor) \
-    ((LIBCURL_VERSION_MAJOR < (major)) ||  \
-     ((LIBCURL_VERSION_MAJOR == (major)) && (LIBCURL_VERSION_MINOR < (minor))))
+#define __LIBCURL_VERSION_GTE(major, minor) ((LIBCURL_VERSION_MAJOR > (major)) || ((LIBCURL_VERSION_MAJOR == (major)) && (LIBCURL_VERSION_MINOR >= (minor))))
+#define __LIBCURL_VERSION_LT(major, minor) ((LIBCURL_VERSION_MAJOR < (major)) || ((LIBCURL_VERSION_MAJOR == (major)) && (LIBCURL_VERSION_MINOR < (minor))))
 
 #ifndef SUPPORT_ALPN
 #define SUPPORT_ALPN __LIBCURL_VERSION_GTE(7, 36)
@@ -107,7 +102,7 @@ class DerCert : public CertFile {
     // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
     DerCert(std::string&& p_filename) : CertFile(std::move(p_filename)) {}
 
-    virtual ~DerCert() = default;
+    ~DerCert() override = default;
 
     const char* GetCertType() const override {
         return "DER";
@@ -121,12 +116,9 @@ class KeyFile {
     KeyFile(std::string&& p_filename) : filename(std::move(p_filename)) {}
 
     template <typename FileType, typename PassType>
-    KeyFile(FileType&& p_filename, PassType p_password)
-            : filename(std::forward<FileType>(p_filename)), password(std::move(p_password)) {}
+    KeyFile(FileType&& p_filename, PassType p_password) : filename(std::forward<FileType>(p_filename)), password(std::move(p_password)) {}
 
-    virtual ~KeyFile() {
-        util::secureStringClear(password);
-    }
+    virtual ~KeyFile();
 
     std::string filename;
     std::string password;
@@ -143,12 +135,9 @@ class KeyBlob {
     KeyBlob(std::string&& p_blob) : blob(std::move(p_blob)) {}
 
     template <typename BlobType, typename PassType>
-    KeyBlob(BlobType&& p_blob, PassType p_password)
-            : blob(std::forward<BlobType>(p_blob)), password(std::move(p_password)) {}
+    KeyBlob(BlobType&& p_blob, PassType p_password) : blob(std::forward<BlobType>(p_blob)), password(std::move(p_password)) {}
 
-    virtual ~KeyBlob() {
-        util::secureStringClear(password);
-    }
+    virtual ~KeyBlob();
 
     std::string blob;
     std::string password;
@@ -167,10 +156,9 @@ class DerKey : public KeyFile {
     DerKey(std::string&& p_filename) : KeyFile(std::move(p_filename)) {}
 
     template <typename FileType, typename PassType>
-    DerKey(FileType&& p_filename, PassType p_password)
-            : KeyFile(std::forward<FileType>(p_filename), std::move(p_password)) {}
+    DerKey(FileType&& p_filename, PassType p_password) : KeyFile(std::forward<FileType>(p_filename), std::move(p_password)) {}
 
-    virtual ~DerKey() = default;
+    ~DerKey() override = default;
 
     const char* GetKeyType() const override {
         return "DER";
@@ -389,7 +377,7 @@ class SslFastStart {
 #endif
 
 class NoRevoke {
-public:
+  public:
     NoRevoke() = default;
     // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
     NoRevoke(bool p_enabled) : enabled(p_enabled) {}
@@ -440,12 +428,7 @@ struct SslOptions {
     bool session_id_cache = true;
 #endif
 
-    ~SslOptions() noexcept {
-#if SUPPORT_CURLOPT_SSLKEY_BLOB
-        util::secureStringClear(key_blob);
-#endif
-        util::secureStringClear(key_pass);
-    }
+    ~SslOptions() noexcept;
 
     void SetOption(const ssl::CertFile& opt) {
         cert_file = opt.filename;

@@ -14,6 +14,7 @@ add_library(cpr
     proxies.cpp
     proxyauth.cpp
     session.cpp
+    ssl_options.cpp
     timeout.cpp
     unix_socket.cpp
     util.cpp
