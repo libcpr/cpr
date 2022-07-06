@@ -15,7 +15,7 @@ class EncodedAuthentication {
     EncodedAuthentication(std::string&& username, std::string&& password) : auth_string_{cpr::util::urlEncode(std::move(username)) + ":" + cpr::util::urlEncode(std::move(password))} {}
     EncodedAuthentication(const EncodedAuthentication& other) = default;
     EncodedAuthentication(EncodedAuthentication&& old) noexcept = default;
-    virtual ~EncodedAuthentication() noexcept = default;
+    virtual ~EncodedAuthentication() noexcept;
 
     EncodedAuthentication& operator=(EncodedAuthentication&& old) noexcept = default;
     EncodedAuthentication& operator=(const EncodedAuthentication& other) = default;

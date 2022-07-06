@@ -5,6 +5,7 @@
 
 #include <curl/curl.h>
 
+#include "cpr/util.h"
 #include <utility>
 
 #define __LIBCURL_VERSION_GTE(major, minor) \
@@ -123,7 +124,9 @@ class KeyFile {
     KeyFile(FileType&& p_filename, PassType p_password)
             : filename(std::forward<FileType>(p_filename)), password(std::move(p_password)) {}
 
-    virtual ~KeyFile() = default;
+    virtual ~KeyFile() {
+        util::secureStringClear(password);
+    }
 
     std::string filename;
     std::string password;
@@ -143,7 +146,9 @@ class KeyBlob {
     KeyBlob(BlobType&& p_blob, PassType p_password)
             : blob(std::forward<BlobType>(p_blob)), password(std::move(p_password)) {}
 
-    virtual ~KeyBlob() = default;
+    virtual ~KeyBlob() {
+        util::secureStringClear(password);
+    }
 
     std::string blob;
     std::string password;
@@ -434,6 +439,13 @@ struct SslOptions {
 #if SUPPORT_SESSIONID_CACHE
     bool session_id_cache = true;
 #endif
+
+    ~SslOptions() noexcept {
+#if SUPPORT_CURLOPT_SSLKEY_BLOB
+        util::secureStringClear(key_blob);
+#endif
+        util::secureStringClear(key_pass);
+    }
 
     void SetOption(const ssl::CertFile& opt) {
         cert_file = opt.filename;

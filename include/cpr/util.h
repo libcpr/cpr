@@ -33,7 +33,7 @@ int debugUserFunction(CURL* handle, curl_infotype type, char* data, size_t size,
 std::vector<std::string> split(const std::string& to_split, char delimiter);
 std::string urlEncode(const std::string& s);
 std::string urlDecode(const std::string& s);
-
+void secureStringClear(std::string& s);
 } // namespace util
 } // namespace cpr
 

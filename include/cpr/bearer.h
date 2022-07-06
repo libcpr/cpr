@@ -19,7 +19,7 @@ class Bearer {
     Bearer(std::string&& token) : token_string_{std::move(token)} {}
     Bearer(const Bearer& other) = default;
     Bearer(Bearer&& old) noexcept = default;
-    virtual ~Bearer() noexcept = default;
+    virtual ~Bearer() noexcept;
 
     Bearer& operator=(Bearer&& old) noexcept = default;
     Bearer& operator=(const Bearer& other) = default;
