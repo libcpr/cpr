@@ -11,6 +11,12 @@
 #include <string>
 #include <vector>
 
+#if defined(_Win32)
+#include <Windows.h>
+#else
+#include <cstring>
+#endif
+
 namespace cpr {
 namespace util {
 
@@ -158,5 +164,30 @@ std::string urlDecode(const std::string& s) {
     return holder.urlDecode(s);
 }
 
+/**
+ * Override the content of the provided string to hide sensitve data. The
+ * string content after invocation is undefined. The string size is reset to zero.
+ * impl. based on:
+ * https://github.com/ojeda/secure_clear/blob/master/example-implementation/secure_clear.h
+ **/
+void secureStringClear(std::string& s) {
+#if defined(__linux__) || defined(__unix__)
+    explicit_bzero(&s.front(), s.length());
+#elif defined(_WIN32)
+    SecureZeroMemory(&s.front(), s.length());
+#elif defined(__STDC_LIB_EXT1__)
+    memset_s(&s.front(), s.length(), 0, s.length());
+#else
+#pragma GCC push_options // g++
+#pragma GCC optimize ("O0") // g++
+#pragma clang optimize off // clang
+#pragma optimize("", off) // MSVC
+    std::memset(s.data(), 0, s.length());
+#pragma optimize("", on) // MSVC
+#pragma clang optimize on // clang
+#pragma GCC pop_options // g++
+#endif
+    s.clear();
+}
 } // namespace util
 } // namespace cpr
