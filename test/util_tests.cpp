@@ -160,6 +160,18 @@ TEST(UtilUrlDecodeTests, AsciiDecoderTest) {
     EXPECT_EQ(result, expected);
 }
 
+TEST(UtilSecureStringClearTests, EmptyStringTest) {
+    std::string input;
+    util::secureStringClear(input);
+    EXPECT_TRUE(input.empty());
+}
+
+TEST(UtilSecureStringClearTests, NotEmptyStringTest) {
+    std::string input = "Hello World!";
+    util::secureStringClear(input);
+    EXPECT_TRUE(input.empty());
+}
+
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();

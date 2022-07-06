@@ -171,6 +171,10 @@ std::string urlDecode(const std::string& s) {
  * https://github.com/ojeda/secure_clear/blob/master/example-implementation/secure_clear.h
  **/
 void secureStringClear(std::string& s) {
+    if (s.empty()) {
+        return;
+    }
+
 #if defined(__linux__) || defined(__unix__)
     explicit_bzero(&s.front(), s.length());
 #elif defined(_WIN32)
@@ -178,14 +182,14 @@ void secureStringClear(std::string& s) {
 #elif defined(__STDC_LIB_EXT1__)
     memset_s(&s.front(), s.length(), 0, s.length());
 #else
-#pragma GCC push_options // g++
-#pragma GCC optimize ("O0") // g++
+#pragma GCC push_options   // g++
+#pragma GCC optimize("O0") // g++
 #pragma clang optimize off // clang
-#pragma optimize("", off) // MSVC
+#pragma optimize("", off)  // MSVC
     std::memset(s.data(), 0, s.length());
-#pragma optimize("", on) // MSVC
-#pragma clang optimize on // clang
-#pragma GCC pop_options // g++
+#pragma optimize("", on)   // MSVC
+#pragma clang optimize on  // clang
+#pragma GCC pop_options    // g++
 #endif
     s.clear();
 }
