@@ -108,7 +108,17 @@ std::vector<Response> MultiPerform::ReadMultiInfo(std::function<Response(Session
         }
     } while (info);
 
-    return responses;
+    // Sort response objects to match order of added sessions
+    std::vector<Response> sorted_responses;
+    for (std::pair<std::shared_ptr<Session>, HttpMethod>& pair : sessions_) {
+        Session& current_session = *(pair.first);
+        auto it = std::find_if(responses.begin(), responses.end(), [&current_session](const Response& response) { return current_session.curl_->handle == response.curl_->handle; });
+        Response current_response = *it;
+        responses.erase(it);
+        sorted_responses.push_back(current_response);
+    }
+
+    return sorted_responses;
 }
 
 std::vector<Response> MultiPerform::MakeRequest() {
