@@ -1,0 +1,8 @@
+# Based on https://www.feistyduck.com/library/openssl-cookbook/online/openssl-command-line/private-ca-create-subordinate.html
+[req]
+prompt = no
+distinguished_name = dn
+
+[dn]
+CN = test-client
+
