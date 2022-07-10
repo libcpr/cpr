@@ -3,6 +3,7 @@
 
 #include <atomic>
 #include <condition_variable>
+#include <csignal>
 #include <gtest/gtest.h>
 #include <memory>
 #include <mutex>
@@ -35,6 +36,7 @@ class AbstractServer : public testing::Environment {
     std::condition_variable server_stop_cv;
     std::atomic<bool> should_run{false};
 
+    static void SignalHandler(int signo, siginfo_t* info, void* ptr);
     void Run();
 
   protected:

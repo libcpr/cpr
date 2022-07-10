@@ -10,6 +10,12 @@ void AbstractServer::TearDown() {
 }
 
 void AbstractServer::Start() {
+    // See sigaction(2) and the example from mprotect(2)
+    struct sigaction action {};
+    action.sa_flags = SA_SIGINFO;
+    sigemptyset(&action.sa_mask);
+    action.sa_sigaction = SignalHandler;
+    sigaction(SIGPIPE, &action, nullptr);
     should_run = true;
     serverThread = std::make_shared<std::thread>(&AbstractServer::Run, this);
     serverThread->detach();
@@ -76,6 +82,11 @@ void AbstractServer::Run() {
 
     // Notify the main thread that we have shut down everything:
     server_stop_cv.notify_all();
+}
+
+void AbstractServer::SignalHandler(int /*signo*/, siginfo_t* /*si*/, void* /*ptr*/) {
+    // Do nothing, only for handling of SIGPIPE
+    std::cout << "Caught SIGPIPE" << '\n';
 }
 
 static const std::string base64_chars =
