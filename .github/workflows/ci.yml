@@ -389,6 +389,12 @@ jobs:
         submodules: true
     - name: Install OpenSSL
       run: choco install openssl -y
+    - name: Configure OpenSSL Paths
+      shell: pwsh
+      run: |
+        [System.Environment]::SetEnvironmentVariable('LIB', (Resolve-Path -Path "$env:OPENSSL_CONF\..\..\lib"), [System.EnvironmentVariableTarget]::User);
+        [System.Environment]::SetEnvironmentVariable('INCLUDE', (Resolve-Path -Path "$env:OPENSSL_CONF\..\..\include"), [System.EnvironmentVariableTarget]::User);
+        refreshEnv;
     - name: "[Release msvc] Build & Test"
       env:
         CMAKE_GENERATOR: "Visual Studio 17 2022"
@@ -413,6 +419,12 @@ jobs:
         submodules: true
     - name: Install OpenSSL
       run: choco install openssl -y
+    - name: Configure OpenSSL Paths
+      shell: pwsh
+      run: |
+        [System.Environment]::SetEnvironmentVariable('LIB', (Resolve-Path -Path "$env:OPENSSL_CONF\..\..\lib"), [System.EnvironmentVariableTarget]::User);
+        [System.Environment]::SetEnvironmentVariable('INCLUDE', (Resolve-Path -Path "$env:OPENSSL_CONF\..\..\include"), [System.EnvironmentVariableTarget]::User);
+        refreshEnv;
     - name: "[Release msvc] Build & Test"
       env:
         CMAKE_GENERATOR: "Visual Studio 17 2022"
