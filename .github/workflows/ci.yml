@@ -6,7 +6,7 @@ on:
     branches: [ master ]
 
 jobs:
-  ubuntu-22-10-static-gcc-ssl:
+  ubuntu-22-04-static-gcc-ssl:
     runs-on: ubuntu-latest
     container: ubuntu:22.04
     steps:
