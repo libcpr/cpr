@@ -14,6 +14,8 @@
 #if defined(_Win32)
 #include <Windows.h>
 #else
+// https://en.cppreference.com/w/c/string/byte/memset
+#define __STDC_WANT_LIB_EXT1__ 1
 #include <cstring>
 #endif
 
@@ -174,24 +176,27 @@ void secureStringClear(std::string& s) {
     if (s.empty()) {
         return;
     }
-
-#if defined(__linux__) || defined(__unix__)
-    explicit_bzero(&s.front(), s.length());
+#if defined(__STDC_LIB_EXT1__)
+    memset_s(&s.front(), s.length(), 0, s.length());
 #elif defined(_WIN32)
     SecureZeroMemory(&s.front(), s.length());
-#elif defined(__STDC_LIB_EXT1__)
-    memset_s(&s.front(), s.length(), 0, s.length());
 #else
+#if defined(__clang__)
+#pragma clang optimize off // clang
+#elif defined(__GNUC__) || defined(__MINGW32__) || defined(__MINGW32__) || defined(__MINGW64__)
 #pragma GCC push_options   // g++
 #pragma GCC optimize("O0") // g++
-#pragma clang optimize off // clang
-#pragma optimize("", off)  // MSVC
-    std::memset(s.data(), 0, s.length());
-#pragma optimize("", on)   // MSVC
+#endif
+    char* ptr = &(s[0]);
+    memset(ptr, '\0', s.length());
+#if defined(__clang__)
 #pragma clang optimize on  // clang
+#elif defined(__GNUC__) || defined(__MINGW32__) || defined(__MINGW32__) || defined(__MINGW64__)
 #pragma GCC pop_options    // g++
 #endif
-    s.clear();
+#endif
+s.clear();
+    
 }
 } // namespace util
 } // namespace cpr
