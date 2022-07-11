@@ -56,6 +56,8 @@ jobs:
       run: apt install -y cmake
     - name: Install build-essential
       run: apt install -y build-essential
+    - name: Install clang
+      run: apt install -y clang
     - name: "[Release g++] Build & Test"
       env:
         CPR_BUILD_TESTS: ON
