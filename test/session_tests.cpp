@@ -935,7 +935,7 @@ TEST(LocalPortTests, SetLocalPortTest) {
     Url url{server->GetBaseUrl() + "/local_port.html"};
     Session session;
     session.SetUrl(url);
-    std::uint16_t const local_port = 60250; // beware of HttpServer::GetPort when changing
+    std::uint16_t const local_port = 60252; // beware of HttpServer::GetPort when changing
     std::uint16_t const local_port_range = 50;
     session.SetLocalPort(local_port);
     session.SetLocalPortRange(local_port_range);
@@ -957,7 +957,7 @@ TEST(LocalPortTests, SetOptionTest) {
     Url url{server->GetBaseUrl() + "/local_port.html"};
     Session session;
     session.SetUrl(url);
-    std::uint16_t const local_port = 60550; // beware of HttpServer::GetPort when changing
+    std::uint16_t const local_port = 60551; // beware of HttpServer::GetPort when changing
     std::uint16_t const local_port_range = 50;
     session.SetOption(LocalPort(local_port));
     session.SetOption(LocalPortRange(local_port_range));
