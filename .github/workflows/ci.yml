@@ -458,7 +458,7 @@ jobs:
         cxx: clang++
         run-test: true
         ctest-options: -V
-        configure-options: -DBUILD_SHARED_LIBS=ON -DCPR_BUILD_TESTS=ON -DCPR_BUILD_TESTS_SSL=ON
+        configure-options: -DBUILD_SHARED_LIBS=ON
 
   macos-clang-static-openssl:
     runs-on: macos-latest
