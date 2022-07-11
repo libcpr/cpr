@@ -413,7 +413,6 @@ jobs:
         submodules: true
     - name: Install OpenSSL
       run: choco install openssl -y
-        refreshEnv;
     - name: "[Release msvc] Build & Test"
       env:
         CMAKE_GENERATOR: "Visual Studio 17 2022"
