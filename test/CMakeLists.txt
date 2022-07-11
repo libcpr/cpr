@@ -62,8 +62,13 @@ add_cpr_test(interceptor)
 if (ENABLE_SSL_TESTS)
     add_cpr_test(ssl)
     
-    # Install all ssl keys and certs:
+    # Install all ssl keys and certs. Explicit copy for each file to prevent issues when copying on Windows.
     add_custom_command(TARGET ssl_tests POST_BUILD COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:ssl_tests>/data/certificates $<TARGET_FILE_DIR:ssl_tests>/data/keys)
-    add_custom_command(TARGET ssl_tests POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/data/certificates/* $<TARGET_FILE_DIR:ssl_tests>/data/certificates/)
-    add_custom_command(TARGET ssl_tests POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/data/keys/* $<TARGET_FILE_DIR:ssl_tests>/data/keys/)
+    add_custom_command(TARGET ssl_tests POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/data/certificates/client.crt $<TARGET_FILE_DIR:ssl_tests>/data/certificates/client.crt)
+    add_custom_command(TARGET ssl_tests POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/data/certificates/root-ca.crt $<TARGET_FILE_DIR:ssl_tests>/data/certificates/root-ca.crt)
+    add_custom_command(TARGET ssl_tests POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/data/certificates/server.crt $<TARGET_FILE_DIR:ssl_tests>/data/certificates/server.crt)
+    add_custom_command(TARGET ssl_tests POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/data/keys/client.key $<TARGET_FILE_DIR:ssl_tests>/data/keys/client.key)
+    add_custom_command(TARGET ssl_tests POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/data/keys/root-ca.key $<TARGET_FILE_DIR:ssl_tests>/data/keys/root-ca.key)
+    add_custom_command(TARGET ssl_tests POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/data/keys/server.key $<TARGET_FILE_DIR:ssl_tests>/data/keys/server.key)
+    add_custom_command(TARGET ssl_tests POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/data/keys/server.pub $<TARGET_FILE_DIR:ssl_tests>/data/keys/server.pub)
 endif()
