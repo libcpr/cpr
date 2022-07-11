@@ -1,3 +1,5 @@
+include(CheckCXXCompilerFlag)
+
 cmake_minimum_required(VERSION 3.15)
 project(cpr VERSION 1.9.0 LANGUAGES CXX)
 
@@ -10,11 +12,36 @@ if(${CMAKE_PROJECT_NAME} STREQUAL ${PROJECT_NAME})
     set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "CMake")
     set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
     set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib)
+else()
+    # Check required c++ standard of parent project
+    if(CMAKE_CXX_STANDARD)
+        set(PARENT_CXX_STANDARD ${CMAKE_CXX_STANDARD})
+        message(STATUS "CXX standard of parent project: ${PARENT_CXX_STANDARD}")
+    endif()
 endif()
 
 # Avoid the dll boilerplate code for windows
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
-set(CMAKE_CXX_STANDARD 17)
+
+if (PARENT_CXX_STANDARD)
+    # Don't set CMAKE_CXX_STANDARD if it is already set by parent project
+    if (${PARENT_CXX_STANDARD} LESS 17)
+        message(FATAL_ERROR "cpr ${cpr_VERSION} does not support ${PARENT_CXX_STANDARD}. Please use cpr <= 1.9.0")
+    endif()
+else()
+    # Check and set supported c++ standard
+    CHECK_CXX_COMPILER_FLAG("-std=c++17" COMPILER_SUPPORTS_CXX17)
+    CHECK_CXX_COMPILER_FLAG("-std=c++20" COMPILER_SUPPORTS_CXX20)
+    if(COMPILER_SUPPORTS_CXX20)
+        set(CMAKE_CXX_STANDARD 20)
+    elseif(COMPILER_SUPPORTS_CXX17)
+        set(CMAKE_CXX_STANDARD 17)
+    else()
+        message(FATAL_ERROR "Compiler ${CMAKE_CXX_COMPILER} does not support C++17. Please use cpr <= 1.9.0")        
+    endif()
+endif()
+
+message(STATUS "CXX standard: ${CMAKE_CXX_STANDARD}")
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CPR_LIBRARIES cpr CACHE INTERNAL "")
