@@ -28,8 +28,9 @@ class async {
   public:
     static void startup(size_t min_threads = CPR_DEFAULT_THREAD_POOL_MIN_THREAD_NUM, size_t max_threads = CPR_DEFAULT_THREAD_POOL_MAX_THREAD_NUM, std::chrono::milliseconds max_idle_ms = CPR_DEFAULT_THREAD_POOL_MAX_IDLE_TIME) {
         GlobalThreadPool* gtp = GlobalThreadPool::GetInstance();
-        if (gtp->IsStarted())
+        if (gtp->IsStarted()) {
             return;
+        }
         gtp->SetMinThreadNum(min_threads);
         gtp->SetMaxThreadNum(max_threads);
         gtp->SetMaxIdleTime(max_idle_ms);
