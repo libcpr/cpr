@@ -446,6 +446,7 @@ jobs:
     - name: "[Release clang++] Build & Test"
       env:
         CPR_BUILD_TESTS: ON
+        CPR_BUILD_TESTS_SSL: ON
         OPENSSL_ROOT_DIR: "/usr/local/opt/openssl@3"
         OPENSSL_LIBRARIES: "/usr/local/opt/openssl@3/lib"
       uses: ashutoshvarma/action-cmake-build@master
@@ -457,7 +458,7 @@ jobs:
         cxx: clang++
         run-test: true
         ctest-options: -V
-        configure-options: -DBUILD_SHARED_LIBS=ON -DCPR_BUILD_TESTS=ON -DCPR_BUILD_TESTS_SSL=ON
+        configure-options: -DBUILD_SHARED_LIBS=ON
 
   macos-clang-static-openssl:
     runs-on: macos-latest
@@ -477,7 +478,7 @@ jobs:
     - name: "[Release clang++] Build & Test"
       env:
         CPR_BUILD_TESTS: ON
-        DCPR_BUILD_TESTS_SSL: ON
+        CPR_BUILD_TESTS_SSL: OFF
         OPENSSL_ROOT_DIR: "/usr/local/opt/openssl@3"
         OPENSSL_LIBRARIES: "/usr/local/opt/openssl@3/lib"
       uses: ashutoshvarma/action-cmake-build@master
@@ -501,7 +502,7 @@ jobs:
     - name: "[Release clang++] Build & Test"
       env:
         CPR_BUILD_TESTS: ON
-        DCPR_BUILD_TESTS_SSL: OFF
+        CPR_BUILD_TESTS_SSL: OFF
       uses: ashutoshvarma/action-cmake-build@master
       with:
         build-dir: ${{github.workspace}}/build
@@ -523,7 +524,7 @@ jobs:
     - name: "[Release clang++] Build & Test"
       env:
         CPR_BUILD_TESTS: ON
-        DCPR_BUILD_TESTS_SSL: OFF
+        CPR_BUILD_TESTS_SSL: OFF
       uses: ashutoshvarma/action-cmake-build@master
       with:
         build-dir: ${{github.workspace}}/build
