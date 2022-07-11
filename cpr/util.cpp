@@ -167,20 +167,22 @@ std::string urlDecode(const std::string& s) {
     return holder.urlDecode(s);
 }
 
-/**
- * Override the content of the provided string to hide sensitve data. The
- * string content after invocation is undefined. The string size is reset to zero.
- * impl. based on:
- * https://github.com/ojeda/secure_clear/blob/master/example-implementation/secure_clear.h
- **/
+#if defined(__STDC_LIB_EXT1__)
 void secureStringClear(std::string& s) {
     if (s.empty()) {
         return;
     }
-#if defined(__STDC_LIB_EXT1__)
     memset_s(&s.front(), s.length(), 0, s.length());
+    s.clear();
+}
 #elif defined(_WIN32)
+void secureStringClear(std::string& s) {
+    if (s.empty()) {
+        return;
+    }
     SecureZeroMemory(&s.front(), s.length());
+    s.clear();
+}
 #else
 #if defined(__clang__)
 #pragma clang optimize off // clang
@@ -188,16 +190,20 @@ void secureStringClear(std::string& s) {
 #pragma GCC push_options   // g++
 #pragma GCC optimize("O0") // g++
 #endif
+void secureStringClear(std::string& s) {
+    if (s.empty()) {
+        return;
+    }
+    // NOLINTNEXTLINE (readability-container-data-pointer)
     char* ptr = &(s[0]);
     memset(ptr, '\0', s.length());
-#if defined(__clang__)
-#pragma clang optimize on  // clang
-#elif defined(__GNUC__) || defined(__MINGW32__) || defined(__MINGW32__) || defined(__MINGW64__)
-#pragma GCC pop_options    // g++
-#endif
-#endif
-s.clear();
-    
+    s.clear();
 }
+#if defined(__clang__)
+#pragma clang optimize on // clang
+#elif defined(__GNUC__) || defined(__MINGW32__) || defined(__MINGW32__) || defined(__MINGW64__)
+#pragma GCC pop_options // g++
+#endif
+#endif
 } // namespace util
 } // namespace cpr
