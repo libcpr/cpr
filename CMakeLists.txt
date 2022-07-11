@@ -138,6 +138,8 @@ if(CPR_ENABLE_SSL)
 endif()
 
 if(SSL_BACKEND_USED STREQUAL "OpenSSL")
+# Fix missing OpenSSL includes for Windows since in 'ssl_ctx.cpp' we include OpenSSL directly
+find_package(OpenSSL REQUIRED)
     add_compile_definitions(OPENSSL_BACKEND_USED)
 endif()
 

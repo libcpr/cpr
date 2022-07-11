@@ -394,8 +394,6 @@ jobs:
         CMAKE_GENERATOR: "Visual Studio 17 2022"
         CPR_BUILD_TESTS: ON
         CPR_FORCE_OPENSSL_BACKEND: ON
-        INCLUDE: "C:\Program Files\OpenSSL-Win64\include"
-        LIB: "C:\Program Files\OpenSSL-Win64\lib"
       uses: ashutoshvarma/action-cmake-build@master
       with:
         build-dir: ${{github.workspace}}/build
@@ -421,8 +419,6 @@ jobs:
         CMAKE_GENERATOR: "Visual Studio 17 2022"
         CPR_BUILD_TESTS: ON
         CPR_FORCE_OPENSSL_BACKEND: ON
-        INCLUDE: "C:\Program Files\OpenSSL-Win64\include"
-        LIB: "C:\Program Files\OpenSSL-Win64\lib"
       uses: ashutoshvarma/action-cmake-build@master
       with:
         build-dir: ${{github.workspace}}/build
