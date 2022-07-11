@@ -484,6 +484,7 @@ void Session::SetSslOptions(const SslOptions& options) {
     } else if (!options.key_blob.empty()) {
         std::string key_blob(options.key_blob);
         curl_blob blob{};
+        // NOLINTNEXTLINE (readability-container-data-pointer)
         blob.data = &key_blob[0];
         blob.len = key_blob.length();
         curl_easy_setopt(curl_->handle, CURLOPT_SSLKEY_BLOB, &blob);
