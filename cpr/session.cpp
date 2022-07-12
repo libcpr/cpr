@@ -30,7 +30,7 @@ constexpr long OFF = 0L;
 
 CURLcode Session::DoEasyPerform() {
     if (isUsedInMultiPerform) {
-        fprintf(stderr, "curl_easy_perform cannot be executed if the CURL handle is used in a MultiPerform.\n");
+        (void) fprintf(stderr, "curl_easy_perform cannot be executed if the CURL handle is used in a MultiPerform.\n");
         return CURLcode::CURLE_FAILED_INIT;
     }
     return curl_easy_perform(curl_->handle);
