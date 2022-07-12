@@ -418,7 +418,7 @@ TEST(TimeoutTests, SetTimeoutLowSpeed) {
     session.SetTimeout(1000);
     Response response = session.Get();
     EXPECT_EQ(url, response.url);
-    EXPECT_FALSE(response.status_code == 200);
+    // Do not check for the HTTP status code, since libcurl always provides the status code of the header if it was received
     EXPECT_EQ(ErrorCode::OPERATION_TIMEDOUT, response.error.code);
 }
 
