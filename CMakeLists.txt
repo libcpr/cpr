@@ -1,5 +1,3 @@
-include(CheckCXXCompilerFlag)
-
 cmake_minimum_required(VERSION 3.15)
 project(cpr VERSION 1.9.0 LANGUAGES CXX)
 
@@ -29,21 +27,7 @@ if (PARENT_CXX_STANDARD)
         message(FATAL_ERROR "cpr ${cpr_VERSION} does not support ${PARENT_CXX_STANDARD}. Please use cpr <= 1.9.0")
     endif()
 else()
-    # Check and set supported c++ standard
-    if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-        CHECK_CXX_COMPILER_FLAG("/std:c++17" COMPILER_SUPPORTS_CXX17)
-        CHECK_CXX_COMPILER_FLAG("/std:c++20" COMPILER_SUPPORTS_CXX20)
-    else()
-        CHECK_CXX_COMPILER_FLAG("-std=c++17" COMPILER_SUPPORTS_CXX17)
-        CHECK_CXX_COMPILER_FLAG("-std=c++20" COMPILER_SUPPORTS_CXX20)
-    endif()
-    if(COMPILER_SUPPORTS_CXX20)
-        set(CMAKE_CXX_STANDARD 20)
-    elseif(COMPILER_SUPPORTS_CXX17)
-        set(CMAKE_CXX_STANDARD 17)
-    else()
-        message(FATAL_ERROR "Compiler ${CMAKE_CXX_COMPILER} does not support C++17. Please use cpr <= 1.9.0")        
-    endif()
+    set(CMAKE_CXX_STANDARD 17)
 endif()
 
 message(STATUS "CXX standard: ${CMAKE_CXX_STANDARD}")
