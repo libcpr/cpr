@@ -27,6 +27,7 @@ if (PARENT_CXX_STANDARD)
         message(FATAL_ERROR "cpr ${cpr_VERSION} does not support ${PARENT_CXX_STANDARD}. Please use cpr <= 1.9.0")
     endif()
 else()
+    # Set standard version if not already set by potential parent project
     set(CMAKE_CXX_STANDARD 17)
 endif()
 
