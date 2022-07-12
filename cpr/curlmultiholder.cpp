@@ -4,8 +4,7 @@
 
 namespace cpr {
 
-CurlMultiHolder::CurlMultiHolder() {
-    handle = curl_multi_init();
+CurlMultiHolder::CurlMultiHolder() : handle{curl_multi_init()} {
     assert(handle);
 }
 
