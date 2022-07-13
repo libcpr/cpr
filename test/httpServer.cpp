@@ -91,9 +91,13 @@ void HttpServer::OnRequestLowSpeedTimeout(mg_connection* conn, mg_http_message* 
 void HttpServer::OnRequestLowSpeed(mg_connection* conn, mg_http_message* /*msg*/, mg_mgr* mgr) {
     std::string response{"Hello world!"};
     mg_printf(conn, "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: %d\r\n\r\n", response.length());
-    mg_mgr_poll(mgr, 0);
-    std::this_thread::sleep_for(std::chrono::seconds(2));
-    mg_send(conn, response.c_str(), response.length());
+    mg_timer_add(
+            mgr, 2000, MG_TIMER_ONCE,
+            [](void* connection) {
+                std::string response{"Hello world!"};
+                mg_send(static_cast<mg_connection*>(connection), response.c_str(), response.length());
+            },
+            conn);
 }
 
 // Before and after calling an endpoint that calls this method, the test needs to wait until all previous connections are closed
