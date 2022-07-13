@@ -72,6 +72,8 @@ void HttpServer::OnRequestTimeout(mg_connection* conn, mg_http_message* msg) {
     OnRequestHello(conn, msg);
 }
 
+// Before and after calling an endpoint that calls this method, the test needs to wait until all previous connections are closed
+// The nested call to mg_mgr_poll can lead to problems otherwise
 void HttpServer::OnRequestLowSpeedTimeout(mg_connection* conn, mg_http_message* /* msg */, mg_mgr* mgr) {
     std::string response{"Hello world!"};
 
@@ -84,6 +86,8 @@ void HttpServer::OnRequestLowSpeedTimeout(mg_connection* conn, mg_http_message* 
     }
 }
 
+// Before and after calling an endpoint that calls this method, the test needs to wait until all previous connections are closed
+// The nested call to mg_mgr_poll can lead to problems otherwise
 void HttpServer::OnRequestLowSpeed(mg_connection* conn, mg_http_message* /*msg*/, mg_mgr* mgr) {
     std::string response{"Hello world!"};
     mg_printf(conn, "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: %d\r\n\r\n", response.length());
@@ -92,14 +96,16 @@ void HttpServer::OnRequestLowSpeed(mg_connection* conn, mg_http_message* /*msg*/
     mg_send(conn, response.c_str(), response.length());
 }
 
+// Before and after calling an endpoint that calls this method, the test needs to wait until all previous connections are closed
+// The nested call to mg_mgr_poll can lead to problems otherwise
 void HttpServer::OnRequestLowSpeedBytes(mg_connection* conn, mg_http_message* /*msg*/, mg_mgr* mgr) {
     std::string response{'a'};
     mg_printf(conn, "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: %d\r\n\r\n", response.length() * 20);
     mg_mgr_poll(mgr, 0);
     std::this_thread::sleep_for(std::chrono::seconds(2));
-    for (size_t i = 0; i < 20; ++i) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    for (size_t i = 0; i < 20 && !conn->is_closing; ++i) {
         mg_send(conn, response.c_str(), response.length());
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
         mg_mgr_poll(mgr, 0);
     }
 }
