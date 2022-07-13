@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.15)
-project(cpr VERSION 1.8.3 LANGUAGES CXX)
+project(cpr VERSION 1.9.0 LANGUAGES CXX)
 
 math(EXPR cpr_VERSION_NUM "${cpr_VERSION_MAJOR} * 0x10000 + ${cpr_VERSION_MINOR} * 0x100 + ${cpr_VERSION_PATCH}" OUTPUT_FORMAT HEXADECIMAL)
 configure_file("${cpr_SOURCE_DIR}/cmake/cprver.h.in" "${cpr_BINARY_DIR}/cpr_generated_includes/cpr/cprver.h")
@@ -138,6 +138,8 @@ if(CPR_ENABLE_SSL)
 endif()
 
 if(SSL_BACKEND_USED STREQUAL "OpenSSL")
+# Fix missing OpenSSL includes for Windows since in 'ssl_ctx.cpp' we include OpenSSL directly
+find_package(OpenSSL REQUIRED)
     add_compile_definitions(OPENSSL_BACKEND_USED)
 endif()
 
@@ -165,7 +167,7 @@ if(CPR_FORCE_USE_SYSTEM_CURL)
         if(CURL_FOUND)
             message(STATUS "Curl ${CURL_VERSION_STRING} found on this system.")
             # To be able to load certificates under Windows when using OpenSSL:
-            if(CURL_USE_OPENSSL AND WIN32 AND (NOT (CURL_VERSION_STRING VERSION_GREATER_EQUAL "7.71.0")))
+            if(CMAKE_USE_OPENSSL AND WIN32 AND (NOT (CURL_VERSION_STRING VERSION_GREATER_EQUAL "7.71.0")))
                 message(FATAL_ERROR "Your system curl version (${CURL_VERSION_STRING}) is too old to support OpenSSL on Windows which requires curl >= 7.71.0. Update your curl version, use WinSSL, disable SSL or use the build in version of curl.")
             endif()
         else()
@@ -215,33 +217,29 @@ else()
         endif()
 
         if(SSL_BACKEND_USED STREQUAL "WinSSL")
-            set(CURL_USE_SCHANNEL ON CACHE INTERNAL "" FORCE) # <= curl  1.80.0
-            set(CMAKE_USE_SCHANNEL ON CACHE INTERNAL "" FORCE) # > curl  1.80.0
+            set(CMAKE_USE_SCHANNEL ON CACHE INTERNAL "" FORCE)
         endif()
 
         if(SSL_BACKEND_USED STREQUAL "OpenSSL")
-            set(CURL_USE_OPENSSL ON CACHE INTERNAL "" FORCE) # <= curl  1.80.0
-            set(CMAKE_USE_OPENSSL ON CACHE INTERNAL "" FORCE) # > curl  1.80.0
+            set(CMAKE_USE_OPENSSL ON CACHE INTERNAL "" FORCE)
         endif()
 
         if(SSL_BACKEND_USED STREQUAL "DarwinSSL")
-            set(CURL_USE_SECTRANSP ON CACHE INTERNAL "" FORCE) # <= curl  1.80.0
-            set(CMAKE_USE_SECTRANSP ON CACHE INTERNAL "" FORCE) # > curl  1.80.0
+            set(CMAKE_USE_SECTRANSP ON CACHE INTERNAL "" FORCE)
         endif()
 
         if(SSL_BACKEND_USED STREQUAL "MbedTLS")
-            set(CURL_USE_MBEDTLS ON CACHE INTERNAL "" FORCE) # <= curl  1.80.0
-            set(CMAKE_USE_MBEDTLS ON CACHE INTERNAL "" FORCE) # > curl  1.80.0
+            set(CMAKE_USE_MBEDTLS ON CACHE INTERNAL "" FORCE)
         endif()
 
         message(STATUS "Enabled curl SSL")
     else()
         set(SSL_ENABLED OFF CACHE INTERNAL "" FORCE)
         set(CURL_CA_PATH "none" CACHE INTERNAL "" FORCE)
-        set(CURL_USE_SCHANNEL OFF CACHE INTERNAL "" FORCE)
-        set(CURL_USE_OPENSSL OFF CACHE INTERNAL "" FORCE)
-        set(CURL_USE_SECTRANSP OFF CACHE INTERNAL "" FORCE)
-        set(CURL_USE_MBEDTLS OFF CACHE INTERNAL "" FORCE)
+        set(CMAKE_USE_SCHANNEL OFF CACHE INTERNAL "" FORCE)
+        set(CMAKE_USE_OPENSSL OFF CACHE INTERNAL "" FORCE)
+        set(CMAKE_USE_SECTRANSP OFF CACHE INTERNAL "" FORCE)
+        set(CMAKE_USE_MBEDTLS OFF CACHE INTERNAL "" FORCE)
         message(STATUS "Disabled curl SSL")
     endif()
     # Disable linting for curl

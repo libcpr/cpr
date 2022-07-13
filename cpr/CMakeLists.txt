@@ -29,6 +29,12 @@ add_library(cpr::cpr ALIAS cpr)
 
 target_link_libraries(cpr PUBLIC CURL::libcurl) # todo should be private, but first dependencys in ssl_options need to be removed
 
+# Fix missing OpenSSL includes for Windows since in 'ssl_ctx.cpp' we include OpenSSL directly
+if(SSL_BACKEND_USED STREQUAL "OpenSSL")
+        target_link_libraries(cpr PRIVATE OpenSSL::SSL)
+        target_include_directories(cpr PRIVATE ${OPENSSL_INCLUDE_DIR})
+endif()
+
 # Set version for shared libraries.
 set_target_properties(cpr
      PROPERTIES

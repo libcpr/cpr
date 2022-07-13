@@ -11,6 +11,15 @@
 #include <string>
 #include <vector>
 
+#if defined(_Win32)
+#include <Windows.h>
+#else
+// https://en.cppreference.com/w/c/string/byte/memset
+// NOLINTNEXTLINE(bugprone-reserved-identifier, cert-dcl37-c, cert-dcl51-cpp, cppcoreguidelines-macro-usage)
+#define __STDC_WANT_LIB_EXT1__ 1
+#include <cstring>
+#endif
+
 namespace cpr {
 namespace util {
 
@@ -124,7 +133,7 @@ int progressUserFunction(const ProgressCallback* progress, curl_off_t dltotal, c
 }
 
 int debugUserFunction(CURL* /*handle*/, curl_infotype type, char* data, size_t size, const DebugCallback* debug) {
-    (*debug)(DebugCallback::InfoType(type), std::string(data, size));
+    (*debug)(static_cast<DebugCallback::InfoType>(type), std::string(data, size));
     return 0;
 }
 
@@ -158,5 +167,43 @@ std::string urlDecode(const std::string& s) {
     return holder.urlDecode(s);
 }
 
+#if defined(__STDC_LIB_EXT1__)
+void secureStringClear(std::string& s) {
+    if (s.empty()) {
+        return;
+    }
+    memset_s(&s.front(), s.length(), 0, s.length());
+    s.clear();
+}
+#elif defined(_WIN32)
+void secureStringClear(std::string& s) {
+    if (s.empty()) {
+        return;
+    }
+    SecureZeroMemory(&s.front(), s.length());
+    s.clear();
+}
+#else
+#if defined(__clang__)
+#pragma clang optimize off // clang
+#elif defined(__GNUC__) || defined(__MINGW32__) || defined(__MINGW32__) || defined(__MINGW64__)
+#pragma GCC push_options   // g++
+#pragma GCC optimize("O0") // g++
+#endif
+void secureStringClear(std::string& s) {
+    if (s.empty()) {
+        return;
+    }
+    // NOLINTNEXTLINE (readability-container-data-pointer)
+    char* ptr = &(s[0]);
+    memset(ptr, '\0', s.length());
+    s.clear();
+}
+#if defined(__clang__)
+#pragma clang optimize on // clang
+#elif defined(__GNUC__) || defined(__MINGW32__) || defined(__MINGW32__) || defined(__MINGW64__)
+#pragma GCC pop_options // g++
+#endif
+#endif
 } // namespace util
 } // namespace cpr

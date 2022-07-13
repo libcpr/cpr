@@ -388,7 +388,7 @@ jobs:
       with:
         submodules: true
     - name: Install OpenSSL
-      run: choco install openssl
+      run: choco install openssl -y
     - name: "[Release msvc] Build & Test"
       env:
         CMAKE_GENERATOR: "Visual Studio 17 2022"
@@ -412,7 +412,7 @@ jobs:
       with:
         submodules: true
     - name: Install OpenSSL
-      run: choco install openssl
+      run: choco install openssl -y
     - name: "[Release msvc] Build & Test"
       env:
         CMAKE_GENERATOR: "Visual Studio 17 2022"
@@ -438,13 +438,17 @@ jobs:
     - name: Install OpenSSL
       run: |
         brew install openssl
-        echo 'export PATH="/usr/local/opt/openssl/bin:$PATH"' >> ~/.bash_profile
+        echo 'export PATH="/usr/local/opt/openssl@3/bin:$PATH"' >> /Users/runner/.bash_profile
         source ~/.bash_profile
+        export LDFLAGS="-L/usr/local/opt/openssl@3/lib"
+        export CPPFLAGS="-I/usr/local/opt/openssl@3/include"
+        export PKG_CONFIG_PATH="/usr/local/opt/openssl@3/lib/pkgconfig"
     - name: "[Release clang++] Build & Test"
       env:
         CPR_BUILD_TESTS: ON
-        OPENSSL_ROOT_DIR: "/usr/local/opt/openssl"
-        OPENSSL_LIBRARIES: "/usr/local/opt/openssl/lib"
+        CPR_BUILD_TESTS_SSL: ON
+        OPENSSL_ROOT_DIR: "/usr/local/opt/openssl@3"
+        OPENSSL_LIBRARIES: "/usr/local/opt/openssl@3/lib"
       uses: ashutoshvarma/action-cmake-build@master
       with:
         build-dir: ${{github.workspace}}/build
@@ -466,13 +470,17 @@ jobs:
     - name: Install OpenSSL
       run: |
         brew install openssl
-        echo 'export PATH="/usr/local/opt/openssl/bin:$PATH"' >> ~/.bash_profile
+        echo 'export PATH="/usr/local/opt/openssl@3/bin:$PATH"' >> /Users/runner/.bash_profile
         source ~/.bash_profile
+        export LDFLAGS="-L/usr/local/opt/openssl@3/lib"
+        export CPPFLAGS="-I/usr/local/opt/openssl@3/include"
+        export PKG_CONFIG_PATH="/usr/local/opt/openssl@3/lib/pkgconfig"
     - name: "[Release clang++] Build & Test"
       env:
         CPR_BUILD_TESTS: ON
-        OPENSSL_ROOT_DIR: "/usr/local/opt/openssl"
-        OPENSSL_LIBRARIES: "/usr/local/opt/openssl/lib"
+        CPR_BUILD_TESTS_SSL: OFF
+        OPENSSL_ROOT_DIR: "/usr/local/opt/openssl@3"
+        OPENSSL_LIBRARIES: "/usr/local/opt/openssl@3/lib"
       uses: ashutoshvarma/action-cmake-build@master
       with:
         build-dir: ${{github.workspace}}/build
@@ -494,6 +502,7 @@ jobs:
     - name: "[Release clang++] Build & Test"
       env:
         CPR_BUILD_TESTS: ON
+        CPR_BUILD_TESTS_SSL: OFF
       uses: ashutoshvarma/action-cmake-build@master
       with:
         build-dir: ${{github.workspace}}/build
@@ -515,6 +524,7 @@ jobs:
     - name: "[Release clang++] Build & Test"
       env:
         CPR_BUILD_TESTS: ON
+        CPR_BUILD_TESTS_SSL: OFF
       uses: ashutoshvarma/action-cmake-build@master
       with:
         build-dir: ${{github.workspace}}/build
