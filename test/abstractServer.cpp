@@ -134,4 +134,15 @@ void AbstractServer::SendError(mg_connection* conn, int code, std::string& reaso
     mg_http_reply(conn, code, headers.c_str(), reason.c_str());
 }
 
+bool AbstractServer::IsConnectionActive(mg_mgr* mgr, mg_connection* conn) {
+    mg_connection* c {mgr->conns};
+    while (c) {
+        if (c == conn) {
+            return true;
+        }
+        c = c->next;
+    }
+    return false;
+}
+
 } // namespace cpr

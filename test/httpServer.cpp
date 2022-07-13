@@ -72,18 +72,36 @@ void HttpServer::OnRequestTimeout(mg_connection* conn, mg_http_message* msg) {
     OnRequestHello(conn, msg);
 }
 
-// Before and after calling an endpoint that calls this method, the test needs to wait until all previous connections are closed
-// The nested call to mg_mgr_poll can lead to problems otherwise
+// Send the header, then send "Hello world!" every 100ms
+// For this, we use a mongoose timer
 void HttpServer::OnRequestLowSpeedTimeout(mg_connection* conn, mg_http_message* /* msg */, mg_mgr* mgr) {
     std::string response{"Hello world!"};
-
     mg_printf(conn, "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: %d\r\n\r\n", response.length() * 20);
-    mg_mgr_poll(mgr, 0);
-    for (size_t i = 0; i < 20 && !conn->is_closing; i++) {
-        mg_send(conn, response.c_str(), response.length());
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-        mg_mgr_poll(mgr, 0);
-    }
+
+    struct timer_fn_arg {
+        mg_mgr* mgr;
+        mg_connection* connection;
+        mg_timer timer;
+    };
+    timer_fn_arg* timer_arg = new timer_fn_arg{mgr, conn, mg_timer {}};
+    mg_timer_init(
+            &mgr->timers, &timer_arg->timer, 100, MG_TIMER_REPEAT,
+            // The following lambda function gets executed each time the timer is called.
+            // It sends "Hello world!" to the client each 100ms at most 20 times.
+            [](void* arg) {
+                static int counter{0};
+                std::string response{"Hello world!"};
+                auto* timer_arg = static_cast<timer_fn_arg*>(arg);
+                mg_send(timer_arg->connection, response.c_str(), response.length());
+                std::cout << counter << '\n';
+                // If we reached the 20th iteration or if the connection is not active anymore, we remove the timer
+                if (++counter == 20 || IsConnectionActive(timer_arg->mgr, timer_arg->connection)) {
+                    std::cout << "Finished" << std::endl;
+                    mg_timer_free(&timer_arg->mgr->timers, &timer_arg->timer);
+                    delete timer_arg;
+                }
+            },
+            timer_arg);
 }
 
 // Before and after calling an endpoint that calls this method, the test needs to wait until all previous connections are closed

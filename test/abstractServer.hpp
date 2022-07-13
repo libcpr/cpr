@@ -45,6 +45,7 @@ class AbstractServer : public testing::Environment {
 
     static std::string Base64Decode(const std::string& in);
     static void SendError(mg_connection* conn, int code, std::string& reason);
+    static bool IsConnectionActive(mg_mgr* mgr, mg_connection* conn);
 };
 } // namespace cpr
 
