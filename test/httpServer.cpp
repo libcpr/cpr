@@ -76,10 +76,11 @@ void HttpServer::OnRequestLowSpeedTimeout(mg_connection* conn, mg_http_message* 
     std::string response{"Hello world!"};
 
     mg_printf(conn, "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: %d\r\n\r\n", response.length() * 20);
-    for (size_t i = 0; i < 20; i++) {
-        mg_mgr_poll(mgr, 0);
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    mg_mgr_poll(mgr, 0);
+    for (size_t i = 0; i < 20 && !conn->is_closing; i++) {
         mg_send(conn, response.c_str(), response.length());
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        mg_mgr_poll(mgr, 0);
     }
 }
 
