@@ -26,7 +26,12 @@ Checks: '*,
 -hicpp-signed-bitwise,
 -llvmlibc-implementation-in-namespace,
 -llvmlibc-restrict-system-libc-headers,
--readability-function-cognitive-complexity
+-readability-function-cognitive-complexity,
+-readability-identifier-length,
+-altera-unroll-loops,
+-altera-id-dependent-backward-branch,
+-bugprone-easily-swappable-parameters,
+-modernize-return-braced-init-list
 '
 WarningsAsErrors: '*'
 HeaderFilterRegex: 'src/*.hpp'
