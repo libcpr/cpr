@@ -420,10 +420,6 @@ TEST(TimeoutTests, SetTimeoutLowSpeed) {
     EXPECT_EQ(url, response.url);
     // Do not check for the HTTP status code, since libcurl always provides the status code of the header if it was received
     EXPECT_EQ(ErrorCode::OPERATION_TIMEDOUT, response.error.code);
-
-    // Wait until the server exits the OnRequestLowSpeedTimeout method due to the closing connection
-    // If it didn't exit this method, this would influence the remaining tests, as "Hello world!" would get prepended to every message
-    std::this_thread::sleep_for(std::chrono::seconds(1));
 }
 
 TEST(TimeoutTests, SetChronoTimeoutTest) {

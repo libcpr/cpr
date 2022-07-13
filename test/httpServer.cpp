@@ -93,12 +93,11 @@ void HttpServer::OnRequestLowSpeedTimeout(mg_connection* conn, mg_http_message* 
                 std::string response{"Hello world!"};
                 auto* timer_arg = static_cast<timer_fn_arg*>(arg);
                 mg_send(timer_arg->connection, response.c_str(), response.length());
-                std::cout << counter << '\n';
                 // If we reached the 20th iteration or if the connection is not active anymore, we remove the timer
-                if (++counter == 20 || IsConnectionActive(timer_arg->mgr, timer_arg->connection)) {
-                    std::cout << "Finished" << std::endl;
+                if (++counter == 20 || !IsConnectionActive(timer_arg->mgr, timer_arg->connection)) {
                     mg_timer_free(&timer_arg->mgr->timers, &timer_arg->timer);
                     delete timer_arg;
+                    counter = 0;
                 }
             },
             timer_arg);

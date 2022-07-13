@@ -74,7 +74,7 @@ void AbstractServer::Run() {
     // Main server loop:
     while (should_run) {
         // NOLINTNEXTLINE (cppcoreguidelines-avoid-magic-numbers)
-        mg_mgr_poll(&mgr, 1000);
+        mg_mgr_poll(&mgr, 100);
     }
 
     // Shutdown and cleanup:
@@ -134,6 +134,10 @@ void AbstractServer::SendError(mg_connection* conn, int code, std::string& reaso
     mg_http_reply(conn, code, headers.c_str(), reason.c_str());
 }
 
+// Checks whether a pointer to a connection is still managed by a mg_mgr.
+// This check tells whether it is still possible to send a message via the given connection
+// Note that it is still possible that the pointer of an old connection object may be reused by mongoose.
+// In this case, the active connection might refer to a different connection than the one the caller refers to
 bool AbstractServer::IsConnectionActive(mg_mgr* mgr, mg_connection* conn) {
     mg_connection* c {mgr->conns};
     while (c) {
