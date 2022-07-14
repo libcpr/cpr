@@ -83,21 +83,23 @@ void HttpServer::OnRequestLowSpeedTimeout(mg_connection* conn, mg_http_message* 
         mg_connection* connection;
         mg_timer timer;
     };
-    timer_fn_arg* timer_arg = new timer_fn_arg{mgr, conn, mg_timer {}};
+    timer_fn_arg* timer_arg = new timer_fn_arg{mgr, conn, mg_timer{}};
     mg_timer_init(
             &mgr->timers, &timer_arg->timer, 100, MG_TIMER_REPEAT,
             // The following lambda function gets executed each time the timer is called.
             // It sends "Hello world!" to the client each 100ms at most 20 times.
             [](void* arg) {
                 static int counter{0};
-                std::string response{"Hello world!"};
                 auto* timer_arg = static_cast<timer_fn_arg*>(arg);
-                mg_send(timer_arg->connection, response.c_str(), response.length());
-                // If we reached the 20th iteration or if the connection is not active anymore, we remove the timer
-                if (++counter == 20 || !IsConnectionActive(timer_arg->mgr, timer_arg->connection)) {
+                if (counter == 20 || !IsConnectionActive(timer_arg->mgr, timer_arg->connection)) {
+                    // If we reached the 20th iteration or if the connection is not active anymore, we remove the timer
                     mg_timer_free(&timer_arg->mgr->timers, &timer_arg->timer);
                     delete timer_arg;
                     counter = 0;
+                } else {
+                    std::string response{"Hello world!"};
+                    mg_send(timer_arg->connection, response.c_str(), response.length());
+                    ++counter;
                 }
             },
             timer_arg);
