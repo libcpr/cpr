@@ -37,6 +37,8 @@ std::string urlDecode(const std::string& s);
  * https://github.com/ojeda/secure_clear/blob/master/example-implementation/secure_clear.h
  **/
 void secureStringClear(std::string& s);
+bool isTrue(const std::string& s);
+
 } // namespace util
 } // namespace cpr
 
