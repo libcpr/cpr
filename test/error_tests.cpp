@@ -69,9 +69,6 @@ TEST(ErrorTests, LowSpeedBytesFailure) {
     Response response = cpr::Get(url, cpr::LowSpeed{1000, 1});
     // Do not check for the HTTP status code, since libcurl always provides the status code of the header if it was received
     EXPECT_EQ(ErrorCode::OPERATION_TIMEDOUT, response.error.code);
-
-    // Wait until the server exits the OnRequestLowSpeedBytes method due to the closing connection
-    std::this_thread::sleep_for(std::chrono::seconds(1));
 }
 
 TEST(ErrorTests, ProxyFailure) {
