@@ -34,7 +34,7 @@ enum class CurlHTTPCookieField : size_t {
 };
 
 Cookies parseCookies(curl_slist* raw_cookies) {
-    const int CURL_HTTP_COOKIE_SIZE(7);
+    const int CURL_HTTP_COOKIE_SIZE = static_cast<int>(CurlHTTPCookieField::Value) + 1;
     Cookies cookies;
     for (curl_slist* nc = raw_cookies; nc; nc = nc->next) {
         std::vector<std::string> tokens = cpr::util::split(nc->data, '\t');
