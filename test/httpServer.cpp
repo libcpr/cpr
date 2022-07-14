@@ -6,13 +6,6 @@
 
 namespace cpr {
 
-// Helper struct for functions using timers to simulate slow connections
-struct timer_fn_arg {
-    mg_mgr* mgr;
-    mg_connection* connection;
-    mg_timer timer;
-};
-
 std::string HttpServer::GetBaseUrl() {
     return "http://127.0.0.1:" + std::to_string(GetPort());
 }
@@ -82,26 +75,19 @@ void HttpServer::OnRequestTimeout(mg_connection* conn, mg_http_message* msg) {
 
 // Send the header, then send "Hello world!" every 100ms
 // For this, we use a mongoose timer
-void HttpServer::OnRequestLowSpeedTimeout(mg_connection* conn, mg_http_message* /* msg */, mg_mgr* mgr) {
+void HttpServer::OnRequestLowSpeedTimeout(mg_connection* conn, mg_http_message* /* msg */, TimerArg* timer_arg) {
     std::string response{"Hello world!"};
     mg_printf(conn, "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: %d\r\n\r\n", response.length() * 20);
-    timer_fn_arg* timer_arg = new timer_fn_arg{mgr, conn, mg_timer{}};
     mg_timer_init(
-            &mgr->timers, &timer_arg->timer, 100, MG_TIMER_REPEAT,
+            &timer_arg->mgr->timers, &timer_arg->timer, 100, MG_TIMER_REPEAT,
             // The following lambda function gets executed each time the timer is called.
             // It sends "Hello world!" to the client each 100ms at most 20 times.
             [](void* arg) {
-                static int counter{0};
-                auto* timer_arg = static_cast<timer_fn_arg*>(arg);
-                if (counter == 20 || !IsConnectionActive(timer_arg->mgr, timer_arg->connection)) {
-                    // If we reached the 20th iteration or if the connection is not active anymore, we remove the timer
-                    mg_timer_free(&timer_arg->mgr->timers, &timer_arg->timer);
-                    delete timer_arg;
-                    counter = 0;
-                } else {
+                auto* timer_arg = static_cast<TimerArg*>(arg);
+                if (timer_arg->counter < 20 && IsConnectionActive(timer_arg->mgr, timer_arg->connection)) {
                     std::string response{"Hello world!"};
                     mg_send(timer_arg->connection, response.c_str(), response.length());
-                    ++counter;
+                    ++timer_arg->counter;
                 }
             },
             timer_arg);
@@ -123,13 +109,12 @@ void HttpServer::OnRequestLowSpeed(mg_connection* conn, mg_http_message* /*msg*/
 
 // Before and after calling an endpoint that calls this method, the test needs to wait until all previous connections are closed
 // The nested call to mg_mgr_poll can lead to problems otherwise
-void HttpServer::OnRequestLowSpeedBytes(mg_connection* conn, mg_http_message* /*msg*/, mg_mgr* mgr) {
+void HttpServer::OnRequestLowSpeedBytes(mg_connection* conn, mg_http_message* /*msg*/, TimerArg* timer_arg) {
     std::string response{'a'};
     mg_printf(conn, "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: %d\r\n\r\n", response.length() * 20);
 
-    timer_fn_arg* timer_arg = new timer_fn_arg{mgr, conn, mg_timer{}};
     mg_timer_init(
-            &mgr->timers, &timer_arg->timer, 100, MG_TIMER_REPEAT,
+            &timer_arg->mgr->timers, &timer_arg->timer, 100, MG_TIMER_REPEAT,
             // The following lambda function gets executed each time the timer is called.
             // It first waits for 2 seconds, then sends "a" to the client each 100ms at most 20 times.
             [](void* arg) {
@@ -137,13 +122,8 @@ void HttpServer::OnRequestLowSpeedBytes(mg_connection* conn, mg_http_message* /*
               if (counter == 0) {
                   std::this_thread::sleep_for(std::chrono::seconds(2));
               }
-              auto* timer_arg = static_cast<timer_fn_arg*>(arg);
-              if (counter == 20 || !IsConnectionActive(timer_arg->mgr, timer_arg->connection)) {
-                  // If we reached the 20th iteration or if the connection is not active anymore, we remove the timer
-                  mg_timer_free(&timer_arg->mgr->timers, &timer_arg->timer);
-                  delete timer_arg;
-                  counter = 0;
-              } else {
+              auto* timer_arg = static_cast<TimerArg*>(arg);
+              if (counter < 20 && IsConnectionActive(timer_arg->mgr, timer_arg->connection)) {
                   std::string response{'a'};
                   mg_send(timer_arg->connection, response.c_str(), response.length());
                   ++counter;
@@ -836,11 +816,13 @@ void HttpServer::OnRequest(mg_connection* conn, mg_http_message* msg) {
     } else if (uri == "/timeout.html") {
         OnRequestTimeout(conn, msg);
     } else if (uri == "/low_speed_timeout.html") {
-        OnRequestLowSpeedTimeout(conn, msg, &mgr);
+        timer_args.emplace_back(std::unique_ptr<TimerArg>{new TimerArg{&mgr, conn, mg_timer{}}});
+        OnRequestLowSpeedTimeout(conn, msg, timer_args.back().get());
     } else if (uri == "/low_speed.html") {
         OnRequestLowSpeed(conn, msg, &mgr);
     } else if (uri == "/low_speed_bytes.html") {
-        OnRequestLowSpeedBytes(conn, msg, &mgr);
+        timer_args.emplace_back(std::unique_ptr<TimerArg>{new TimerArg{&mgr, conn, mg_timer{}}});
+        OnRequestLowSpeedBytes(conn, msg, timer_args.back().get());
     } else if (uri == "/basic_cookies.html") {
         OnRequestBasicCookies(conn, msg);
     } else if (uri == "/empty_cookies.html") {

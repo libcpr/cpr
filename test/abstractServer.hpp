@@ -13,6 +13,21 @@
 #include "mongoose.h"
 
 namespace cpr {
+
+// Helper struct for functions using timers to simulate slow connections
+struct TimerArg {
+    mg_mgr* mgr;
+    mg_connection* connection;
+    mg_timer timer;
+    unsigned counter;
+
+    explicit TimerArg(mg_mgr* m, mg_connection* c, mg_timer&& t) : mgr{m}, connection{c}, timer{t}, counter{0} {}
+
+    ~TimerArg() {
+        mg_timer_free(&mgr->timers, &timer);
+    }
+};
+
 class AbstractServer : public testing::Environment {
   public:
     ~AbstractServer() override = default;
@@ -41,6 +56,7 @@ class AbstractServer : public testing::Environment {
 
   protected:
     mg_mgr mgr{};
+    std::vector<std::unique_ptr<TimerArg>> timer_args {};
     virtual mg_connection* initServer(mg_mgr* mgr, mg_event_handler_t event_handler) = 0;
 
     static std::string Base64Decode(const std::string& in);

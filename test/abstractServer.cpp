@@ -78,6 +78,7 @@ void AbstractServer::Run() {
     }
 
     // Shutdown and cleanup:
+    timer_args.clear();
     mg_mgr_free(&mgr);
 
     // Notify the main thread that we have shut down everything:
