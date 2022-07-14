@@ -488,7 +488,7 @@ static std::string getTimestamp() {
 }
 
 TEST(UrlEncodedPostTests, PostReflectTest) {
-    std::string uri = server->GetBaseUrl() + "/reflect_post.html";
+    std::string uri = server->GetBaseUrl() + "/post_reflect.html";
     std::string body = R"({"property1": "value1"})";
     std::string contentType = "application/json";
     std::string signature = "x-ms-date: something";
@@ -515,7 +515,7 @@ TEST(UrlEncodedPostTests, PostReflectPayloadTest) {
 }
 
 TEST(UrlEncodedPostTests, InjectMultipleHeadersTest) {
-    std::string uri = server->GetBaseUrl() + "/reflect_post.html";
+    std::string uri = server->GetBaseUrl() + "/post_reflect.html";
     std::string key_1 = "key_1";
     std::string val_1 = "value_1";
     std::string key_2 = "key_2";
@@ -535,7 +535,7 @@ TEST(UrlEncodedPostTests, PostBodyWithFile) {
     test_file.open(filename);
     test_file << expected_text;
     test_file.close();
-    Url url{server->GetBaseUrl() + "/reflect_post.html"};
+    Url url{server->GetBaseUrl() + "/post_reflect.html"};
     cpr::Response response = Post(url, cpr::Header({{"Content-Type", "application/octet-stream"}}), cpr::Body(File("test_file")));
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
@@ -545,7 +545,7 @@ TEST(UrlEncodedPostTests, PostBodyWithFile) {
 }
 
 TEST(UrlEncodedPostTests, PostBodyWithBuffer) {
-    Url url{server->GetBaseUrl() + "/reflect_post.html"};
+    Url url{server->GetBaseUrl() + "/post_reflect.html"};
     std::string expected_text(R"({"property1": "value1"})");
     cpr::Response response = Post(url, cpr::Header({{"Content-Type", "application/octet-stream"}}), cpr::Body(Buffer{expected_text.begin(), expected_text.end(), "test_file"}));
     EXPECT_EQ(expected_text, response.text);

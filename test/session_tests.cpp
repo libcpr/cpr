@@ -659,65 +659,102 @@ TEST(CookiesTests, BasicCookiesTest) {
     Url url{server->GetBaseUrl() + "/basic_cookies.html"};
     Session session{};
     session.SetUrl(url);
-    Cookies cookies;
-
-    {
-        Response response = session.Get();
-        std::string expected_text{"Hello world!"};
-        EXPECT_EQ(expected_text, response.text);
-        EXPECT_EQ(url, response.url);
-        EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
-        EXPECT_EQ(200, response.status_code);
-        EXPECT_EQ(ErrorCode::OK, response.error.code);
-        cookies = response.cookies;
-    }
-    {
-        cookies["hello"] = "world";
-        cookies["my"] = "another; fake=cookie;"; // This is url encoded
-        session.SetCookies(cookies);
-        Response response = session.Get();
-        std::string expected_text{"Hello world!"};
-        EXPECT_EQ(expected_text, response.text);
-        EXPECT_EQ(url, response.url);
-        EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
-        EXPECT_EQ(200, response.status_code);
-        EXPECT_EQ(ErrorCode::OK, response.error.code);
-        EXPECT_EQ(cookies["cookie"], response.cookies["cookie"]);
-        EXPECT_EQ(cookies["icecream"], response.cookies["icecream"]);
-        EXPECT_EQ(cookies["expires"], response.cookies["expires"]);
+    Response response = session.Get();
+    Cookies res_cookies{response.cookies};
+    std::string expected_text{"Basic Cookies"};
+    cpr::Cookies expectedCookies{
+            {"SID", "31d4d96e407aad42", "127.0.0.1", false, "/", true, std::chrono::system_clock::from_time_t(3905119080)},
+            {"lang", "en-US", "127.0.0.1", false, "/", true, std::chrono::system_clock::from_time_t(3905119080)},
+    };
+    EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+    EXPECT_EQ(expected_text, response.text);
+    for (auto cookie = res_cookies.begin(), expectedCookie = expectedCookies.begin(); cookie != res_cookies.end() && expectedCookie != expectedCookies.end(); cookie++, expectedCookie++) {
+        EXPECT_EQ(expectedCookie->GetName(), cookie->GetName());
+        EXPECT_EQ(expectedCookie->GetValue(), cookie->GetValue());
+        EXPECT_EQ(expectedCookie->GetDomain(), cookie->GetDomain());
+        EXPECT_EQ(expectedCookie->IsIncludingSubdomains(), cookie->IsIncludingSubdomains());
+        EXPECT_EQ(expectedCookie->GetPath(), cookie->GetPath());
+        EXPECT_EQ(expectedCookie->IsHttpsOnly(), cookie->IsHttpsOnly());
+        EXPECT_EQ(expectedCookie->GetExpires(), cookie->GetExpires());
     }
 }
 
-TEST(CookiesTests, CookiesConstructorTest) {
-    Url url{server->GetBaseUrl() + "/basic_cookies.html"};
-    Session session{};
-    session.SetUrl(url);
-    Cookies cookies;
-
+TEST(CookiesTests, ClientSetCookiesTest) {
+    Url url{server->GetBaseUrl() + "/cookies_reflect.html"};
     {
+        Session session{};
+        session.SetUrl(url);
+        session.SetCookies(Cookies{
+                {"SID", "31d4d96e407aad42"},
+                {"lang", "en-US"},
+        });
         Response response = session.Get();
-        std::string expected_text{"Hello world!"};
-        EXPECT_EQ(expected_text, response.text);
-        EXPECT_EQ(url, response.url);
+        std::string expected_text{"SID=31d4d96e407aad42; lang=en-US;"};
         EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
         EXPECT_EQ(200, response.status_code);
         EXPECT_EQ(ErrorCode::OK, response.error.code);
-        cookies = response.cookies;
+        EXPECT_EQ(expected_text, response.text);
     }
     {
-        cookies = Cookies{{"hello", "world"}, {"my", "another; fake=cookie;"}};
-        session.SetCookies(cookies);
+        Session session{};
+        session.SetUrl(url);
+        Cookies cookie{
+                {"SID", "31d4d96e407aad42"},
+                {"lang", "en-US"},
+        };
+        session.SetCookies(cookie);
         Response response = session.Get();
-        std::string expected_text{"Hello world!"};
-        EXPECT_EQ(expected_text, response.text);
-        EXPECT_EQ(url, response.url);
+        std::string expected_text{"SID=31d4d96e407aad42; lang=en-US;"};
         EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
         EXPECT_EQ(200, response.status_code);
         EXPECT_EQ(ErrorCode::OK, response.error.code);
-        cookies = response.cookies;
-        EXPECT_EQ(cookies["cookie"], response.cookies["cookie"]);
-        EXPECT_EQ(cookies["icecream"], response.cookies["icecream"]);
-        EXPECT_EQ(cookies["expires"], response.cookies["expires"]);
+        EXPECT_EQ(expected_text, response.text);
+    }
+}
+
+TEST(CookiesTests, RedirectionWithChangingCookiesTest) {
+    Url url{server->GetBaseUrl() + "/redirection_with_changing_cookies.html"};
+    {
+        Session session{};
+        session.SetUrl(url);
+        session.SetCookies(Cookies{
+                {"SID", "31d4d96e407aad42"},
+                {"lang", "en-US"},
+        });
+        session.SetRedirect(Redirect(0L));
+        Response response = session.Get();
+        std::string expected_text{"Received cookies are: SID=31d4d96e407aad42; lang=en-US;"};
+        EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+        EXPECT_EQ(200, response.status_code);
+        EXPECT_EQ(ErrorCode::OK, response.error.code);
+        EXPECT_EQ(expected_text, response.text);
+    }
+    {
+        Session session{};
+        session.SetUrl(url);
+        session.SetRedirect(Redirect(1L));
+        Response response = session.Get();
+        std::string expected_text{"Received cookies are: lang=en-US; SID=31d4d96e407aad42"};
+        EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+        EXPECT_EQ(200, response.status_code);
+        EXPECT_EQ(ErrorCode::OK, response.error.code);
+        EXPECT_EQ(expected_text, response.text);
+    }
+    {
+        Session session{};
+        session.SetUrl(url);
+        session.SetCookies(Cookies{
+                {"SID", "empty_sid"},
+        });
+        session.SetRedirect(Redirect(1L));
+        Response response = session.Get();
+        std::string expected_text{"Received cookies are: lang=en-US; SID=31d4d96e407aad42; SID=empty_sid;"};
+        EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+        EXPECT_EQ(200, response.status_code);
+        EXPECT_EQ(ErrorCode::OK, response.error.code);
+        EXPECT_EQ(expected_text, response.text);
     }
 }
 
@@ -851,7 +888,7 @@ TEST(DifferentMethodTests, MultipleGetPostTest) {
 
 TEST(DifferentMethodTests, MultipleDeleteHeadPutGetPostTest) {
     Url url{server->GetBaseUrl() + "/header_reflect.html"};
-    Url urlPost{server->GetBaseUrl() + "/reflect_post.html"};
+    Url urlPost{server->GetBaseUrl() + "/post_reflect.html"};
     Url urlPut{server->GetBaseUrl() + "/put.html"};
     Session session;
     for (size_t i = 0; i < 10; ++i) {

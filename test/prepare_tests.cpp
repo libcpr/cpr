@@ -63,7 +63,7 @@ TEST(PrepareTests, PatchTest) {
 
 TEST(PrepareTests, MultipleDeleteHeadPutGetPostTest) {
     Url url{server->GetBaseUrl() + "/header_reflect.html"};
-    Url urlPost{server->GetBaseUrl() + "/reflect_post.html"};
+    Url urlPost{server->GetBaseUrl() + "/post_reflect.html"};
     Url urlPut{server->GetBaseUrl() + "/put.html"};
     Session session;
     for (size_t i = 0; i < 3; ++i) {
