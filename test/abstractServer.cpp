@@ -140,7 +140,7 @@ void AbstractServer::SendError(mg_connection* conn, int code, std::string& reaso
 // Note that it is still possible that the pointer of an old connection object may be reused by mongoose.
 // In this case, the active connection might refer to a different connection than the one the caller refers to
 bool AbstractServer::IsConnectionActive(mg_mgr* mgr, mg_connection* conn) {
-    mg_connection* c {mgr->conns};
+    mg_connection* c{mgr->conns};
     while (c) {
         if (c == conn) {
             return true;

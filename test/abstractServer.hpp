@@ -18,10 +18,11 @@ namespace cpr {
 struct TimerArg {
     mg_mgr* mgr;
     mg_connection* connection;
+    unsigned long connection_id;
     mg_timer timer;
     unsigned counter;
 
-    explicit TimerArg(mg_mgr* m, mg_connection* c, mg_timer&& t) : mgr{m}, connection{c}, timer{t}, counter{0} {}
+    explicit TimerArg(mg_mgr* m, mg_connection* c, mg_timer&& t) : mgr{m}, connection{c}, connection_id{0}, timer{t}, counter{0} {}
 
     ~TimerArg() {
         mg_timer_free(&mgr->timers, &timer);
@@ -56,7 +57,7 @@ class AbstractServer : public testing::Environment {
 
   protected:
     mg_mgr mgr{};
-    std::vector<std::unique_ptr<TimerArg>> timer_args {};
+    std::vector<std::unique_ptr<TimerArg>> timer_args{};
     virtual mg_connection* initServer(mg_mgr* mgr, mg_event_handler_t event_handler) = 0;
 
     static std::string Base64Decode(const std::string& in);

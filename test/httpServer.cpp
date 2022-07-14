@@ -78,16 +78,19 @@ void HttpServer::OnRequestTimeout(mg_connection* conn, mg_http_message* msg) {
 void HttpServer::OnRequestLowSpeedTimeout(mg_connection* conn, mg_http_message* /* msg */, TimerArg* timer_arg) {
     std::string response{"Hello world!"};
     mg_printf(conn, "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: %d\r\n\r\n", response.length() * 20);
+    timer_arg->connection_id = conn->id;
     mg_timer_init(
             &timer_arg->mgr->timers, &timer_arg->timer, 100, MG_TIMER_REPEAT,
             // The following lambda function gets executed each time the timer is called.
             // It sends "Hello world!" to the client each 100ms at most 20 times.
             [](void* arg) {
                 auto* timer_arg = static_cast<TimerArg*>(arg);
-                if (timer_arg->counter < 20 && IsConnectionActive(timer_arg->mgr, timer_arg->connection)) {
+                if (timer_arg->counter < 20 && IsConnectionActive(timer_arg->mgr, timer_arg->connection) && timer_arg->connection->id == timer_arg->connection_id) {
                     std::string response{"Hello world!"};
                     mg_send(timer_arg->connection, response.c_str(), response.length());
                     ++timer_arg->counter;
+                } else {
+                    timer_arg->counter = 20; // Make sure that this timer is never called again
                 }
             },
             timer_arg);
@@ -118,16 +121,17 @@ void HttpServer::OnRequestLowSpeedBytes(mg_connection* conn, mg_http_message* /*
             // The following lambda function gets executed each time the timer is called.
             // It first waits for 2 seconds, then sends "a" to the client each 100ms at most 20 times.
             [](void* arg) {
-              static int counter{0};
-              if (counter == 0) {
-                  std::this_thread::sleep_for(std::chrono::seconds(2));
-              }
-              auto* timer_arg = static_cast<TimerArg*>(arg);
-              if (counter < 20 && IsConnectionActive(timer_arg->mgr, timer_arg->connection)) {
-                  std::string response{'a'};
-                  mg_send(timer_arg->connection, response.c_str(), response.length());
-                  ++counter;
-              }
+                auto* timer_arg = static_cast<TimerArg*>(arg);
+                if (timer_arg->counter == 0) {
+                    std::this_thread::sleep_for(std::chrono::seconds(2));
+                }
+                if (timer_arg->counter < 20 && IsConnectionActive(timer_arg->mgr, timer_arg->connection) && timer_arg->connection->id == timer_arg->connection_id) {
+                    std::string response{'a'};
+                    mg_send(timer_arg->connection, response.c_str(), response.length());
+                    ++timer_arg->counter;
+                } else {
+                    timer_arg->counter = 20; // Make sure that this timer is never called again
+                }
             },
             timer_arg);
 }
