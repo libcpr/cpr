@@ -4,7 +4,6 @@
 #include "cpr/curlholder.h"
 #include <chrono>
 #include <initializer_list>
-#include <iomanip>
 #include <sstream>
 #include <string>
 #include <vector>
