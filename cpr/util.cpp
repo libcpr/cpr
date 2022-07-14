@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cassert>
 #include <cctype>
+#include <chrono>
 #include <cstdint>
 #include <fstream>
 #include <iomanip>
@@ -23,13 +24,34 @@
 namespace cpr {
 namespace util {
 
+enum class CurlHTTPCookieField : size_t {
+    Domain = 0,
+    IncludeSubdomains,
+    Path,
+    HttpsOnly,
+    Expires,
+    Name,
+    Value,
+};
+
 Cookies parseCookies(curl_slist* raw_cookies) {
+    const int CURL_HTTP_COOKIE_SIZE = static_cast<int>(CurlHTTPCookieField::Value) + 1;
     Cookies cookies;
     for (curl_slist* nc = raw_cookies; nc; nc = nc->next) {
         std::vector<std::string> tokens = cpr::util::split(nc->data, '\t');
-        std::string value = tokens.back();
-        tokens.pop_back();
-        cookies[tokens.back()] = value;
+        while (tokens.size() < CURL_HTTP_COOKIE_SIZE) {
+            tokens.emplace_back("");
+        }
+        std::time_t expires = static_cast<time_t>(std::stoul(tokens.at(static_cast<size_t>(CurlHTTPCookieField::Expires))));
+        cookies.emplace_back(Cookie{
+                tokens.at(static_cast<size_t>(CurlHTTPCookieField::Name)),
+                tokens.at(static_cast<size_t>(CurlHTTPCookieField::Value)),
+                tokens.at(static_cast<size_t>(CurlHTTPCookieField::Domain)),
+                isTrue(tokens.at(static_cast<size_t>(CurlHTTPCookieField::IncludeSubdomains))),
+                tokens.at(static_cast<size_t>(CurlHTTPCookieField::Path)),
+                isTrue(tokens.at(static_cast<size_t>(CurlHTTPCookieField::HttpsOnly))),
+                std::chrono::system_clock::from_time_t(expires),
+        });
     }
     return cookies;
 }
@@ -205,5 +227,12 @@ void secureStringClear(std::string& s) {
 #pragma GCC pop_options // g++
 #endif
 #endif
+
+bool isTrue(const std::string& s) {
+    std::string temp_string{s};
+    std::transform(temp_string.begin(), temp_string.end(), temp_string.begin(), [](unsigned char c) { return std::tolower(c); });
+    return temp_string == "true";
+}
+
 } // namespace util
 } // namespace cpr

@@ -2,12 +2,44 @@
 #define CPR_COOKIES_H
 
 #include "cpr/curlholder.h"
+#include <chrono>
 #include <initializer_list>
-#include <map>
 #include <sstream>
 #include <string>
+#include <vector>
 
 namespace cpr {
+/**
+ * EXPIRES_STRING_SIZE is an explicitly static and const variable that could be only accessed within the same namespace and is immutable.
+ * To be used for "std::array", the expression must have a constant value, so EXPIRES_STRING_SIZE must be a const value.
+ **/
+static const std::size_t EXPIRES_STRING_SIZE = 100;
+
+class Cookie {
+  public:
+    Cookie() = default;
+    Cookie(const std::string& name, const std::string& value, const std::string& domain = "", bool p_isIncludingSubdomains = false, const std::string& path = "/", bool p_isHttpsOnly = false, std::chrono::time_point<std::chrono::system_clock> expires = std::chrono::time_point<std::chrono::system_clock>::min()) : name_{name}, value_{value}, domain_{domain}, includeSubdomains_{p_isIncludingSubdomains}, path_{path}, httpsOnly_{p_isHttpsOnly}, expires_{expires} {};
+    const std::string GetDomain() const;
+    bool IsIncludingSubdomains() const;
+    const std::string GetPath() const;
+    bool IsHttpsOnly() const;
+    const std::chrono::time_point<std::chrono::system_clock> GetExpires() const;
+    const std::string GetExpiresString() const;
+    const std::string GetName() const;
+    const std::string GetValue() const;
+
+  private:
+    std::string name_;
+    std::string value_;
+    std::string domain_;
+    bool includeSubdomains_{};
+    std::string path_;
+    bool httpsOnly_{};
+    /**
+     * TODO: Update the implementation using `std::chrono::utc_clock` of C++20
+     **/
+    std::chrono::time_point<std::chrono::system_clock> expires_{};
+};
 
 class Cookies {
   public:
@@ -25,16 +57,16 @@ class Cookies {
     bool encode{true};
 
     // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
-    Cookies(bool p_encode = true) : encode(p_encode) {}
-    Cookies(const std::initializer_list<std::pair<const std::string, std::string>>& pairs, bool p_encode = true) : encode(p_encode), map_{pairs} {}
+    Cookies(bool p_encode = true) : encode{p_encode} {};
+    Cookies(const std::initializer_list<cpr::Cookie>& cookies, bool p_encode = true) : encode{p_encode}, cookies_{cookies} {};
     // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
-    Cookies(const std::map<std::string, std::string>& map, bool p_encode = true) : encode(p_encode), map_{map} {}
+    Cookies(const cpr::Cookie& cookie, bool p_encode = true) : encode{p_encode}, cookies_{cookie} {};
 
-    std::string& operator[](const std::string& key);
-    std::string GetEncoded(const CurlHolder& holder) const;
+    cpr::Cookie& operator[](size_t pos);
+    const std::string GetEncoded(const CurlHolder& holder) const;
 
-    using iterator = std::map<std::string, std::string>::iterator;
-    using const_iterator = std::map<std::string, std::string>::const_iterator;
+    using iterator = std::vector<cpr::Cookie>::iterator;
+    using const_iterator = std::vector<cpr::Cookie>::const_iterator;
 
     iterator begin();
     iterator end();
@@ -42,9 +74,12 @@ class Cookies {
     const_iterator end() const;
     const_iterator cbegin() const;
     const_iterator cend() const;
+    void emplace_back(const Cookie& str);
+    void push_back(const Cookie& str);
+    void pop_back();
 
   private:
-    std::map<std::string, std::string> map_;
+    std::vector<cpr::Cookie> cookies_;
 };
 
 } // namespace cpr

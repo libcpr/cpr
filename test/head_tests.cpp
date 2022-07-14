@@ -1,3 +1,4 @@
+#include <chrono>
 #include <gtest/gtest.h>
 
 #include <string>
@@ -51,17 +52,26 @@ TEST(HeadTests, BadHostHeadTest) {
 
 TEST(HeadTests, CookieHeadTest) {
     Url url{server->GetBaseUrl() + "/basic_cookies.html"};
-    Cookies cookies{{"hello", "world"}, {"my", "another; fake=cookie;"}};
-    Response response = cpr::Head(url, cookies);
+    Response response = cpr::Head(url);
+    cpr::Cookies expectedCookies{
+            {"SID", "31d4d96e407aad42", "127.0.0.1", false, "/", true, std::chrono::system_clock::from_time_t(3905119080)},
+            {"lang", "en-US", "127.0.0.1", false, "/", true, std::chrono::system_clock::from_time_t(3905119080)},
+    };
+    cpr::Cookies res_cookies{response.cookies};
     EXPECT_EQ(std::string{}, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
     EXPECT_EQ(ErrorCode::OK, response.error.code);
-    cookies = response.cookies;
-    EXPECT_EQ(cookies["cookie"], response.cookies["cookie"]);
-    EXPECT_EQ(cookies["icecream"], response.cookies["icecream"]);
-    EXPECT_EQ(cookies["expires"], response.cookies["expires"]);
+    for (auto cookie = res_cookies.begin(), expectedCookie = expectedCookies.begin(); cookie != res_cookies.end() && expectedCookie != expectedCookies.end(); cookie++, expectedCookie++) {
+        EXPECT_EQ(expectedCookie->GetName(), cookie->GetName());
+        EXPECT_EQ(expectedCookie->GetValue(), cookie->GetValue());
+        EXPECT_EQ(expectedCookie->GetDomain(), cookie->GetDomain());
+        EXPECT_EQ(expectedCookie->IsIncludingSubdomains(), cookie->IsIncludingSubdomains());
+        EXPECT_EQ(expectedCookie->GetPath(), cookie->GetPath());
+        EXPECT_EQ(expectedCookie->IsHttpsOnly(), cookie->IsHttpsOnly());
+        EXPECT_EQ(expectedCookie->GetExpires(), cookie->GetExpires());
+    }
 }
 
 TEST(HeadTests, ParameterHeadTest) {

@@ -137,43 +137,44 @@ void HttpServer::OnRequestLowSpeedBytes(mg_connection* conn, mg_http_message* /*
 }
 
 void HttpServer::OnRequestBasicCookies(mg_connection* conn, mg_http_message* /*msg*/) {
-    time_t t = time(nullptr) + 5; // Valid for 1 hour
-    char expire[100], expire_epoch[100];
-    snprintf(expire_epoch, sizeof(expire_epoch), "%lu", static_cast<unsigned long>(t));
-    strftime(expire, sizeof(expire), "%a, %d %b %Y %H:%M:%S GMT", gmtime(&t));
-    std::string cookie{"cookie=chocolate; expires=\"" + std::string{expire} + "\"; http-only;"};
-    std::string cookie2{"icecream=vanilla; expires=\"" + std::string{expire} + "\"; http-only;"};
+    time_t expires_time = 3905119080; // Expires=Wed, 30 Sep 2093 03:18:00 GMT
+    std::array<char, EXPIRES_STRING_SIZE> expires_string;
+    std::strftime(expires_string.data(), expires_string.size(), "%a, %d %b %Y %H:%M:%S GMT", gmtime(&expires_time));
+
+    std::string cookie1{"SID=31d4d96e407aad42; Expires=" + std::string(expires_string.data()) + "; Secure"};
+    std::string cookie2{"lang=en-US; Expires=" + std::string(expires_string.data()) + "; Secure"};
     std::string headers =
             "Content-Type: text/html\r\n"
             "Set-Cookie: " +
-            cookie +
+            cookie1 +
             "\r\n"
             "Set-Cookie: " +
             cookie2 + "\r\n";
-    std::string response{"Hello world!"};
+    std::string response{"Basic Cookies"};
+
     mg_http_reply(conn, 200, headers.c_str(), response.c_str());
 }
 
 void HttpServer::OnRequestEmptyCookies(mg_connection* conn, mg_http_message* /*msg*/) {
-    time_t t = time(nullptr) + 5; // Valid for 1 hour
-    char expire[100];
-    char expire_epoch[100];
-    snprintf(expire_epoch, sizeof(expire_epoch), "%lu", static_cast<unsigned long>(t));
-    strftime(expire, sizeof(expire), "%a, %d %b %Y %H:%M:%S GMT", gmtime(&t));
-    std::string cookie{"cookie=; expires=\"" + std::string{expire} + "\"; http-only;"};
-    std::string cookie2{"icecream=; expires=\"" + std::string{expire} + "\"; http-only;"};
+    time_t expires_time = 3905119080; // Expires=Wed, 30 Sep 2093 03:18:00 GMT
+    std::array<char, EXPIRES_STRING_SIZE> expires_string;
+    std::strftime(expires_string.data(), sizeof(expires_string), "%a, %d %b %Y %H:%M:%S GMT", gmtime(&expires_time));
+
+    std::string cookie1{"SID=; Expires=" + std::string(expires_string.data()) + "; Secure"};
+    std::string cookie2{"lang=; Expires=" + std::string(expires_string.data()) + "; Secure"};
     std::string headers =
             "Content-Type: text/html\r\n"
             "Set-Cookie: " +
-            cookie +
+            cookie1 +
             "\r\n"
             "Set-Cookie: " +
             cookie2 + "\r\n";
-    std::string response{"Hello world!"};
+    std::string response{"Empty Cookies"};
+
     mg_http_reply(conn, 200, headers.c_str(), response.c_str());
 }
 
-void HttpServer::OnRequestCheckCookies(mg_connection* conn, mg_http_message* msg) {
+void HttpServer::OnRequestCookiesReflect(mg_connection* conn, mg_http_message* msg) {
     mg_str* request_cookies;
     if ((request_cookies = mg_http_get_header(msg, "Cookie")) == nullptr) {
         std::string errorMessage{"Cookie not found"};
@@ -181,46 +182,39 @@ void HttpServer::OnRequestCheckCookies(mg_connection* conn, mg_http_message* msg
         return;
     }
     std::string cookie_str{request_cookies->ptr, request_cookies->len};
-
-    if (cookie_str.find("cookie=chocolate;") == cookie_str.npos || cookie_str.find("icecream=vanilla;") == cookie_str.npos) {
-        std::string errorMessage{"Cookies not found"};
-        SendError(conn, 400, errorMessage);
-    }
-
-    OnRequestHello(conn, msg);
+    std::string headers = "Content-Type: text/html\r\n";
+    mg_http_reply(conn, 200, headers.c_str(), cookie_str.c_str());
 }
 
-void HttpServer::OnRequestV1Cookies(mg_connection* conn, mg_http_message* /*msg*/) {
-    time_t t = time(nullptr) + 5; // Valid for 1 hour
-    char expire[100], expire_epoch[100];
-    snprintf(expire_epoch, sizeof(expire_epoch), "%lu", static_cast<unsigned long>(t));
-    strftime(expire, sizeof(expire), "%a, %d %b %Y %H:%M:%S GMT", gmtime(&t));
-    std::string v1cookie{"cookie=\"value with spaces (v1 cookie)\"; expires=\"" + std::string{expire} + "\"; http-only;"};
+void HttpServer::OnRequestRedirectionWithChangingCookies(mg_connection* conn, mg_http_message* msg) {
+    time_t expires_time = 3905119080; // Expires=Wed, 30 Sep 2093 03:18:00 GMT
+    std::array<char, EXPIRES_STRING_SIZE> expires_string;
+    std::strftime(expires_string.data(), sizeof(expires_string), "%a, %d %b %Y %H:%M:%S GMT", gmtime(&expires_time));
 
-    std::string headers =
-            "Content-Type: text/html\r\n"
-            "Set-Cookie: " +
-            v1cookie + "\r\n";
-    std::string response{"Hello world!"};
-    mg_http_reply(conn, 200, headers.c_str(), response.c_str());
-}
-
-void HttpServer::OnRequestCheckV1Cookies(mg_connection* conn, mg_http_message* msg) {
     mg_str* request_cookies;
-    if ((request_cookies = mg_http_get_header(msg, "Cookie")) == nullptr) {
-        std::string errorMessage{"Cookie not found"};
-        SendError(conn, 400, errorMessage);
-        return;
-    }
-    std::string cookie_str{request_cookies->ptr, request_cookies->len};
-
-    if (cookie_str.find("cookie=\"value with spaces (v1 cookie)\";") == std::string::npos) {
-        std::string errorMessage{"Cookie with space not found"};
-        SendError(conn, 400, errorMessage);
-        return;
+    std::string cookie_str;
+    if ((request_cookies = mg_http_get_header(msg, "Cookie")) != nullptr) {
+        cookie_str = std::string{request_cookies->ptr, request_cookies->len};
     }
 
-    OnRequestHello(conn, msg);
+    if (cookie_str.find("SID=31d4d96e407aad42") == std::string::npos) {
+        std::string cookie1{"SID=31d4d96e407aad42; Expires=" + std::string(expires_string.data()) + "; Secure"};
+        std::string cookie2{"lang=en-US; Expires=" + std::string(expires_string.data()) + "; Secure"};
+        std::string headers =
+                "Content-Type: text/html\r\n"
+                "Location: http://127.0.0.1:61936/redirection_with_changing_cookies.html\r\n"
+                "Set-Cookie: " +
+                cookie1 +
+                "\r\n"
+                "Set-Cookie: " +
+                cookie2 + "\r\n";
+
+        mg_http_reply(conn, 302, headers.c_str(), "");
+    } else {
+        cookie_str = "Received cookies are: " + cookie_str;
+        std::string headers = "Content-Type: text/html\r\n";
+        mg_http_reply(conn, 200, headers.c_str(), cookie_str.c_str());
+    }
 }
 
 void HttpServer::OnRequestBasicAuth(mg_connection* conn, mg_http_message* msg) {
@@ -557,7 +551,7 @@ void HttpServer::OnRequestPut(mg_connection* conn, mg_http_message* msg) {
     }
 }
 
-void HttpServer::OnRequestReflectPost(mg_connection* conn, mg_http_message* msg) {
+void HttpServer::OnRequestPostReflect(mg_connection* conn, mg_http_message* msg) {
     if (std::string{msg->method.ptr, msg->method.len} != std::string{"POST"}) {
         std::string errorMessage{"Method Not Allowed"};
         SendError(conn, 405, errorMessage);
@@ -831,12 +825,10 @@ void HttpServer::OnRequest(mg_connection* conn, mg_http_message* msg) {
         OnRequestBasicCookies(conn, msg);
     } else if (uri == "/empty_cookies.html") {
         OnRequestEmptyCookies(conn, msg);
-    } else if (uri == "/check_cookies.html") {
-        OnRequestCheckCookies(conn, msg);
-    } else if (uri == "/v1_cookies.html") {
-        OnRequestV1Cookies(conn, msg);
-    } else if (uri == "/check_v1_cookies.html") {
-        OnRequestCheckV1Cookies(conn, msg);
+    } else if (uri == "/cookies_reflect.html") {
+        OnRequestCookiesReflect(conn, msg);
+    } else if (uri == "/redirection_with_changing_cookies.html") {
+        OnRequestRedirectionWithChangingCookies(conn, msg);
     } else if (uri == "/basic_auth.html") {
         OnRequestBasicAuth(conn, msg);
     } else if (uri == "/bearer_token.html") {
@@ -861,8 +853,8 @@ void HttpServer::OnRequest(mg_connection* conn, mg_http_message* msg) {
         OnRequestJsonPost(conn, msg);
     } else if (uri == "/form_post.html") {
         OnRequestFormPost(conn, msg);
-    } else if (uri == "/reflect_post.html") {
-        OnRequestReflectPost(conn, msg);
+    } else if (uri == "/post_reflect.html") {
+        OnRequestPostReflect(conn, msg);
     } else if (uri == "/delete.html") {
         OnRequestDelete(conn, msg);
     } else if (uri == "/delete_unallowed.html") {

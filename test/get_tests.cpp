@@ -85,64 +85,64 @@ TEST(BasicTests, BadHostTest) {
     EXPECT_EQ(ErrorCode::HOST_RESOLUTION_FAILURE, response.error.code);
 }
 
-TEST(CookiesTests, SingleCookieTest) {
+TEST(CookiesTests, BasicCookiesTest) {
     Url url{server->GetBaseUrl() + "/basic_cookies.html"};
-    Cookies cookies{{"hello", "world"}, {"my", "another; fake=cookie;"}};
-    Response response = cpr::Get(url, cookies);
-    std::string expected_text{"Hello world!"};
+    Response response = cpr::Get(url);
+    cpr::Cookies res_cookies{response.cookies};
+    std::string expected_text{"Basic Cookies"};
+    cpr::Cookies expectedCookies{
+            {"SID", "31d4d96e407aad42", "127.0.0.1", false, "/", true, std::chrono::system_clock::from_time_t(3905119080)},
+            {"lang", "en-US", "127.0.0.1", false, "/", true, std::chrono::system_clock::from_time_t(3905119080)},
+    };
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
     EXPECT_EQ(ErrorCode::OK, response.error.code);
-    cookies = response.cookies;
-    EXPECT_EQ(cookies["cookie"], response.cookies["cookie"]);
-    EXPECT_EQ(cookies["icecream"], response.cookies["icecream"]);
-    EXPECT_EQ(cookies["expires"], response.cookies["expires"]);
+    for (auto cookie = res_cookies.begin(), expectedCookie = expectedCookies.begin(); cookie != res_cookies.end() && expectedCookie != expectedCookies.end(); cookie++, expectedCookie++) {
+        EXPECT_EQ(expectedCookie->GetName(), cookie->GetName());
+        EXPECT_EQ(expectedCookie->GetValue(), cookie->GetValue());
+        EXPECT_EQ(expectedCookie->GetDomain(), cookie->GetDomain());
+        EXPECT_EQ(expectedCookie->IsIncludingSubdomains(), cookie->IsIncludingSubdomains());
+        EXPECT_EQ(expectedCookie->GetPath(), cookie->GetPath());
+        EXPECT_EQ(expectedCookie->IsHttpsOnly(), cookie->IsHttpsOnly());
+        EXPECT_EQ(expectedCookie->GetExpires(), cookie->GetExpires());
+    }
 }
 
 TEST(CookiesTests, EmptyCookieTest) {
     Url url{server->GetBaseUrl() + "/empty_cookies.html"};
     Response response = cpr::Get(url);
-    EXPECT_EQ(url, response.url);
-    EXPECT_EQ(200, response.status_code);
-    EXPECT_EQ(ErrorCode::OK, response.error.code);
-    EXPECT_EQ("", response.cookies["cookie"]);
-    EXPECT_EQ("", response.cookies["icecream"]);
-}
-
-TEST(CookiesTests, CheckBasicCookieTest) {
-    // server validates whether the cookies are indeed present
-    Url url{server->GetBaseUrl() + "/check_cookies.html"};
-    Cookies cookies{{"cookie", "chocolate"}, {"icecream", "vanilla"}};
-    Response response = cpr::Get(url, cookies);
-    std::string expected_text{"Hello world!"};
-    EXPECT_EQ(expected_text, response.text);
+    cpr::Cookies res_cookies{response.cookies};
+    std::string expected_text{"Empty Cookies"};
+    cpr::Cookies expectedCookies{
+            {"SID", "", "127.0.0.1", false, "/", true, std::chrono::system_clock::from_time_t(3905119080)},
+            {"lang", "", "127.0.0.1", false, "/", true, std::chrono::system_clock::from_time_t(3905119080)},
+    };
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
     EXPECT_EQ(ErrorCode::OK, response.error.code);
-}
-
-TEST(CookiesTests, V1CookieTest) {
-    Url url{server->GetBaseUrl() + "/v1_cookies.html"};
-    Response response = cpr::Get(url);
-    std::string expected_text{"Hello world!"};
     EXPECT_EQ(expected_text, response.text);
-    EXPECT_EQ(url, response.url);
-    EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
-    EXPECT_EQ(200, response.status_code);
-    EXPECT_EQ(ErrorCode::OK, response.error.code);
-    Cookies cookies = response.cookies;
-    EXPECT_EQ("\"value with spaces (v1 cookie)\"", cookies["cookie"]);
+    for (auto cookie = res_cookies.begin(), expectedCookie = expectedCookies.begin(); cookie != res_cookies.end() && expectedCookie != expectedCookies.end(); cookie++, expectedCookie++) {
+        EXPECT_EQ(expectedCookie->GetName(), cookie->GetName());
+        EXPECT_EQ(expectedCookie->GetValue(), cookie->GetValue());
+        EXPECT_EQ(expectedCookie->GetDomain(), cookie->GetDomain());
+        EXPECT_EQ(expectedCookie->IsIncludingSubdomains(), cookie->IsIncludingSubdomains());
+        EXPECT_EQ(expectedCookie->GetPath(), cookie->GetPath());
+        EXPECT_EQ(expectedCookie->IsHttpsOnly(), cookie->IsHttpsOnly());
+        EXPECT_EQ(expectedCookie->GetExpires(), cookie->GetExpires());
+    }
 }
 
-TEST(CookiesTests, CheckV1CookieTest) {
-    // server validates whether the cookie is indeed present
-    Url url{server->GetBaseUrl() + "/check_v1_cookies.html"};
-    Cookies cookies{{"cookie", "\"value with spaces (v1 cookie)\""}};
+TEST(CookiesTests, ClientSetCookiesTest) {
+    Url url{server->GetBaseUrl() + "/cookies_reflect.html"};
+    Cookies cookies{
+            {"SID", "31d4d96e407aad42", "127.0.0.1", false, "/", true, std::chrono::system_clock::from_time_t(3905119080)},
+            {"lang", "en-US", "127.0.0.1", false, "/", true, std::chrono::system_clock::from_time_t(3905119080)},
+    };
     Response response = cpr::Get(url, cookies);
-    std::string expected_text{"Hello world!"};
+    std::string expected_text{"SID=31d4d96e407aad42; lang=en-US;"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
