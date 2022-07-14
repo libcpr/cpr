@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cassert>
 #include <cctype>
+#include <chrono>
 #include <cstdint>
 #include <fstream>
 #include <iomanip>
@@ -41,6 +42,7 @@ Cookies parseCookies(curl_slist* raw_cookies) {
         while (tokens.size() < CURL_HTTP_COOKIE_SIZE) {
             tokens.emplace_back("");
         }
+        std::time_t expires = static_cast<time_t>(std::stoul(tokens.at(static_cast<size_t>(CurlHTTPCookieField::Expires))));
         cookies.emplace_back(Cookie{
                 tokens.at(static_cast<size_t>(CurlHTTPCookieField::Name)),
                 tokens.at(static_cast<size_t>(CurlHTTPCookieField::Value)),
@@ -48,7 +50,7 @@ Cookies parseCookies(curl_slist* raw_cookies) {
                 isTrue(tokens.at(static_cast<size_t>(CurlHTTPCookieField::IncludeSubdomains))),
                 tokens.at(static_cast<size_t>(CurlHTTPCookieField::Path)),
                 isTrue(tokens.at(static_cast<size_t>(CurlHTTPCookieField::HttpsOnly))),
-                static_cast<time_t>(std::stoul(tokens.at(static_cast<size_t>(CurlHTTPCookieField::Expires)))),
+                std::chrono::system_clock::from_time_t(expires),
         });
     }
     return cookies;

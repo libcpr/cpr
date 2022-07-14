@@ -8,7 +8,7 @@
 using namespace cpr;
 
 TEST(UtilParseCookiesTests, BasicParseTest) {
-    Cookies expectedCookies{{Cookie("status", "on", "127.0.0.1", false, "/", false, 1656908640), Cookie("name", "debug", "127.0.0.1", false, "/", false, 0)}};
+    Cookies expectedCookies{{Cookie("status", "on", "127.0.0.1", false, "/", false, std::chrono::system_clock::from_time_t(1656908640)), Cookie("name", "debug", "127.0.0.1", false, "/", false, std::chrono::system_clock::from_time_t(0))}};
     curl_slist* raw_cookies = new curl_slist{
             (char*) "127.0.0.1\tFALSE\t/\tFALSE\t1656908640\tstatus\ton",
             new curl_slist{

@@ -91,8 +91,8 @@ TEST(CookiesTests, BasicCookiesTest) {
     cpr::Cookies res_cookies{response.cookies};
     std::string expected_text{"Basic Cookies"};
     cpr::Cookies expectedCookies{
-            {"SID", "31d4d96e407aad42", "127.0.0.1", false, "/", true, 3905119080},
-            {"lang", "en-US", "127.0.0.1", false, "/", true, 3905119080},
+            {"SID", "31d4d96e407aad42", "127.0.0.1", false, "/", true, std::chrono::system_clock::from_time_t(3905119080)},
+            {"lang", "en-US", "127.0.0.1", false, "/", true, std::chrono::system_clock::from_time_t(3905119080)},
     };
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
@@ -116,8 +116,8 @@ TEST(CookiesTests, EmptyCookieTest) {
     cpr::Cookies res_cookies{response.cookies};
     std::string expected_text{"Empty Cookies"};
     cpr::Cookies expectedCookies{
-            {"SID", "", "127.0.0.1", false, "/", true, 3905119080},
-            {"lang", "", "127.0.0.1", false, "/", true, 3905119080},
+            {"SID", "", "127.0.0.1", false, "/", true, std::chrono::system_clock::from_time_t(3905119080)},
+            {"lang", "", "127.0.0.1", false, "/", true, std::chrono::system_clock::from_time_t(3905119080)},
     };
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
@@ -138,8 +138,8 @@ TEST(CookiesTests, EmptyCookieTest) {
 TEST(CookiesTests, ClientSetCookiesTest) {
     Url url{server->GetBaseUrl() + "/cookies_reflect.html"};
     Cookies cookies{
-            {"SID", "31d4d96e407aad42", "127.0.0.1", false, "/", true, 3905119080},
-            {"lang", "en-US", "127.0.0.1", false, "/", true, 3905119080},
+            {"SID", "31d4d96e407aad42", "127.0.0.1", false, "/", true, std::chrono::system_clock::from_time_t(3905119080)},
+            {"lang", "en-US", "127.0.0.1", false, "/", true, std::chrono::system_clock::from_time_t(3905119080)},
     };
     Response response = cpr::Get(url, cookies);
     std::string expected_text{"SID=31d4d96e407aad42; lang=en-US;"};

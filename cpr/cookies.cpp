@@ -1,4 +1,5 @@
 #include "cpr/cookies.h"
+#include <ctime>
 
 namespace cpr {
 const std::string Cookie::GetDomain() const {
@@ -17,21 +18,18 @@ bool Cookie::IsHttpsOnly() const {
     return httpsOnly_;
 }
 
-
-/**
- * TODO: Update the implementation using `std::chrono::utc_clock` of C++20
- */
 const std::chrono::time_point<std::chrono::system_clock> Cookie::GetExpires() const {
-    return std::chrono::system_clock::from_time_t(expires_);
+    return expires_;
 }
 
 const std::string Cookie::GetExpiresString() const {
     std::stringstream ss;
     std::tm tm{};
+    std::time_t tt = std::chrono::system_clock::to_time_t(expires_);
 #ifdef _WIN32
     gmtime_s(&tm, &expires_);
 #else
-    gmtime_r(&expires_, &tm);
+    gmtime_r(&tt, &tm);
 #endif
     ss << std::put_time(&tm, "%a, %d %b %Y %H:%M:%S GMT");
     return ss.str();

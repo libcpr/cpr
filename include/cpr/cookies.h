@@ -19,7 +19,7 @@ static const std::size_t EXPIRES_STRING_SIZE = 100;
 class Cookie {
   public:
     Cookie() = default;
-    Cookie(const std::string& name, const std::string& value, const std::string& domain = "", bool p_isIncludingSubdomains = false, const std::string& path = "/", bool p_isHttpsOnly = false, std::time_t expires = 0) : name_{name}, value_{value}, domain_{domain}, includeSubdomains_{p_isIncludingSubdomains}, path_{path}, httpsOnly_{p_isHttpsOnly}, expires_{expires} {};
+    Cookie(const std::string& name, const std::string& value, const std::string& domain = "", bool p_isIncludingSubdomains = false, const std::string& path = "/", bool p_isHttpsOnly = false, std::chrono::time_point<std::chrono::system_clock> expires = std::chrono::time_point<std::chrono::system_clock>::min()) : name_{name}, value_{value}, domain_{domain}, includeSubdomains_{p_isIncludingSubdomains}, path_{path}, httpsOnly_{p_isHttpsOnly}, expires_{expires} {};
     const std::string GetDomain() const;
     bool IsIncludingSubdomains() const;
     const std::string GetPath() const;
@@ -36,7 +36,10 @@ class Cookie {
     bool includeSubdomains_{};
     std::string path_;
     bool httpsOnly_{};
-    std::time_t expires_{};
+    /**
+     * TODO: Update the implementation using `std::chrono::utc_clock` of C++20
+     **/
+    std::chrono::time_point<std::chrono::system_clock> expires_{};
 };
 
 class Cookies {
