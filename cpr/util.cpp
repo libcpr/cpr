@@ -24,7 +24,7 @@ namespace cpr {
 namespace util {
 
 enum class CurlHTTPCookieField : size_t {
-    Domain,
+    Domain = 0,
     IncludeSubdomains,
     Path,
     HttpsOnly,
