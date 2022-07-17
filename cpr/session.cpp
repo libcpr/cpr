@@ -206,7 +206,7 @@ void Session::prepareCommon() {
 
 Response Session::makeRequest() {
     if (!interceptors_.empty()) {
-        // At least one interceptor exists -> Ececute its intercept function
+        // At least one interceptor exists -> Execute its intercept function
         std::shared_ptr<Interceptor> interceptor = interceptors_.front();
         interceptors_.pop();
         return interceptor->intercept(*this);
@@ -836,6 +836,14 @@ void Session::PreparePost() {
 
 void Session::PreparePut() {
     curl_easy_setopt(curl_->handle, CURLOPT_NOBODY, 0L);
+    if (!hasBodyOrPayload_ && readcb_.callback) {
+        /**
+         * Yes, this one has to be CURLOPT_POSTFIELDS even if we are performing a PUT request.
+         * In case we don't set this one, performing a POST-request with PUT won't work.
+         * It in theory this only enforces the usage of the readcallback for POST requests, but works here as well.
+         **/
+        curl_easy_setopt(curl_->handle, CURLOPT_POSTFIELDS, nullptr);
+    }
     curl_easy_setopt(curl_->handle, CURLOPT_CUSTOMREQUEST, "PUT");
     curl_easy_setopt(curl_->handle, CURLOPT_RANGE, nullptr);
     prepareCommon();
