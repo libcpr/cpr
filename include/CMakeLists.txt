@@ -15,6 +15,7 @@ target_sources(cpr PRIVATE
     cpr/bearer.h
     cpr/body.h
     cpr/buffer.h
+    cpr/cert_info.h
     cpr/cookies.h
     cpr/cpr.h
     cpr/cprtypes.h
