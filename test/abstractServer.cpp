@@ -69,7 +69,6 @@ void AbstractServer::Run() {
 
     // Main server loop:
     while (should_run) {
-        // NOLINTNEXTLINE (cppcoreguidelines-avoid-magic-numbers)
         mg_mgr_poll(&mgr, 1000);
     }
 
@@ -91,27 +90,20 @@ static const std::string base64_chars =
 std::string AbstractServer::Base64Decode(const std::string& in) {
     std::string out;
 
-    // NOLINTNEXTLINE (cppcoreguidelines-avoid-magic-numbers)
     std::vector<int> T(256, -1);
-    // NOLINTNEXTLINE (cppcoreguidelines-avoid-magic-numbers)
     for (size_t i = 0; i < 64; i++)
-        T[base64_chars[i]] = i;
+        T[base64_chars[i]] = static_cast<int>(i);
 
     int val = 0;
-    // NOLINTNEXTLINE (cppcoreguidelines-avoid-magic-numbers)
     int valb = -8;
     for (unsigned char c : in) {
         if (T[c] == -1) {
             break;
         }
-        // NOLINTNEXTLINE (cppcoreguidelines-avoid-magic-numbers)
         val = (val << 6) + T[c];
-        // NOLINTNEXTLINE (cppcoreguidelines-avoid-magic-numbers)
         valb += 6;
         if (valb >= 0) {
-            // NOLINTNEXTLINE (cppcoreguidelines-avoid-magic-numbers)
             out.push_back(char((val >> valb) & 0xFF));
-            // NOLINTNEXTLINE (cppcoreguidelines-avoid-magic-numbers)
             valb -= 8;
         }
     }

@@ -68,7 +68,6 @@ Header parseHeader(const std::string& headers, std::string* status_line, std::st
     }
 
     for (std::string& line : lines) {
-        // NOLINTNEXTLINE (cppcoreguidelines-avoid-magic-numbers)
         if (line.substr(0, 5) == "HTTP/") {
             // set the status_line if it was given
             if ((status_line != nullptr) || (reason != nullptr)) {
