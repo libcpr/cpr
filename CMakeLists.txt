@@ -24,7 +24,7 @@ set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 if (PARENT_CXX_STANDARD)
     # Don't set CMAKE_CXX_STANDARD if it is already set by parent project
     if (PARENT_CXX_STANDARD LESS 17)
-        message(FATAL_ERROR "cpr ${cpr_VERSION} does not support ${PARENT_CXX_STANDARD}. Please use cpr <= 1.9.0")
+        message(FATAL_ERROR "cpr ${cpr_VERSION} does not support ${PARENT_CXX_STANDARD}. Please use cpr <= 1.9.x")
     endif()
 else()
     # Set standard version if not already set by potential parent project
