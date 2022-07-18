@@ -767,6 +767,37 @@ TEST(CallbackDataTests, CallbackReadFunctionTextTest) {
     EXPECT_EQ(expected_text, response.text);
 }
 
+TEST(CallbackDataTests, CallbackReadFunctionTextTestPut) {
+    Url url{server->GetBaseUrl() + "/put.html"};
+    std::string expected_text{
+            "{\n"
+            "  \"x\": 5\n"
+            "}"};
+    unsigned count = 0;
+    Response response = cpr::Put(url, cpr::ReadCallback{3, [&](char* buffer, size_t& size, intptr_t /*userdata*/) -> size_t {
+                                                            std::string data;
+                                                            ++count;
+                                                            switch (count) {
+                                                                case 1:
+                                                                    data = "x=";
+                                                                    break;
+                                                                case 2:
+                                                                    data = "5";
+                                                                    break;
+                                                                default:
+                                                                    return false;
+                                                            }
+                                                            std::copy(data.begin(), data.end(), buffer);
+                                                            size = data.size();
+                                                            return true;
+                                                        }});
+    EXPECT_EQ(2, count);
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
 /**
  * Checks if the "Transfer-Encoding" header will be kept when using headers and a read callback.
  * Issue: https://github.com/whoshuu/cpr/issues/517
