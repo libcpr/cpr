@@ -2,7 +2,6 @@ name: Build NuGet Package
 on:
   push:
     tags: [ '[0-9]+.[0-9]+.[0-9]+' ]
-    branches: [ nuget ]
   pull_request:
     tags: [ '[0-9]+.[0-9]+.[0-9]+' ]
 
@@ -86,7 +85,7 @@ jobs:
       run: xcopy /y ${{github.workspace}}\README.md ${{github.workspace}}\nuget
     - name: "Create NuGet package"
       env: 
-        VERSION: 1.9.0 # ${{ github.ref_name }}
+        VERSION: ${{ github.ref_name }}
         COMMIT_HASH: ${{ github.sha }}
       run: nuget pack ${{github.workspace}}\nuget\libcpr.nuspec -OutputDirectory ${{github.workspace}} -Properties "VERSION=$ENV:VERSION;COMMIT_HASH=$ENV:COMMIT_HASH"
     - name: "Upload artifact"
