@@ -86,7 +86,7 @@ jobs:
       run: xcopy /y ${{github.workspace}}\README.md ${{github.workspace}}\nuget
     - name: "Create NuGet package"
       env: 
-        VERSION: ${{ github.ref_name }}
+        VERSION: 1.9.0 # ${{ github.ref_name }}
         COMMIT_HASH: ${{ github.sha }}
       run: nuget pack ${{github.workspace}}\nuget\libcpr.nuspec -OutputDirectory ${{github.workspace}} -Properties "VERSION=$ENV:VERSION;COMMIT_HASH=$ENV:COMMIT_HASH"
     - name: "Upload artifact"
