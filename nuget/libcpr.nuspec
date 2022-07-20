@@ -8,7 +8,7 @@
     <owners></owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <license type="expression">MIT</license>
-    <iconUrl>https://avatars.githubusercontent.com/u/55407394?s=200&amp;v=4</iconUrl>
+    <icon>resources/cpr.png</icon>
     <readme>README.md</readme>
     <projectUrl>https://github.com/libcpr</projectUrl>
     <description>C++ Requests: Curl for People, a spiritual port of Python Requests.</description>
