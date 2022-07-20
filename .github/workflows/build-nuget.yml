@@ -4,6 +4,7 @@ on:
     tags: [ '[0-9]+.[0-9]+.[0-9]+' ]
   pull_request:
     tags: [ '[0-9]+.[0-9]+.[0-9]+' ]
+  workflow_dispatch:
 
 jobs:
   package-windows-latest:
@@ -81,11 +82,17 @@ jobs:
         install-options: --prefix ${{github.workspace}}\install --config Debug
     - name: "[Debug_x64] Copy install files for Debug_x64"
       run: xcopy /e /i /y ${{github.workspace}}\install ${{github.workspace}}\nuget\build\native\x64\Debug
+    - name: "Get latest release tag"
+      uses: oprypin/find-latest-tag@v1
+      with:
+        repository: libcpr/cpr
+        releases-only: true
+      id: find_release_tag
     - name: "Copy Readme.md"
       run: xcopy /y ${{github.workspace}}\README.md ${{github.workspace}}\nuget
     - name: "Create NuGet package"
       env: 
-        VERSION: ${{ github.ref_name }}
+        VERSION: ${{ steps.find_release_tag.outputs.tag }}
         COMMIT_HASH: ${{ github.sha }}
       run: nuget pack ${{github.workspace}}\nuget\libcpr.nuspec -OutputDirectory ${{github.workspace}} -Properties "VERSION=$ENV:VERSION;COMMIT_HASH=$ENV:COMMIT_HASH"
     - name: "Upload artifact"
