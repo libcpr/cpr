@@ -35,7 +35,7 @@ TEST(DownloadTests, RangeTestWholeFile) {
     cpr::Session session;
     session.SetUrl(url);
     session.SetHeader(cpr::Header{{"Accept-Encoding", "gzip"}});
-    session.SetRange(cpr::Range{0, -1});
+    session.SetRange(cpr::Range{std::nullopt, std::nullopt});
     cpr::Response response = session.Download(cpr::WriteCallback{write_data, 0});
     EXPECT_EQ(200, response.status_code);
     EXPECT_EQ(cpr::ErrorCode::OK, response.error.code);
@@ -48,7 +48,7 @@ TEST(DownloadTests, RangeTestLowerLimit) {
     cpr::Session session;
     session.SetUrl(url);
     session.SetHeader(cpr::Header{{"Accept-Encoding", "gzip"}});
-    session.SetRange(cpr::Range{1, -1});
+    session.SetRange(cpr::Range{1, std::nullopt});
     cpr::Response response = session.Download(cpr::WriteCallback{write_data, 0});
     EXPECT_EQ(206, response.status_code);
     EXPECT_EQ(cpr::ErrorCode::OK, response.error.code);
@@ -61,7 +61,7 @@ TEST(DownloadTests, RangeTestUpperLimit) {
     cpr::Session session;
     session.SetUrl(url);
     session.SetHeader(cpr::Header{{"Accept-Encoding", "gzip"}});
-    session.SetRange(cpr::Range{0, download_size - 1});
+    session.SetRange(cpr::Range{std::nullopt, download_size - 1});
     cpr::Response response = session.Download(cpr::WriteCallback{write_data, 0});
     EXPECT_EQ(206, response.status_code);
     EXPECT_EQ(cpr::ErrorCode::OK, response.error.code);
@@ -90,7 +90,7 @@ TEST(DownloadTests, RangeTestMultipleRangesSet) {
     cpr::Session session;
     session.SetUrl(url);
     session.SetHeader(cpr::Header{{"Accept-Encoding", "gzip"}});
-    session.SetMultiRange(cpr::MultiRange{cpr::Range{0, 3}, cpr::Range{5, 6}});
+    session.SetMultiRange(cpr::MultiRange{cpr::Range{std::nullopt, 3}, cpr::Range{5, 6}});
     cpr::Response response = session.Download(cpr::WriteCallback{write_data, 0});
     EXPECT_EQ(206, response.status_code);
     EXPECT_EQ(cpr::ErrorCode::OK, response.error.code);
@@ -104,7 +104,7 @@ TEST(DownloadTests, RangeTestMultipleRangesOption) {
     cpr::Session session;
     session.SetUrl(url);
     session.SetHeader(cpr::Header{{"Accept-Encoding", "gzip"}});
-    session.SetOption(cpr::MultiRange{cpr::Range{0, 2}, cpr::Range{4, 5}, cpr::Range{7, 8}});
+    session.SetOption(cpr::MultiRange{cpr::Range{std::nullopt, 2}, cpr::Range{4, 5}, cpr::Range{7, 8}});
     cpr::Response response = session.Download(cpr::WriteCallback{write_data, 0});
     EXPECT_EQ(206, response.status_code);
     EXPECT_EQ(cpr::ErrorCode::OK, response.error.code);

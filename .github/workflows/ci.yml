@@ -6,6 +6,72 @@ on:
     branches: [ master ]
 
 jobs:
+  ubuntu-22-04-static-gcc-ssl:
+    runs-on: ubuntu-latest
+    container: ubuntu:22.04
+    steps:
+    - name: Update package list
+      run: apt update
+    - name: Install git
+      run: apt install -y git
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        submodules: true
+    - name: Install libssl-dev
+      run: apt install -y libssl-dev
+    - name: Install cmake
+      run: apt install -y cmake
+    - name: Install build-essential
+      run: apt install -y build-essential
+    - name: "[Release g++] Build & Test"
+      env:
+        CPR_BUILD_TESTS: ON
+      uses: ashutoshvarma/action-cmake-build@master
+      with:
+        build-dir: ${{github.workspace}}/build
+        source-dir: ${{github.workspace}}
+        cc: gcc
+        cxx: g++
+        build-type: Release
+        run-test: true
+        ctest-options: -V
+        configure-options: -DBUILD_SHARED_LIBS=OFF
+  
+  ubuntu-22-04-clang-static-ssl:
+    runs-on: ubuntu-latest
+    container: ubuntu:22.04
+    steps:
+    - name: Update package list
+      run: apt update
+    - name: Install git
+      run: apt install -y git
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        submodules: true
+    - name: Install libssl-dev
+      run: apt install -y libssl-dev
+    - name: Install cmake
+      run: apt install -y cmake
+    - name: Install build-essential
+      run: apt install -y build-essential
+    - name: Install clang
+      run: apt install -y clang
+    - name: "[Release g++] Build & Test"
+      env:
+        CPR_BUILD_TESTS: ON
+      uses: ashutoshvarma/action-cmake-build@master
+      with:
+        build-dir: ${{github.workspace}}/build
+        source-dir: ${{github.workspace}}
+        cc: clang
+        cxx: clang++
+        build-type: Release
+        run-test: true
+        ctest-options: -V
+        configure-options: -DBUILD_SHARED_LIBS=OFF
+        
   ubuntu-20-shared-gcc-ssl:
     runs-on: ubuntu-20.04
     steps:

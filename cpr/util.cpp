@@ -21,8 +21,7 @@
 #include <cstring>
 #endif
 
-namespace cpr {
-namespace util {
+namespace cpr::util {
 
 enum class CurlHTTPCookieField : size_t {
     Domain = 0,
@@ -151,7 +150,7 @@ int progressUserFunction(const ProgressCallback* progress, double dltotal, doubl
 int progressUserFunction(const ProgressCallback* progress, curl_off_t dltotal, curl_off_t dlnow, curl_off_t ultotal, curl_off_t ulnow) {
 #endif
     return (*progress)(dltotal, dlnow, ultotal, ulnow) ? 0 : 1;
-}
+} // namespace cpr::util
 
 int debugUserFunction(CURL* /*handle*/, curl_infotype type, char* data, size_t size, const DebugCallback* debug) {
     (*debug)(static_cast<DebugCallback::InfoType>(type), std::string(data, size));
@@ -220,6 +219,7 @@ void secureStringClear(std::string& s) {
     memset(ptr, '\0', s.length());
     s.clear();
 }
+
 #if defined(__clang__)
 #pragma clang optimize on // clang
 #elif defined(__GNUC__) || defined(__MINGW32__) || defined(__MINGW32__) || defined(__MINGW64__)
@@ -233,5 +233,4 @@ bool isTrue(const std::string& s) {
     return temp_string == "true";
 }
 
-} // namespace util
-} // namespace cpr
+} // namespace cpr::util

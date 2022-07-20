@@ -734,43 +734,35 @@ AsyncResponse Session::GetAsync() {
 }
 
 AsyncResponse Session::DeleteAsync() {
-    auto shared_this = GetSharedPtrFromThis();
-    return async([shared_this]() { return shared_this->Delete(); });
+    return async([shared_this = GetSharedPtrFromThis()]() { return shared_this->Delete(); });
 }
 
 AsyncResponse Session::DownloadAsync(const WriteCallback& write) {
-    auto shared_this = GetSharedPtrFromThis();
-    return async([shared_this, write]() { return shared_this->Download(write); });
+    return async([shared_this = GetSharedPtrFromThis(), write]() { return shared_this->Download(write); });
 }
 
 AsyncResponse Session::DownloadAsync(std::ofstream& file) {
-    auto shared_this = GetSharedPtrFromThis();
-    return async([shared_this, &file]() { return shared_this->Download(file); });
+    return async([shared_this = GetSharedPtrFromThis(), &file]() { return shared_this->Download(file); });
 }
 
 AsyncResponse Session::HeadAsync() {
-    auto shared_this = GetSharedPtrFromThis();
-    return async([shared_this]() { return shared_this->Head(); });
+    return async([shared_this = GetSharedPtrFromThis()]() { return shared_this->Head(); });
 }
 
 AsyncResponse Session::OptionsAsync() {
-    auto shared_this = GetSharedPtrFromThis();
-    return async([shared_this]() { return shared_this->Options(); });
+    return async([shared_this = GetSharedPtrFromThis()]() { return shared_this->Options(); });
 }
 
 AsyncResponse Session::PatchAsync() {
-    auto shared_this = GetSharedPtrFromThis();
-    return async([shared_this]() { return shared_this->Patch(); });
+    return async([shared_this = GetSharedPtrFromThis()]() { return shared_this->Patch(); });
 }
 
 AsyncResponse Session::PostAsync() {
-    auto shared_this = GetSharedPtrFromThis();
-    return async([shared_this]() { return shared_this->Post(); });
+    return async([shared_this = GetSharedPtrFromThis()]() { return shared_this->Post(); });
 }
 
 AsyncResponse Session::PutAsync() {
-    auto shared_this = GetSharedPtrFromThis();
-    return async([shared_this]() { return shared_this->Put(); });
+    return async([shared_this = GetSharedPtrFromThis()]() { return shared_this->Put(); });
 }
 
 std::shared_ptr<CurlHolder> Session::GetCurlHolder() {

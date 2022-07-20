@@ -6,6 +6,7 @@
 #include <vector>
 
 #include <cpr/cprtypes.h>
+#include <cpr/filesystem.h>
 #include <cpr/ssl_options.h>
 
 #include "httpsServer.hpp"
@@ -82,7 +83,7 @@ TEST(SslTests, GetCertInfos) {
                     "Public Key Algorithm:ED25519",
                     "X509v3 Subject Alternative Name:DNS:localhost, IP Address:127.0.0.1, IP Address:0:0:0:0:0:0:0:1",
                     "X509v3 Subject Key Identifier:39:C1:81:38:01:DC:55:38:E5:2F:4E:7A:D0:4C:84:7B:B7:27:D3:AF",
-                    "X509v3 Authority Key Identifier:keyid:E4:F2:F3:85:0E:B7:85:75:84:76:E3:43:D1:B6:9D:14:B8:E2:A4:B7\n",
+                    "X509v3 Authority Key Identifier:E4:F2:F3:85:0E:B7:85:75:84:76:E3:43:D1:B6:9D:14:B8:E2:A4:B7",
                     "Start date:Jun 29 11:33:07 2022 GMT",
                     "Expire date:Jun 28 11:33:07 2027 GMT",
                     "Signature:2e:0d:a1:0d:f5:90:77:e9:eb:84:7d:80:63:63:4d:8a:eb:d9:23:57:1f:21:2a:ed:81:b4:a8:58:b9:00:1b:cb:5c:90:1b:33:6b:f6:ec:42:20:63:54:d6:60:ee:37:14:1b:1c:95:0b:33:ea:67:29:d4:cc:d9:7e:34:fd:47:04:",
@@ -107,6 +108,17 @@ t4V1hHbjQ9G2nRS44qS3MAUGAytlcANBAC4NoQ31kHfp64R9gGNjTYrr2SNXHyEq
     EXPECT_EQ(1, certInfos.size());
     for (auto certInfo_it = certInfos.begin(), expectedCertInfo_it = expectedCertInfos.begin(); certInfo_it != certInfos.end() && expectedCertInfo_it != expectedCertInfos.end(); certInfo_it++, expectedCertInfo_it++) {
         for (auto entry_it = (*certInfo_it).begin(), expectedEntry_it = (*expectedCertInfo_it).begin(); entry_it != (*certInfo_it).end() && expectedEntry_it != (*expectedCertInfo_it).end(); entry_it++, expectedEntry_it++) {
+            std::string search_string = "Identifier:keyid:";
+            std::size_t search_index = (*entry_it).find(search_string);
+            if (search_index != std::string::npos) {
+                (*entry_it).replace(search_index, search_string.length(), "Identifier:");
+
+                search_string = "\n";
+                search_index = (*entry_it).find(search_string);
+                if (search_index != std::string::npos) {
+                    (*entry_it).replace(search_index, search_string.length(), "");
+                }
+            }
             EXPECT_EQ(*expectedEntry_it, *entry_it);
         }
         std::cout << std::endl;
@@ -134,29 +146,16 @@ TEST(SslTests, LoadCertFromBufferTestSimpel) {
 }
 #endif
 
-/**
- * We should replace this with a C++17 filesystem call,
- * once we have updated to >= C++17.
- **/
-std::string getBasePath(const std::string& execPath) {
-    std::string path = execPath.substr(0, execPath.find_last_of("\\/") + 1);
-
-    // If Windows convert paths from "D:/cpr/build/bin/Release/client.cer" to
-    // "D:\cpr\build\bin\Release\client.cer":
-#ifdef _WIN32
-    std::cout << "Converting Unix path to Windows path...\n";
-    std::replace(path.begin(), path.end(), '\\', '/');
-    std::cout << "Result path: " << path << '\n';
-#endif
-    return path;
+fs::path getBasePath(const std::string& execPath) {
+    return fs::path(fs::path{execPath}.parent_path().string() + "/").make_preferred();
 }
 
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
-
-    std::string baseDirPath = getBasePath(argv[0]) + "data/";
-
-    server = new HttpsServer(std::move(baseDirPath), baseDirPath + "certificates/server.crt", baseDirPath + "keys/server.key");
+    fs::path baseDirPath = fs::path{getBasePath(argv[0]).string() + "data/"};
+    fs::path serverCertPath = fs::path{baseDirPath}.append("certificates/server.crt");
+    fs::path serverKeyPath = fs::path{baseDirPath}.append("keys/server.key");
+    server = new HttpsServer(std::move(baseDirPath), std::move(serverCertPath), std::move(serverKeyPath));
     ::testing::AddGlobalTestEnvironment(server);
 
     return RUN_ALL_TESTS();

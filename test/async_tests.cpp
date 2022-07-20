@@ -4,6 +4,7 @@
 #include <vector>
 
 #include <cpr/cpr.h>
+#include <cpr/filesystem.h>
 
 #include "httpServer.hpp"
 
@@ -64,7 +65,7 @@ TEST(UrlEncodedPostTests, AsyncGetMultipleReflectTest) {
 
 TEST(UrlEncodedPostTests, AsyncDownloadTest) {
     cpr::Url url{server->GetBaseUrl() + "/download_gzip.html"};
-    cpr::AsyncResponse future = cpr::DownloadAsync("/tmp/aync_download", url, cpr::Header{{"Accept-Encoding", "gzip"}}, cpr::WriteCallback{write_data, 0});
+    cpr::AsyncResponse future = cpr::DownloadAsync(fs::path{"/tmp/aync_download"}, url, cpr::Header{{"Accept-Encoding", "gzip"}}, cpr::WriteCallback{write_data, 0});
     cpr::Response response = future.get();
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(200, response.status_code);
