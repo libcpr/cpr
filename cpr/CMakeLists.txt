@@ -45,7 +45,7 @@ set_target_properties(cpr
 # Import GNU common install directory variables
 include(GNUInstallDirs)
 
-if(CPR_FORCE_USE_SYSTEM_CURL)
+if(CPR_USE_SYSTEM_CURL)
         install(TARGETS cpr
                 EXPORT cprTargets
                 RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
