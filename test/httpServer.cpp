@@ -814,12 +814,12 @@ void HttpServer::OnRequest(mg_connection* conn, mg_http_message* msg) {
     } else if (uri == "/timeout.html") {
         OnRequestTimeout(conn, msg);
     } else if (uri == "/low_speed_timeout.html") {
-        timer_args.emplace_back(std::unique_ptr<TimerArg>{new TimerArg{&mgr, conn, mg_timer{}}});
+        timer_args.emplace_back(std::make_unique<TimerArg>(&mgr, conn, mg_timer{}));
         OnRequestLowSpeedTimeout(conn, msg, timer_args.back().get());
     } else if (uri == "/low_speed.html") {
         OnRequestLowSpeed(conn, msg, &mgr);
     } else if (uri == "/low_speed_bytes.html") {
-        timer_args.emplace_back(std::unique_ptr<TimerArg>{new TimerArg{&mgr, conn, mg_timer{}}});
+        timer_args.emplace_back(std::make_unique<TimerArg>(&mgr, conn, mg_timer{}));
         OnRequestLowSpeedBytes(conn, msg, timer_args.back().get());
     } else if (uri == "/basic_cookies.html") {
         OnRequestBasicCookies(conn, msg);
