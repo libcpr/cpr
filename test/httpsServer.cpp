@@ -2,11 +2,11 @@
 #include <system_error>
 
 namespace cpr {
-HttpsServer::HttpsServer(std::string&& baseDirPath, std::string&& sslCertFileName, std::string&& sslKeyFileName) : baseDirPath_{baseDirPath}, sslCertFileName_(std::move(sslCertFileName)), sslKeyFileName_(std::move(sslKeyFileName)) {
+HttpsServer::HttpsServer(fs::path&& baseDirPath, fs::path&& sslCertFileName, fs::path&& sslKeyFileName) : baseDirPath(baseDirPath.make_preferred().string()), sslCertFileName(sslCertFileName.make_preferred().string()), sslKeyFileName(sslKeyFileName.make_preferred().string()) {
     // See https://mongoose.ws/tutorials/tls/
-    memset(static_cast<void*>(&tlsOpts_), 0, sizeof(tlsOpts_));
-    tlsOpts_.cert = sslCertFileName_.c_str();
-    tlsOpts_.certkey = sslKeyFileName_.c_str();
+    memset(static_cast<void*>(&tlsOpts), 0, sizeof(tlsOpts));
+    tlsOpts.cert = this->sslCertFileName.c_str();
+    tlsOpts.certkey = this->sslKeyFileName.c_str();
 }
 
 std::string HttpsServer::GetBaseUrl() {
@@ -28,7 +28,7 @@ mg_connection* HttpsServer::initServer(mg_mgr* mgr, mg_event_handler_t event_han
 
 void HttpsServer::acceptConnection(mg_connection* conn) {
     // See https://mongoose.ws/tutorials/tls/
-    mg_tls_init(conn, &tlsOpts_);
+    mg_tls_init(conn, &tlsOpts);
 }
 
 void HttpsServer::OnRequest(mg_connection* conn, mg_http_message* msg) {
@@ -51,15 +51,15 @@ void HttpsServer::OnRequestHello(mg_connection* conn, mg_http_message* /*msg*/) 
 }
 
 const std::string& HttpsServer::getBaseDirPath() const {
-    return baseDirPath_;
+    return baseDirPath;
 }
 
 const std::string& HttpsServer::getSslCertFileName() const {
-    return sslCertFileName_;
+    return sslCertFileName;
 }
 
 const std::string& HttpsServer::getSslKeyFileName() const {
-    return sslKeyFileName_;
+    return sslKeyFileName;
 }
 
 } // namespace cpr

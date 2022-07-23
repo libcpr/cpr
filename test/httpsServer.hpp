@@ -7,17 +7,19 @@
 #include "abstractServer.hpp"
 #include "cpr/cpr.h"
 #include "mongoose.h"
+#include <cpr/filesystem.h>
 
 namespace cpr {
 class HttpsServer : public AbstractServer {
   private:
-    const std::string baseDirPath_;
-    const std::string sslCertFileName_;
-    const std::string sslKeyFileName_;
-    struct mg_tls_opts tlsOpts_;
+    // We don't use fs::path here, as this leads to problems using windows
+    const std::string baseDirPath;
+    const std::string sslCertFileName;
+    const std::string sslKeyFileName;
+    struct mg_tls_opts tlsOpts;
 
   public:
-    explicit HttpsServer(std::string&& baseDirPath, std::string&& sslCertFileName, std::string&& sslKeyFileName);
+    explicit HttpsServer(fs::path&& baseDirPath, fs::path&& sslCertFileName, fs::path&& sslKeyFileName);
     ~HttpsServer() override = default;
 
     std::string GetBaseUrl() override;

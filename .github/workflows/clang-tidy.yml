@@ -25,6 +25,5 @@ jobs:
         cc: clang
         cxx: clang++
         build-type: Release
-        run-test: true
-        ctest-options: -V
+        run-test: false
         configure-options: -DCPR_ENABLE_LINTING=ON
