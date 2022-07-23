@@ -31,7 +31,9 @@ Checks: '*,
 -altera-unroll-loops,
 -altera-id-dependent-backward-branch,
 -bugprone-easily-swappable-parameters,
--modernize-return-braced-init-list
+-modernize-return-braced-init-list,
+-cppcoreguidelines-avoid-magic-numbers,
+-readability-magic-numbers
 '
 WarningsAsErrors: '*'
 HeaderFilterRegex: 'src/*.hpp'

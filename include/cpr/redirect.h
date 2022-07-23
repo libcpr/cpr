@@ -50,7 +50,7 @@ class Redirect {
      * Default: 50
      * https://curl.se/libcurl/c/CURLOPT_MAXREDIRS.html
      **/
-    // NOLINTNEXTLINE (cppcoreguidelines-avoid-magic-numbers, google-runtime-int)
+    // NOLINTNEXTLINE (google-runtime-int)
     long maximum{50L};
     /**
      * Follow 3xx redirects.

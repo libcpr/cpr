@@ -18,12 +18,17 @@ static const std::size_t EXPIRES_STRING_SIZE = 100;
 class Cookie {
   public:
     Cookie() = default;
-    Cookie(const std::string& name, const std::string& value, const std::string& domain = "", bool p_isIncludingSubdomains = false, const std::string& path = "/", bool p_isHttpsOnly = false, std::chrono::time_point<std::chrono::system_clock> expires = std::chrono::time_point<std::chrono::system_clock>::min()) : name_{name}, value_{value}, domain_{domain}, includeSubdomains_{p_isIncludingSubdomains}, path_{path}, httpsOnly_{p_isHttpsOnly}, expires_{expires} {};
+    /**
+     * Some notes for the default value used by expires:
+     * std::chrono::system_clock::time_point::min() won't work on Windows due to the min, max clash there.
+     * So we fall back to std::chrono::system_clock::from_time_t(0) for the minimum value here.
+     **/
+    Cookie(const std::string& name, const std::string& value, const std::string& domain = "", bool p_isIncludingSubdomains = false, const std::string& path = "/", bool p_isHttpsOnly = false, std::chrono::system_clock::time_point expires = std::chrono::system_clock::from_time_t(0)) : name_{name}, value_{value}, domain_{domain}, includeSubdomains_{p_isIncludingSubdomains}, path_{path}, httpsOnly_{p_isHttpsOnly}, expires_{expires} {};
     const std::string GetDomain() const;
     bool IsIncludingSubdomains() const;
     const std::string GetPath() const;
     bool IsHttpsOnly() const;
-    const std::chrono::time_point<std::chrono::system_clock> GetExpires() const;
+    const std::chrono::system_clock::time_point GetExpires() const;
     const std::string GetExpiresString() const;
     const std::string GetName() const;
     const std::string GetValue() const;
@@ -38,7 +43,7 @@ class Cookie {
     /**
      * TODO: Update the implementation using `std::chrono::utc_clock` of C++20
      **/
-    std::chrono::time_point<std::chrono::system_clock> expires_{};
+    std::chrono::system_clock::time_point expires_{};
 };
 
 class Cookies {

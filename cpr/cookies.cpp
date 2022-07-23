@@ -19,7 +19,7 @@ bool Cookie::IsHttpsOnly() const {
     return httpsOnly_;
 }
 
-const std::chrono::time_point<std::chrono::system_clock> Cookie::GetExpires() const {
+const std::chrono::system_clock::time_point Cookie::GetExpires() const {
     return expires_;
 }
 
@@ -28,7 +28,7 @@ const std::string Cookie::GetExpiresString() const {
     std::tm tm{};
     std::time_t tt = std::chrono::system_clock::to_time_t(expires_);
 #ifdef _WIN32
-    gmtime_s(&tm, &expires_);
+    gmtime_s(&tm, &tt);
 #else
     gmtime_r(&tt, &tm);
 #endif

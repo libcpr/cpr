@@ -15,7 +15,7 @@
 
 #define CPR_DEFAULT_THREAD_POOL_MAX_THREAD_NUM std::thread::hardware_concurrency()
 
-constexpr size_t CPR_DEFAULT_THREAD_POOL_MIN_THREAD_NUM  = 1;
+constexpr size_t CPR_DEFAULT_THREAD_POOL_MIN_THREAD_NUM = 1;
 constexpr std::chrono::milliseconds CPR_DEFAULT_THREAD_POOL_MAX_IDLE_TIME{60000};
 
 namespace cpr {
@@ -24,9 +24,7 @@ class ThreadPool {
   public:
     using Task = std::function<void()>;
 
-    ThreadPool( size_t min_threads = CPR_DEFAULT_THREAD_POOL_MIN_THREAD_NUM,
-                size_t max_threads = CPR_DEFAULT_THREAD_POOL_MAX_THREAD_NUM,
-                std::chrono::milliseconds max_idle_ms = CPR_DEFAULT_THREAD_POOL_MAX_IDLE_TIME );
+    ThreadPool(size_t min_threads = CPR_DEFAULT_THREAD_POOL_MIN_THREAD_NUM, size_t max_threads = CPR_DEFAULT_THREAD_POOL_MAX_THREAD_NUM, std::chrono::milliseconds max_idle_ms = CPR_DEFAULT_THREAD_POOL_MAX_IDLE_TIME);
 
     virtual ~ThreadPool();
 
@@ -64,21 +62,20 @@ class ThreadPool {
      * Submit(std::bind(&Class::mem_fn, &obj))
      * Submit(std::mem_fn(&Class::mem_fn, &obj))
      **/
-    template<class Fn, class... Args>
-    auto Submit(Fn&& fn, Args&&... args) -> std::future<decltype(fn(args...))> {
-        if (status == STOP) { Start(); }
+    template <class Fn, class... Args>
+    auto Submit(Fn&& fn, Args&&... args) {
+        if (status == STOP) {
+            Start();
+        }
         if (idle_thread_num == 0 && cur_thread_num < max_thread_num) {
             CreateThread();
         }
         using RetType = decltype(fn(args...));
-        auto task = std::make_shared<std::packaged_task<RetType()> >(
-            std::bind(std::forward<Fn>(fn), std::forward<Args>(args)...));
+        auto task = std::make_shared<std::packaged_task<RetType()> >(std::bind(std::forward<Fn>(fn), std::forward<Args>(args)...));
         std::future<RetType> future = task->get_future();
         {
             std::lock_guard<std::mutex> locker(task_mutex);
-            tasks.emplace([task]{
-                (*task)();
-            });
+            tasks.emplace([task] { (*task)(); });
         }
 
         task_cond.notify_one();
@@ -104,17 +101,17 @@ class ThreadPool {
     struct ThreadData {
         std::shared_ptr<std::thread> thread;
         std::thread::id id;
-        Status          status;
-        time_t          start_time;
-        time_t          stop_time;
+        Status status;
+        time_t start_time;
+        time_t stop_time;
     };
-    std::atomic<Status>     status;
-    std::atomic<size_t>     cur_thread_num;
-    std::atomic<size_t>     idle_thread_num;
-    std::list<ThreadData>   threads;
-    std::mutex              thread_mutex;
-    std::queue<Task>        tasks;
-    std::mutex              task_mutex;
+    std::atomic<Status> status;
+    std::atomic<size_t> cur_thread_num;
+    std::atomic<size_t> idle_thread_num;
+    std::list<ThreadData> threads;
+    std::mutex thread_mutex;
+    std::queue<Task> tasks;
+    std::mutex task_mutex;
     std::condition_variable task_cond;
 };
 
