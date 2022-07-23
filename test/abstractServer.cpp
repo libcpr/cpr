@@ -10,7 +10,6 @@ void AbstractServer::TearDown() {
 }
 
 void AbstractServer::Start() {
-    signal(SIGPIPE, SignalHandler);
     should_run = true;
     serverThread = std::make_shared<std::thread>(&AbstractServer::Run, this);
     serverThread->detach();
@@ -78,13 +77,6 @@ void AbstractServer::Run() {
 
     // Notify the main thread that we have shut down everything:
     server_stop_cv.notify_all();
-}
-
-void AbstractServer::SignalHandler(int signo) {
-    // Do nothing, only for handling of SIGPIPE
-    if (signo == SIGPIPE) {
-        std::cout << "Caught SIGPIPE" << '\n';
-    }
 }
 
 static const std::string base64_chars =
