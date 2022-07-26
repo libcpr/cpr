@@ -589,7 +589,7 @@ TEST(MultipartTests, SetMultipartTest) {
     Response response = session.Post();
     std::string expected_text{
             "{\n"
-            "  \"x\": 5\n"
+            "  \"x\": \"5\"\n"
             "}"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
@@ -607,7 +607,7 @@ TEST(MultipartTests, SetMultipartValueTest) {
     Response response = session.Post();
     std::string expected_text{
             "{\n"
-            "  \"x\": 5\n"
+            "  \"x\": \"5\"\n"
             "}"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
