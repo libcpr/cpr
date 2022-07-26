@@ -428,7 +428,7 @@ void HttpServer::OnRequestFormPost(mg_connection* conn, mg_http_message* msg) {
     struct mg_http_part part {};
 
     std::string headers = "Content-Type: application/json\r\n";
-    std::string response {};
+    std::string response{};
     response += "{\n";
     while ((pos = mg_http_next_multipart(msg->body, pos, &part)) > 0) {
         response += "  \"" + std::string(part.name.ptr, part.name.len) + "\": \"";
