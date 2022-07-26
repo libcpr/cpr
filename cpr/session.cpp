@@ -61,6 +61,13 @@ void Session::SetHeaderInternal() {
         }
     }
 
+    // libcurl would prepare the header "Expect: 100-continue" by default when uploading files larger than 1 MB.
+    // Here we would like to disable this feature:
+    curl_slist* temp = curl_slist_append(chunk, "Expect:");
+    if (temp) {
+        chunk = temp;
+    }
+
     curl_easy_setopt(curl_->handle, CURLOPT_HTTPHEADER, chunk);
 
     curl_slist_free_all(curl_->chunk);
