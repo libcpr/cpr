@@ -11,6 +11,7 @@ add_library(cpr
         curl_container.cpp
         curlholder.cpp
         error.cpp
+        file.cpp
         multipart.cpp
         parameters.cpp
         payload.cpp

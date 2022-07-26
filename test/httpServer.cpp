@@ -425,49 +425,21 @@ void HttpServer::OnRequestJsonPost(mg_connection* conn, mg_http_message* msg) {
 
 void HttpServer::OnRequestFormPost(mg_connection* conn, mg_http_message* msg) {
     size_t pos{0};
-    std::map<std::string, std::string> forms;
-    std::map<std::string, std::string> filenames;
     struct mg_http_part part {};
 
-    while ((pos = mg_http_next_multipart(msg->body, pos, &part)) > 0) {
-        forms[std::string(part.name.ptr, part.name.len)] = std::string(part.body.ptr, part.body.len);
-        filenames[std::string(part.name.ptr, part.name.len)] = std::string(part.filename.ptr, part.filename.len);
-    }
-
-    std::string x = forms["x"];
-
     std::string headers = "Content-Type: application/json\r\n";
-    std::string response;
-    if (forms.find("y") == forms.end()) {
-        if (!filenames["x"].empty()) {
-            response = std::string{
-                    "{\n"
-                    "  \"x\": " +
-                    filenames["x"] + "=" + forms["x"] +
-                    "\n"
-                    "}"};
-        } else {
-            response = std::string{
-                    "{\n"
-                    "  \"x\": " +
-                    forms["x"] +
-                    "\n"
-                    "}"};
+    std::string response {};
+    response += "{\n";
+    while ((pos = mg_http_next_multipart(msg->body, pos, &part)) > 0) {
+        response += "  \"" + std::string(part.name.ptr, part.name.len) + "\": \"";
+        if (!std::string(part.filename.ptr, part.filename.len).empty()) {
+            response += std::string(part.filename.ptr, part.filename.len) + "=";
         }
-    } else {
-        response = std::string{
-                "{\n"
-                "  \"x\": " +
-                forms["x"] +
-                ",\n"
-                "  \"y\": " +
-                forms["y"] +
-                ",\n"
-                "  \"sum\": " +
-                std::to_string(atoi(forms["x"].c_str()) + atoi(forms["y"].c_str())) +
-                "\n"
-                "}"};
+        response += std::string(part.body.ptr, part.body.len) + "\",\n";
     }
+    response.erase(response.find_last_not_of(",\n") + 1);
+    response += "\n}";
+
     mg_http_reply(conn, 201, headers.c_str(), response.c_str());
 }
 
