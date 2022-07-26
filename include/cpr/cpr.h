@@ -21,6 +21,7 @@
 #include "cpr/local_port_range.h"
 #include "cpr/low_speed.h"
 #include "cpr/multipart.h"
+#include "cpr/multiperform.h"
 #include "cpr/parameters.h"
 #include "cpr/payload.h"
 #include "cpr/proxies.h"

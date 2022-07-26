@@ -5,6 +5,7 @@
 #include <cstring>
 #include <fstream>
 #include <functional>
+#include <iostream>
 #include <stdexcept>
 #include <string>
 
@@ -27,6 +28,14 @@ constexpr long ON = 1L;
 // Ignored here since libcurl reqires a long:
 // NOLINTNEXTLINE(google-runtime-int)
 constexpr long OFF = 0L;
+
+CURLcode Session::DoEasyPerform() {
+    if (isUsedInMultiPerform) {
+        std::cerr << "curl_easy_perform cannot be executed if the CURL handle is used in a MultiPerform." << std::endl;
+        return CURLcode::CURLE_FAILED_INIT;
+    }
+    return curl_easy_perform(curl_->handle);
+}
 
 void Session::SetHeaderInternal() {
     curl_slist* chunk = nullptr;
@@ -87,59 +96,15 @@ Session::Session() : curl_(new CurlHolder()) {
 }
 
 Response Session::makeDownloadRequest() {
-    assert(curl_->handle);
-
     if (!interceptors_.empty()) {
         std::shared_ptr<Interceptor> interceptor = interceptors_.front();
         interceptors_.pop();
         return interceptor->intercept(*this);
     }
 
-    // Set Header:
-    SetHeaderInternal();
+    CURLcode curl_error = DoEasyPerform();
 
-    const std::string parametersContent = parameters_.GetContent(*curl_);
-    if (!parametersContent.empty()) {
-        Url new_url{url_ + "?" + parametersContent};
-        curl_easy_setopt(curl_->handle, CURLOPT_URL, new_url.c_str());
-    } else {
-        curl_easy_setopt(curl_->handle, CURLOPT_URL, url_.c_str());
-    }
-
-    std::string protocol = url_.str().substr(0, url_.str().find(':'));
-    if (proxies_.has(protocol)) {
-        curl_easy_setopt(curl_->handle, CURLOPT_PROXY, proxies_[protocol].c_str());
-        if (proxyAuth_.has(protocol)) {
-            curl_easy_setopt(curl_->handle, CURLOPT_PROXYAUTH, CURLAUTH_ANY);
-            curl_easy_setopt(curl_->handle, CURLOPT_PROXYUSERPWD, proxyAuth_[protocol]);
-        }
-    }
-
-    curl_->error[0] = '\0';
-
-    std::string header_string;
-    if (headercb_.callback) {
-        curl_easy_setopt(curl_->handle, CURLOPT_HEADERFUNCTION, cpr::util::headerUserFunction);
-        curl_easy_setopt(curl_->handle, CURLOPT_HEADERDATA, &headercb_);
-    } else {
-        curl_easy_setopt(curl_->handle, CURLOPT_HEADERFUNCTION, cpr::util::writeFunction);
-        curl_easy_setopt(curl_->handle, CURLOPT_HEADERDATA, &header_string);
-    }
-
-    CURLcode curl_error = curl_easy_perform(curl_->handle);
-
-    if (!headercb_.callback) {
-        curl_easy_setopt(curl_->handle, CURLOPT_HEADERFUNCTION, nullptr);
-        curl_easy_setopt(curl_->handle, CURLOPT_HEADERDATA, 0);
-    }
-
-    curl_slist* raw_cookies{nullptr};
-    curl_easy_getinfo(curl_->handle, CURLINFO_COOKIELIST, &raw_cookies);
-    Cookies cookies = util::parseCookies(raw_cookies);
-    curl_slist_free_all(raw_cookies);
-    std::string errorMsg = curl_->error.data();
-
-    return Response(curl_, "", std::move(header_string), std::move(cookies), Error(curl_error, std::move(errorMsg)));
+    return CompleteDownload(curl_error);
 }
 
 void Session::prepareCommon() {
@@ -204,6 +169,41 @@ void Session::prepareCommon() {
     curl_easy_setopt(curl_->handle, CURLOPT_CERTINFO, 1L);
 }
 
+void Session::prepareCommonDownload() {
+    assert(curl_->handle);
+
+    // Set Header:
+    SetHeaderInternal();
+
+    const std::string parametersContent = parameters_.GetContent(*curl_);
+    if (!parametersContent.empty()) {
+        Url new_url{url_ + "?" + parametersContent};
+        curl_easy_setopt(curl_->handle, CURLOPT_URL, new_url.c_str());
+    } else {
+        curl_easy_setopt(curl_->handle, CURLOPT_URL, url_.c_str());
+    }
+
+    std::string protocol = url_.str().substr(0, url_.str().find(':'));
+    if (proxies_.has(protocol)) {
+        curl_easy_setopt(curl_->handle, CURLOPT_PROXY, proxies_[protocol].c_str());
+        if (proxyAuth_.has(protocol)) {
+            curl_easy_setopt(curl_->handle, CURLOPT_PROXYAUTH, CURLAUTH_ANY);
+            curl_easy_setopt(curl_->handle, CURLOPT_PROXYUSERPWD, proxyAuth_[protocol]);
+        }
+    }
+
+    curl_->error[0] = '\0';
+
+    header_string_.clear();
+    if (headercb_.callback) {
+        curl_easy_setopt(curl_->handle, CURLOPT_HEADERFUNCTION, cpr::util::headerUserFunction);
+        curl_easy_setopt(curl_->handle, CURLOPT_HEADERDATA, &headercb_);
+    } else {
+        curl_easy_setopt(curl_->handle, CURLOPT_HEADERFUNCTION, cpr::util::writeFunction);
+        curl_easy_setopt(curl_->handle, CURLOPT_HEADERDATA, &header_string_);
+    }
+}
+
 Response Session::makeRequest() {
     if (!interceptors_.empty()) {
         // At least one interceptor exists -> Execute its intercept function
@@ -212,7 +212,7 @@ Response Session::makeRequest() {
         return interceptor->intercept(*this);
     }
 
-    CURLcode curl_error = curl_easy_perform(curl_->handle);
+    CURLcode curl_error = DoEasyPerform();
     return Complete(curl_error);
 }
 
@@ -657,7 +657,7 @@ cpr_off_t Session::GetDownloadFileLength() {
 
     curl_easy_setopt(curl_->handle, CURLOPT_HTTPGET, 1);
     curl_easy_setopt(curl_->handle, CURLOPT_NOBODY, 1);
-    if (curl_easy_perform(curl_->handle) == CURLE_OK) {
+    if (DoEasyPerform() == CURLE_OK) {
         curl_easy_getinfo(curl_->handle, CURLINFO_CONTENT_LENGTH_DOWNLOAD_T, &downloadFileLenth);
     }
     return downloadFileLenth;
@@ -673,22 +673,12 @@ Response Session::Delete() {
 }
 
 Response Session::Download(const WriteCallback& write) {
-    curl_easy_setopt(curl_->handle, CURLOPT_NOBODY, 0L);
-    curl_easy_setopt(curl_->handle, CURLOPT_HTTPGET, 1);
-    curl_easy_setopt(curl_->handle, CURLOPT_CUSTOMREQUEST, nullptr);
-
-    SetWriteCallback(write);
-
+    PrepareDownload(write);
     return makeDownloadRequest();
 }
 
 Response Session::Download(std::ofstream& file) {
-    curl_easy_setopt(curl_->handle, CURLOPT_NOBODY, 0L);
-    curl_easy_setopt(curl_->handle, CURLOPT_HTTPGET, 1);
-    curl_easy_setopt(curl_->handle, CURLOPT_WRITEFUNCTION, cpr::util::writeFileFunction);
-    curl_easy_setopt(curl_->handle, CURLOPT_WRITEDATA, &file);
-    curl_easy_setopt(curl_->handle, CURLOPT_CUSTOMREQUEST, nullptr);
-
+    PrepareDownload(file);
     return makeDownloadRequest();
 }
 
@@ -843,6 +833,26 @@ void Session::PreparePut() {
     prepareCommon();
 }
 
+void Session::PrepareDownload(std::ofstream& file) {
+    curl_easy_setopt(curl_->handle, CURLOPT_NOBODY, 0L);
+    curl_easy_setopt(curl_->handle, CURLOPT_HTTPGET, 1);
+    curl_easy_setopt(curl_->handle, CURLOPT_WRITEFUNCTION, cpr::util::writeFileFunction);
+    curl_easy_setopt(curl_->handle, CURLOPT_WRITEDATA, &file);
+    curl_easy_setopt(curl_->handle, CURLOPT_CUSTOMREQUEST, nullptr);
+
+    prepareCommonDownload();
+}
+
+void Session::PrepareDownload(const WriteCallback& write) {
+    curl_easy_setopt(curl_->handle, CURLOPT_NOBODY, 0L);
+    curl_easy_setopt(curl_->handle, CURLOPT_HTTPGET, 1);
+    curl_easy_setopt(curl_->handle, CURLOPT_CUSTOMREQUEST, nullptr);
+
+    SetWriteCallback(write);
+
+    prepareCommonDownload();
+}
+
 Response Session::Complete(CURLcode curl_error) {
     curl_slist* raw_cookies{nullptr};
     curl_easy_getinfo(curl_->handle, CURLINFO_COOKIELIST, &raw_cookies);
@@ -854,6 +864,21 @@ Response Session::Complete(CURLcode curl_error) {
 
     std::string errorMsg = curl_->error.data();
     return Response(curl_, std::move(response_string_), std::move(header_string_), std::move(cookies), Error(curl_error, std::move(errorMsg)));
+}
+
+Response Session::CompleteDownload(CURLcode curl_error) {
+    if (!headercb_.callback) {
+        curl_easy_setopt(curl_->handle, CURLOPT_HEADERFUNCTION, nullptr);
+        curl_easy_setopt(curl_->handle, CURLOPT_HEADERDATA, 0);
+    }
+
+    curl_slist* raw_cookies{nullptr};
+    curl_easy_getinfo(curl_->handle, CURLINFO_COOKIELIST, &raw_cookies);
+    Cookies cookies = util::parseCookies(raw_cookies);
+    curl_slist_free_all(raw_cookies);
+    std::string errorMsg = curl_->error.data();
+
+    return Response(curl_, "", std::move(header_string_), std::move(cookies), Error(curl_error, std::move(errorMsg)));
 }
 
 void Session::AddInterceptor(const std::shared_ptr<Interceptor>& pinterceptor) {
