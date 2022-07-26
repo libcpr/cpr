@@ -1,6 +1,7 @@
 #include "cpr/multiperform.h"
 
 #include <algorithm>
+#include <iostream>
 
 namespace cpr {
 
@@ -28,7 +29,7 @@ void MultiPerform::AddSession(std::shared_ptr<Session>& session, HttpMethod meth
     // Add easy handle to multi handle
     CURLMcode error_code = curl_multi_add_handle(multicurl_->handle, session->curl_->handle);
     if (error_code) {
-        (void) fprintf(stderr, "curl_multi_add_handle() failed, code %d.\n", static_cast<int>(error_code));
+        std::cerr << "curl_multi_add_handle() failed, code " << static_cast<int>(error_code) << std::endl;
         return;
     }
 
@@ -43,7 +44,7 @@ void MultiPerform::RemoveSession(const std::shared_ptr<Session>& session) {
     // Remove easy handle from multihandle
     CURLMcode error_code = curl_multi_remove_handle(multicurl_->handle, session->curl_->handle);
     if (error_code) {
-        (void) fprintf(stderr, "curl_multi_remove_handle() failed, code %d.\n", static_cast<int>(error_code));
+        std::cerr << "curl_multi_remove_handle() failed, code " << static_cast<int>(error_code) << std::endl;
         return;
     }
 
@@ -69,7 +70,7 @@ void MultiPerform::DoMultiPerform() {
     do {
         CURLMcode error_code = curl_multi_perform(multicurl_->handle, &still_running);
         if (error_code) {
-            (void) fprintf(stderr, "curl_multi_perform() failed, code %d.\n", static_cast<int>(error_code));
+            std::cerr << "curl_multi_perform() failed, code " << static_cast<int>(error_code) << std::endl;
             break;
         }
 
@@ -77,7 +78,7 @@ void MultiPerform::DoMultiPerform() {
             const int timeout_ms{1000};
             error_code = curl_multi_poll(multicurl_->handle, nullptr, 0, timeout_ms, nullptr);
             if (error_code) {
-                (void) fprintf(stderr, "curl_multi_poll() failed, code %d.\n", static_cast<int>(error_code));
+                std::cerr << "curl_multi_poll() failed, code " << static_cast<int>(error_code) << std::endl;
                 break;
             }
         }
@@ -98,7 +99,7 @@ std::vector<Response> MultiPerform::ReadMultiInfo(std::function<Response(Session
             // Find current session
             auto it = std::find_if(sessions_.begin(), sessions_.end(), [&info](const std::pair<std::shared_ptr<Session>, HttpMethod>& pair) { return pair.first->curl_->handle == info->easy_handle; });
             if (it == sessions_.end()) {
-                (void) fprintf(stderr, "Failed to find current session!\n");
+                std::cerr << "Failed to find current session!" << std::endl;
                 break;
             }
             std::shared_ptr<Session> current_session = (*it).first;
@@ -158,7 +159,7 @@ void MultiPerform::PrepareSessions() {
                 pair.first->PrepareOptions();
                 break;
             default:
-                (void) fprintf(stderr, "PrepareSessions failed: Undefined HttpMethod or download without arguments!\n");
+                std::cerr << "PrepareSessions failed: Undefined HttpMethod or download without arguments!" << std::endl;
                 return;
         }
     }
@@ -171,7 +172,7 @@ void MultiPerform::PrepareDownloadSession(size_t sessions_index, const WriteCall
             pair.first->PrepareDownload(write);
             break;
         default:
-            (void) fprintf(stderr, "PrepareSessions failed: Undefined HttpMethod or non download method with arguments!\n");
+            std::cerr << "PrepareSessions failed: Undefined HttpMethod or non download method with arguments!" << std::endl;
             return;
     }
 }
@@ -183,7 +184,7 @@ void MultiPerform::PrepareDownloadSession(size_t sessions_index, std::ofstream& 
             pair.first->PrepareDownload(file);
             break;
         default:
-            (void) fprintf(stderr, "PrepareSessions failed: Undefined HttpMethod or non download method with arguments!\n");
+            std::cerr << "PrepareSessions failed: Undefined HttpMethod or non download method with arguments!" << std::endl;
             return;
     }
 }

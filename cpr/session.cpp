@@ -5,6 +5,7 @@
 #include <cstring>
 #include <fstream>
 #include <functional>
+#include <iostream>
 #include <stdexcept>
 #include <string>
 
@@ -30,7 +31,7 @@ constexpr long OFF = 0L;
 
 CURLcode Session::DoEasyPerform() {
     if (isUsedInMultiPerform) {
-        (void) fprintf(stderr, "curl_easy_perform cannot be executed if the CURL handle is used in a MultiPerform.\n");
+        std::cerr << "curl_easy_perform cannot be executed if the CURL handle is used in a MultiPerform." << std::endl;
         return CURLcode::CURLE_FAILED_INIT;
     }
     return curl_easy_perform(curl_->handle);
