@@ -36,6 +36,7 @@ install_manifest.txt
 
 # Custom
 build/
+!nuget/build
 
 # Jekyll stuff
 _includes/

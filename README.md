@@ -105,6 +105,12 @@ Currently, we are aware of packages for the following distributions:
 
 If there's no package for your distribution, try making one! If you do, and it is added to your distribution's repositories, please submit a pull request to add it to the list above. However, please only do this if you plan to actively maintain the package.
 
+### NuGet Package
+
+For Windows there is also a libcpr NuGet package available. Currently x86 and x64 builds are supported with release and debug configuration.
+
+The package can be found here: [NuGet.org](https://www.nuget.org/packages/libcpr/)
+
 ## Requirements
 
 The only explicit requirements are:
