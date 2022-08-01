@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>libcpr</id>
+    <version>$VERSION$</version>
+    <title>C++ Requests: Curl for People</title>
+    <authors>Simon Berger</authors>
+    <owners>Fabian Sauter, Kilian Traub, many other libcpr contributors</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <license type="expression">MIT</license>
+    <icon>resources/cpr.png</icon>
+    <readme>README.md</readme>
+    <projectUrl>https://github.com/libcpr</projectUrl>
+    <description>C++ Requests: Curl for People, a spiritual port of Python Requests.</description>
+    <tags>Native, native</tags>
+	  <language>english</language>
+	  <repository type="git" url="https://github.com/libcpr/cpr" branch="master" commit="$COMMIT_HASH$" />
+  </metadata>
+</package>
