@@ -53,4 +53,4 @@ _site/
 .cache/
 
 # macOS
-.DS_store
+.DS_Store
