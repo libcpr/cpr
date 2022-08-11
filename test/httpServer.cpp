@@ -788,7 +788,7 @@ void HttpServer::OnRequestCheckExpect100Continue(mg_connection* conn, mg_http_me
             response = std::string(header.value.ptr, header.value.len);
         }
     }
-    std::string headers = "Content-Type: text/html";
+    std::string headers = "Content-Type: text/html\r\n";
     mg_http_reply(conn, 200, headers.c_str(), response.c_str());
 }
 
