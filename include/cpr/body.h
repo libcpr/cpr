@@ -5,6 +5,7 @@
 #include <initializer_list>
 #include <string>
 #include <vector>
+#include <fstream>
 
 #include "cpr/buffer.h"
 #include "cpr/cprtypes.h"
@@ -30,7 +31,7 @@ class Body : public StringHolder<Body> {
         std::ifstream is(file.filepath, std::ifstream::binary);
         if (is) {
             is.seekg(0, is.end);
-            int length = is.tellg();
+            int length = static_cast<int>(is.tellg());
             is.seekg(0, is.beg);
             std::vector<char> buffer;
             buffer.resize(length);

@@ -12,6 +12,7 @@
 #include "cpr/bearer.h"
 #include "cpr/cprtypes.h"
 #include "cpr/multipart.h"
+#include "cpr/multiperform.h"
 #include "cpr/payload.h"
 #include "cpr/response.h"
 #include "cpr/session.h"
@@ -49,6 +50,39 @@ void set_option_internal(Session& session, CurrentType&& current_option, Ts&&...
 template <typename... Ts>
 void set_option(Session& session, Ts&&... ts) {
     set_option_internal<false, Ts...>(session, std::forward<Ts>(ts)...);
+}
+
+// Idea: https://stackoverflow.com/a/19060157
+template <typename Tuple, std::size_t... I>
+void apply_set_option_internal(Session& session, Tuple&& t, std::index_sequence<I...>) {
+    set_option(session, std::get<I>(std::forward<Tuple>(t))...);
+}
+
+// Idea: https://stackoverflow.com/a/19060157
+template <typename Tuple>
+void apply_set_option(Session& session, Tuple&& t) {
+    using Indices = std::make_index_sequence<std::tuple_size<std::decay_t<Tuple>>::value>;
+    apply_set_option_internal(session, std::forward<Tuple>(t), Indices());
+}
+
+template <typename T>
+void setup_multiperform_internal(MultiPerform& multiperform, T&& t) {
+    std::shared_ptr<Session> session = std::make_shared<Session>();
+    apply_set_option(*session, t);
+    multiperform.AddSession(session);
+}
+
+template <typename T, typename... Ts>
+void setup_multiperform_internal(MultiPerform& multiperform, T&& t, Ts&&... ts) {
+    std::shared_ptr<Session> session = std::make_shared<Session>();
+    apply_set_option(*session, t);
+    multiperform.AddSession(session);
+    setup_multiperform_internal<Ts...>(multiperform, std::forward<Ts>(ts)...);
+}
+
+template <typename... Ts>
+void setup_multiperform(MultiPerform& multiperform, Ts&&... ts) {
+    setup_multiperform_internal<Ts...>(multiperform, std::forward<Ts>(ts)...);
 }
 
 } // namespace priv
@@ -226,6 +260,56 @@ Response Download(const WriteCallback& write, Ts&&... ts) {
     Session session;
     priv::set_option(session, std::forward<Ts>(ts)...);
     return session.Download(write);
+}
+
+// Multi requests
+template <typename... Ts>
+std::vector<Response> MultiGet(Ts&&... ts) {
+    MultiPerform multiperform;
+    priv::setup_multiperform<Ts...>(multiperform, std::forward<Ts>(ts)...);
+    return multiperform.Get();
+}
+
+template <typename... Ts>
+std::vector<Response> MultiDelete(Ts&&... ts) {
+    MultiPerform multiperform;
+    priv::setup_multiperform<Ts...>(multiperform, std::forward<Ts>(ts)...);
+    return multiperform.Delete();
+}
+
+template <typename... Ts>
+std::vector<Response> MultiPut(Ts&&... ts) {
+    MultiPerform multiperform;
+    priv::setup_multiperform<Ts...>(multiperform, std::forward<Ts>(ts)...);
+    return multiperform.Put();
+}
+
+template <typename... Ts>
+std::vector<Response> MultiHead(Ts&&... ts) {
+    MultiPerform multiperform;
+    priv::setup_multiperform<Ts...>(multiperform, std::forward<Ts>(ts)...);
+    return multiperform.Head();
+}
+
+template <typename... Ts>
+std::vector<Response> MultiOptions(Ts&&... ts) {
+    MultiPerform multiperform;
+    priv::setup_multiperform<Ts...>(multiperform, std::forward<Ts>(ts)...);
+    return multiperform.Options();
+}
+
+template <typename... Ts>
+std::vector<Response> MultiPatch(Ts&&... ts) {
+    MultiPerform multiperform;
+    priv::setup_multiperform<Ts...>(multiperform, std::forward<Ts>(ts)...);
+    return multiperform.Patch();
+}
+
+template <typename... Ts>
+std::vector<Response> MultiPost(Ts&&... ts) {
+    MultiPerform multiperform;
+    priv::setup_multiperform<Ts...>(multiperform, std::forward<Ts>(ts)...);
+    return multiperform.Post();
 }
 
 } // namespace cpr
