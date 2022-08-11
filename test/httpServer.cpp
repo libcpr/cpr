@@ -73,6 +73,11 @@ void HttpServer::OnRequestTimeout(mg_connection* conn, mg_http_message* msg) {
     OnRequestHello(conn, msg);
 }
 
+void HttpServer::OnRequestLongTimeout(mg_connection* conn, mg_http_message* msg) {
+    std::this_thread::sleep_for(std::chrono::seconds(2));
+    OnRequestHello(conn, msg);
+}
+
 // Send the header, then send "Hello world!" every 100ms
 // For this, we use a mongoose timer
 void HttpServer::OnRequestLowSpeedTimeout(mg_connection* conn, mg_http_message* /* msg */, TimerArg* timer_arg) {
@@ -800,6 +805,8 @@ void HttpServer::OnRequest(mg_connection* conn, mg_http_message* msg) {
         OnRequestHello(conn, msg);
     } else if (uri == "/timeout.html") {
         OnRequestTimeout(conn, msg);
+    } else if (uri == "/long_timeout.html") {
+        OnRequestLongTimeout(conn, msg);
     } else if (uri == "/low_speed_timeout.html") {
         timer_args.emplace_back(std::make_unique<TimerArg>(&mgr, conn, mg_timer{}));
         OnRequestLowSpeedTimeout(conn, msg, timer_args.back().get());

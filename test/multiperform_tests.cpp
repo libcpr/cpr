@@ -566,11 +566,11 @@ TEST(MultiperformAPITests, MultiperformApiSingleGetTest) {
 }
 
 TEST(MultiperformAPITests, MultiperformApiTwoGetsTest) {
-    std::vector<Response> responses = MultiGet(std::tuple<Url, Timeout>{Url{server->GetBaseUrl() + "/low_speed_timeout.html"}, Timeout{1000}}, std::tuple<Url>{Url{server->GetBaseUrl() + "/error.html"}});
+    std::vector<Response> responses = MultiGet(std::tuple<Url, Timeout>{Url{server->GetBaseUrl() + "/long_timeout.html"}, Timeout{1000}}, std::tuple<Url>{Url{server->GetBaseUrl() + "/error.html"}});
 
     EXPECT_EQ(responses.size(), 2);
     std::vector<Url> urls;
-    urls.push_back({server->GetBaseUrl() + "/low_speed_timeout.html"});
+    urls.push_back({server->GetBaseUrl() + "/long_timeout.html"});
     urls.push_back({server->GetBaseUrl() + "/error.html"});
 
     std::vector<std::string> expected_texts;
