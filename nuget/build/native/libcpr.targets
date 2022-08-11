@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Target Name="PlatformCheck" BeforeTargets="InjectReference" Condition="(('$(Platform)' != 'x86') AND ('$(Platform)' != 'x64')) AND ('$(Platform)' != 'Win32'))">
+    <Error  Text="$(MSBuildThisFileName) does not work correctly on this platform: '$(Platform)'. You need to specify platform x86, x64, or Win32." />
+  </Target>
+</Project>

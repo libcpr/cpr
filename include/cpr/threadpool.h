@@ -24,7 +24,7 @@ class ThreadPool {
   public:
     using Task = std::function<void()>;
 
-    ThreadPool(size_t min_threads = CPR_DEFAULT_THREAD_POOL_MIN_THREAD_NUM, size_t max_threads = CPR_DEFAULT_THREAD_POOL_MAX_THREAD_NUM, std::chrono::milliseconds max_idle_ms = CPR_DEFAULT_THREAD_POOL_MAX_IDLE_TIME);
+    explicit ThreadPool(size_t min_threads = CPR_DEFAULT_THREAD_POOL_MIN_THREAD_NUM, size_t max_threads = CPR_DEFAULT_THREAD_POOL_MAX_THREAD_NUM, std::chrono::milliseconds max_idle_ms = CPR_DEFAULT_THREAD_POOL_MAX_IDLE_TIME);
 
     virtual ~ThreadPool();
 
@@ -67,7 +67,7 @@ class ThreadPool {
         if (status == STOP) {
             Start();
         }
-        if (idle_thread_num == 0 && cur_thread_num < max_thread_num) {
+        if (idle_thread_num <= 0 && cur_thread_num < max_thread_num) {
             CreateThread();
         }
         using RetType = decltype(fn(args...));
@@ -98,13 +98,15 @@ class ThreadPool {
         RUNNING,
         PAUSE,
     };
+
     struct ThreadData {
         std::shared_ptr<std::thread> thread;
         std::thread::id id;
         Status status;
         time_t start_time;
         time_t stop_time;
-    };
+    } __attribute__((aligned(64)));
+
     std::atomic<Status> status;
     std::atomic<size_t> cur_thread_num;
     std::atomic<size_t> idle_thread_num;

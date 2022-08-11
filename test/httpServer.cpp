@@ -777,6 +777,21 @@ void HttpServer::OnRequestCheckAcceptEncoding(mg_connection* conn, mg_http_messa
     mg_http_reply(conn, 200, headers.c_str(), response.c_str());
 }
 
+void HttpServer::OnRequestCheckExpect100Continue(mg_connection* conn, mg_http_message* msg) {
+    std::string response;
+    for (auto& header : msg->headers) {
+        if (!header.name.ptr) {
+            continue;
+        }
+        std::string name = std::string(header.name.ptr, header.name.len);
+        if (std::string{"Expect"} == name) {
+            response = std::string(header.value.ptr, header.value.len);
+        }
+    }
+    std::string headers = "Content-Type: text/html";
+    mg_http_reply(conn, 200, headers.c_str(), response.c_str());
+}
+
 void HttpServer::OnRequest(mg_connection* conn, mg_http_message* msg) {
     std::string uri = std::string(msg->uri.ptr, msg->uri.len);
     if (uri == "/") {
@@ -845,6 +860,8 @@ void HttpServer::OnRequest(mg_connection* conn, mg_http_message* msg) {
         OnRequestLocalPort(conn, msg);
     } else if (uri == "/check_accept_encoding.html") {
         OnRequestCheckAcceptEncoding(conn, msg);
+    } else if (uri == "/check_expect_100_continue.html") {
+        OnRequestCheckExpect100Continue(conn, msg);
     } else {
         OnRequestNotFound(conn, msg);
     }

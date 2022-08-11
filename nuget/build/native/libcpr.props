@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003"
+        ToolsVersion="15.0">
+  <PropertyGroup>
+    <LibraryType Condition="'$(Configuration)'=='Debug'">mdd</LibraryType>
+    <LibraryType Condition="'$(Configuration)'=='Release'">md</LibraryType>
+  </PropertyGroup>
+  <ItemGroup>
+	  <CprLibs Include="$(MSBuildThisFileDirectory)\$(Platform)\$(Configuration)\lib\*.lib" />
+  </ItemGroup>
+  <ItemGroup>
+    <CprDlls Include="$(MSBuildThisFileDirectory)\$(Platform)\$(Configuration)\bin\*.dll" />
+    <None Include="@(CprDlls)">
+      <Link>%(RecursiveDir)%(FileName)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <PropertyGroup>
+    <CprLibraries>@(CprLibs)</CprLibraries>
+    </PropertyGroup>
+    <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)\$(Platform)\$(Configuration)\include</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>$(CprLibraries);%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+</Project>

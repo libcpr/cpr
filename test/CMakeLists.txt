@@ -58,6 +58,7 @@ add_cpr_test(proxy_auth)
 add_cpr_test(version)
 add_cpr_test(download)
 add_cpr_test(interceptor)
+add_cpr_test(multiperform)
 
 if (ENABLE_SSL_TESTS)
     add_cpr_test(ssl)

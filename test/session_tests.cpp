@@ -1154,6 +1154,25 @@ TEST(BasicTests, AcceptEncodingTestWithCostomizedStringLValue) {
     EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
+TEST(BasicTests, DisableHeaderExpect100ContinueTest) {
+    Url url{server->GetBaseUrl() + "/check_expect_100_continue.html"};
+    std::string filename{"test_file"};
+    std::string content{std::string(1024 * 1024, 'a')};
+    std::ofstream test_file;
+    test_file.open(filename);
+    test_file << content;
+    test_file.close();
+    Session session{};
+    session.SetUrl(url);
+    session.SetMultipart({{"file", File{"test_file"}}});
+    Response response = session.Post();
+    std::string expected_text{""};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
 TEST(AsyncRequestsTests, AsyncGetTest) {
     Url url{server->GetBaseUrl() + "/hello.html"};
     std::shared_ptr<Session> session = std::make_shared<Session>();
@@ -1433,7 +1452,6 @@ TEST(CallbackTests, PatchCallbackTest) {
     EXPECT_EQ(200, response.status_code);
     EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
-
 
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);

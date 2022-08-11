@@ -17,8 +17,11 @@
 
 namespace cpr {
 
+class MultiPerform;
+
 class Response {
   private:
+    friend MultiPerform;
     std::shared_ptr<CurlHolder> curl_{nullptr};
 
   public:

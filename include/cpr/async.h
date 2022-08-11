@@ -9,8 +9,10 @@ namespace cpr {
 class GlobalThreadPool : public ThreadPool {
     CPR_SINGLETON_DECL(GlobalThreadPool)
   protected:
-    GlobalThreadPool() : ThreadPool() {}
-    ~GlobalThreadPool() {}
+    GlobalThreadPool() = default;
+
+  public:
+    ~GlobalThreadPool() override = default;
 };
 
 /**
