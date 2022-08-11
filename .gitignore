@@ -52,3 +52,5 @@ _site/
 # clangd
 .cache/
 
+# macOS
+.DS_Store
