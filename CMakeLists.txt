@@ -222,6 +222,12 @@ else()
         include(cmake/zlib_external.cmake)
     endif()
 
+    string( TOLOWER "${CMAKE_BUILD_TYPE}" BUILD_TYPE_LOWER )
+    if (BUILD_TYPE_LOWER STREQUAL "debug")
+        message(STATUS "Enabled curl debug features")
+        set(ENABLE_DEBUG ON CACHE INTERNAL "" FORCE)
+    endif()
+
     # We only need HTTP (and HTTPS) support:
     set(HTTP_ONLY ON CACHE INTERNAL "" FORCE)
     set(BUILD_CURL_EXE OFF CACHE INTERNAL "" FORCE)
