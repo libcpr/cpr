@@ -105,7 +105,7 @@ class ThreadPool {
         Status status;
         time_t start_time;
         time_t stop_time;
-    } __attribute__((aligned(64)));
+    };
 
     std::atomic<Status> status;
     std::atomic<size_t> cur_thread_num;
