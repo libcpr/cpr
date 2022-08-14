@@ -222,7 +222,7 @@ else()
         include(cmake/zlib_external.cmake)
     endif()
 
-    string( TOLOWER "${CMAKE_BUILD_TYPE}" BUILD_TYPE_LOWER )
+    string(TOLOWER "${CMAKE_BUILD_TYPE}" BUILD_TYPE_LOWER)
     if (BUILD_TYPE_LOWER STREQUAL "debug")
         message(STATUS "Enabled curl debug features")
         set(ENABLE_DEBUG ON CACHE INTERNAL "" FORCE)
