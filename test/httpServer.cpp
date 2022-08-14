@@ -89,7 +89,7 @@ void HttpServer::OnRequestLowSpeedTimeout(mg_connection* conn, mg_http_message* 
             // The following lambda function gets executed each time the timer is called.
             // It sends "Hello world!" to the client each 100ms at most 20 times.
             [](void* arg) {
-                auto* timer_arg = static_cast<TimerArg*>(arg);
+                TimerArg* timer_arg = static_cast<TimerArg*>(arg);
                 if (timer_arg->counter < 20 && IsConnectionActive(timer_arg->mgr, timer_arg->connection) && timer_arg->connection->id == timer_arg->connection_id) {
                     std::string response{"Hello world!"};
                     mg_send(timer_arg->connection, response.c_str(), response.length());
@@ -126,7 +126,7 @@ void HttpServer::OnRequestLowSpeedBytes(mg_connection* conn, mg_http_message* /*
             // The following lambda function gets executed each time the timer is called.
             // It first waits for 2 seconds, then sends "a" to the client each 100ms at most 20 times.
             [](void* arg) {
-                auto* timer_arg = static_cast<TimerArg*>(arg);
+                TimerArg* timer_arg = static_cast<TimerArg*>(arg);
                 if (timer_arg->counter == 0) {
                     std::this_thread::sleep_for(std::chrono::seconds(2));
                 }
@@ -280,7 +280,7 @@ void HttpServer::OnRequestHeaderReflect(mg_connection* conn, mg_http_message* ms
     std::string response = "Header reflect " + std::string{msg->method.ptr, msg->method.len};
     std::string headers;
     bool hasContentTypeHeader = false;
-    for (auto& header : msg->headers) {
+    for (const mg_http_header& header : msg->headers) {
         if (!header.name.ptr) {
             continue;
         }
@@ -306,7 +306,7 @@ void HttpServer::OnRequestHeaderReflect(mg_connection* conn, mg_http_message* ms
 void HttpServer::OnRequestTempRedirect(mg_connection* conn, mg_http_message* msg) {
     // Get the requested target location:
     std::string location;
-    for (auto& header : msg->headers) {
+    for (mg_http_header& header : msg->headers) {
         if (!header.name.ptr) {
             continue;
         }
@@ -330,7 +330,7 @@ void HttpServer::OnRequestTempRedirect(mg_connection* conn, mg_http_message* msg
 void HttpServer::OnRequestPermRedirect(mg_connection* conn, mg_http_message* msg) {
     // Get the requested target location:
     std::string location;
-    for (auto& header : msg->headers) {
+    for (mg_http_header& header : msg->headers) {
         if (!header.name.ptr) {
             continue;
         }
@@ -450,7 +450,7 @@ void HttpServer::OnRequestFormPost(mg_connection* conn, mg_http_message* msg) {
 
 void HttpServer::OnRequestDelete(mg_connection* conn, mg_http_message* msg) {
     bool has_json_header = false;
-    for (auto& header : msg->headers) {
+    for (mg_http_header& header : msg->headers) {
         if (!header.name.ptr) {
             continue;
         }
@@ -536,7 +536,7 @@ void HttpServer::OnRequestPostReflect(mg_connection* conn, mg_http_message* msg)
 
     std::string response = std::string{msg->body.ptr, msg->body.len};
     std::string headers;
-    for (auto& header : msg->headers) {
+    for (mg_http_header& header : msg->headers) {
         if (!header.name.ptr) {
             continue;
         }
@@ -620,7 +620,7 @@ void HttpServer::OnRequestDownloadGzip(mg_connection* conn, mg_http_message* msg
         std::string range;
         std::vector<std::pair<int64_t, int64_t>> ranges;
 
-        for (auto& header : msg->headers) {
+        for (mg_http_header& header : msg->headers) {
             if (!header.name.ptr) {
                 continue;
             }
@@ -769,7 +769,7 @@ void HttpServer::OnRequestDownloadGzip(mg_connection* conn, mg_http_message* msg
 
 void HttpServer::OnRequestCheckAcceptEncoding(mg_connection* conn, mg_http_message* msg) {
     std::string response;
-    for (auto& header : msg->headers) {
+    for (mg_http_header& header : msg->headers) {
         if (!header.name.ptr) {
             continue;
         }
@@ -784,7 +784,7 @@ void HttpServer::OnRequestCheckAcceptEncoding(mg_connection* conn, mg_http_messa
 
 void HttpServer::OnRequestCheckExpect100Continue(mg_connection* conn, mg_http_message* msg) {
     std::string response;
-    for (auto& header : msg->headers) {
+    for (mg_http_header& header : msg->headers) {
         if (!header.name.ptr) {
             continue;
         }
