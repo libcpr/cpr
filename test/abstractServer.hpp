@@ -12,6 +12,22 @@
 #include "mongoose.h"
 
 namespace cpr {
+
+// Helper struct for functions using timers to simulate slow connections
+struct TimerArg {
+    mg_mgr* mgr;
+    mg_connection* connection;
+    unsigned long connection_id;
+    mg_timer timer;
+    unsigned counter;
+
+    explicit TimerArg(mg_mgr* m, mg_connection* c, mg_timer&& t) : mgr{m}, connection{c}, connection_id{0}, timer{t}, counter{0} {}
+
+    ~TimerArg() {
+        mg_timer_free(&mgr->timers, &timer);
+    }
+};
+
 class AbstractServer : public testing::Environment {
   public:
     ~AbstractServer() override = default;
@@ -25,7 +41,8 @@ class AbstractServer : public testing::Environment {
     virtual std::string GetBaseUrl() = 0;
     virtual uint16_t GetPort() = 0;
 
-    virtual void OnRequest(mg_connection* conn, http_message* msg) = 0;
+    virtual void acceptConnection(mg_connection* conn) = 0;
+    virtual void OnRequest(mg_connection* conn, mg_http_message* msg) = 0;
 
   private:
     std::shared_ptr<std::thread> serverThread{nullptr};
@@ -33,14 +50,17 @@ class AbstractServer : public testing::Environment {
     std::condition_variable server_start_cv;
     std::condition_variable server_stop_cv;
     std::atomic<bool> should_run{false};
-    mg_mgr mgr{};
 
     void Run();
 
   protected:
-    virtual mg_connection* initServer(mg_mgr* mgr, MG_CB(mg_event_handler_t event_handler, void* user_data)) = 0;
+    mg_mgr mgr{};
+    std::vector<std::unique_ptr<TimerArg>> timer_args{};
+    virtual mg_connection* initServer(mg_mgr* mgr, mg_event_handler_t event_handler) = 0;
 
     static std::string Base64Decode(const std::string& in);
+    static void SendError(mg_connection* conn, int code, std::string& reason);
+    static bool IsConnectionActive(mg_mgr* mgr, mg_connection* conn);
 };
 } // namespace cpr
 

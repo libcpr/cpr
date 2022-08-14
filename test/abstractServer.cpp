@@ -23,10 +23,10 @@ void AbstractServer::Stop() {
     server_stop_cv.wait(server_lock);
 }
 
-static void EventHandler(mg_connection* conn, int event, void* event_data) {
+static void EventHandler(mg_connection* conn, int event, void* event_data, void* context) {
     switch (event) {
-        case MG_EV_RECV:
-        case MG_EV_SEND:
+        case MG_EV_READ:
+        case MG_EV_WRITE:
             /** Do nothing. Just for housekeeping. **/
             break;
         case MG_EV_POLL:
@@ -36,12 +36,10 @@ static void EventHandler(mg_connection* conn, int event, void* event_data) {
             /** Do nothing. Just for housekeeping. **/
             break;
         case MG_EV_ACCEPT:
-            /** Do nothing. Just for housekeeping. **/
+            /* Initialize HTTPS connection if Server is an HTTPS Server */
+            static_cast<AbstractServer*>(context)->acceptConnection(conn);
             break;
         case MG_EV_CONNECT:
-            /** Do nothing. Just for housekeeping. **/
-            break;
-        case MG_EV_TIMER:
             /** Do nothing. Just for housekeeping. **/
             break;
 
@@ -49,9 +47,9 @@ static void EventHandler(mg_connection* conn, int event, void* event_data) {
             /** Do nothing. Just for housekeeping. **/
         } break;
 
-        case MG_EV_HTTP_REQUEST: {
-            AbstractServer* server = static_cast<AbstractServer*>(conn->mgr->user_data);
-            server->OnRequest(conn, static_cast<http_message*>(event_data));
+        case MG_EV_HTTP_MSG: {
+            AbstractServer* server = static_cast<AbstractServer*>(context);
+            server->OnRequest(conn, static_cast<mg_http_message*>(event_data));
         } break;
 
         default:
@@ -69,10 +67,12 @@ void AbstractServer::Run() {
 
     // Main server loop:
     while (should_run) {
-        mg_mgr_poll(&mgr, 1000);
+        // NOLINTNEXTLINE (cppcoreguidelines-avoid-magic-numbers)
+        mg_mgr_poll(&mgr, 100);
     }
 
     // Shutdown and cleanup:
+    timer_args.clear();
     mg_mgr_free(&mgr);
 
     // Notify the main thread that we have shut down everything:
@@ -108,6 +108,28 @@ std::string AbstractServer::Base64Decode(const std::string& in) {
         }
     }
     return out;
+}
+
+// Sends error similar like in mongoose 6 method mg_http_send_error
+// https://github.com/cesanta/mongoose/blob/6.18/mongoose.c#L7081-L7089
+void AbstractServer::SendError(mg_connection* conn, int code, std::string& reason) {
+    std::string headers{"Content-Type: text/plain\r\nConnection: close\r\n"};
+    mg_http_reply(conn, code, headers.c_str(), reason.c_str());
+}
+
+// Checks whether a pointer to a connection is still managed by a mg_mgr.
+// This check tells whether it is still possible to send a message via the given connection
+// Note that it is still possible that the pointer of an old connection object may be reused by mongoose.
+// In this case, the active connection might refer to a different connection than the one the caller refers to
+bool AbstractServer::IsConnectionActive(mg_mgr* mgr, mg_connection* conn) {
+    mg_connection* c{mgr->conns};
+    while (c) {
+        if (c == conn) {
+            return true;
+        }
+        c = c->next;
+    }
+    return false;
 }
 
 } // namespace cpr

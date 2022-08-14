@@ -2,7 +2,12 @@
 #include <system_error>
 
 namespace cpr {
-HttpsServer::HttpsServer(fs::path&& baseDirPath, fs::path&& sslCertFileName, fs::path&& sslKeyFileName) : baseDirPath(baseDirPath.make_preferred().string()), sslCertFileName(sslCertFileName.make_preferred().string()), sslKeyFileName(sslKeyFileName.make_preferred().string()) {}
+HttpsServer::HttpsServer(fs::path&& baseDirPath, fs::path&& sslCertFileName, fs::path&& sslKeyFileName) : baseDirPath(baseDirPath.make_preferred().string()), sslCertFileName(sslCertFileName.make_preferred().string()), sslKeyFileName(sslKeyFileName.make_preferred().string()) {
+    // See https://mongoose.ws/tutorials/tls/
+    memset(static_cast<void*>(&tlsOpts), 0, sizeof(tlsOpts));
+    tlsOpts.cert = this->sslCertFileName.c_str();
+    tlsOpts.certkey = this->sslKeyFileName.c_str();
+}
 
 std::string HttpsServer::GetBaseUrl() {
     return "https://127.0.0.1:" + std::to_string(GetPort());
@@ -13,24 +18,21 @@ uint16_t HttpsServer::GetPort() {
     return 61937;
 }
 
-mg_connection* HttpsServer::initServer(mg_mgr* mgr, MG_CB(mg_event_handler_t event_handler, void* user_data)) {
-    // https://cesanta.com/docs/http/ssl.html
-    mg_mgr_init(mgr, this);
+mg_connection* HttpsServer::initServer(mg_mgr* mgr, mg_event_handler_t event_handler) {
+    mg_mgr_init(mgr);
 
-    mg_bind_opts bind_opts{};
-    bind_opts.ssl_cert = sslCertFileName.c_str();
-    bind_opts.ssl_key = sslKeyFileName.c_str();
     std::string port = std::to_string(GetPort());
-    mg_connection* c = mg_bind_opt(mgr, port.c_str(), event_handler, bind_opts);
-    if (!c) {
-        throw std::system_error(errno, std::system_category(), "Failed to bind to port " + port);
-    }
-    mg_set_protocol_http_websocket(c);
+    mg_connection* c = mg_http_listen(mgr, GetBaseUrl().c_str(), event_handler, this);
     return c;
 }
 
-void HttpsServer::OnRequest(mg_connection* conn, http_message* msg) {
-    std::string uri = std::string(msg->uri.p, msg->uri.len);
+void HttpsServer::acceptConnection(mg_connection* conn) {
+    // See https://mongoose.ws/tutorials/tls/
+    mg_tls_init(conn, &tlsOpts);
+}
+
+void HttpsServer::OnRequest(mg_connection* conn, mg_http_message* msg) {
+    std::string uri = std::string(msg->uri.ptr, msg->uri.len);
     if (uri == "/hello.html") {
         OnRequestHello(conn, msg);
     } else {
@@ -38,15 +40,14 @@ void HttpsServer::OnRequest(mg_connection* conn, http_message* msg) {
     }
 }
 
-void HttpsServer::OnRequestNotFound(mg_connection* conn, http_message* /*msg*/) {
-    mg_http_send_error(conn, 404, "Not Found");
+void HttpsServer::OnRequestNotFound(mg_connection* conn, mg_http_message* /*msg*/) {
+    mg_http_reply(conn, 404, nullptr, "Not Found");
 }
 
-void HttpsServer::OnRequestHello(mg_connection* conn, http_message* /*msg*/) {
+void HttpsServer::OnRequestHello(mg_connection* conn, mg_http_message* /*msg*/) {
     std::string response{"Hello world!"};
-    std::string headers = "Content-Type: text/html";
-    mg_send_head(conn, 200, response.length(), headers.c_str());
-    mg_send(conn, response.c_str(), response.length());
+    std::string headers{"Content-Type: text/html\r\n"};
+    mg_http_reply(conn, 200, headers.c_str(), response.c_str());
 }
 
 const std::string& HttpsServer::getBaseDirPath() const {
