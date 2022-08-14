@@ -430,7 +430,7 @@ void HttpServer::OnRequestJsonPost(mg_connection* conn, mg_http_message* msg) {
 
 void HttpServer::OnRequestFormPost(mg_connection* conn, mg_http_message* msg) {
     size_t pos{0};
-    struct mg_http_part part {};
+    mg_http_part part{};
 
     std::string headers = "Content-Type: application/json\r\n";
     std::string response{};
