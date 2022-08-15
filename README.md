@@ -105,7 +105,7 @@ $ git clone https://github.com/libcpr/cpr.git
 $ cd cpr && mkdir build && cd build
 $ cmake .. -DCPR_USE_SYSTEM_CURL=ON
 $ cmake --build .
-$ sudo cmake --build . --target install
+$ sudo cmake --install .
 ```
 In your `CMakeLists.txt`:
 ```cmake
