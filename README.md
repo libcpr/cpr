@@ -104,8 +104,8 @@ If you prefer not to use `fetch_content`, you can download, build, and install t
 $ git clone https://github.com/libcpr/cpr.git
 $ cd cpr && mkdir build && cd build
 $ cmake .. -DCPR_USE_SYSTEM_CURL=ON
-$ make -j
-$ sudo make install
+$ cmake --build .
+$ sudo cmake --build . --target install
 ```
 In your `CMakeLists.txt`:
 ```cmake
