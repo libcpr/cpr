@@ -237,10 +237,10 @@ else()
             set(CURL_CA_PATH "auto" CACHE INTERNAL "")
         endif()
 
-        if(NOT DEFINED CURL_CA_BUNDLE)
-            set(CURL_CA_BUNDLE "auto" CACHE INTERNAL "")
-        elseif(CPR_SKIP_CA_BUNDLE_SEARCH)
+        if(CPR_SKIP_CA_BUNDLE_SEARCH)
             set(CURL_CA_BUNDLE "none" CACHE INTERNAL "")
+        elseif(NOT DEFINED CURL_CA_BUNDLE)
+            set(CURL_CA_BUNDLE "auto" CACHE INTERNAL "")
         endif()
 
         if(SSL_BACKEND_USED STREQUAL "WinSSL")
