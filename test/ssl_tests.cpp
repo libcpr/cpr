@@ -16,6 +16,11 @@ using namespace cpr;
 
 static HttpsServer* server;
 
+static std::string caCertPath;
+static std::string serverPubKeyPath;
+static std::string clientKeyPath;
+static std::string clientCertPath;
+
 std::string loadCertificateFromFile(const std::string certPath) {
     std::ifstream certFile(certPath);
     std::stringstream buffer;
@@ -112,7 +117,6 @@ t4V1hHbjQ9G2nRS44qS3MAUGAytlcANBAC4NoQ31kHfp64R9gGNjTYrr2SNXHyEq
             std::size_t search_index = (*entry_it).find(search_string);
             if (search_index != std::string::npos) {
                 (*entry_it).replace(search_index, search_string.length(), "Identifier:");
-
                 search_string = "\n";
                 search_index = (*entry_it).find(search_string);
                 if (search_index != std::string::npos) {

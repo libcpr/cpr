@@ -73,3 +73,5 @@ if (ENABLE_SSL_TESTS)
     add_custom_command(TARGET ssl_tests POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/data/keys/server.key $<TARGET_FILE_DIR:ssl_tests>/data/keys/server.key)
     add_custom_command(TARGET ssl_tests POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/data/keys/server.pub $<TARGET_FILE_DIR:ssl_tests>/data/keys/server.pub)
 endif()
+
+file(INSTALL data DESTINATION data)
