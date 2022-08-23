@@ -51,8 +51,13 @@ target_sources(cpr PRIVATE
 )
 
 # Filesystem
-if ((CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 9.1) OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+include(CheckIncludeFileCXX)
+check_include_file_cxx(boost/filesystem.hpp HAVE_BOOST_FS_HEADERS)
+
+if ((CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 9.1) OR (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND NOT HAVE_FS_HEADERS))
     target_link_libraries(cpr PUBLIC stdc++fs)
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND HAVE_BOOST_FS_HEADERS)
+    target_link_libraries(cpr PUBLIC boost_filesystem)
 endif()
 
 install(DIRECTORY cpr DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
