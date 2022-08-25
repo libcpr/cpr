@@ -8,6 +8,7 @@ namespace fs = std::filesystem;
 #elif __has_include("experimental/filesystem")
 #include <experimental/filesystem>
 namespace fs = std::experimental::filesystem;
+//cppcheck-suppress preprocessorErrorDirective
 #elif __has_include(<boost/filesystem.hpp>)
 #include <boost/filesystem.hpp>
 namespace fs = boost::filesystem;
