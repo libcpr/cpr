@@ -30,6 +30,7 @@ class ProxyAuthentication {
   public:
     ProxyAuthentication() = default;
     ProxyAuthentication(const std::initializer_list<std::pair<const std::string, EncodedAuthentication>>& auths) : proxyAuth_{auths} {}
+    ProxyAuthentication(const std::map<std::string, EncodedAuthentication>& auths) : proxyAuth_{auths} {}
 
     bool has(const std::string& protocol) const;
     const char* operator[](const std::string& protocol);
