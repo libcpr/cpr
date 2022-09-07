@@ -273,9 +273,10 @@ void Session::SetUrl(const Url& url) {
     url_ = url;
 }
 
-void Session::SetResolve(const std::string& host, const std::string& addr) {
-    curlSlist_ = curl_slist_append(curlSlist_, (host + ":443:" + addr).c_str());
-    curl_slist_append(curlSlist_, (host + ":80:" + addr).c_str());
+void Session::SetResolve(const Resolve& resolve) {
+    curlSlist_ = curl_slist_append(curlSlist_, (resolve.host + ":" + std::to_string(resolve.ports[0]) + ":" + resolve.addr).c_str());
+    for (unsigned i = 1; i < resolve.ports.size(); i++)
+        curl_slist_append(curlSlist_, (resolve.host + ":" + std::to_string(resolve.ports[i]) + ":" + resolve.addr).c_str());
     curl_easy_setopt(curl_->handle, CURLOPT_RESOLVE, curlSlist_);
 }
 
@@ -905,7 +906,7 @@ Response Session::proceed() {
 }
 
 // clang-format off
-//void Session::SetResolve(const std::string &host, const std::string &address) { SetResolve(host, address); }
+void Session::SetOption(const Resolve& resolve) { SetResolve(resolve); }
 void Session::SetOption(const ReadCallback& read) { SetReadCallback(read); }
 void Session::SetOption(const HeaderCallback& header) { SetHeaderCallback(header); }
 void Session::SetOption(const WriteCallback& write) { SetWriteCallback(write); }

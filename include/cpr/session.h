@@ -36,6 +36,7 @@
 #include "cpr/unix_socket.h"
 #include "cpr/user_agent.h"
 #include "cpr/verbose.h"
+#include "cpr/resolve.h"
 
 namespace cpr {
 
@@ -99,7 +100,7 @@ class Session : public std::enable_shared_from_this<Session> {
     void SetLocalPortRange(const LocalPortRange& local_port_range);
     void SetHttpVersion(const HttpVersion& version);
     void SetRange(const Range& range);
-    void SetResolve(const std::string& host, const std::string& address);
+    void SetResolve(const Resolve& resolve);
     void SetMultiRange(const MultiRange& multi_range);
     void SetReserveSize(const ReserveSize& reserve_size);
     void SetAcceptEncoding(const AcceptEncoding& accept_encoding);
@@ -152,6 +153,7 @@ class Session : public std::enable_shared_from_this<Session> {
     void SetOption(const ReserveSize& reserve_size);
     void SetOption(const AcceptEncoding& accept_encoding);
     void SetOption(AcceptEncoding&& accept_encoding);
+    void SetOption(const Resolve& resolve);
 
     cpr_off_t GetDownloadFileLength();
     /**
