@@ -1,7 +1,3 @@
-//
-// Created by hexadec on 07/09/22.
-//
-
 #ifndef CPR_RESOLVE_H
 #define CPR_RESOLVE_H
 
@@ -23,4 +19,4 @@ namespace cpr {
     };
 } // namespace cpr
 
-#endif // CPR_RESOLVE_H
+#endif

@@ -84,7 +84,6 @@ void Session::SetBearer(const Bearer& token) {
 }
 #endif
 
-
 Session::Session() : curl_(new CurlHolder()) {
     // Set up some sensible defaults
     curl_version_info_data* version_info = curl_version_info(CURLVERSION_NOW);
