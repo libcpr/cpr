@@ -274,8 +274,9 @@ void Session::SetUrl(const Url& url) {
 
 void Session::SetResolve(const Resolve& resolve) {
     curlSlist_ = curl_slist_append(curlSlist_, (resolve.host + ":" + std::to_string(resolve.ports[0]) + ":" + resolve.addr).c_str());
-    for (unsigned i = 1; i < resolve.ports.size(); i++)
+    for (unsigned i = 1; i < resolve.ports.size(); i++) {
         curl_slist_append(curlSlist_, (resolve.host + ":" + std::to_string(resolve.ports[i]) + ":" + resolve.addr).c_str());
+    }
     curl_easy_setopt(curl_->handle, CURLOPT_RESOLVE, curlSlist_);
 }
 
