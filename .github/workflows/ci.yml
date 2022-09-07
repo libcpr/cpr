@@ -6,6 +6,72 @@ on:
     branches: [ master ]
 
 jobs:
+  ubuntu-22-04-static-gcc-ssl:
+    runs-on: ubuntu-latest
+    container: ubuntu:22.04
+    steps:
+    - name: Update package list
+      run: apt update
+    - name: Install git
+      run: apt install -y git
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        submodules: true
+    - name: Install libssl-dev
+      run: apt install -y libssl-dev
+    - name: Install cmake
+      run: apt install -y cmake
+    - name: Install build-essential
+      run: apt install -y build-essential
+    - name: "[Release g++] Build & Test"
+      env:
+        CPR_BUILD_TESTS: ON
+      uses: ashutoshvarma/action-cmake-build@master
+      with:
+        build-dir: ${{github.workspace}}/build
+        source-dir: ${{github.workspace}}
+        cc: gcc
+        cxx: g++
+        build-type: Release
+        run-test: true
+        ctest-options: -V
+        configure-options: -DBUILD_SHARED_LIBS=OFF
+  
+  ubuntu-22-04-clang-static-ssl:
+    runs-on: ubuntu-latest
+    container: ubuntu:22.04
+    steps:
+    - name: Update package list
+      run: apt update
+    - name: Install git
+      run: apt install -y git
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        submodules: true
+    - name: Install libssl-dev
+      run: apt install -y libssl-dev
+    - name: Install cmake
+      run: apt install -y cmake
+    - name: Install build-essential
+      run: apt install -y build-essential
+    - name: Install clang
+      run: apt install -y clang
+    - name: "[Release g++] Build & Test"
+      env:
+        CPR_BUILD_TESTS: ON
+      uses: ashutoshvarma/action-cmake-build@master
+      with:
+        build-dir: ${{github.workspace}}/build
+        source-dir: ${{github.workspace}}
+        cc: clang
+        cxx: clang++
+        build-type: Release
+        run-test: true
+        ctest-options: -V
+        configure-options: -DBUILD_SHARED_LIBS=OFF
+        
   ubuntu-20-shared-gcc-ssl:
     runs-on: ubuntu-20.04
     steps:
@@ -30,56 +96,6 @@ jobs:
         run-test: true
         ctest-options: -V
         configure-options: -DBUILD_SHARED_LIBS=ON
-  
-  clang-tidy:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-      with:
-        submodules: true
-    - name: Update package list
-      run: sudo apt update
-    - name: Install libssl-dev
-      run: sudo apt install libssl-dev
-    - name: Install clang-tidy
-      run: sudo apt install clang-tidy
-    - name: "[Release g++] Build & Test"
-      env:
-        CPR_BUILD_TESTS: ON
-      uses: ashutoshvarma/action-cmake-build@master
-      with:
-        build-dir: ${{github.workspace}}/build
-        source-dir: ${{github.workspace}}
-        cc: clang
-        cxx: clang++
-        build-type: Release
-        run-test: true
-        ctest-options: -V
-        configure-options: -DCPR_ENABLE_LINTING=ON
-
-  cppcheck:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-      with:
-        submodules: true
-    - name: Update package list
-      run: sudo apt update
-    - name: Install cppcheck
-      run: sudo apt install cppcheck
-    - name: "[Release g++] Build"
-      env:
-        CPR_ENABLE_CPPCHECK: ON
-      uses: ashutoshvarma/action-cmake-build@master
-      with:
-        build-dir: ${{github.workspace}}/build
-        source-dir: ${{github.workspace}}
-        cc: gcc
-        cxx: g++
-        build-type: Release
-        run-test: false
 
   ubuntu-20-static-gcc-mbedtls:
     runs-on: ubuntu-20.04
@@ -438,7 +454,7 @@ jobs:
       with:
         submodules: true
     - name: Install OpenSSL
-      run: choco install openssl
+      run: choco install openssl -y
     - name: "[Release msvc] Build & Test"
       env:
         CMAKE_GENERATOR: "Visual Studio 17 2022"
@@ -462,7 +478,7 @@ jobs:
       with:
         submodules: true
     - name: Install OpenSSL
-      run: choco install openssl
+      run: choco install openssl -y
     - name: "[Release msvc] Build & Test"
       env:
         CMAKE_GENERATOR: "Visual Studio 17 2022"
@@ -488,13 +504,17 @@ jobs:
     - name: Install OpenSSL
       run: |
         brew install openssl
-        echo 'export PATH="/usr/local/opt/openssl/bin:$PATH"' >> ~/.bash_profile
+        echo 'export PATH="/usr/local/opt/openssl@3/bin:$PATH"' >> /Users/runner/.bash_profile
         source ~/.bash_profile
+        export LDFLAGS="-L/usr/local/opt/openssl@3/lib"
+        export CPPFLAGS="-I/usr/local/opt/openssl@3/include"
+        export PKG_CONFIG_PATH="/usr/local/opt/openssl@3/lib/pkgconfig"
     - name: "[Release clang++] Build & Test"
       env:
         CPR_BUILD_TESTS: ON
-        OPENSSL_ROOT_DIR: "/usr/local/opt/openssl"
-        OPENSSL_LIBRARIES: "/usr/local/opt/openssl/lib"
+        CPR_BUILD_TESTS_SSL: ON
+        OPENSSL_ROOT_DIR: "/usr/local/opt/openssl@3"
+        OPENSSL_LIBRARIES: "/usr/local/opt/openssl@3/lib"
       uses: ashutoshvarma/action-cmake-build@master
       with:
         build-dir: ${{github.workspace}}/build
@@ -516,13 +536,17 @@ jobs:
     - name: Install OpenSSL
       run: |
         brew install openssl
-        echo 'export PATH="/usr/local/opt/openssl/bin:$PATH"' >> ~/.bash_profile
+        echo 'export PATH="/usr/local/opt/openssl@3/bin:$PATH"' >> /Users/runner/.bash_profile
         source ~/.bash_profile
+        export LDFLAGS="-L/usr/local/opt/openssl@3/lib"
+        export CPPFLAGS="-I/usr/local/opt/openssl@3/include"
+        export PKG_CONFIG_PATH="/usr/local/opt/openssl@3/lib/pkgconfig"
     - name: "[Release clang++] Build & Test"
       env:
         CPR_BUILD_TESTS: ON
-        OPENSSL_ROOT_DIR: "/usr/local/opt/openssl"
-        OPENSSL_LIBRARIES: "/usr/local/opt/openssl/lib"
+        CPR_BUILD_TESTS_SSL: OFF
+        OPENSSL_ROOT_DIR: "/usr/local/opt/openssl@3"
+        OPENSSL_LIBRARIES: "/usr/local/opt/openssl@3/lib"
       uses: ashutoshvarma/action-cmake-build@master
       with:
         build-dir: ${{github.workspace}}/build
@@ -544,6 +568,7 @@ jobs:
     - name: "[Release clang++] Build & Test"
       env:
         CPR_BUILD_TESTS: ON
+        CPR_BUILD_TESTS_SSL: OFF
       uses: ashutoshvarma/action-cmake-build@master
       with:
         build-dir: ${{github.workspace}}/build
@@ -565,6 +590,7 @@ jobs:
     - name: "[Release clang++] Build & Test"
       env:
         CPR_BUILD_TESTS: ON
+        CPR_BUILD_TESTS_SSL: OFF
       uses: ashutoshvarma/action-cmake-build@master
       with:
         build-dir: ${{github.workspace}}/build

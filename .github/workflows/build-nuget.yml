@@ -1,0 +1,106 @@
+name: Build NuGet Package
+on:
+  push:
+    tags: [ '[0-9]+.[0-9]+.[0-9]+' ]
+  pull_request:
+    tags: [ '[0-9]+.[0-9]+.[0-9]+' ]
+  workflow_dispatch:
+
+jobs:
+  package-windows-latest:
+    runs-on: windows-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        submodules: true
+    - name: Setup NuGet.exe
+      uses: nuget/setup-nuget@v1
+    - name: "[Release_x86] Build & Install"
+      env:
+        CMAKE_GENERATOR: "Visual Studio 17 2022"
+      uses: ashutoshvarma/action-cmake-build@master
+      with:
+        build-dir: ${{github.workspace}}/build
+        source-dir: ${{github.workspace}}
+        build-type: Release
+        target: ALL_BUILD
+        run-test: false
+        configure-options: -DBUILD_SHARED_LIBS=ON -DCURL_ZLIB=OFF -A Win32
+        install-build: true
+        install-options: --prefix ${{github.workspace}}\install --config Release
+    - name: "[Release_x86] Copy install files for Release_x86"
+      run: xcopy /e /i /y ${{github.workspace}}\install ${{github.workspace}}\nuget\build\native\x86\Release && xcopy /e /i /y ${{github.workspace}}\install ${{github.workspace}}\nuget\build\native\Win32\Release
+    - name: "[Release_x86] Clean build"
+      run: rm -r -fo ${{github.workspace}}/build
+    - name: "[Debug_x86] Build & Install"
+      env:
+        CMAKE_GENERATOR: "Visual Studio 17 2022"
+      uses: ashutoshvarma/action-cmake-build@master
+      with:
+        build-dir: ${{github.workspace}}/build
+        source-dir: ${{github.workspace}}
+        build-type: Debug
+        target: ALL_BUILD
+        run-test: false
+        configure-options: -DBUILD_SHARED_LIBS=ON -DCURL_ZLIB=OFF -A Win32
+        install-build: true
+        install-options: --prefix ${{github.workspace}}\install --config Debug
+    - name: "[Debug_x86] Copy install files for Debug_x86"
+      run: xcopy /e /i /y ${{github.workspace}}\install ${{github.workspace}}\nuget\build\native\x86\Debug && xcopy /e /i /y ${{github.workspace}}\install ${{github.workspace}}\nuget\build\native\Win32\Debug
+    - name: "[Debug_x86] Clean build"
+      run: rm -r -fo ${{github.workspace}}/build
+    - name: "[Release_x64] Build & Install"
+      env:
+        CMAKE_GENERATOR: "Visual Studio 17 2022"
+      uses: ashutoshvarma/action-cmake-build@master
+      with:
+        build-dir: ${{github.workspace}}/build
+        source-dir: ${{github.workspace}}
+        build-type: Release
+        target: ALL_BUILD
+        run-test: false
+        configure-options: -DBUILD_SHARED_LIBS=ON -DCURL_ZLIB=OFF -A x64
+        install-build: true
+        install-options: --prefix ${{github.workspace}}\install --config Release
+    - name: "[Release_x64] Copy install files for Release_x64"
+      run: xcopy /e /i /y ${{github.workspace}}\install ${{github.workspace}}\nuget\build\native\x64\Release
+    - name: "[Release_x64] Clean build"
+      run: rm -r -fo ${{github.workspace}}/build
+    - name: "[Debug_x64] Build & Install"
+      env:
+        CMAKE_GENERATOR: "Visual Studio 17 2022"
+      uses: ashutoshvarma/action-cmake-build@master
+      with:
+        build-dir: ${{github.workspace}}/build
+        source-dir: ${{github.workspace}}
+        build-type: Debug
+        target: ALL_BUILD
+        run-test: false
+        configure-options: -DBUILD_SHARED_LIBS=ON -DCURL_ZLIB=OFF -A x64
+        install-build: true
+        install-options: --prefix ${{github.workspace}}\install --config Debug
+    - name: "[Debug_x64] Copy install files for Debug_x64"
+      run: xcopy /e /i /y ${{github.workspace}}\install ${{github.workspace}}\nuget\build\native\x64\Debug
+    - name: "Get latest release tag"
+      uses: oprypin/find-latest-tag@v1
+      with:
+        repository: libcpr/cpr
+        releases-only: true
+      id: find_release_tag
+    - name: "Copy Readme.md"
+      run: xcopy /y ${{github.workspace}}\README.md ${{github.workspace}}\nuget
+    - name: "Create NuGet package"
+      env: 
+        VERSION: ${{ steps.find_release_tag.outputs.tag }}
+        COMMIT_HASH: ${{ github.sha }}
+      run: nuget pack ${{github.workspace}}\nuget\libcpr.nuspec -OutputDirectory ${{github.workspace}} -Properties "VERSION=$ENV:VERSION;COMMIT_HASH=$ENV:COMMIT_HASH"
+    - name: "Upload artifact"
+      uses: actions/upload-artifact@v3
+      with:
+        name: artifact-nuget
+        path: ${{github.workspace}}\*.nupkg
+    - name: "Publish package to NuGet.org"
+      env:
+        NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+      run: nuget push ${{github.workspace}}\*.nupkg $ENV:NUGET_API_KEY -Source https://api.nuget.org/v3/index.json

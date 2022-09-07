@@ -36,8 +36,7 @@ TEST(PrepareTests, OptionsTests) {
     std::string expected_text{""};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
-    EXPECT_EQ(std::string{"GET, POST, PUT, DELETE, PATCH, OPTIONS"},
-              response.header["Access-Control-Allow-Methods"]);
+    EXPECT_EQ(std::string{"GET, POST, PUT, DELETE, PATCH, OPTIONS"}, response.header["Access-Control-Allow-Methods"]);
     EXPECT_EQ(200, response.status_code);
     EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
@@ -64,7 +63,7 @@ TEST(PrepareTests, PatchTest) {
 
 TEST(PrepareTests, MultipleDeleteHeadPutGetPostTest) {
     Url url{server->GetBaseUrl() + "/header_reflect.html"};
-    Url urlPost{server->GetBaseUrl() + "/reflect_post.html"};
+    Url urlPost{server->GetBaseUrl() + "/post_reflect.html"};
     Url urlPut{server->GetBaseUrl() + "/put.html"};
     Session session;
     for (size_t i = 0; i < 3; ++i) {

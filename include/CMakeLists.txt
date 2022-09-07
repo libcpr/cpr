@@ -1,33 +1,41 @@
 cmake_minimum_required(VERSION 3.15)
 
-target_include_directories(cpr PUBLIC  
-    $<INSTALL_INTERFACE:include>    
+target_include_directories(cpr PUBLIC
+    $<INSTALL_INTERFACE:include>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
     $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/cpr_generated_includes/>)
 
 target_sources(cpr PRIVATE
-     # Header files (useful in IDEs)
+    # Header files (useful in IDEs)
+    cpr/accept_encoding.h
     cpr/api.h
+    cpr/async.h
     cpr/auth.h
     cpr/bearer.h
     cpr/body.h
+    cpr/buffer.h
+    cpr/cert_info.h
     cpr/cookies.h
     cpr/cpr.h
     cpr/cprtypes.h
     cpr/curlholder.h
     cpr/curlholder.h
-    cpr/digest.h
     cpr/error.h
+    cpr/file.h
     cpr/limit_rate.h
+    cpr/local_port.h
+    cpr/local_port_range.h
     cpr/multipart.h
-    cpr/ntlm.h
     cpr/parameters.h
     cpr/payload.h
     cpr/proxies.h
     cpr/proxyauth.h
     cpr/response.h
     cpr/session.h
+    cpr/singleton.h
+    cpr/ssl_ctx.h
     cpr/ssl_options.h
+    cpr/threadpool.h
     cpr/timeout.h
     cpr/unix_socket.h
     cpr/util.h
@@ -35,8 +43,17 @@ target_sources(cpr PRIVATE
     cpr/interface.h
     cpr/redirect.h
     cpr/http_version.h
+    cpr/interceptor.h
+    cpr/filesystem.h
+    cpr/curlmultiholder.h
+    cpr/multiperform.h
     ${PROJECT_BINARY_DIR}/cpr_generated_includes/cpr/cprver.h
 )
+
+# Filesystem
+if ((CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 9.1) OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    target_link_libraries(cpr PUBLIC stdc++fs)
+endif()
 
 install(DIRECTORY cpr DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 install(DIRECTORY ${PROJECT_BINARY_DIR}/cpr_generated_includes/cpr DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})

@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cassert>
 #include <cctype>
+#include <chrono>
 #include <cstdint>
 #include <fstream>
 #include <iomanip>
@@ -11,16 +12,45 @@
 #include <string>
 #include <vector>
 
-namespace cpr {
-namespace util {
+#if defined(_Win32)
+#include <Windows.h>
+#else
+// https://en.cppreference.com/w/c/string/byte/memset
+// NOLINTNEXTLINE(bugprone-reserved-identifier, cert-dcl37-c, cert-dcl51-cpp, cppcoreguidelines-macro-usage)
+#define __STDC_WANT_LIB_EXT1__ 1
+#include <cstring>
+#endif
+
+namespace cpr::util {
+
+enum class CurlHTTPCookieField : size_t {
+    Domain = 0,
+    IncludeSubdomains,
+    Path,
+    HttpsOnly,
+    Expires,
+    Name,
+    Value,
+};
 
 Cookies parseCookies(curl_slist* raw_cookies) {
+    const int CURL_HTTP_COOKIE_SIZE = static_cast<int>(CurlHTTPCookieField::Value) + 1;
     Cookies cookies;
     for (curl_slist* nc = raw_cookies; nc; nc = nc->next) {
         std::vector<std::string> tokens = cpr::util::split(nc->data, '\t');
-        std::string value = tokens.back();
-        tokens.pop_back();
-        cookies[tokens.back()] = value;
+        while (tokens.size() < CURL_HTTP_COOKIE_SIZE) {
+            tokens.emplace_back("");
+        }
+        std::time_t expires = static_cast<time_t>(std::stoul(tokens.at(static_cast<size_t>(CurlHTTPCookieField::Expires))));
+        cookies.emplace_back(Cookie{
+                tokens.at(static_cast<size_t>(CurlHTTPCookieField::Name)),
+                tokens.at(static_cast<size_t>(CurlHTTPCookieField::Value)),
+                tokens.at(static_cast<size_t>(CurlHTTPCookieField::Domain)),
+                isTrue(tokens.at(static_cast<size_t>(CurlHTTPCookieField::IncludeSubdomains))),
+                tokens.at(static_cast<size_t>(CurlHTTPCookieField::Path)),
+                isTrue(tokens.at(static_cast<size_t>(CurlHTTPCookieField::HttpsOnly))),
+                std::chrono::system_clock::from_time_t(expires),
+        });
     }
     return cookies;
 }
@@ -37,7 +67,6 @@ Header parseHeader(const std::string& headers, std::string* status_line, std::st
     }
 
     for (std::string& line : lines) {
-        // NOLINTNEXTLINE (cppcoreguidelines-avoid-magic-numbers)
         if (line.substr(0, 5) == "HTTP/") {
             // set the status_line if it was given
             if ((status_line != nullptr) || (reason != nullptr)) {
@@ -116,18 +145,15 @@ size_t writeUserFunction(char* ptr, size_t size, size_t nmemb, const WriteCallba
 }
 
 #if LIBCURL_VERSION_NUM < 0x072000
-int progressUserFunction(const ProgressCallback* progress, double dltotal, double dlnow,
-                         double ultotal, double ulnow) {
+int progressUserFunction(const ProgressCallback* progress, double dltotal, double dlnow, double ultotal, double ulnow) {
 #else
-int progressUserFunction(const ProgressCallback* progress, curl_off_t dltotal, curl_off_t dlnow,
-                         curl_off_t ultotal, curl_off_t ulnow) {
+int progressUserFunction(const ProgressCallback* progress, curl_off_t dltotal, curl_off_t dlnow, curl_off_t ultotal, curl_off_t ulnow) {
 #endif
     return (*progress)(dltotal, dlnow, ultotal, ulnow) ? 0 : 1;
-}
+} // namespace cpr::util
 
-int debugUserFunction(CURL* /*handle*/, curl_infotype type, char* data, size_t size,
-                      const DebugCallback* debug) {
-    (*debug)(DebugCallback::InfoType(type), std::string(data, size));
+int debugUserFunction(CURL* /*handle*/, curl_infotype type, char* data, size_t size, const DebugCallback* debug) {
+    (*debug)(static_cast<DebugCallback::InfoType>(type), std::string(data, size));
     return 0;
 }
 
@@ -161,5 +187,50 @@ std::string urlDecode(const std::string& s) {
     return holder.urlDecode(s);
 }
 
-} // namespace util
-} // namespace cpr
+#if defined(__STDC_LIB_EXT1__)
+void secureStringClear(std::string& s) {
+    if (s.empty()) {
+        return;
+    }
+    memset_s(&s.front(), s.length(), 0, s.length());
+    s.clear();
+}
+#elif defined(_WIN32)
+void secureStringClear(std::string& s) {
+    if (s.empty()) {
+        return;
+    }
+    SecureZeroMemory(&s.front(), s.length());
+    s.clear();
+}
+#else
+#if defined(__clang__)
+#pragma clang optimize off // clang
+#elif defined(__GNUC__) || defined(__MINGW32__) || defined(__MINGW32__) || defined(__MINGW64__)
+#pragma GCC push_options   // g++
+#pragma GCC optimize("O0") // g++
+#endif
+void secureStringClear(std::string& s) {
+    if (s.empty()) {
+        return;
+    }
+    // NOLINTNEXTLINE (readability-container-data-pointer)
+    char* ptr = &(s[0]);
+    memset(ptr, '\0', s.length());
+    s.clear();
+}
+
+#if defined(__clang__)
+#pragma clang optimize on // clang
+#elif defined(__GNUC__) || defined(__MINGW32__) || defined(__MINGW32__) || defined(__MINGW64__)
+#pragma GCC pop_options // g++
+#endif
+#endif
+
+bool isTrue(const std::string& s) {
+    std::string temp_string{s};
+    std::transform(temp_string.begin(), temp_string.end(), temp_string.begin(), [](unsigned char c) { return std::tolower(c); });
+    return temp_string == "true";
+}
+
+} // namespace cpr::util

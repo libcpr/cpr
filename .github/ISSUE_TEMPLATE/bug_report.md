@@ -7,6 +7,8 @@ assignees: ''
 
 ---
 
+<!-- ⚠️⚠️ If you do not use this template, we will simply close your issue. There are no exceptions for this! These steps, especially the part at the end, are very important to solve your problem quickly and efficiently. Please remember that we are not paid to solve or even answer your issues, so we do all this work in OUR free time. ⚠️⚠️ -->
+
 <!-- Provide a general summary of the issue in the Title above -->
 <!-- Use Markdown to highlight and format your code! -->
 <!-- https://guides.github.com/pdfs/markdown-cheatsheet-online.pdf -->

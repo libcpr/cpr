@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "cpr/cert_info.h"
 #include "cpr/cookies.h"
 #include "cpr/cprtypes.h"
 #include "cpr/error.h"
@@ -16,8 +17,11 @@
 
 namespace cpr {
 
+class MultiPerform;
+
 class Response {
   private:
+    friend MultiPerform;
     std::shared_ptr<CurlHolder> curl_{nullptr};
 
   public:
@@ -41,7 +45,7 @@ class Response {
 
     Response() = default;
     Response(std::shared_ptr<CurlHolder> curl, std::string&& p_text, std::string&& p_header_string, Cookies&& p_cookies, Error&& p_error);
-    std::vector<std::string> GetCertInfo();
+    std::vector<CertInfo> GetCertInfos();
     Response(const Response& other) = default;
     Response(Response&& old) noexcept = default;
     ~Response() noexcept = default;

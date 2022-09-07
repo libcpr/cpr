@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.15)
-project(cpr VERSION 1.8.1 LANGUAGES CXX)
+project(cpr VERSION 1.9.0 LANGUAGES CXX)
 
 math(EXPR cpr_VERSION_NUM "${cpr_VERSION_MAJOR} * 0x10000 + ${cpr_VERSION_MINOR} * 0x100 + ${cpr_VERSION_PATCH}" OUTPUT_FORMAT HEXADECIMAL)
 configure_file("${cpr_SOURCE_DIR}/cmake/cprver.h.in" "${cpr_BINARY_DIR}/cpr_generated_includes/cpr/cprver.h")
@@ -10,11 +10,28 @@ if(${CMAKE_PROJECT_NAME} STREQUAL ${PROJECT_NAME})
     set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "CMake")
     set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
     set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib)
+else()
+    # Check required c++ standard of parent project
+    if(CMAKE_CXX_STANDARD)
+        set(PARENT_CXX_STANDARD ${CMAKE_CXX_STANDARD})
+        message(STATUS "CXX standard of parent project: ${PARENT_CXX_STANDARD}")
+    endif()
 endif()
 
 # Avoid the dll boilerplate code for windows
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
-set(CMAKE_CXX_STANDARD 11)
+
+if (PARENT_CXX_STANDARD)
+    # Don't set CMAKE_CXX_STANDARD if it is already set by parent project
+    if (PARENT_CXX_STANDARD LESS 17)
+        message(FATAL_ERROR "cpr ${cpr_VERSION} does not support ${PARENT_CXX_STANDARD}. Please use cpr <= 1.9.x")
+    endif()
+else()
+    # Set standard version if not already set by potential parent project
+    set(CMAKE_CXX_STANDARD 17)
+endif()
+
+message(STATUS "CXX standard: ${CMAKE_CXX_STANDARD}")
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CPR_LIBRARIES cpr CACHE INTERNAL "")
@@ -36,8 +53,9 @@ message(STATUS "C++ Requests CMake Options")
 message(STATUS "=======================================================")
 cpr_option(CPR_GENERATE_COVERAGE "Set to ON to generate coverage reports." OFF)
 cpr_option(CPR_CURL_NOSIGNAL "Set to ON to disable use of signals in libcurl." OFF)
+cpr_option(CURL_VERBOSE_LOGGING "Curl verbose logging during building curl" OFF)
 cpr_option(CPR_USE_SYSTEM_GTEST "If ON, this project will look in the system paths for an installed gtest library. If none is found it will use the build in one." OFF)
-cpr_option(CPR_FORCE_USE_SYSTEM_CURL "If enabled we will use the curl lib already installed on this system." OFF)
+cpr_option(CPR_USE_SYSTEM_CURL "If enabled we will use the curl lib already installed on this system." OFF)
 cpr_option(CPR_ENABLE_SSL "Enables or disables the SSL backend. Required to perform HTTPS requests." ON)
 cpr_option(CPR_FORCE_OPENSSL_BACKEND "Force to use the OpenSSL backend. If CPR_FORCE_OPENSSL_BACKEND, CPR_FORCE_DARWINSSL_BACKEND, CPR_FORCE_MBEDTLS_BACKEND, and CPR_FORCE_WINSSL_BACKEND are set to to OFF, cpr will try to automatically detect the best available SSL backend (WinSSL - Windows, OpenSSL - Linux, DarwinSSL - Mac ...)." OFF)
 cpr_option(CPR_FORCE_WINSSL_BACKEND "Force to use the WinSSL backend. If CPR_FORCE_OPENSSL_BACKEND, CPR_FORCE_DARWINSSL_BACKEND, CPR_FORCE_MBEDTLS_BACKEND, and CPR_FORCE_WINSSL_BACKEND are set to to OFF, cpr will try to automatically detect the best available SSL backend (WinSSL - Windows, OpenSSL - Linux, DarwinSSL - Mac ...)." OFF)
@@ -47,7 +65,13 @@ cpr_option(CPR_ENABLE_LINTING "Set to ON to enable clang linting." OFF)
 cpr_option(CPR_ENABLE_CPPCHECK "Set to ON to enable Cppcheck static analysis. Requires CPR_BUILD_TESTS and CPR_BUILD_TESTS_SSL to be OFF to prevent checking google tests source code." OFF)
 cpr_option(CPR_BUILD_TESTS "Set to ON to build cpr tests." OFF)
 cpr_option(CPR_BUILD_TESTS_SSL "Set to ON to build cpr ssl tests" ${CPR_BUILD_TESTS})
+cpr_option(CPR_SKIP_CA_BUNDLE_SEARCH "Skip searching for Certificate Authority certs. Turn ON systems like iOS where file access is restricted and prevents https from working." OFF)
 message(STATUS "=======================================================")
+
+if (CPR_FORCE_USE_SYSTEM_CURL)
+    message(WARNING "The variable CPR_FORCE_USE_SYSTEM_CURL is deprecated, please use CPR_USE_SYSTEM_CURL instead")
+    set(CPR_USE_SYSTEM_CURL ${CPR_FORCE_USE_SYSTEM_CURL})
+endif()
 
 include(GNUInstallDirs)
 include(FetchContent)
@@ -137,6 +161,12 @@ if(CPR_ENABLE_SSL)
     endif()
 endif()
 
+if(SSL_BACKEND_USED STREQUAL "OpenSSL")
+# Fix missing OpenSSL includes for Windows since in 'ssl_ctx.cpp' we include OpenSSL directly
+find_package(OpenSSL REQUIRED)
+    add_compile_definitions(OPENSSL_BACKEND_USED)
+endif()
+
 get_property(isMultiConfig GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
 if (NOT isMultiConfig)
     set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "${ALLOWED_BUILD_TYPES}")
@@ -155,21 +185,21 @@ else ()
 endif()
 
 # Curl configuration
-if(CPR_FORCE_USE_SYSTEM_CURL)
+if(CPR_USE_SYSTEM_CURL)
     if(CPR_ENABLE_SSL)
         find_package(CURL COMPONENTS HTTP HTTPS)
         if(CURL_FOUND)
             message(STATUS "Curl ${CURL_VERSION_STRING} found on this system.")
             # To be able to load certificates under Windows when using OpenSSL:
-            if(CURL_USE_OPENSSL AND WIN32 AND (NOT (CURL_VERSION_STRING VERSION_GREATER_EQUAL "7.71.0")))
+            if(CMAKE_USE_OPENSSL AND WIN32 AND (NOT (CURL_VERSION_STRING VERSION_GREATER_EQUAL "7.71.0")))
                 message(FATAL_ERROR "Your system curl version (${CURL_VERSION_STRING}) is too old to support OpenSSL on Windows which requires curl >= 7.71.0. Update your curl version, use WinSSL, disable SSL or use the build in version of curl.")
             endif()
         else()
             find_package(CURL COMPONENTS HTTP)
             if(CURL_FOUND)
-                message(FATAL_ERROR "Curl found on this system but WITHOUT HTTPS/SSL support. Either disable SSL by setting CPR_ENABLE_SSL to OFF or use the build in version of curl by setting CPR_FORCE_USE_SYSTEM_CURL to OFF.")
+                message(FATAL_ERROR "Curl found on this system but WITHOUT HTTPS/SSL support. Either disable SSL by setting CPR_ENABLE_SSL to OFF or use the build in version of curl by setting CPR_USE_SYSTEM_CURL to OFF.")
             else()
-                message(FATAL_ERROR "Curl not found on this system. To use the build in version set CPR_FORCE_USE_SYSTEM_CURL to OFF.")
+                message(FATAL_ERROR "Curl not found on this system. To use the build in version set CPR_USE_SYSTEM_CURL to OFF.")
             endif()
         endif()
     else()
@@ -177,7 +207,7 @@ if(CPR_FORCE_USE_SYSTEM_CURL)
         if(CURL_FOUND)
             message(STATUS "Curl found on this system.")
         else()
-            message(FATAL_ERROR "Curl not found on this system. To use the build in version set CPR_FORCE_USE_SYSTEM_CURL to OFF.")
+            message(FATAL_ERROR "Curl not found on this system. To use the build in version set CPR_USE_SYSTEM_CURL to OFF.")
         endif()
     endif()
 else()
@@ -198,42 +228,51 @@ else()
     set(BUILD_CURL_EXE OFF CACHE INTERNAL "" FORCE)
     set(BUILD_TESTING OFF)
 
+    if (CURL_VERBOSE_LOGGING)
+        message(STATUS "Enabled curl debug features")
+        set(ENABLE_DEBUG ON CACHE INTERNAL "" FORCE)
+    endif()
+
     if (CPR_ENABLE_SSL)
         set(SSL_ENABLED ON CACHE INTERNAL "" FORCE)
         if(ANDROID)
             set(CURL_CA_PATH "/system/etc/security/cacerts" CACHE INTERNAL "")
+        elseif(CPR_SKIP_CA_BUNDLE_SEARCH)
+            set(CURL_CA_PATH "none" CACHE INTERNAL "")
         else()
             set(CURL_CA_PATH "auto" CACHE INTERNAL "")
         endif()
 
-        if(NOT DEFINED CURL_CA_BUNDLE)
+        if(CPR_SKIP_CA_BUNDLE_SEARCH)
+            set(CURL_CA_BUNDLE "none" CACHE INTERNAL "")
+        elseif(NOT DEFINED CURL_CA_BUNDLE)
             set(CURL_CA_BUNDLE "auto" CACHE INTERNAL "")
         endif()
 
         if(SSL_BACKEND_USED STREQUAL "WinSSL")
-            set(CURL_USE_SCHANNEL ON CACHE INTERNAL "" FORCE)
+            set(CMAKE_USE_SCHANNEL ON CACHE INTERNAL "" FORCE)
         endif()
 
         if(SSL_BACKEND_USED STREQUAL "OpenSSL")
-            set(CURL_USE_OPENSSL ON CACHE INTERNAL "" FORCE)
+            set(CMAKE_USE_OPENSSL ON CACHE INTERNAL "" FORCE)
         endif()
 
         if(SSL_BACKEND_USED STREQUAL "DarwinSSL")
-            set(CURL_USE_SECTRANSP ON CACHE INTERNAL "" FORCE)
+            set(CMAKE_USE_SECTRANSP ON CACHE INTERNAL "" FORCE)
         endif()
 
         if(SSL_BACKEND_USED STREQUAL "MbedTLS")
-            set(CURL_USE_MBEDTLS ON CACHE INTERNAL "" FORCE)
+            set(CMAKE_USE_MBEDTLS ON CACHE INTERNAL "" FORCE)
         endif()
 
         message(STATUS "Enabled curl SSL")
     else()
         set(SSL_ENABLED OFF CACHE INTERNAL "" FORCE)
         set(CURL_CA_PATH "none" CACHE INTERNAL "" FORCE)
-        set(CURL_USE_SCHANNEL OFF CACHE INTERNAL "" FORCE)
-        set(CURL_USE_OPENSSL OFF CACHE INTERNAL "" FORCE)
-        set(CURL_USE_SECTRANSP OFF CACHE INTERNAL "" FORCE)
-        set(CURL_USE_MBEDTLS OFF CACHE INTERNAL "" FORCE)
+        set(CMAKE_USE_SCHANNEL OFF CACHE INTERNAL "" FORCE)
+        set(CMAKE_USE_OPENSSL OFF CACHE INTERNAL "" FORCE)
+        set(CMAKE_USE_SECTRANSP OFF CACHE INTERNAL "" FORCE)
+        set(CMAKE_USE_MBEDTLS OFF CACHE INTERNAL "" FORCE)
         message(STATUS "Disabled curl SSL")
     endif()
     # Disable linting for curl
@@ -249,8 +288,8 @@ else()
         set(CURL_USE_OPENSSL ON)
     endif()
     FetchContent_Declare(curl
-                         URL                    https://github.com/curl/curl/releases/download/curl-7_81_0/curl-7.81.0.tar.xz
-                         URL_HASH               SHA256=a067b688d1645183febc31309ec1f3cdce9213d02136b6a6de3d50f69c95a7d3 # the file hash for curl-7.81.0.tar.xz
+                         URL                    https://github.com/curl/curl/releases/download/curl-7_80_0/curl-7.80.0.tar.xz
+                         URL_HASH               SHA256=a132bd93188b938771135ac7c1f3ac1d3ce507c1fcbef8c471397639214ae2ab # the file hash for curl-7.80.0.tar.xz
                          USES_TERMINAL_DOWNLOAD TRUE)   # <---- This is needed only for Ninja to show download progress
     FetchContent_MakeAvailable(curl)
 
@@ -324,8 +363,8 @@ if(CPR_BUILD_TESTS)
     clear_variable(DESTINATION CMAKE_CXX_CLANG_TIDY BACKUP CMAKE_CXX_CLANG_TIDY_BKP)
 
     FetchContent_Declare(mongoose 
-                         URL                    https://github.com/cesanta/mongoose/archive/6.18.tar.gz
-                         URL_HASH               SHA256=f5c10346abc9c72f7cac7885d853ca064fb09aad57580433941a8fd7a3543769 # the hash for 6.18.tar.gz
+                         URL                    https://github.com/cesanta/mongoose/archive/7.7.tar.gz
+                         URL_HASH               SHA256=4e5733dae31c3a81156af63ca9aa3a6b9b736547f21f23c3ab2f8e3f1ecc16c0 # the hash for 7.7.tar.gz
                          USES_TERMINAL_DOWNLOAD TRUE)   # <---- This is needed only for Ninja to show download progress
     # We can not use FetchContent_MakeAvailable, since we need to patch mongoose to use CMake
     if (NOT mongoose_POPULATED)
