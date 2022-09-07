@@ -1,0 +1,69 @@
+# Based on: https://www.feistyduck.com/library/openssl-cookbook/online/openssl-command-line/private-ca-creating-root.html
+[default]
+name                    = root-ca
+default_ca              = ca_default
+name_opt                = utf8,esc_ctrl,multiline,lname,align
+
+[ca_dn]
+countryName             = "GB"
+organizationName        = "Example"
+commonName              = "Root CA"
+
+[ca_default]
+home                    = ./${ENV::CA_PATH}
+database                = $home/db/index
+serial                  = $home/db/serial
+certificate             = ./${ENV::CRT_PATH}/$name.crt
+private_key             = ./${ENV::KEY_PATH}/$name.key
+RANDFILE                = $home/private/random
+new_certs_dir           = $home/certificates
+unique_subject          = no
+copy_extensions         = none
+default_days            = 3650
+default_md              = sha256
+policy                  = policy_cn_supplied
+
+[policy_cn_supplied]
+countryName             = optional
+stateOrProvinceName     = optional
+organizationName        = optional
+organizationalUnitName  = optional
+commonName              = supplied
+emailAddress            = optional
+
+[req]
+default_bits            = 4096
+encrypt_key             = yes
+default_md              = sha256
+utf8                    = yes
+string_mask             = utf8only
+prompt                  = no
+distinguished_name      = ca_dn
+req_extensions          = ca_ext
+
+[ca_ext]
+basicConstraints        = critical,CA:true
+keyUsage                = critical,keyCertSign
+subjectKeyIdentifier    = hash
+nameConstraints         = @name_constraints
+
+
+[server_ext]
+authorityKeyIdentifier  = keyid:always
+basicConstraints        = critical,CA:false
+extendedKeyUsage        = clientAuth,serverAuth
+keyUsage                = critical,digitalSignature,keyEncipherment
+subjectKeyIdentifier    = hash
+
+[client_ext]
+authorityKeyIdentifier  = keyid:always
+basicConstraints        = critical,CA:false
+extendedKeyUsage        = clientAuth
+keyUsage                = critical,digitalSignature
+subjectKeyIdentifier    = hash
+
+[name_constraints]
+permitted;DNS.0=localhost
+permitted;IP.0=127.0.0.1/255.0.0.0
+permitted;IP.1=::1/ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff
+

@@ -46,8 +46,7 @@ TEST(ErrorTests, ConnectTimeoutFailure) {
     Response response = cpr::Get(url, cpr::ConnectTimeout{1});
     EXPECT_EQ(0, response.status_code);
     // Sometimes a CONNECTION_FAILURE happens before the OPERATION_TIMEDOUT:
-    EXPECT_TRUE(response.error.code == ErrorCode::OPERATION_TIMEDOUT ||
-                response.error.code == ErrorCode::CONNECTION_FAILURE);
+    EXPECT_TRUE(response.error.code == ErrorCode::OPERATION_TIMEDOUT || response.error.code == ErrorCode::CONNECTION_FAILURE);
 }
 
 TEST(ErrorTests, ChronoConnectTimeoutFailure) {
@@ -55,21 +54,20 @@ TEST(ErrorTests, ChronoConnectTimeoutFailure) {
     Response response = cpr::Get(url, cpr::ConnectTimeout{std::chrono::milliseconds{1}});
     EXPECT_EQ(0, response.status_code);
     // Sometimes a CONNECTION_FAILURE happens before the OPERATION_TIMEDOUT:
-    EXPECT_TRUE(response.error.code == ErrorCode::OPERATION_TIMEDOUT ||
-                response.error.code == ErrorCode::CONNECTION_FAILURE);
+    EXPECT_TRUE(response.error.code == ErrorCode::OPERATION_TIMEDOUT || response.error.code == ErrorCode::CONNECTION_FAILURE);
 }
 
 TEST(ErrorTests, LowSpeedTimeFailure) {
     Url url{server->GetBaseUrl() + "/low_speed.html"};
     Response response = cpr::Get(url, cpr::LowSpeed{1000, 1});
-    EXPECT_EQ(0, response.status_code);
+    // Do not check for the HTTP status code, since libcurl always provides the status code of the header if it was received
     EXPECT_EQ(ErrorCode::OPERATION_TIMEDOUT, response.error.code);
 }
 
 TEST(ErrorTests, LowSpeedBytesFailure) {
     Url url{server->GetBaseUrl() + "/low_speed_bytes.html"};
     Response response = cpr::Get(url, cpr::LowSpeed{1000, 1});
-    EXPECT_EQ(0, response.status_code);
+    // Do not check for the HTTP status code, since libcurl always provides the status code of the header if it was received
     EXPECT_EQ(ErrorCode::OPERATION_TIMEDOUT, response.error.code);
 }
 

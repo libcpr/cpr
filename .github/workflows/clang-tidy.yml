@@ -1,0 +1,29 @@
+name: "Test Clang Tidy"
+
+on: [push, pull_request]
+
+jobs:
+  clang-tidy:
+    runs-on: ubuntu-latest
+    container: fedora:latest
+    steps:
+    - name: Update package list
+      run: sudo dnf update -y
+    - name: Install dependencies
+      run: sudo dnf install -y openssl-devel cmake git gcc clang ninja-build
+    - name: Install clang-tidy
+      run: sudo dnf install -y clang-tools-extra
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: "[Release g++] Build & Test"
+      env:
+        CPR_BUILD_TESTS: ON
+      uses: ashutoshvarma/action-cmake-build@master
+      with:
+        build-dir: ${{github.workspace}}/build
+        source-dir: ${{github.workspace}}
+        cc: clang
+        cxx: clang++
+        build-type: Release
+        run-test: false
+        configure-options: -DCPR_ENABLE_LINTING=ON

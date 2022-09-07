@@ -1,0 +1,19 @@
+name: "Test Clang Format"
+
+on: [push, pull_request]
+
+jobs:
+  clang-format:
+    runs-on: ubuntu-latest
+    container: fedora:latest
+    steps:
+    - name: Update package list
+      run: sudo dnf update -y
+    - name: Install dependencies
+      run: sudo dnf install -y openssl-devel cmake git gcc clang ninja-build
+    - name: Install clang-tidy
+      run: sudo dnf install -y clang-tools-extra
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Check format
+      uses: RafikFarhad/clang-format-github-action@v2.1.0
