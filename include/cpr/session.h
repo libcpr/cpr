@@ -45,11 +45,15 @@ class Interceptor;
 class MultiPerform;
 
 class Session : public std::enable_shared_from_this<Session> {
+  private:
+    curl_slist * curlSlist_ = nullptr;
   public:
     Session();
     Session(const Session& other) = delete;
 
-    ~Session() = default;
+    ~Session() {
+      curl_slist_free_all(curlSlist_);
+    }
 
     Session& operator=(Session&& old) noexcept = default;
     Session& operator=(const Session& other) = delete;
