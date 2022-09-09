@@ -46,14 +46,12 @@ class Interceptor;
 class MultiPerform;
 
 class Session : public std::enable_shared_from_this<Session> {
-  private:
-    curl_slist * curlSlist_ = nullptr;
   public:
     Session();
     Session(const Session& other) = delete;
 
     ~Session() {
-      curl_slist_free_all(curlSlist_);
+      curl_slist_free_all(resolveCurlList_);
     }
 
     Session& operator=(Session&& old) noexcept = default;
@@ -101,6 +99,7 @@ class Session : public std::enable_shared_from_this<Session> {
     void SetHttpVersion(const HttpVersion& version);
     void SetRange(const Range& range);
     void SetResolve(const Resolve& resolve);
+    void SetResolves(const std::vector<Resolve>& resolves);
     void SetMultiRange(const MultiRange& multi_range);
     void SetReserveSize(const ReserveSize& reserve_size);
     void SetAcceptEncoding(const AcceptEncoding& accept_encoding);
@@ -154,6 +153,7 @@ class Session : public std::enable_shared_from_this<Session> {
     void SetOption(const AcceptEncoding& accept_encoding);
     void SetOption(AcceptEncoding&& accept_encoding);
     void SetOption(const Resolve& resolve);
+    void SetOption(const std::vector<Resolve>& resolves);
 
     cpr_off_t GetDownloadFileLength();
     /**
@@ -256,6 +256,8 @@ class Session : public std::enable_shared_from_this<Session> {
     void SetHeaderInternal();
     std::shared_ptr<Session> GetSharedPtrFromThis();
     CURLcode DoEasyPerform();
+
+    curl_slist* resolveCurlList_{nullptr};
 };
 
 template <typename Then>
