@@ -50,9 +50,7 @@ class Session : public std::enable_shared_from_this<Session> {
     Session();
     Session(const Session& other) = delete;
 
-    ~Session() {
-      curl_slist_free_all(resolveCurlList_);
-    }
+    ~Session() = default;
 
     Session& operator=(Session&& old) noexcept = default;
     Session& operator=(const Session& other) = delete;
@@ -256,8 +254,6 @@ class Session : public std::enable_shared_from_this<Session> {
     void SetHeaderInternal();
     std::shared_ptr<Session> GetSharedPtrFromThis();
     CURLcode DoEasyPerform();
-
-    curl_slist* resolveCurlList_{nullptr};
 };
 
 template <typename Then>
