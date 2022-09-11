@@ -277,16 +277,14 @@ void Session::SetResolve(const Resolve& resolve) {
 }
 
 void Session::SetResolves(const std::vector<Resolve>& resolves) {
-    curl_slist_free_all(curl_->resolveCurlList_);
-    curl_->resolveCurlList_ = nullptr;
+    curl_slist_free_all(curl_->resolveCurlList);
+    curl_->resolveCurlList = nullptr;
     for (const Resolve& resolve : resolves) {
-        auto resolve_ports_iterator = resolve.ports.cbegin();
-        curl_->resolveCurlList_ = curl_slist_append(curl_->resolveCurlList_, (resolve.host + ":" + std::to_string(*resolve_ports_iterator) + ":" + resolve.addr).c_str());
-        while (++resolve_ports_iterator != resolve.ports.cend()) {
-            curl_slist_append(curl_->resolveCurlList_, (resolve.host + ":" + std::to_string(*resolve_ports_iterator) + ":" + resolve.addr).c_str());
+        for (const uint16_t port : resolve.ports) {
+            curl_->resolveCurlList = curl_slist_append(curl_->resolveCurlList, (resolve.host + ":" + std::to_string(port) + ":" + resolve.addr).c_str());
         }
     }
-    curl_easy_setopt(curl_->handle, CURLOPT_RESOLVE, curl_->resolveCurlList_);
+    curl_easy_setopt(curl_->handle, CURLOPT_RESOLVE, curl_->resolveCurlList);
 }
 
 void Session::SetParameters(const Parameters& parameters) {
