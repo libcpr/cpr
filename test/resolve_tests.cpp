@@ -27,5 +27,5 @@ TEST(ResolveTests, RedirectToNotResponding) {
     Resolve resolve{"www.example.com", "127.0.0.1", {80}};
     Response response = cpr::Get(url, resolve);
     EXPECT_EQ(0, response.status_code);
-    EXPECT_EQ(response.error.code == ErrorCode::OPERATION_TIMEDOUT || response.error.code == ErrorCode::CONNECTION_FAILURE, response.error.code);
+    EXPECT_TRUE(response.error.code == ErrorCode::OPERATION_TIMEDOUT || response.error.code == ErrorCode::CONNECTION_FAILURE);
 }
