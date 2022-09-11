@@ -1,6 +1,5 @@
 #include <gtest/gtest.h>
 
-#include <memory>
 #include <string>
 
 #include "cpr/cpr.h"
@@ -28,4 +27,10 @@ TEST(ResolveTests, RedirectToNotResponding) {
     Response response = cpr::Get(url, resolve);
     EXPECT_EQ(0, response.status_code);
     EXPECT_TRUE(response.error.code == ErrorCode::OPERATION_TIMEDOUT || response.error.code == ErrorCode::CONNECTION_FAILURE);
+}
+
+int main(int argc, char** argv) {
+    ::testing::InitGoogleTest(&argc, argv);
+    ::testing::AddGlobalTestEnvironment(server);
+    return RUN_ALL_TESTS();
 }
