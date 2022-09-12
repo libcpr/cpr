@@ -7,8 +7,8 @@
 // TODO: This uses public servers for proxies and endpoints. This should be replaced with a source
 // code implementation inside server.cpp
 
-#define HTTP_PROXY "104.131.214.38:3128"
-#define HTTPS_PROXY "104.131.214.38:3128"
+#define HTTP_PROXY "51.159.4.98:80"
+#define HTTPS_PROXY "51.104.53.182:8000"
 
 using namespace cpr;
 
