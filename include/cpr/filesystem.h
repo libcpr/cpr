@@ -9,7 +9,7 @@ namespace fs = std::filesystem;
 #include <experimental/filesystem>
 namespace fs = std::experimental::filesystem;
 //cppcheck-suppress preprocessorErrorDirective
-#elif __has_include(<boost/filesystem.hpp>)
+#elif defined(CPR_USE_BOOST_FILESYSTEM) && __has_include(<boost/filesystem.hpp>)
 #include <boost/filesystem.hpp>
 namespace fs = boost::filesystem;
 #else
