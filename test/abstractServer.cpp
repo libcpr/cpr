@@ -132,4 +132,12 @@ bool AbstractServer::IsConnectionActive(mg_mgr* mgr, mg_connection* conn) {
     return false;
 }
 
+uint16_t AbstractServer::GetRemotePort(const  mg_connection* conn) {
+    return (conn->rem.port >> 8) | (conn->rem.port << 8);
+}
+
+uint16_t AbstractServer::GetLocalPort(const  mg_connection* conn) {
+    return (conn->loc.port >> 8) | (conn->loc.port << 8);
+}
+
 } // namespace cpr

@@ -21,12 +21,20 @@ TEST(ResolveTests, HelloWorldTest) {
     EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
-TEST(ResolveTests, RedirectToNotResponding) {
-    Url url{"http://www.example.com/hello.html"};
-    Resolve resolve{"www.example.com", "127.0.0.1", {80}};
-    Response response = cpr::Get(url, resolve);
-    EXPECT_EQ(0, response.status_code);
-    EXPECT_TRUE(response.error.code == ErrorCode::OPERATION_TIMEDOUT || response.error.code == ErrorCode::CONNECTION_FAILURE);
+TEST(ResolveTests, RedirectMultiple) {
+    Url url1{"http://www.example0.com:" + std::to_string(server->GetPort()) + "/resolve_permanent_redirect.html"};
+    Url url2{"http://www.example1.com:" + std::to_string(server->GetPort()) + "/hello.html"};
+    Resolve resolve1{"www.example0.com", "127.0.0.1", {server->GetPort()}};
+    Resolve resolve2{"www.example1.com", "127.0.0.1", {server->GetPort()}};
+
+    Response response = cpr::Get(url1, std::vector<Resolve>{resolve1, resolve2}, Header{{"RedirectLocation", url2.str()}});
+    
+    std::string expected_text{"Hello world!"};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url2, response.url);
+    EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
 int main(int argc, char** argv) {

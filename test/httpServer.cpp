@@ -352,6 +352,33 @@ void HttpServer::OnRequestPermRedirect(mg_connection* conn, mg_http_message* msg
     mg_http_reply(conn, 301, headers.c_str(), response.c_str());
 }
 
+void HttpServer::OnRequestResolvePermRedirect(mg_connection* conn, mg_http_message* msg) {
+    // Get the requested target location:
+    std::string location;
+    for (mg_http_header& header : msg->headers) {
+        if (!header.name.ptr) {
+            continue;
+        }
+
+        std::string name = std::string(header.name.ptr, header.name.len);
+        if (std::string{"RedirectLocation"} == name) {
+            location = std::string(header.value.ptr, header.value.len);
+            break;
+        }
+    }
+
+    if(location.empty()) {
+        std::string errorMessage{"Redirect location missing"};
+        SendError(conn, 405, errorMessage);
+        return;
+    }
+
+    std::string headers = "Location: " + location + "\r\n";
+    std::string response = "Moved Permanently";
+
+    mg_http_reply(conn, 301, headers.c_str(), response.c_str());
+}
+
 void HttpServer::OnRequestTwoRedirects(mg_connection* conn, mg_http_message* /*msg*/) {
     std::string response = "Moved Permanently";
     std::string headers = "Location: permanent_redirect.html\r\n";
@@ -837,6 +864,8 @@ void HttpServer::OnRequest(mg_connection* conn, mg_http_message* msg) {
         OnRequestTempRedirect(conn, msg);
     } else if (uri == "/permanent_redirect.html") {
         OnRequestPermRedirect(conn, msg);
+    } else if (uri == "/resolve_permanent_redirect.html") {
+        OnRequestResolvePermRedirect(conn, msg);
     } else if (uri == "/two_redirects.html") {
         OnRequestTwoRedirects(conn, msg);
     } else if (uri == "/url_post.html") {
@@ -878,8 +907,7 @@ void HttpServer::OnRequestLocalPort(mg_connection* conn, mg_http_message* /*msg*
     // send source port number as response for checking SetLocalPort/SetLocalPortRange
     std::string headers = "Content-Type: text/plain\r\n";
     // Convert from big endian to little endian
-    uint16_t remote_port = (conn->rem.port >> 8) | (conn->rem.port << 8);
-    std::string response = std::to_string(remote_port);
+    std::string response = std::to_string(AbstractServer::GetRemotePort(conn));
     mg_http_reply(conn, 200, headers.c_str(), response.c_str());
 }
 
