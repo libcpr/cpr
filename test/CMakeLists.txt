@@ -59,6 +59,7 @@ add_cpr_test(version)
 add_cpr_test(download)
 add_cpr_test(interceptor)
 add_cpr_test(multiperform)
+add_cpr_test(resolve)
 
 if (ENABLE_SSL_TESTS)
     add_cpr_test(ssl)

@@ -27,6 +27,7 @@ struct CurlHolder {
   public:
     CURL* handle{nullptr};
     struct curl_slist* chunk{nullptr};
+    struct curl_slist* resolveCurlList{nullptr};
     struct curl_httppost* formpost{nullptr};
     std::array<char, CURL_ERROR_SIZE> error{};
 
