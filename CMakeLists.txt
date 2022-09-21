@@ -376,7 +376,7 @@ add_subdirectory(cpr)
 add_subdirectory(include)
 
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND CPR_BUILD_TESTS)
-    # Disable linting for test since they are currently not up to the standard
+    # Disable linting for tests since they are currently not up to the standard
     clear_variable(DESTINATION CMAKE_CXX_CLANG_TIDY BACKUP CMAKE_CXX_CLANG_TIDY_BKP)
     enable_testing()
     add_subdirectory(test)
