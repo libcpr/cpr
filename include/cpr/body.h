@@ -34,7 +34,7 @@ class Body : public StringHolder<Body> {
         }
 
         is.seekg(0, std::ios::end);
-        const auto length = is.tellg();
+        const std::streampos length = is.tellg();
         is.seekg(0, std::ios::beg);
         std::string buffer;
         buffer.resize(static_cast<size_t>(length));
