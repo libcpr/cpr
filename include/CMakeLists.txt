@@ -54,8 +54,7 @@ target_sources(cpr PRIVATE
 if(CPR_USE_BOOST_FILESYSTEM)
   find_package(Boost 1.44 REQUIRED COMPONENTS filesystem)
   if(Boost_FOUND)
-    target_include_directories(cpr PUBLIC ${Boost_INCLUDE_DIRS})
-    target_link_libraries(cpr PUBLIC ${Boost_LIBRARIES})
+    target_link_libraries(cpr PUBLIC Boost::filesystem)
   endif()
 endif()
 
