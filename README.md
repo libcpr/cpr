@@ -14,7 +14,7 @@
 
 C++ Requests is a simple wrapper around [libcurl](http://curl.haxx.se/libcurl) inspired by the excellent [Python Requests](https://github.com/kennethreitz/requests) project.
 
-Despite its name, libcurl's easy interface is anything but, and making mistakes misusing it is a common source of error and frustration. Using the more expressive language facilities of C++11, this library captures the essence of making network calls into a few concise idioms.
+Despite its name, libcurl's easy interface is anything but, and making mistakes, misusing it is a common source of error and frustration. Using the more expressive language facilities of `C++17` (or `C++11` in case you use cpr < 1.10.0), this library captures the essence of making network calls into a few concise idioms.
 
 Here's a quick GET request:
 
@@ -125,7 +125,7 @@ If there's no package for your distribution, try making one! If you do, and it i
 
 ### NuGet Package
 
-For Windows there is also a libcpr NuGet package available. Currently x86 and x64 builds are supported with release and debug configuration.
+For Windows, there is also a libcpr NuGet package available. Currently, x86 and x64 builds are supported with release and debug configuration.
 
 The package can be found here: [NuGet.org](https://www.nuget.org/packages/libcpr/)
 
@@ -133,7 +133,8 @@ The package can be found here: [NuGet.org](https://www.nuget.org/packages/libcpr
 
 The only explicit requirements are:
 
-* a `C++11` compatible compiler such as Clang or GCC. The minimum required version of GCC is unknown, so if anyone has trouble building this library with a specific version of GCC, do let me know
+* a `C++17` compatible compiler such as Clang or GCC. The minimum required version of GCC is unknown, so if anyone has trouble building this library with a specific version of GCC, do let me know
+* in case you only have a `C++11` compatible compiler available, all versions below cpr 1.9.x are for you. With the upcoming release of cpr 1.10.0, we are switching to `C++17` as a requirement.
 * If you would like to perform https requests `OpenSSL` and its development libraries are required.
 
 ## Building cpr - Using vcpkg
