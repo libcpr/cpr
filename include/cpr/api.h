@@ -248,7 +248,11 @@ AsyncResponse DownloadAsync(fs::path local_path, Ts... ts) {
     return std::async(
             std::launch::async,
             [](fs::path local_path, Ts... ts) {
+#ifdef CPR_USE_BOOST_FILESYSTEM
+                std::ofstream f(local_path.string());
+#else
                 std::ofstream f(local_path);
+#endif
                 return Download(f, std::move(ts)...);
             },
             std::move(local_path), std::move(ts)...);

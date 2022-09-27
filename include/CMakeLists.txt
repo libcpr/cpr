@@ -52,7 +52,14 @@ target_sources(cpr PRIVATE
 )
 
 # Filesystem
-if ((CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 9.1) OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+if(CPR_USE_BOOST_FILESYSTEM)
+  find_package(Boost 1.44 REQUIRED COMPONENTS filesystem)
+  if(Boost_FOUND)
+    target_link_libraries(cpr PUBLIC Boost::filesystem)
+  endif()
+endif()
+
+if (((CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 9.1) OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang") AND NOT CPR_USE_BOOST_FILESYSTEM)
     target_link_libraries(cpr PUBLIC stdc++fs)
 endif()
 
