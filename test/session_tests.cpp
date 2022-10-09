@@ -1,3 +1,5 @@
+#include <cstdint>
+#include <cstdlib>
 #include <gtest/gtest.h>
 
 #include <chrono>
@@ -1015,18 +1017,18 @@ TEST(LocalPortTests, SetLocalPortTest) {
     Session session;
     session.SetUrl(url);
     std::uint16_t const local_port = 60252; // beware of HttpServer::GetPort when changing
-    std::uint16_t const local_port_range = 50;
+    std::uint16_t const local_port_range = 5000;
     session.SetLocalPort(local_port);
     session.SetLocalPortRange(local_port_range);
     // expected response: body contains port number in specified range
-    // NOTE: even when trying up to 50 ports there is the chance that all of them are occupied.
+    // NOTE: even when trying up to 5000 ports there is the chance that all of them are occupied.
     // It would be possible to also check here for ErrorCode::INTERNAL_ERROR but that somehow seems
     // wrong as then this test would pass in case SetLocalPort does not work at all
     // or in other words: we have to assume that at least one port in the specified range is free.
     Response response = session.Get();
     EXPECT_EQ(200, response.status_code);
     EXPECT_EQ(ErrorCode::OK, response.error.code);
-    unsigned long port_from_response = std::strtoul(response.text.c_str(), nullptr, 10);
+    std::uint16_t port_from_response = std::strtoul(response.text.c_str(), nullptr, 10);
     EXPECT_EQ(errno, 0);
     EXPECT_GE(port_from_response, local_port);
     EXPECT_LE(port_from_response, local_port + local_port_range);
@@ -1037,11 +1039,11 @@ TEST(LocalPortTests, SetOptionTest) {
     Session session;
     session.SetUrl(url);
     std::uint16_t const local_port = 60551; // beware of HttpServer::GetPort when changing
-    std::uint16_t const local_port_range = 50;
+    std::uint16_t const local_port_range = 5000;
     session.SetOption(LocalPort(local_port));
     session.SetOption(LocalPortRange(local_port_range));
     // expected response: body contains port number in specified range
-    // NOTE: even when trying up to 50 ports there is the chance that all of them are occupied.
+    // NOTE: even when trying up to 5000 ports there is the chance that all of them are occupied.
     // It would be possible to also check here for ErrorCode::INTERNAL_ERROR but that somehow seems
     // wrong as then this test would pass in case SetOption(LocalPort) does not work at all
     // or in other words: we have to assume that at least one port in the specified range is free.
