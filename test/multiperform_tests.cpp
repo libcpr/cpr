@@ -1,5 +1,7 @@
+#include <cstdint>
 #include <gtest/gtest.h>
 
+#include <memory>
 #include <string>
 
 #include <cpr/api.h>
@@ -26,39 +28,27 @@ TEST(MultiperformAddSessionTests, MultiperformAddSingleSessionTest) {
 }
 
 TEST(MultiperformAddSessionTests, MultiperformAddMultipleSessionsTest) {
-    std::vector<std::shared_ptr<Session>> sessions;
-    for (int i = 0; i < 10; ++i) {
-        sessions.push_back(std::make_shared<Session>());
-    }
-
     MultiPerform multiperform;
-    for (std::shared_ptr<Session>& session : sessions) {
+    for (int i = 0; i < 10; ++i) {
+        std::shared_ptr<Session> session = std::make_shared<Session>();
         multiperform.AddSession(session);
         EXPECT_EQ(2, session.use_count());
     }
 }
 
 TEST(MultiperformAddSessionTests, MultiperformAddMultipleNonDownloadSessionsTest) {
-    std::vector<std::shared_ptr<Session>> sessions;
-    for (int i = 0; i < 10; ++i) {
-        sessions.push_back(std::make_shared<Session>());
-    }
-
     MultiPerform multiperform;
-    for (std::shared_ptr<Session>& session : sessions) {
+    for (int i = 0; i < 10; ++i) {
+        std::shared_ptr<Session> session = std::make_shared<Session>();
         multiperform.AddSession(session, MultiPerform::HttpMethod::GET_REQUEST);
         EXPECT_EQ(2, session.use_count());
     }
 }
 
 TEST(MultiperformAddSessionTests, MultiperformAddMultipleDownloadSessionsTest) {
-    std::vector<std::shared_ptr<Session>> sessions;
-    for (int i = 0; i < 10; ++i) {
-        sessions.push_back(std::make_shared<Session>());
-    }
-
     MultiPerform multiperform;
-    for (std::shared_ptr<Session>& session : sessions) {
+    for (int i = 0; i < 10; ++i) {
+        std::shared_ptr<Session> session = std::make_shared<Session>();
         multiperform.AddSession(session, MultiPerform::HttpMethod::DOWNLOAD_REQUEST);
         EXPECT_EQ(2, session.use_count());
     }
@@ -92,13 +82,9 @@ TEST(MultiperformRemoveSessionTests, MultiperformRemoveSingleSessionTest) {
 }
 
 TEST(MultiperformRemoveSessionTests, MultiperformRemoveMultipleSessionsTest) {
-    std::vector<std::shared_ptr<Session>> sessions;
-    for (int i = 0; i < 10; ++i) {
-        sessions.push_back(std::make_shared<Session>());
-    }
-
     MultiPerform multiperform;
-    for (std::shared_ptr<Session>& session : sessions) {
+    for (int i = 0; i < 10; ++i) {
+        std::shared_ptr<Session> session = std::make_shared<Session>();
         multiperform.AddSession(session);
         EXPECT_EQ(2, session.use_count());
         multiperform.RemoveSession(session);
@@ -149,14 +135,14 @@ TEST(MultiperformGetTests, MultiperformTwoSessionsGetTest) {
 
     EXPECT_EQ(responses.size(), sessions.size());
     std::vector<std::string> expected_texts;
-    expected_texts.push_back("Hello world!");
-    expected_texts.push_back("Not Found");
+    expected_texts.emplace_back("Hello world!");
+    expected_texts.emplace_back("Not Found");
 
     std::vector<std::string> expected_content_types;
-    expected_content_types.push_back("text/html");
-    expected_content_types.push_back("text/plain");
+    expected_content_types.emplace_back("text/html");
+    expected_content_types.emplace_back("text/plain");
 
-    std::vector<long> expected_status_codes;
+    std::vector<uint16_t> expected_status_codes;
     expected_status_codes.push_back(200);
     expected_status_codes.push_back(404);
 
@@ -198,20 +184,19 @@ TEST(MultiperformGetTests, MultiperformRemoveSessionGetTest) {
 }
 
 TEST(MultiperformGetTests, MultiperformTenSessionsGetTest) {
+    const size_t sessionCount = 10;
+
     MultiPerform multiperform;
-    std::vector<Url> urls;
-    std::vector<std::shared_ptr<Session>> sessions;
     Url url{server->GetBaseUrl() + "/hello.html"};
-    for (size_t i = 0; i < 10; ++i) {
-        urls.push_back(url);
-        sessions.push_back(std::make_shared<Session>());
-        sessions.at(i)->SetUrl(urls.at(i));
-        multiperform.AddSession(sessions.at(i));
+    for (size_t i = 0; i < sessionCount; ++i) {
+        std::shared_ptr<Session> session = std::make_shared<Session>();
+        session->SetUrl(url);
+        multiperform.AddSession(session);
     }
 
     std::vector<Response> responses = multiperform.Get();
 
-    EXPECT_EQ(responses.size(), 10);
+    EXPECT_EQ(responses.size(), sessionCount);
     for (Response& response : responses) {
         EXPECT_EQ(std::string{"Hello world!"}, response.text);
         EXPECT_EQ(url, response.url);
@@ -318,7 +303,7 @@ TEST(MultiperformHeadTests, MultiperformSingleSessionHeadTest) {
     std::vector<Response> responses = multiperform.Head();
 
     EXPECT_EQ(responses.size(), 1);
-    std::string expected_text{""};
+    std::string expected_text;
     EXPECT_EQ(expected_text, responses.at(0).text);
     EXPECT_EQ(url, responses.at(0).url);
     EXPECT_EQ(std::string{"text/html"}, responses.at(0).header["content-type"]);
@@ -335,7 +320,7 @@ TEST(MultiperformOptionsTests, MultiperformSingleSessionOptionsTest) {
     std::vector<Response> responses = multiperform.Options();
 
     EXPECT_EQ(responses.size(), 1);
-    std::string expected_text{""};
+    std::string expected_text;
     EXPECT_EQ(expected_text, responses.at(0).text);
     EXPECT_EQ(url, responses.at(0).url);
     EXPECT_EQ(std::string{"GET, POST, PUT, DELETE, PATCH, OPTIONS"}, responses.at(0).header["Access-Control-Allow-Methods"]);
@@ -422,14 +407,14 @@ TEST(MultiperformPerformTests, MultiperformTwoGetPerformTest) {
 
     EXPECT_EQ(responses.size(), sessions.size());
     std::vector<std::string> expected_texts;
-    expected_texts.push_back("Hello world!");
-    expected_texts.push_back("Not Found");
+    expected_texts.emplace_back("Hello world!");
+    expected_texts.emplace_back("Not Found");
 
     std::vector<std::string> expected_content_types;
-    expected_content_types.push_back("text/html");
-    expected_content_types.push_back("text/plain");
+    expected_content_types.emplace_back("text/html");
+    expected_content_types.emplace_back("text/plain");
 
-    std::vector<long> expected_status_codes;
+    std::vector<uint16_t> expected_status_codes;
     expected_status_codes.push_back(200);
     expected_status_codes.push_back(404);
 
@@ -475,21 +460,21 @@ TEST(MultiperformPerformTests, MultiperformMixedMethodsPerformTest) {
     EXPECT_EQ(responses.size(), sessions.size());
 
     std::vector<std::string> expected_texts;
-    expected_texts.push_back("Hello world!");
-    expected_texts.push_back("Delete success");
-    expected_texts.push_back("Not Found");
-    expected_texts.push_back(
-            {"{\n"
-             "  \"x\": 5\n"
-             "}"});
+    expected_texts.emplace_back("Hello world!");
+    expected_texts.emplace_back("Delete success");
+    expected_texts.emplace_back("Not Found");
+    expected_texts.emplace_back(
+            "{\n"
+            "  \"x\": 5\n"
+            "}");
 
     std::vector<std::string> expected_content_types;
-    expected_content_types.push_back("text/html");
-    expected_content_types.push_back("text/html");
-    expected_content_types.push_back("text/plain");
-    expected_content_types.push_back("application/json");
+    expected_content_types.emplace_back("text/html");
+    expected_content_types.emplace_back("text/html");
+    expected_content_types.emplace_back("text/plain");
+    expected_content_types.emplace_back("application/json");
 
-    std::vector<long> expected_status_codes;
+    std::vector<uint16_t> expected_status_codes;
     expected_status_codes.push_back(200);
     expected_status_codes.push_back(200);
     expected_status_codes.push_back(404);
@@ -574,14 +559,14 @@ TEST(MultiperformAPITests, MultiperformApiTwoGetsTest) {
     urls.push_back({server->GetBaseUrl() + "/error.html"});
 
     std::vector<std::string> expected_texts;
-    expected_texts.push_back("");
-    expected_texts.push_back("Not Found");
+    expected_texts.emplace_back("");
+    expected_texts.emplace_back("Not Found");
 
     std::vector<std::string> expected_content_types;
-    expected_content_types.push_back("");
-    expected_content_types.push_back("text/plain");
+    expected_content_types.emplace_back("");
+    expected_content_types.emplace_back("text/plain");
 
-    std::vector<long> expected_status_codes;
+    std::vector<uint16_t> expected_status_codes;
     expected_status_codes.push_back(0);
     expected_status_codes.push_back(404);
 
@@ -626,7 +611,7 @@ TEST(MultiperformAPITests, MultiperformApiSinglePutTest) {
 TEST(MultiperformAPITests, MultiperformApiSingleHeadTest) {
     std::vector<Response> responses = MultiHead(std::tuple<Url>{Url{server->GetBaseUrl() + "/hello.html"}});
     EXPECT_EQ(responses.size(), 1);
-    std::string expected_text{""};
+    std::string expected_text;
     EXPECT_EQ(expected_text, responses.at(0).text);
     EXPECT_EQ(Url{server->GetBaseUrl() + "/hello.html"}, responses.at(0).url);
     EXPECT_EQ(std::string{"text/html"}, responses.at(0).header["content-type"]);
@@ -637,7 +622,7 @@ TEST(MultiperformAPITests, MultiperformApiSingleHeadTest) {
 TEST(MultiperformAPITests, MultiperformApiSingleOptionsTest) {
     std::vector<Response> responses = MultiOptions(std::tuple<Url>{Url{server->GetBaseUrl() + "/"}});
     EXPECT_EQ(responses.size(), 1);
-    std::string expected_text{""};
+    std::string expected_text;
     EXPECT_EQ(expected_text, responses.at(0).text);
     EXPECT_EQ(Url{server->GetBaseUrl() + "/"}, responses.at(0).url);
     EXPECT_EQ(std::string{"GET, POST, PUT, DELETE, PATCH, OPTIONS"}, responses.at(0).header["Access-Control-Allow-Methods"]);
