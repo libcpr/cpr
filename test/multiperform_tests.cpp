@@ -183,6 +183,13 @@ TEST(MultiperformGetTests, MultiperformRemoveSessionGetTest) {
     EXPECT_EQ(ErrorCode::OK, responses.at(0).error.code);
 }
 
+#ifndef __APPLE__
+/**
+ * This test case is currently disabled for macOS/Apple systems since it fails in an nondeterministic manner.
+ * It is probably caused by a bug inside curl_multi_perform on macOS.
+ * Needs further investigation.
+ * Issue: https://github.com/libcpr/cpr/issues/841
+ **/
 TEST(MultiperformGetTests, MultiperformTenSessionsGetTest) {
     const size_t sessionCount = 10;
 
@@ -205,6 +212,7 @@ TEST(MultiperformGetTests, MultiperformTenSessionsGetTest) {
         EXPECT_EQ(ErrorCode::OK, response.error.code);
     }
 }
+#endif
 
 TEST(MultiperformDeleteTests, MultiperformSingleSessionDeleteTest) {
     Url url{server->GetBaseUrl() + "/delete.html"};
