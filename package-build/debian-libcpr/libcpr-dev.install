@@ -1,0 +1,3 @@
+usr/include
+usr/lib/*/*.so
+usr/lib/*/cmake
