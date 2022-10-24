@@ -499,9 +499,6 @@ jobs:
         brew install openssl
         echo 'export PATH="/usr/local/opt/openssl@3/bin:$PATH"' >> /Users/runner/.bash_profile
         source ~/.bash_profile
-        export LDFLAGS="-L/usr/local/opt/openssl@3/lib"
-        export CPPFLAGS="-I/usr/local/opt/openssl@3/include"
-        export PKG_CONFIG_PATH="/usr/local/opt/openssl@3/lib/pkgconfig"
     - name: Checkout
       uses: actions/checkout@v3.1.0
     - name: "Build & Test"
@@ -514,6 +511,9 @@ jobs:
         BUILD_SHARED_LIBS: ${{ matrix.shared }}
         OPENSSL_ROOT_DIR: "/usr/local/opt/openssl@3"
         OPENSSL_LIBRARIES: "/usr/local/opt/openssl@3/lib"
+        LDFLAGS: "-L/usr/local/opt/openssl@3/lib"
+        CPPFLAGS: "-I/usr/local/opt/openssl@3/include"
+        PKG_CONFIG_PATH: "/usr/local/opt/openssl@3/lib/pkgconfig"
       uses: ashutoshvarma/action-cmake-build@master
       with:
         build-dir: ${{ github.workspace }}/build
