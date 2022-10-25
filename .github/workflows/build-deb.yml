@@ -21,7 +21,7 @@ jobs:
     - name: "Install cpr dependencies"
       run: sudo apt install -y libssl-dev libcurl4-openssl-dev
     - name: "Install building tools"
-      run: sudo apt install cmake debmake devscripts debhelper
+      run: sudo apt install -y cmake debmake devscripts debhelper
 
       # Build package of runtime library
     - name: "Package build of runtime library"

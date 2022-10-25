@@ -3,7 +3,7 @@ Section: libs
 Priority: optional
 Maintainer: Philip Saendig <philip.saendig@gmail.com>
 Build-Depends:
- debhelper-compat (= 13),
+ debhelper-compat (= 12),
  cmake,
  libcurl4-openssl-dev,
  libssl-dev,
