@@ -14,6 +14,7 @@ Files:     .clang-format
            cpr-config.cmake
            cpr/*
            include/*
+           nuget/*
            package-build/*
            debian/*
 Copyright: 2017-2021 Huu Nguyen
