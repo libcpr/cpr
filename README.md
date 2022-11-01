@@ -113,6 +113,11 @@ find_package(cpr REQUIRED)
 add_executable(your_target_name your_target_name.cpp)
 target_link_libraries(your_target_name PRIVATE cpr::cpr)
 ```
+
+### Bazel
+
+Please refer to [hedronvision/bazel-make-cc-https-easy](https://github.com/hedronvision/bazel-make-cc-https-easy).
+
 ### Packages for Linux Distributions
 
 Alternatively, you may install a package specific to your Linux distribution. Since so few distributions currently have a package for cpr, most users will not be able to run your program with this approach.
