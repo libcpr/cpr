@@ -30,13 +30,13 @@
 #include "cpr/range.h"
 #include "cpr/redirect.h"
 #include "cpr/reserve_size.h"
+#include "cpr/resolve.h"
 #include "cpr/response.h"
 #include "cpr/ssl_options.h"
 #include "cpr/timeout.h"
 #include "cpr/unix_socket.h"
 #include "cpr/user_agent.h"
 #include "cpr/verbose.h"
-#include "cpr/resolve.h"
 
 namespace cpr {
 
@@ -49,6 +49,7 @@ class Session : public std::enable_shared_from_this<Session> {
   public:
     Session();
     Session(const Session& other) = delete;
+    Session(Session&& old) = default;
 
     ~Session() = default;
 
