@@ -41,7 +41,7 @@ Cookies parseCookies(curl_slist* raw_cookies) {
         while (tokens.size() < CURL_HTTP_COOKIE_SIZE) {
             tokens.emplace_back("");
         }
-        std::time_t expires = static_cast<time_t>(std::stoul(tokens.at(static_cast<size_t>(CurlHTTPCookieField::Expires))));
+        const std::time_t expires = static_cast<time_t>(std::stoul(tokens.at(static_cast<size_t>(CurlHTTPCookieField::Expires))));
         cookies.emplace_back(Cookie{
                 tokens.at(static_cast<size_t>(CurlHTTPCookieField::Name)),
                 tokens.at(static_cast<size_t>(CurlHTTPCookieField::Value)),
@@ -77,7 +77,7 @@ Header parseHeader(const std::string& headers, std::string* status_line, std::st
 
                 // set the reason if it was given
                 if (reason != nullptr) {
-                    size_t pos1 = line.find_first_of("\t ");
+                    const size_t pos1 = line.find_first_of("\t ");
                     size_t pos2 = std::string::npos;
                     if (pos1 != std::string::npos) {
                         pos2 = line.find_first_of("\t ", pos1 + 1);
@@ -92,7 +92,7 @@ Header parseHeader(const std::string& headers, std::string* status_line, std::st
         }
 
         if (line.length() > 0) {
-            size_t found = line.find(':');
+            const size_t found = line.find(':');
             if (found != std::string::npos) {
                 std::string value = line.substr(found + 1);
                 value.erase(0, value.find_first_not_of("\t "));
@@ -168,7 +168,7 @@ int debugUserFunction(CURL* /*handle*/, curl_infotype type, char* data, size_t s
  * std::string result = holder.urlEncode(input);
  **/
 std::string urlEncode(const std::string& s) {
-    CurlHolder holder; // Create a temporary new holder for URL encoding
+    const CurlHolder holder; // Create a temporary new holder for URL encoding
     return holder.urlEncode(s);
 }
 
@@ -183,7 +183,7 @@ std::string urlEncode(const std::string& s) {
  * std::string result = holder.urlDecode(input);
  **/
 std::string urlDecode(const std::string& s) {
-    CurlHolder holder; // Create a temporary new holder for URL decoding
+    const CurlHolder holder; // Create a temporary new holder for URL decoding
     return holder.urlDecode(s);
 }
 

@@ -47,7 +47,7 @@ CURLcode sslctx_function_load_ca_cert_from_buffer(CURL* /*curl*/, void* sslctx, 
     store = SSL_CTX_get_cert_store(static_cast<SSL_CTX*>(sslctx));
 
     // Add the loaded certificate to the verification storage
-    int status = X509_STORE_add_cert(store, cert);
+    const int status = X509_STORE_add_cert(store, cert);
     if (status == 0) {
         printf("Error adding certificate\n");
         return CURLE_ABORTED_BY_CALLBACK;

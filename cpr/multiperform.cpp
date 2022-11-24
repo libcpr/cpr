@@ -9,7 +9,7 @@ MultiPerform::MultiPerform() : multicurl_(new CurlMultiHolder()) {}
 
 MultiPerform::~MultiPerform() {
     // Unock all sessions
-    for (std::pair<std::shared_ptr<Session>, HttpMethod>& pair : sessions_) {
+    for (const std::pair<std::shared_ptr<Session>, HttpMethod>& pair : sessions_) {
         pair.first->isUsedInMultiPerform = false;
     }
 }
@@ -27,7 +27,7 @@ void MultiPerform::AddSession(std::shared_ptr<Session>& session, HttpMethod meth
     }
 
     // Add easy handle to multi handle
-    CURLMcode error_code = curl_multi_add_handle(multicurl_->handle, session->curl_->handle);
+    const CURLMcode error_code = curl_multi_add_handle(multicurl_->handle, session->curl_->handle);
     if (error_code) {
         std::cerr << "curl_multi_add_handle() failed, code " << static_cast<int>(error_code) << std::endl;
         return;
@@ -42,7 +42,7 @@ void MultiPerform::AddSession(std::shared_ptr<Session>& session, HttpMethod meth
 
 void MultiPerform::RemoveSession(const std::shared_ptr<Session>& session) {
     // Remove easy handle from multihandle
-    CURLMcode error_code = curl_multi_remove_handle(multicurl_->handle, session->curl_->handle);
+    const CURLMcode error_code = curl_multi_remove_handle(multicurl_->handle, session->curl_->handle);
     if (error_code) {
         std::cerr << "curl_multi_remove_handle() failed, code " << static_cast<int>(error_code) << std::endl;
         return;
@@ -102,7 +102,7 @@ std::vector<Response> MultiPerform::ReadMultiInfo(std::function<Response(Session
                 std::cerr << "Failed to find current session!" << std::endl;
                 break;
             }
-            std::shared_ptr<Session> current_session = (*it).first;
+            const std::shared_ptr<Session> current_session = (*it).first;
 
             // Add response object
             // NOLINTNEXTLINE (cppcoreguidelines-pro-type-union-access)
@@ -112,10 +112,10 @@ std::vector<Response> MultiPerform::ReadMultiInfo(std::function<Response(Session
 
     // Sort response objects to match order of added sessions
     std::vector<Response> sorted_responses;
-    for (std::pair<std::shared_ptr<Session>, HttpMethod>& pair : sessions_) {
+    for (const std::pair<std::shared_ptr<Session>, HttpMethod>& pair : sessions_) {
         Session& current_session = *(pair.first);
         auto it = std::find_if(responses.begin(), responses.end(), [&current_session](const Response& response) { return current_session.curl_->handle == response.curl_->handle; });
-        Response current_response = *it;
+        const Response current_response = *it;
         // Erase response from original vector to increase future search speed
         responses.erase(it);
         sorted_responses.push_back(current_response);
@@ -135,7 +135,7 @@ std::vector<Response> MultiPerform::MakeDownloadRequest() {
 }
 
 void MultiPerform::PrepareSessions() {
-    for (std::pair<std::shared_ptr<Session>, HttpMethod>& pair : sessions_) {
+    for (const std::pair<std::shared_ptr<Session>, HttpMethod>& pair : sessions_) {
         switch (pair.second) {
             case HttpMethod::GET_REQUEST:
                 pair.first->PrepareGet();
@@ -166,7 +166,7 @@ void MultiPerform::PrepareSessions() {
 }
 
 void MultiPerform::PrepareDownloadSession(size_t sessions_index, const WriteCallback& write) {
-    std::pair<std::shared_ptr<Session>, HttpMethod>& pair = sessions_[sessions_index];
+    const std::pair<std::shared_ptr<Session>, HttpMethod>& pair = sessions_[sessions_index];
     switch (pair.second) {
         case HttpMethod::DOWNLOAD_REQUEST:
             pair.first->PrepareDownload(write);
@@ -178,7 +178,7 @@ void MultiPerform::PrepareDownloadSession(size_t sessions_index, const WriteCall
 }
 
 void MultiPerform::PrepareDownloadSession(size_t sessions_index, std::ofstream& file) {
-    std::pair<std::shared_ptr<Session>, HttpMethod>& pair = sessions_[sessions_index];
+    const std::pair<std::shared_ptr<Session>, HttpMethod>& pair = sessions_[sessions_index];
     switch (pair.second) {
         case HttpMethod::DOWNLOAD_REQUEST:
             pair.first->PrepareDownload(file);

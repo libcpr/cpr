@@ -19,7 +19,7 @@ PostRedirectFlags operator~(PostRedirectFlags flag) {
 
 PostRedirectFlags& operator|=(PostRedirectFlags& lhs, PostRedirectFlags rhs) {
     lhs = static_cast<PostRedirectFlags>(static_cast<uint8_t>(lhs) | static_cast<uint8_t>(rhs));
-    uint8_t tmp = static_cast<uint8_t>(lhs);
+    const uint8_t tmp = static_cast<uint8_t>(lhs);
     lhs = static_cast<PostRedirectFlags>(tmp);
     return lhs;
 }
