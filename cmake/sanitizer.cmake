@@ -11,7 +11,7 @@ if(NOT CMAKE_CROSSCOMPILING)
     set(CMAKE_REQUIRED_FLAGS "${THREAD_SAN_FLAGS}")
     check_cxx_source_runs("int main() { return 0; }" THREAD_SANITIZER_AVAILABLE)
     set(CMAKE_REQUIRED_FLAGS ${PREV_FLAG})
-    # Do not add Thread sanitizer to all sanitizer because it is incompatible with other sanitizer
+    # Do not add the ThreadSanitizer for builds with all sanitizers enabled because it is incompatible with other sanitizers.
 
     # Address sanitizer
     set(ADDR_SAN_FLAGS "-fsanitize=address")
