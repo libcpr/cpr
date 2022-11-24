@@ -292,13 +292,14 @@ jobs:
     - name: "[Release g++] Build & Test"
       env:
         CPR_BUILD_TESTS: ON
+        CPR_DEBUG_SANITIZER_FLAG_ALL: ON
       uses: ashutoshvarma/action-cmake-build@master
       with:
         build-dir: ${{github.workspace}}/build
         source-dir: ${{github.workspace}}
         cc: gcc
         cxx: g++
-        build-type: AllSan
+        build-type: Debug
         run-test: true
         ctest-options: -V
 
@@ -319,13 +320,14 @@ jobs:
     - name: "[Release g++] Build & Test"
       env:
         CPR_BUILD_TESTS: ON
+        CPR_DEBUG_SANITIZER_FLAG_THREAD: ON
       uses: ashutoshvarma/action-cmake-build@master
       with:
         build-dir: ${{github.workspace}}/build
         source-dir: ${{github.workspace}}
         cc: gcc
         cxx: g++
-        build-type: ThreadSan
+        build-type: Debug
         run-test: true
         ctest-options: -V
   
