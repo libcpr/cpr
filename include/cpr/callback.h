@@ -18,7 +18,7 @@ class ReadCallback {
         return callback(buffer, buffer_size, userdata);
     }
 
-    intptr_t userdata;
+    intptr_t userdata{};
     cpr_off_t size{};
     std::function<bool(char* buffer, size_t& size, intptr_t userdata)> callback;
 };
@@ -32,7 +32,7 @@ class HeaderCallback {
         return callback(std::move(header), userdata);
     }
 
-    intptr_t userdata;
+    intptr_t userdata{};
     std::function<bool(std::string header, intptr_t userdata)> callback;
 };
 
@@ -45,7 +45,7 @@ class WriteCallback {
         return callback(std::move(data), userdata);
     }
 
-    intptr_t userdata;
+    intptr_t userdata{};
     std::function<bool(std::string data, intptr_t userdata)> callback;
 };
 
@@ -58,7 +58,7 @@ class ProgressCallback {
         return callback(downloadTotal, downloadNow, uploadTotal, uploadNow, userdata);
     }
 
-    intptr_t userdata;
+    intptr_t userdata{};
     std::function<bool(cpr_off_t downloadTotal, cpr_off_t downloadNow, cpr_off_t uploadTotal, cpr_off_t uploadNow, intptr_t userdata)> callback;
 };
 
@@ -80,7 +80,7 @@ class DebugCallback {
         callback(type, std::move(data), userdata);
     }
 
-    intptr_t userdata;
+    intptr_t userdata{};
     std::function<void(InfoType type, std::string data, intptr_t userdata)> callback;
 };
 
