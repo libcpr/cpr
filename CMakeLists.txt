@@ -72,7 +72,7 @@ cpr_option(CPR_DEBUG_SANITIZER_FLAG_THREAD "Enable ThreadSanitizer for debug bui
 cpr_option(CPR_DEBUG_SANITIZER_FLAG_ADDR "Enable AddressSanitizer for debug build." OFF)
 cpr_option(CPR_DEBUG_SANITIZER_FLAG_LEAK "Enable LeakSanitizer for debug build." OFF)
 cpr_option(CPR_DEBUG_SANITIZER_FLAG_UB "Enable UndefinedBehaviorSanitizer for debug build." OFF)
-cpr_option(CPR_DEBUG_SANITIZER_FLAG_ALL "Enable all sanitizers for debug build." OFF)
+cpr_option(CPR_DEBUG_SANITIZER_FLAG_ALL "Enables all sanitizers for debug builds except the ThreadSanitizer since it is incompatible with the other sanitizers." OFF)
 message(STATUS "=======================================================")
 
 if (CPR_FORCE_USE_SYSTEM_CURL)
