@@ -2,10 +2,10 @@
 #define CPR_BODY_H
 
 #include <exception>
+#include <fstream>
 #include <initializer_list>
 #include <string>
 #include <vector>
-#include <fstream>
 
 #include "cpr/buffer.h"
 #include "cpr/cprtypes.h"
@@ -15,18 +15,20 @@ namespace cpr {
 
 class Body : public StringHolder<Body> {
   public:
-    Body() : StringHolder<Body>() {}
+    Body() = default;
     // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
     Body(const std::string& body) : StringHolder<Body>(body) {}
     // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
     Body(std::string&& body) : StringHolder<Body>(std::move(body)) {}
     // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
-    Body(std::string_view body) : StringHolder<Body>(body) {}
+    Body(const std::string_view& body) : StringHolder<Body>(body) {}
     // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
     Body(const char* body) : StringHolder<Body>(body) {}
     Body(const char* str, size_t len) : StringHolder<Body>(str, len) {}
     Body(const std::initializer_list<std::string> args) : StringHolder<Body>(args) {}
+    // NOLINTNEXTLINE(google-explicit-constructor, cppcoreguidelines-pro-type-reinterpret-cast)
     Body(const Buffer& buffer) : StringHolder<Body>(reinterpret_cast<const char*>(buffer.data), static_cast<size_t>(buffer.datalen)) {}
+    // NOLINTNEXTLINE(google-explicit-constructor)
     Body(const File& file) {
         std::ifstream is(file.filepath, std::ifstream::binary);
         if (!is) {
@@ -38,7 +40,7 @@ class Body : public StringHolder<Body> {
         is.seekg(0, std::ios::beg);
         std::string buffer;
         buffer.resize(static_cast<size_t>(length));
-        is.read(&buffer[0], length);
+        is.read(buffer.data(), length);
         str_ = std::move(buffer);
     }
     Body(const Body& other) = default;
