@@ -16,4 +16,4 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v3
     - name: Check format
-      uses: RafikFarhad/clang-format-github-action@v2.1.0
+      uses: RafikFarhad/clang-format-github-action@v3.0.0
