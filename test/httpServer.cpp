@@ -367,7 +367,7 @@ void HttpServer::OnRequestResolvePermRedirect(mg_connection* conn, mg_http_messa
         }
     }
 
-    if(location.empty()) {
+    if (location.empty()) {
         std::string errorMessage{"Redirect location missing"};
         SendError(conn, 405, errorMessage);
         return;
@@ -824,6 +824,17 @@ void HttpServer::OnRequestCheckExpect100Continue(mg_connection* conn, mg_http_me
     mg_http_reply(conn, 200, headers.c_str(), response.c_str());
 }
 
+void HttpServer::OnRequestGetDownloadFileLength(mg_connection* conn, mg_http_message* msg) {
+    auto method = std::string{msg->method.ptr, msg->method.len};
+    if (method == std::string{"HEAD"}) {
+        mg_http_reply(conn, 405, nullptr, "");
+    } else {
+        std::string response("this is a file content.");
+        std::string headers = "Content-Type: text/plain\r\n";
+        mg_http_reply(conn, 200, headers.c_str(), response.c_str());
+    }
+}
+
 void HttpServer::OnRequest(mg_connection* conn, mg_http_message* msg) {
     std::string uri = std::string(msg->uri.ptr, msg->uri.len);
     if (uri == "/") {
@@ -898,6 +909,8 @@ void HttpServer::OnRequest(mg_connection* conn, mg_http_message* msg) {
         OnRequestCheckAcceptEncoding(conn, msg);
     } else if (uri == "/check_expect_100_continue.html") {
         OnRequestCheckExpect100Continue(conn, msg);
+    } else if (uri == "/get_download_file_length.html") {
+        OnRequestGetDownloadFileLength(conn, msg);
     } else {
         OnRequestNotFound(conn, msg);
     }
