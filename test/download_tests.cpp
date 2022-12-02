@@ -112,10 +112,11 @@ TEST(DownloadTests, RangeTestMultipleRangesOption) {
 }
 
 bool real_write_data(std::string data, intptr_t userdata) {
-    std::string* dst = (std::string*) userdata;
+    std::string* dst = static_cast<std::string*>(userdata);
     *dst += data;
     return true;
 }
+
 TEST(DownloadTests, GetDownloadFileLength) {
     cpr::Url url{server->GetBaseUrl() + "/get_download_file_length.html"};
     cpr::Session session;
