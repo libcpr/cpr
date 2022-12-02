@@ -55,6 +55,7 @@ class HttpServer : public AbstractServer {
     static void OnRequestLocalPort(mg_connection* conn, mg_http_message* msg);
     static void OnRequestCheckAcceptEncoding(mg_connection* conn, mg_http_message* msg);
     static void OnRequestCheckExpect100Continue(mg_connection* conn, mg_http_message* msg);
+    static void OnRequestGetDownloadFileLength(mg_connection* conn, mg_http_message* msg);
 
   protected:
     mg_connection* initServer(mg_mgr* mgr, mg_event_handler_t event_handler) override;

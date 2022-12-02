@@ -680,7 +680,12 @@ cpr_off_t Session::GetDownloadFileLength() {
     curl_easy_setopt(curl_->handle, CURLOPT_HTTPGET, 1);
     curl_easy_setopt(curl_->handle, CURLOPT_NOBODY, 1);
     if (DoEasyPerform() == CURLE_OK) {
-        curl_easy_getinfo(curl_->handle, CURLINFO_CONTENT_LENGTH_DOWNLOAD_T, &downloadFileLenth);
+        // NOLINTNEXTLINE (google-runtime-int)
+        long status_code{};
+        curl_easy_getinfo(curl_->handle, CURLINFO_RESPONSE_CODE, &status_code);
+        if (200 == status_code) {
+            curl_easy_getinfo(curl_->handle, CURLINFO_CONTENT_LENGTH_DOWNLOAD_T, &downloadFileLenth);
+        }
     }
     return downloadFileLenth;
 }

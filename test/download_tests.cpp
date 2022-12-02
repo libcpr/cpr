@@ -111,6 +111,28 @@ TEST(DownloadTests, RangeTestMultipleRangesOption) {
     EXPECT_EQ(download_size, response.downloaded_bytes);
 }
 
+bool real_write_data(std::string data, intptr_t userdata) {
+    // NOLINTNEXTLINE (cppcoreguidelines-pro-type-reinterpret-cast)
+    std::string* dst = reinterpret_cast<std::string*>(userdata);
+    *dst += data;
+    return true;
+}
+
+TEST(DownloadTests, GetDownloadFileLength) {
+    cpr::Url url{server->GetBaseUrl() + "/get_download_file_length.html"};
+    cpr::Session session;
+    session.SetUrl(url);
+    auto len = session.GetDownloadFileLength();
+    EXPECT_EQ(len, -1);
+
+    std::string strFileData;
+    cpr::Response response = session.Download(cpr::WriteCallback{real_write_data, (intptr_t) &strFileData});
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(cpr::ErrorCode::OK, response.error.code);
+    EXPECT_EQ(strFileData, "this is a file content.");
+}
+
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
     ::testing::AddGlobalTestEnvironment(server);
