@@ -112,7 +112,8 @@ TEST(DownloadTests, RangeTestMultipleRangesOption) {
 }
 
 bool real_write_data(std::string data, intptr_t userdata) {
-    std::string* dst = static_cast<std::string*>(userdata);
+    // NOLINTNEXTLINE (cppcoreguidelines-pro-type-reinterpret-cast)
+    std::string* dst = reinterpret_cast<std::string*>(userdata);
     *dst += data;
     return true;
 }
