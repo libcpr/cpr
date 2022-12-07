@@ -11,11 +11,9 @@ class UserAgent : public StringHolder<UserAgent> {
   public:
     UserAgent() = default;
     // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
-    UserAgent(const std::string& useragent) : StringHolder<UserAgent>(useragent) {}
+    UserAgent(std::string useragent) : StringHolder<UserAgent>(std::move(useragent)) {}
     // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
-    UserAgent(std::string&& useragent) : StringHolder<UserAgent>(std::move(useragent)) {}
-    // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
-    UserAgent(const std::string_view& useragent) : StringHolder<UserAgent>(useragent) {}
+    UserAgent(std::string_view useragent) : StringHolder<UserAgent>(useragent) {}
     // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
     UserAgent(const char* useragent) : StringHolder<UserAgent>(useragent) {}
     UserAgent(const char* str, size_t len) : StringHolder<UserAgent>(str, len) {}

@@ -11,8 +11,7 @@ namespace cpr {
 class EncodedAuthentication {
   public:
     EncodedAuthentication() : auth_string_{""} {}
-    EncodedAuthentication(const std::string& username, const std::string& password) : auth_string_{cpr::util::urlEncode(username) + ":" + cpr::util::urlEncode(password)} {}
-    EncodedAuthentication(std::string&& username, std::string&& password) : auth_string_{cpr::util::urlEncode(std::move(username)) + ":" + cpr::util::urlEncode(std::move(password))} {}
+    EncodedAuthentication(std::string username, std::string password) : auth_string_{cpr::util::urlEncode(std::move(username)) + ":" + cpr::util::urlEncode(std::move(password))} {}
     EncodedAuthentication(const EncodedAuthentication& other) = default;
     EncodedAuthentication(EncodedAuthentication&& old) noexcept = default;
     virtual ~EncodedAuthentication() noexcept;

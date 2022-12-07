@@ -14,9 +14,7 @@ namespace cpr {
 class Bearer {
   public:
     // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
-    Bearer(const std::string& token) : token_string_{token} {}
-    // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
-    Bearer(std::string&& token) : token_string_{std::move(token)} {}
+    Bearer(std::string token) : token_string_{std::move(token)} {}
     Bearer(const Bearer& other) = default;
     Bearer(Bearer&& old) noexcept = default;
     virtual ~Bearer() noexcept;
