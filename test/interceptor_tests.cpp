@@ -18,7 +18,7 @@ class HiddenHelloWorldRedirectInterceptor : public Interceptor {
         Url url{server->GetBaseUrl() + "/hello.html"};
         session.SetUrl(url);
 
-        // Procceed the chain
+        // Proceed the chain
         Response response = proceed(session);
 
         // Restore the url again
@@ -30,7 +30,7 @@ class HiddenHelloWorldRedirectInterceptor : public Interceptor {
 class ChangeStatusCodeInterceptor : public Interceptor {
   public:
     Response intercept(Session& session) override {
-        // Procceed the chain
+        // Proceed the chain
         Response response = proceed(session);
 
         // Change the status code
@@ -45,7 +45,7 @@ class SetBasicAuthInterceptor : public Interceptor {
         // Set authentication
         session.SetAuth(Authentication{"user", "password", AuthMode::BASIC});
 
-        // Procceed the chain
+        // Proceed the chain
         return proceed(session);
     }
 };
@@ -53,7 +53,7 @@ class SetBasicAuthInterceptor : public Interceptor {
 class SetUnsupportedProtocolErrorInterceptor : public Interceptor {
   public:
     Response intercept(Session& session) override {
-        // Procceed the chain
+        // Proceed the chain
         Response response = proceed(session);
 
         // Set unsupported protocol error

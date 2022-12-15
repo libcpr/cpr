@@ -1,16 +1,18 @@
 #ifndef CPR_MULTIPERFORM_H
 #define CPR_MULTIPERFORM_H
 
-#include <functional>
-#include <memory>
-#include <stdexcept>
-#include <vector>
-
 #include "cpr/curlmultiholder.h"
 #include "cpr/response.h"
 #include "cpr/session.h"
+#include <functional>
+#include <memory>
+#include <queue>
+#include <stdexcept>
+#include <vector>
 
 namespace cpr {
+
+class InterceptorMulti;
 
 class MultiPerform {
   public:
@@ -46,6 +48,8 @@ class MultiPerform {
     void AddSession(std::shared_ptr<Session>& session, HttpMethod method = HttpMethod::UNDEFINED);
     void RemoveSession(const std::shared_ptr<Session>& session);
 
+    void AddInterceptor(const std::shared_ptr<InterceptorMulti>& pinterceptor);
+
   private:
     void SetHttpMethod(HttpMethod method);
 
@@ -67,6 +71,8 @@ class MultiPerform {
     template <typename... DownloadArgTypes>
     void PrepareDownload(DownloadArgTypes... args);
 
+    std::vector<Response> intercept();
+    std::vector<Response> proceed();
     std::vector<Response> MakeRequest();
     std::vector<Response> MakeDownloadRequest();
 
@@ -76,6 +82,10 @@ class MultiPerform {
     std::vector<std::pair<std::shared_ptr<Session>, HttpMethod>> sessions_;
     std::unique_ptr<CurlMultiHolder> multicurl_;
     bool is_download_multi_perform{false};
+
+    // Interceptors should be able to call the private proceed() function
+    friend InterceptorMulti;
+    std::queue<std::shared_ptr<InterceptorMulti>> interceptors_;
 };
 
 template <typename CurrentDownloadArgType>

@@ -1,14 +1,17 @@
 #include "cpr/multiperform.h"
 
+#include "cpr/interceptor.h"
+#include "cpr/response.h"
 #include <algorithm>
 #include <iostream>
+#include <vector>
 
 namespace cpr {
 
 MultiPerform::MultiPerform() : multicurl_(new CurlMultiHolder()) {}
 
 MultiPerform::~MultiPerform() {
-    // Unock all sessions
+    // Unlock all sessions
     for (const std::pair<std::shared_ptr<Session>, HttpMethod>& pair : sessions_) {
         pair.first->isUsedInMultiPerform = false;
     }
@@ -125,6 +128,10 @@ std::vector<Response> MultiPerform::ReadMultiInfo(std::function<Response(Session
 }
 
 std::vector<Response> MultiPerform::MakeRequest() {
+    if (!interceptors_.empty()) {
+        return intercept();
+    }
+
     DoMultiPerform();
     return ReadMultiInfo([](Session& session, CURLcode curl_error) -> Response { return session.Complete(curl_error); });
 }
@@ -268,6 +275,22 @@ std::vector<Response> MultiPerform::Post() {
 std::vector<Response> MultiPerform::Perform() {
     PrepareSessions();
     return MakeRequest();
+}
+
+std::vector<Response> MultiPerform::proceed() {
+    PrepareSessions();
+    return MakeRequest();
+}
+
+std::vector<Response> MultiPerform::intercept() {
+    // At least one interceptor exists -> Execute its intercept function
+    const std::shared_ptr<InterceptorMulti> interceptor = interceptors_.front();
+    interceptors_.pop();
+    return interceptor->intercept(*this);
+}
+
+void MultiPerform::AddInterceptor(const std::shared_ptr<InterceptorMulti>& pinterceptor) {
+    interceptors_.push(pinterceptor);
 }
 
 } // namespace cpr
