@@ -64,6 +64,8 @@ class InterceptorMulti {
 
   protected:
     static std::vector<Response> proceed(MultiPerform& multi);
+
+    static void PrepareDownloadSession(MultiPerform& multi, size_t sessions_index, const WriteCallback& write);
 };
 
 } // namespace cpr

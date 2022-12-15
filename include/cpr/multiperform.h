@@ -47,10 +47,15 @@ class MultiPerform {
 
     void AddSession(std::shared_ptr<Session>& session, HttpMethod method = HttpMethod::UNDEFINED);
     void RemoveSession(const std::shared_ptr<Session>& session);
+    std::vector<std::pair<std::shared_ptr<Session>, HttpMethod>>& GetSessions();
+    [[nodiscard]] const std::vector<std::pair<std::shared_ptr<Session>, HttpMethod>>& GetSessions() const;
 
     void AddInterceptor(const std::shared_ptr<InterceptorMulti>& pinterceptor);
 
   private:
+    // Interceptors should be able to call the private proceed() and PrepareDownloadSessions() functions
+    friend InterceptorMulti;
+
     void SetHttpMethod(HttpMethod method);
 
     void PrepareSessions();
@@ -83,8 +88,6 @@ class MultiPerform {
     std::unique_ptr<CurlMultiHolder> multicurl_;
     bool is_download_multi_perform{false};
 
-    // Interceptors should be able to call the private proceed() function
-    friend InterceptorMulti;
     std::queue<std::shared_ptr<InterceptorMulti>> interceptors_;
 };
 

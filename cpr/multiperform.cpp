@@ -67,6 +67,14 @@ void MultiPerform::RemoveSession(const std::shared_ptr<Session>& session) {
     }
 }
 
+std::vector<std::pair<std::shared_ptr<Session>, MultiPerform::HttpMethod>>& MultiPerform::GetSessions() {
+    return sessions_;
+}
+
+const std::vector<std::pair<std::shared_ptr<Session>, MultiPerform::HttpMethod>>& MultiPerform::GetSessions() const {
+    return sessions_;
+}
+
 void MultiPerform::DoMultiPerform() {
     // Do multi perform until every handle has finished
     int still_running{0};
@@ -137,6 +145,10 @@ std::vector<Response> MultiPerform::MakeRequest() {
 }
 
 std::vector<Response> MultiPerform::MakeDownloadRequest() {
+    if (!interceptors_.empty()) {
+        return intercept();
+    }
+
     DoMultiPerform();
     return ReadMultiInfo([](Session& session, CURLcode curl_error) -> Response { return session.CompleteDownload(curl_error); });
 }

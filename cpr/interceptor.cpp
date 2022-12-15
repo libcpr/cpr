@@ -47,4 +47,7 @@ std::vector<Response> InterceptorMulti::proceed(MultiPerform& multi) {
     return multi.proceed();
 }
 
+void InterceptorMulti::PrepareDownloadSession(MultiPerform& multi, size_t sessions_index, const WriteCallback& write) {
+    multi.PrepareDownloadSessions(sessions_index, write);
+}
 } // namespace cpr
