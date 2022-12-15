@@ -383,6 +383,26 @@ TEST(InterceptorMultiTest, ChangeRequestMethodToDownloadCallbackInterceptorMulti
     EXPECT_EQ(cpr::ErrorCode::OK, response.front().error.code);
 }
 
+TEST(InterceptorMultiTest, ChangeRequestMethodToDownloadCallbackInterceptorMultiMixTest) {
+    Url url{server->GetBaseUrl() + "/download_gzip.html"};
+    std::shared_ptr<Session> session1 = std::make_shared<Session>();
+    session1->SetUrl(url);
+    session1->SetHeader(cpr::Header{{"Accept-Encoding", "gzip"}});
+    session1->SetTimeout(Timeout{2000});
+
+    std::shared_ptr<Session> session2 = std::make_shared<Session>();
+    session2->SetUrl(url);
+    session2->SetHeader(cpr::Header{{"Accept-Encoding", "gzip"}});
+    session2->SetTimeout(Timeout{2000});
+
+    MultiPerform multi;
+    multi.AddSession(session1);
+    multi.AddSession(session2);
+    // Changes only one of two sessions to download, so it is expected to throw an exception here since we can not mix them.
+    multi.AddInterceptor(std::make_shared<ChangeRequestMethodToDownloadCallbackInterceptorMulti>());
+    EXPECT_THROW(multi.Put(), std::invalid_argument);
+}
+
 TEST(InterceptorMultiTest, ChangeRequestMethodToDeleteInterceptorMultiTest) {
     Url url{server->GetBaseUrl() + "/delete.html"};
     std::shared_ptr<Session> session = std::make_shared<Session>();
