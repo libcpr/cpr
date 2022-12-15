@@ -2,8 +2,10 @@
 
 #include "cpr/interceptor.h"
 #include "cpr/response.h"
+#include "cpr/session.h"
 #include <algorithm>
 #include <iostream>
+#include <memory>
 #include <vector>
 
 namespace cpr {
@@ -290,6 +292,19 @@ std::vector<Response> MultiPerform::Perform() {
 }
 
 std::vector<Response> MultiPerform::proceed() {
+    // Check if this multiperform mixes download and non download requests
+    if (!sessions_.empty()) {
+        bool new_is_download_multi_perform = sessions_.front().second == HttpMethod::DOWNLOAD_REQUEST;
+
+        for (const std::pair<std::shared_ptr<Session>, HttpMethod>& s : sessions_) {
+            HttpMethod method = s.second;
+            if ((new_is_download_multi_perform && method != HttpMethod::DOWNLOAD_REQUEST) || (!new_is_download_multi_perform && method == HttpMethod::DOWNLOAD_REQUEST)) {
+                throw std::invalid_argument("Failed to proceed with session: Cannot mix download and non-download methods!");
+            }
+        }
+        is_download_multi_perform = new_is_download_multi_perform;
+    }
+
     PrepareSessions();
     return MakeRequest();
 }

@@ -130,8 +130,8 @@ class ChangeRequestMethodToDownloadCallbackInterceptorMulti : public Interceptor
   public:
     std::vector<Response> intercept(MultiPerform& multi) override {
         EXPECT_FALSE(multi.GetSessions().empty());
-        PrepareDownloadSession(multi, 0, WriteCallback{write_data, 0});
         multi.GetSessions().front().second = MultiPerform::HttpMethod::DOWNLOAD_REQUEST;
+        PrepareDownloadSession(multi, 0, WriteCallback{write_data, 0});
         return proceed(multi);
     }
 };
