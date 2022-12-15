@@ -60,6 +60,7 @@ add_cpr_test(encoded_auth)
 add_cpr_test(version)
 add_cpr_test(download)
 add_cpr_test(interceptor)
+add_cpr_test(interceptor_multi)
 add_cpr_test(multiperform)
 add_cpr_test(resolve)
 
