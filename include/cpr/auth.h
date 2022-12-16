@@ -11,8 +11,7 @@ enum class AuthMode { BASIC, DIGEST, NTLM };
 
 class Authentication {
   public:
-    Authentication(const std::string& username, const std::string& password, const AuthMode& auth_mode) : auth_string_{username + ":" + password}, auth_mode_{auth_mode} {}
-    Authentication(std::string&& username, std::string&& password, AuthMode&& auth_mode) : auth_string_{std::move(username) + ":" + std::move(password)}, auth_mode_{std::move(auth_mode)} {}
+    Authentication(std::string username, std::string password, AuthMode auth_mode) : auth_string_{std::move(username) + ":" + std::move(password)}, auth_mode_{std::move(auth_mode)} {}
     Authentication(const Authentication& other) = default;
     Authentication(Authentication&& old) noexcept = default;
     ~Authentication() noexcept;

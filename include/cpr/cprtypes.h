@@ -20,9 +20,8 @@ template <class T>
 class StringHolder {
   public:
     StringHolder() = default;
-    explicit StringHolder(const std::string& str) : str_(str) {}
-    explicit StringHolder(std::string&& str) : str_(std::move(str)) {}
-    explicit StringHolder(const std::string_view& str) : str_(str) {}
+    explicit StringHolder(std::string str) : str_(std::move(str)) {}
+    explicit StringHolder(std::string_view str) : str_(str) {}
     explicit StringHolder(const char* str) : str_(str) {}
     StringHolder(const char* str, size_t len) : str_(str, len) {}
     StringHolder(const std::initializer_list<std::string> args) {
@@ -109,11 +108,9 @@ class Url : public StringHolder<Url> {
   public:
     Url() = default;
     // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
-    Url(const std::string& url) : StringHolder<Url>(url) {}
+    Url(std::string url) : StringHolder<Url>(std::move(url)) {}
     // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
-    Url(std::string&& url) : StringHolder<Url>(std::move(url)) {}
-    // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
-    Url(const std::string_view& url) : StringHolder<Url>(url) {}
+    Url(std::string_view url) : StringHolder<Url>(url) {}
     // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
     Url(const char* url) : StringHolder<Url>(url) {}
     Url(const char* str, size_t len) : StringHolder<Url>(std::string(str, len)) {}

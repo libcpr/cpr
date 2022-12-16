@@ -17,11 +17,9 @@ class Body : public StringHolder<Body> {
   public:
     Body() = default;
     // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
-    Body(const std::string& body) : StringHolder<Body>(body) {}
+    Body(std::string body) : StringHolder<Body>(std::move(body)) {}
     // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
-    Body(std::string&& body) : StringHolder<Body>(std::move(body)) {}
-    // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
-    Body(const std::string_view& body) : StringHolder<Body>(body) {}
+    Body(std::string_view body) : StringHolder<Body>(body) {}
     // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
     Body(const char* body) : StringHolder<Body>(body) {}
     Body(const char* str, size_t len) : StringHolder<Body>(str, len) {}

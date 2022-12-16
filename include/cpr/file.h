@@ -10,8 +10,7 @@
 namespace cpr {
 
 struct File {
-    explicit File(std::string&& p_filepath, const std::string& p_overrided_filename = {}) : filepath(std::move(p_filepath)), overrided_filename(p_overrided_filename) {}
-    explicit File(const std::string& p_filepath, const std::string& p_overrided_filename = {}) : filepath(p_filepath), overrided_filename(p_overrided_filename) {}
+    explicit File(std::string p_filepath, const std::string& p_overrided_filename = {}) : filepath(std::move(p_filepath)), overrided_filename(p_overrided_filename) {}
 
     const std::string filepath;
     const std::string overrided_filename;
