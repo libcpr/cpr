@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "cpr/async.h"
+#include "cpr/async_wrapper.h"
 #include "cpr/auth.h"
 #include "cpr/bearer.h"
 #include "cpr/cprtypes.h"
@@ -17,11 +18,10 @@
 #include "cpr/response.h"
 #include "cpr/session.h"
 #include <cpr/filesystem.h>
-#include <utility>
 
 namespace cpr {
 
-using AsyncResponse = std::future<Response>;
+using AsyncResponse = AsyncWrapper<Response>;
 
 namespace priv {
 
@@ -245,7 +245,7 @@ Response Download(std::ofstream& file, Ts&&... ts) {
 // Download async method
 template <typename... Ts>
 AsyncResponse DownloadAsync(fs::path local_path, Ts... ts) {
-    return std::async(
+    return AsyncResponse{std::async(
             std::launch::async,
             [](fs::path local_path_, Ts... ts_) {
 #ifdef CPR_USE_BOOST_FILESYSTEM
@@ -255,7 +255,7 @@ AsyncResponse DownloadAsync(fs::path local_path, Ts... ts) {
 #endif
                 return Download(f, std::move(ts_)...);
             },
-            std::move(local_path), std::move(ts)...);
+            std::move(local_path), std::move(ts)...)};
 }
 
 // Download with user callback

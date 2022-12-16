@@ -3,6 +3,8 @@
 
 #include "singleton.h"
 #include "threadpool.h"
+#include "async_wrapper.h"
+#include "session.h"
 
 namespace cpr {
 
@@ -16,14 +18,14 @@ class GlobalThreadPool : public ThreadPool {
 };
 
 /**
- * Return a future, calling future.get() will wait task done and return RetType.
+ * Return a wraper for a future, calling future.get() will wait until the task is done and return RetType.
  * async(fn, args...)
  * async(std::bind(&Class::mem_fn, &obj))
  * async(std::mem_fn(&Class::mem_fn, &obj))
  **/
 template <class Fn, class... Args>
 auto async(Fn&& fn, Args&&... args) {
-    return GlobalThreadPool::GetInstance()->Submit(std::forward<Fn>(fn), std::forward<Args>(args)...);
+    return AsyncWrapper{GlobalThreadPool::GetInstance()->Submit(std::forward<Fn>(fn), std::forward<Args>(args)...)};
 }
 
 class async {

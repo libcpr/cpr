@@ -8,6 +8,7 @@
 #include <queue>
 
 #include "cpr/accept_encoding.h"
+#include "cpr/async_wrapper.h"
 #include "cpr/auth.h"
 #include "cpr/bearer.h"
 #include "cpr/body.h"
@@ -40,7 +41,7 @@
 
 namespace cpr {
 
-using AsyncResponse = std::future<Response>;
+using AsyncResponse = AsyncWrapper<Response>;
 
 class Interceptor;
 class MultiPerform;
