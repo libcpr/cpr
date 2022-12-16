@@ -211,7 +211,7 @@ void Session::prepareCommonDownload() {
 
 Response Session::makeRequest() {
     if (!interceptors_.empty()) {
-        intercept();
+        return intercept();
     }
 
     const CURLcode curl_error = DoEasyPerform();
