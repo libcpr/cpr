@@ -85,6 +85,33 @@ void setup_multiperform(MultiPerform& multiperform, Ts&&... ts) {
     setup_multiperform_internal<Ts...>(multiperform, std::forward<Ts>(ts)...);
 }
 
+using session_action_t= decltype(&cpr::Session::Get);
+
+template <session_action_t SessionAction, typename T>
+void setup_multiasync(std::vector<AsyncWrapper<Response, true>>& responses, T&& parameters) {
+    std::shared_ptr<std::atomic_bool>cancellation_state = std::make_shared<std::atomic_bool>(false);
+
+    std::function<Response(T)>execFn { [cancellation_state] (T params) {
+            if(cancellation_state->load()) {
+                return Response{};
+            }
+            cpr::Session s{};
+            s.SetCancellationParam(cancellation_state);
+            apply_set_option(s, std::forward<T>(params));
+            return std::invoke(SessionAction, s);
+        }
+    };
+    responses.emplace_back(GlobalThreadPool::GetInstance()->Submit(std::move(execFn), std::forward<T>(parameters)), std::move(cancellation_state));
+}
+
+template <session_action_t SessionAction, typename T, typename... Ts>
+void setup_multiasync(std::vector<AsyncWrapper<Response, true>>& responses, T&& head, Ts&&... tail) {
+    setup_multiasync<SessionAction>(responses, std::forward<T>(head));
+    if constexpr (sizeof...(Ts) > 0) {
+        setup_multiasync<SessionAction>(responses, std::forward<Ts>(tail)...);
+    }
+}
+
 } // namespace priv
 
 // Get methods
@@ -245,7 +272,7 @@ Response Download(std::ofstream& file, Ts&&... ts) {
 // Download async method
 template <typename... Ts>
 AsyncResponse DownloadAsync(fs::path local_path, Ts... ts) {
-    return AsyncResponse{std::async(
+    return AsyncWrapper{std::async(
             std::launch::async,
             [](fs::path local_path_, Ts... ts_) {
 #ifdef CPR_USE_BOOST_FILESYSTEM
@@ -316,6 +343,12 @@ std::vector<Response> MultiPost(Ts&&... ts) {
     return multiperform.Post();
 }
 
+template <typename... Ts>
+std::vector<AsyncWrapper<Response, true>> MultiGetAsync(Ts&&... ts) {
+    std::vector<AsyncWrapper<Response, true>> ret{};
+    priv::setup_multiasync<&cpr::Session::Get>(ret, std::forward<Ts>(ts)...);
+    return ret;
+}
 } // namespace cpr
 
 #endif
