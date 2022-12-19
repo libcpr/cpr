@@ -4,26 +4,16 @@
 #include <vector>
 
 #include <cpr/cpr.h>
+#include <cpr/cprtypes.h>
 #include <cpr/filesystem.h>
 
 #include "cpr/api.h"
+#include "cpr/async_wrapper.h"
 #include "httpServer.hpp"
 
 using namespace cpr;
 
 static HttpServer* server = new HttpServer();
-
-namespace test_internal {
-
-class IntrospectionFunction {
-    public:
-    explicit IntrospectionFunction(std::function<void()>&& f): introFunc{std::move(f)} {}
-
-
-    private:
-    std::function<void()> introFunc;
-};
-} // namespace test_internal
 
 // A cancellable AsyncResponse
 using AsyncResponseC = AsyncWrapper<Response, true>;
@@ -41,18 +31,60 @@ TEST(MultiAsyncBasicTests, MultiAsyncGetTest) {
         EXPECT_EQ(expected_hello, resp.get().text);
     }
 }
-
+/**
+ * We test that cancellation on queue, works, ie libcurl does not get engaged at all
+ * To do this, we plant an observer function in the progress call sequence, which
+ * will set an atomic boolean to true. The objective is to verify that within 500ms,
+ * the function is never called.
+ */
 TEST(MultiAsyncCancelTests, CancellationOnQueue) {
     const Url hello_url{server->GetBaseUrl() + "/hello.html"};
+    std::atomic_bool was_called{false};
+    const std::function observer_fn{[&was_called]
+            (cpr_pf_arg_t, cpr_pf_arg_t, cpr_pf_arg_t, cpr_pf_arg_t, intptr_t) -> bool {
+                was_called.store(true);
+                return true;
+            }
+    };
+
     GlobalThreadPool::GetInstance()->Pause();
-    std::vector resps{threeHelloWorldReqs()};
-    std::for_each(resps.begin(), resps.end(),
-        [] (AsyncResponseC& r) {
-            EXPECT_EQ(CancellationResult::success, r.cancel());
-        }
-    );
+    std::vector resps{MultiGetAsync(std::tuple{hello_url, ProgressCallback{observer_fn}})};
+    EXPECT_EQ(CancellationResult::success, resps.at(0).cancel());
     GlobalThreadPool::GetInstance()->Resume();
-    // TODO: add assertions here, declare this test a friend function of AsyncWrapper
+
+    std::this_thread::sleep_for(std::chrono::milliseconds{500});
+    EXPECT_EQ(false, was_called);
+}
+
+/**
+ * We test that cancellation works as intended while the request is being processed by the server.
+ * To achieve this we use a condition variable to ensure that the observer function, wrapped in a
+ * cpr::ProgressCallback, is called at least once, and then no further calls are made for half a
+ * second after cancellation.
+ */
+TEST(MultiAsyncCancelTests, TestCancellationInTransit) {
+    const Url call_url{server->GetBaseUrl() + "/low_speed_bytes.html"};
+
+    std::atomic_size_t counter{0};
+    std::condition_variable is_called{};
+    std::mutex cv_lock{};
+    std::unique_lock setup_lock{cv_lock};
+    const std::function observer_fn{[&counter, &is_called, &cv_lock]
+        (cpr_pf_arg_t, cpr_pf_arg_t, cpr_pf_arg_t, cpr_pf_arg_t, intptr_t) -> bool {
+            const std::unique_lock l{cv_lock};
+            counter++;
+            is_called.notify_all();
+            return true;
+        }
+    };
+    std::vector res{cpr::MultiGetAsync(std::tuple{call_url, cpr::ProgressCallback{observer_fn}})};
+    is_called.wait(setup_lock);
+    EXPECT_LT(0, counter);
+    EXPECT_EQ(cpr::CancellationResult::success, res.at(0).cancel());
+    const size_t calls{counter};
+
+    std::this_thread::sleep_for(std::chrono::milliseconds{500});
+    EXPECT_EQ(calls, counter.load());
 }
 
 /**
@@ -66,25 +98,30 @@ TEST(MultiAsyncCancelTests, CancellationOnQueue) {
  * least on scheduler behaviour. We have tried, however, to set a boundary that
  * is permissive enough to ensure consistency.
  */
-TEST(MultiAsyncCancelTest, TestIntervalOfProgressCallsLowSpeed) {
+TEST(MultiAsyncCancelTests, TestIntervalOfProgressCallsLowSpeed) {
     const Url call_url{server->GetBaseUrl() + "/low_speed_bytes.html"};
 
     const size_t N{15};
 
     // This variable will be used to cancel the transaction at the point of the Nth call.
-    const std::shared_ptr no{std::make_shared<std::atomic_size_t>(0)};
+    std::atomic_size_t counter{0};
     const std::chrono::time_point start{std::chrono::steady_clock::now()};
 
-    std::vector resp{MultiGetAsync(std::tuple{call_url, ProgressCallback{std::function{[no] (cpr_off_t a1, cpr_off_t a2, cpr_off_t a3, cpr_off_t  a4, intptr_t a5) {
-        std::ignore = std::tuple(a1, a2, a3, a4, a5);
-        no->store(no->load() + 1);
-        return no->load() < N;
-    }}}})};
+    const std::function observer_fn{[&counter, &N]
+            (cpr_pf_arg_t, cpr_pf_arg_t, cpr_pf_arg_t, cpr_pf_arg_t, intptr_t) -> bool {
+                counter++;
+                return counter < N;
+            }
+    };
+
+    std::vector resp{MultiGetAsync(std::tuple{call_url, ProgressCallback{observer_fn}})};
     resp.at(0).wait();
 
     const std::chrono::duration elapsed_time{std::chrono::steady_clock::now() - start};
     EXPECT_GT(std::chrono::seconds(N), elapsed_time);
 }
+
+
 
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);

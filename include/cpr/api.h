@@ -85,7 +85,7 @@ void setup_multiperform(MultiPerform& multiperform, Ts&&... ts) {
     setup_multiperform_internal<Ts...>(multiperform, std::forward<Ts>(ts)...);
 }
 
-using session_action_t= decltype(&cpr::Session::Get);
+using session_action_t = cpr::Response(cpr::Session::*)();
 
 template <session_action_t SessionAction, typename T>
 void setup_multiasync(std::vector<AsyncWrapper<Response, true>>& responses, T&& parameters) {
@@ -349,6 +349,49 @@ std::vector<AsyncWrapper<Response, true>> MultiGetAsync(Ts&&... ts) {
     priv::setup_multiasync<&cpr::Session::Get>(ret, std::forward<Ts>(ts)...);
     return ret;
 }
+
+template <typename... Ts>
+std::vector<AsyncWrapper<Response, true>> MultiDeleteAsync(Ts&&... ts) {
+    std::vector<AsyncWrapper<Response, true>> ret{};
+    priv::setup_multiasync<&cpr::Session::Delete>(ret, std::forward<Ts>(ts)...);
+    return ret;
+}
+
+template <typename... Ts>
+std::vector<AsyncWrapper<Response, true>> MultiHeadAsync(Ts&&... ts) {
+    std::vector<AsyncWrapper<Response, true>> ret{};
+    priv::setup_multiasync<&cpr::Session::Head>(ret, std::forward<Ts>(ts)...);
+    return ret;
+}
+template <typename... Ts>
+std::vector<AsyncWrapper<Response, true>> MultiOptionsAsync(Ts&&... ts) {
+    std::vector<AsyncWrapper<Response, true>> ret{};
+    priv::setup_multiasync<&cpr::Session::Options>(ret, std::forward<Ts>(ts)...);
+    return ret;
+}
+
+template <typename... Ts>
+std::vector<AsyncWrapper<Response, true>> MultiPatchAsync(Ts&&... ts) {
+    std::vector<AsyncWrapper<Response, true>> ret{};
+    priv::setup_multiasync<&cpr::Session::Patch>(ret, std::forward<Ts>(ts)...);
+    return ret;
+}
+
+template <typename... Ts>
+std::vector<AsyncWrapper<Response, true>> MultiPostAsync(Ts&&... ts) {
+    std::vector<AsyncWrapper<Response, true>> ret{};
+    priv::setup_multiasync<&cpr::Session::Post>(ret, std::forward<Ts>(ts)...);
+    return ret;
+}
+
+template <typename... Ts>
+std::vector<AsyncWrapper<Response, true>> MultiPutAsync(Ts&&... ts) {
+    std::vector<AsyncWrapper<Response, true>> ret{};
+    priv::setup_multiasync<&cpr::Session::Put>(ret, std::forward<Ts>(ts)...);
+    return ret;
+}
+
+
 } // namespace cpr
 
 #endif
