@@ -219,7 +219,7 @@ class Session : public std::enable_shared_from_this<Session> {
     void AddInterceptor(const std::shared_ptr<Interceptor>& pinterceptor);
 
   private:
-    // Interceptors should be able to call the private procceed() function
+    // Interceptors should be able to call the private proceed() function
     friend Interceptor;
     friend MultiPerform;
 
@@ -250,6 +250,7 @@ class Session : public std::enable_shared_from_this<Session> {
     Response makeDownloadRequest();
     Response makeRequest();
     Response proceed();
+    Response intercept();
     void prepareCommon();
     void prepareCommonDownload();
     void SetHeaderInternal();

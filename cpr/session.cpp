@@ -104,9 +104,7 @@ Session::Session() : curl_(new CurlHolder()) {
 
 Response Session::makeDownloadRequest() {
     if (!interceptors_.empty()) {
-        const std::shared_ptr<Interceptor> interceptor = interceptors_.front();
-        interceptors_.pop();
-        return interceptor->intercept(*this);
+        return intercept();
     }
 
     const CURLcode curl_error = DoEasyPerform();
@@ -213,10 +211,7 @@ void Session::prepareCommonDownload() {
 
 Response Session::makeRequest() {
     if (!interceptors_.empty()) {
-        // At least one interceptor exists -> Execute its intercept function
-        const std::shared_ptr<Interceptor> interceptor = interceptors_.front();
-        interceptors_.pop();
-        return interceptor->intercept(*this);
+        return intercept();
     }
 
     const CURLcode curl_error = DoEasyPerform();
@@ -915,6 +910,13 @@ void Session::AddInterceptor(const std::shared_ptr<Interceptor>& pinterceptor) {
 Response Session::proceed() {
     prepareCommon();
     return makeRequest();
+}
+
+Response Session::intercept() {
+    // At least one interceptor exists -> Execute its intercept function
+    const std::shared_ptr<Interceptor> interceptor = interceptors_.front();
+    interceptors_.pop();
+    return interceptor->intercept(*this);
 }
 
 // clang-format off

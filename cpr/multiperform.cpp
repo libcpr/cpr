@@ -1,14 +1,19 @@
 #include "cpr/multiperform.h"
 
+#include "cpr/interceptor.h"
+#include "cpr/response.h"
+#include "cpr/session.h"
 #include <algorithm>
 #include <iostream>
+#include <memory>
+#include <vector>
 
 namespace cpr {
 
 MultiPerform::MultiPerform() : multicurl_(new CurlMultiHolder()) {}
 
 MultiPerform::~MultiPerform() {
-    // Unock all sessions
+    // Unlock all sessions
     for (const std::pair<std::shared_ptr<Session>, HttpMethod>& pair : sessions_) {
         pair.first->isUsedInMultiPerform = false;
     }
@@ -62,6 +67,14 @@ void MultiPerform::RemoveSession(const std::shared_ptr<Session>& session) {
     if (sessions_.empty()) {
         is_download_multi_perform = false;
     }
+}
+
+std::vector<std::pair<std::shared_ptr<Session>, MultiPerform::HttpMethod>>& MultiPerform::GetSessions() {
+    return sessions_;
+}
+
+const std::vector<std::pair<std::shared_ptr<Session>, MultiPerform::HttpMethod>>& MultiPerform::GetSessions() const {
+    return sessions_;
 }
 
 void MultiPerform::DoMultiPerform() {
@@ -125,11 +138,19 @@ std::vector<Response> MultiPerform::ReadMultiInfo(std::function<Response(Session
 }
 
 std::vector<Response> MultiPerform::MakeRequest() {
+    if (!interceptors_.empty()) {
+        return intercept();
+    }
+
     DoMultiPerform();
     return ReadMultiInfo([](Session& session, CURLcode curl_error) -> Response { return session.Complete(curl_error); });
 }
 
 std::vector<Response> MultiPerform::MakeDownloadRequest() {
+    if (!interceptors_.empty()) {
+        return intercept();
+    }
+
     DoMultiPerform();
     return ReadMultiInfo([](Session& session, CURLcode curl_error) -> Response { return session.CompleteDownload(curl_error); });
 }
@@ -268,6 +289,35 @@ std::vector<Response> MultiPerform::Post() {
 std::vector<Response> MultiPerform::Perform() {
     PrepareSessions();
     return MakeRequest();
+}
+
+std::vector<Response> MultiPerform::proceed() {
+    // Check if this multiperform mixes download and non download requests
+    if (!sessions_.empty()) {
+        const bool new_is_download_multi_perform = sessions_.front().second == HttpMethod::DOWNLOAD_REQUEST;
+
+        for (const std::pair<std::shared_ptr<Session>, HttpMethod>& s : sessions_) {
+            const HttpMethod method = s.second;
+            if ((new_is_download_multi_perform && method != HttpMethod::DOWNLOAD_REQUEST) || (!new_is_download_multi_perform && method == HttpMethod::DOWNLOAD_REQUEST)) {
+                throw std::invalid_argument("Failed to proceed with session: Cannot mix download and non-download methods!");
+            }
+        }
+        is_download_multi_perform = new_is_download_multi_perform;
+    }
+
+    PrepareSessions();
+    return MakeRequest();
+}
+
+std::vector<Response> MultiPerform::intercept() {
+    // At least one interceptor exists -> Execute its intercept function
+    const std::shared_ptr<InterceptorMulti> interceptor = interceptors_.front();
+    interceptors_.pop();
+    return interceptor->intercept(*this);
+}
+
+void MultiPerform::AddInterceptor(const std::shared_ptr<InterceptorMulti>& pinterceptor) {
+    interceptors_.push(pinterceptor);
 }
 
 } // namespace cpr
