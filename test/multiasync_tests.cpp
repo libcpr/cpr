@@ -4,11 +4,7 @@
 #include <vector>
 
 #include <cpr/cpr.h>
-#include <cpr/cprtypes.h>
-#include <cpr/filesystem.h>
 
-#include "cpr/api.h"
-#include "cpr/async_wrapper.h"
 #include "httpServer.hpp"
 
 using namespace cpr;
@@ -23,6 +19,97 @@ std::vector<AsyncResponseC> threeHelloWorldReqs () {
     return MultiGetAsync(std::tuple{hello_url}, std::tuple{hello_url}, std::tuple{hello_url});
 }
 
+/** This property is tested at compile-time, so if compilation succeeds, it has already been verified. It is, however, useful to structure it as a test for semantic purposes.
+ */
+TEST(AsyncWrapperTests, TestConstructorDeductions) {
+    auto wrapper_non_cancellable{AsyncWrapper{std::future<std::string>{}}};
+    auto wrapper_cancellable{AsyncWrapper{std::future<std::string>{}, std::make_shared<std::atomic_bool>(false)}};
+
+    static_assert(std::is_same<AsyncWrapper<std::string, false>, decltype(wrapper_non_cancellable)>::value);
+    static_assert(std::is_same<AsyncWrapper<std::string, true>, decltype(wrapper_cancellable)>::value);
+    SUCCEED();
+}
+
+/** These tests aim to set a point of reference for AsyncWrapper behavior.
+ * Those functions that replicate std::future member functions should behave in a way that is in all ways compatible.
+ * Others should behave as expected by the below test set.
+ */
+TEST(AsyncWrapperNonCancellableTests, TestGetNoError) {
+    const Url hello_url{server->GetBaseUrl() + "/hello.html"};
+    const std::string expected_hello{"Hello world!"};
+    const Response resp{GetAsync(hello_url).get()};
+    EXPECT_EQ(expected_hello, resp.text);
+}
+
+TEST(AsyncWrapperNonCancellableTests, TestExceptionsNoSharedState) {
+    const std::chrono::duration five_secs{std::chrono::seconds(1)};
+    const std::chrono::time_point in_five_s{std::chrono::steady_clock::now() + five_secs};
+
+    // We create an AsyncWrapper for a future without a shared state (default-initialized)
+    AsyncWrapper test_wrapper{std::future<std::string>{}};
+
+
+    ASSERT_FALSE(test_wrapper.valid());
+    ASSERT_FALSE(test_wrapper.IsCancelled());
+
+    // Trying to get or wait for a future that doesn't have a shared state should result to an exception
+    // It should be noted that there is a divergence from std::future behavior here: calling wait* on the original std::future is undefined behaviour, according to cppreference.com . We find it preferrable to throw an exception.
+    EXPECT_THROW(std::ignore = test_wrapper.get(), std::exception);
+    EXPECT_THROW(test_wrapper.wait(), std::exception);
+    EXPECT_THROW(test_wrapper.wait_for(five_secs), std::exception);
+    EXPECT_THROW(test_wrapper.wait_until(in_five_s), std::exception);
+}
+
+TEST(AsyncWrapperCancellableTests, TestExceptionsNoSharedState) {
+     const std::chrono::duration five_secs{std::chrono::seconds(5)};
+    const std::chrono::time_point in_five_s{std::chrono::steady_clock::now() + five_secs};
+
+    AsyncWrapper test_wrapper{std::future<std::string>{}, std::make_shared<std::atomic_bool>(false)};
+
+    static_assert(std::is_same<AsyncWrapper<std::string, true>, decltype(test_wrapper)>::value);
+
+    ASSERT_FALSE(test_wrapper.valid());
+    ASSERT_FALSE(test_wrapper.IsCancelled());
+
+    EXPECT_THROW(std::ignore = test_wrapper.get(), std::exception);
+    EXPECT_THROW(test_wrapper.wait(), std::exception);
+    EXPECT_THROW(test_wrapper.wait_for(five_secs), std::exception);
+    EXPECT_THROW(test_wrapper.wait_until(in_five_s), std::exception);
+}
+
+TEST(AsyncWrapperCancellableTest, TestExceptionsCancelledRequest) {
+    const Url call_url{server->GetBaseUrl() + "/low_speed_bytes.html"};
+    const std::chrono::duration five_secs{std::chrono::seconds(5)};
+    const std::chrono::time_point in_five_s{std::chrono::steady_clock::now() + five_secs};
+
+    AsyncResponseC test_wrapper{std::move(MultiGetAsync(std::tuple{call_url}).at(0))};
+    EXPECT_EQ(CancellationResult::success, test_wrapper.Cancel());
+    EXPECT_EQ(CancellationResult::invalid_operation, test_wrapper.Cancel());
+    ASSERT_TRUE(test_wrapper.IsCancelled());
+
+    EXPECT_THROW(std::ignore = test_wrapper.get(), std::exception);
+    EXPECT_THROW(test_wrapper.wait(), std::exception);
+    EXPECT_THROW(test_wrapper.wait_for(five_secs), std::exception);
+    EXPECT_THROW(test_wrapper.wait_until(in_five_s), std::exception);
+}
+
+TEST(AsyncWrapperCancellableTest, TestWaitFor) {
+    constexpr std::chrono::duration wait_for_time{std::chrono::milliseconds(100)};
+    constexpr std::chrono::duration teardown_time{std::chrono::milliseconds(10)};
+
+    const Url call_url{server->GetBaseUrl() + "/low_speed_bytes.html"};
+
+    AsyncResponseC test_wrapper{std::move(MultiGetAsync(std::tuple{call_url}).at(0))};
+
+    EXPECT_EQ(std::future_status::timeout, test_wrapper.wait_for(wait_for_time));
+
+    ASSERT_TRUE(test_wrapper.valid());
+    ASSERT_FALSE(test_wrapper.IsCancelled());
+
+    EXPECT_EQ(CancellationResult::success, test_wrapper.Cancel());
+
+    std::this_thread::sleep_for(teardown_time);
+}
 /** The group MultiAsyncBasicTests executes multiple tests from the test sources associated with every Http action in parallel.
  * These tests are reproductions of tests from the appropriate test suites, but they guarantee that the multiasync function template produces correctly working instantiations for every Http action.
  */
@@ -251,7 +338,7 @@ TEST(MultiAsyncCancelTests, CancellationOnQueue) {
 
     GlobalThreadPool::GetInstance()->Pause();
     std::vector<AsyncResponseC> resps{MultiGetAsync(std::tuple{hello_url, ProgressCallback{observer_fn}})};
-    EXPECT_EQ(CancellationResult::success, resps.at(0).cancel());
+    EXPECT_EQ(CancellationResult::success, resps.at(0).Cancel());
     GlobalThreadPool::GetInstance()->Resume();
 
     std::this_thread::sleep_for(std::chrono::milliseconds{500});
@@ -282,7 +369,7 @@ TEST(MultiAsyncCancelTests, TestCancellationInTransit) {
     std::vector<AsyncResponseC> res{cpr::MultiGetAsync(std::tuple{call_url, cpr::ProgressCallback{observer_fn}})};
     is_called.wait(setup_lock);
     EXPECT_LT(0, counter);
-    EXPECT_EQ(cpr::CancellationResult::success, res.at(0).cancel());
+    EXPECT_EQ(cpr::CancellationResult::success, res.at(0).Cancel());
     const size_t calls{counter};
 
     std::this_thread::sleep_for(std::chrono::milliseconds{500});

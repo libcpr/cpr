@@ -50,12 +50,12 @@ class AsyncWrapper {
     [[nodiscard]]
     T get() {
         if constexpr (isCancellable) {
-            if(isCancelled()) {
+            if(IsCancelled()) {
                 throw std::logic_error{"Calling AsyncWrapper::get on a cancelled request!"};
             }
         }
         if(!future.valid()) {
-            throw std::logic_error{"Calling AsyncWrapper::get when the associated future instance has been invalidated!"};
+            throw std::logic_error{"Calling AsyncWrapper::get when the associated future instance is invalid!"};
         }
         return future.get();
     }
@@ -71,9 +71,12 @@ class AsyncWrapper {
 
     void wait() const {
         if constexpr (isCancellable) {
-            if(!future.valid() || is_cancelled->load()) {
+            if(is_cancelled->load()) {
                 throw std::logic_error{"Calling AsyncWrapper::wait when the associated future is invalid or cancelled!"};
             }
+        }
+        if(!future.valid()) {
+            throw std::logic_error{"Calling AsyncWrapper::wait_until when the associated future is invalid!"};
         }
         future.wait();
     }
@@ -81,9 +84,12 @@ class AsyncWrapper {
     template<class Rep, class Period>
     std::future_status wait_for(const std::chrono::duration<Rep, Period>& timeout_duration) const {
         if constexpr (isCancellable) {
-            if(isCancelled()) {
+            if(IsCancelled()) {
                 throw std::logic_error{"Calling AsyncWrapper::wait_for when the associated future is cancelled!"};
             }
+        }
+        if(!future.valid()) {
+            throw std::logic_error{"Calling AsyncWrapper::wait_until when the associated future is invalid!"};
         }
         return future.wait_for(timeout_duration);
     }
@@ -91,9 +97,12 @@ class AsyncWrapper {
     template<class Clock, class Duration>
     std::future_status wait_until(const std::chrono::time_point<Clock, Duration>& timeout_time) const {
         if constexpr (isCancellable) {
-            if(isCancelled()) {
+            if(IsCancelled()) {
                 throw std::logic_error{"Calling AsyncWrapper::wait_until when the associated future is cancelled!"};
             }
+        }
+        if(!future.valid()) {
+            throw std::logic_error{"Calling AsyncWrapper::wait_until when the associated future is invalid!"};
         }
         return future.wait_until(timeout_time);
     }
@@ -103,7 +112,7 @@ class AsyncWrapper {
     }
 
     // Cancellation-related methods
-    CancellationResult cancel() {
+    CancellationResult Cancel() {
         if constexpr (!isCancellable) {
             return CancellationResult::invalid_operation;
         }
@@ -115,7 +124,7 @@ class AsyncWrapper {
    }
 
     [[nodiscard]]
-    bool isCancelled() const {
+    bool IsCancelled() const {
         if constexpr (isCancellable) {
             return is_cancelled->load();
         } else {
