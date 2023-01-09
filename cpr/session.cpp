@@ -251,7 +251,7 @@ void Session::SetProgressCallback(const ProgressCallback& progress) {
         return;
     }
 #if LIBCURL_VERSION_NUM < 0x072000
-    curl_easy_setopt(curl_->handle, CURLOPT_PROGRESSFUNCTION, cpr::util::progressUserFunction);
+    curl_easy_setopt(curl_->handle, CURLOPT_PROGRESSFUNCTION, cpr::util::progressUserFunction<ProgressCallback>);
     curl_easy_setopt(curl_->handle, CURLOPT_PROGRESSDATA, &progresscb_);
 #else
     curl_easy_setopt(curl_->handle, CURLOPT_XFERINFOFUNCTION, cpr::util::progressUserFunction<ProgressCallback>);
@@ -977,7 +977,7 @@ void Session::SetCancellationParam(std::shared_ptr<std::atomic_bool> param) {
     cancellationcb_ = CancellationCallback{std::move(param)};
     isCancellable = true;
 #if LIBCURL_VERSION_NUM < 0x072000
-    curl_easy_setopt(curl_->handle, CURLOPT_PROGRESSFUNCTION, cpr::util::progressUserFunction);
+    curl_easy_setopt(curl_->handle, CURLOPT_PROGRESSFUNCTION, cpr::util::progressUserFunction<CancellationCallback>);
     curl_easy_setopt(curl_->handle, CURLOPT_PROGRESSDATA, &cancellationcb_);
 #else
     curl_easy_setopt(curl_->handle, CURLOPT_XFERINFOFUNCTION, cpr::util::progressUserFunction<CancellationCallback>);
