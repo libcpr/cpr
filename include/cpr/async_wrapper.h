@@ -10,11 +10,7 @@
 namespace cpr {
 
 
-enum class [[nodiscard]] CancellationResult {
-    failure,
-    success,
-    invalid_operation
-};
+enum class [[nodiscard]] CancellationResult { failure, success, invalid_operation };
 
 /**
  * A class template intended to wrap results of async operations (instances of std::future<T>)
@@ -22,17 +18,16 @@ enum class [[nodiscard]] CancellationResult {
  *
  * The RAII semantics are the same as std::future<T> - moveable, not copyable.
  */
-template<typename T, bool isCancellable = false>
+template <typename T, bool isCancellable = false>
 class AsyncWrapper {
-    private:
+  private:
     std::future<T> future;
     std::shared_ptr<std::atomic_bool> is_cancelled;
 
-    public:
-
+  public:
     // Constructors
-    explicit AsyncWrapper(std::future<T>&& f): future{std::move(f)} {}
-    AsyncWrapper(std::future<T>&& f, std::shared_ptr<std::atomic_bool>&& cancelledState): future{std::move(f)}, is_cancelled{std::move(cancelledState)} {}
+    explicit AsyncWrapper(std::future<T>&& f) : future{std::move(f)} {}
+    AsyncWrapper(std::future<T>&& f, std::shared_ptr<std::atomic_bool>&& cancelledState) : future{std::move(f)}, is_cancelled{std::move(cancelledState)} {}
 
     // Copy Semantics
     AsyncWrapper(const AsyncWrapper&) = delete;
@@ -47,21 +42,19 @@ class AsyncWrapper {
 
 
     // These methods replicate the behaviour of std::future<T>
-    [[nodiscard]]
-    T get() {
+    [[nodiscard]] T get() {
         if constexpr (isCancellable) {
-            if(IsCancelled()) {
+            if (IsCancelled()) {
                 throw std::logic_error{"Calling AsyncWrapper::get on a cancelled request!"};
             }
         }
-        if(!future.valid()) {
+        if (!future.valid()) {
             throw std::logic_error{"Calling AsyncWrapper::get when the associated future instance is invalid!"};
         }
         return future.get();
     }
 
-    [[nodiscard]]
-    bool valid() const noexcept {
+    [[nodiscard]] bool valid() const noexcept {
         if constexpr (isCancellable) {
             return !is_cancelled->load() && future.valid();
         } else {
@@ -71,44 +64,44 @@ class AsyncWrapper {
 
     void wait() const {
         if constexpr (isCancellable) {
-            if(is_cancelled->load()) {
+            if (is_cancelled->load()) {
                 throw std::logic_error{"Calling AsyncWrapper::wait when the associated future is invalid or cancelled!"};
             }
         }
-        if(!future.valid()) {
+        if (!future.valid()) {
             throw std::logic_error{"Calling AsyncWrapper::wait_until when the associated future is invalid!"};
         }
         future.wait();
     }
 
-    template<class Rep, class Period>
+    template <class Rep, class Period>
     std::future_status wait_for(const std::chrono::duration<Rep, Period>& timeout_duration) const {
         if constexpr (isCancellable) {
-            if(IsCancelled()) {
+            if (IsCancelled()) {
                 throw std::logic_error{"Calling AsyncWrapper::wait_for when the associated future is cancelled!"};
             }
         }
-        if(!future.valid()) {
+        if (!future.valid()) {
             throw std::logic_error{"Calling AsyncWrapper::wait_until when the associated future is invalid!"};
         }
         return future.wait_for(timeout_duration);
     }
 
-    template<class Clock, class Duration>
+    template <class Clock, class Duration>
     std::future_status wait_until(const std::chrono::time_point<Clock, Duration>& timeout_time) const {
         if constexpr (isCancellable) {
-            if(IsCancelled()) {
+            if (IsCancelled()) {
                 throw std::logic_error{"Calling AsyncWrapper::wait_until when the associated future is cancelled!"};
             }
         }
-        if(!future.valid()) {
+        if (!future.valid()) {
             throw std::logic_error{"Calling AsyncWrapper::wait_until when the associated future is invalid!"};
         }
         return future.wait_until(timeout_time);
     }
 
     std::shared_future<T> share() noexcept {
-       return future.share();
+        return future.share();
     }
 
     // Cancellation-related methods
@@ -116,32 +109,28 @@ class AsyncWrapper {
         if constexpr (!isCancellable) {
             return CancellationResult::invalid_operation;
         }
-        if(!future.valid() || is_cancelled->load()) {
+        if (!future.valid() || is_cancelled->load()) {
             return CancellationResult::invalid_operation;
         }
         is_cancelled->store(true);
         return CancellationResult::success;
-   }
+    }
 
-    [[nodiscard]]
-    bool IsCancelled() const {
+    [[nodiscard]] bool IsCancelled() const {
         if constexpr (isCancellable) {
             return is_cancelled->load();
         } else {
             return false;
         }
     }
-
 };
 
 // Deduction guides
-template<typename T>
-AsyncWrapper(std::future<T>&&)
-    -> AsyncWrapper<T, false>;
+template <typename T>
+AsyncWrapper(std::future<T>&&) -> AsyncWrapper<T, false>;
 
-template<typename T>
-AsyncWrapper(std::future<T>&&, std::shared_ptr<std::atomic_bool>&&)
-    -> AsyncWrapper<T, true>;
+template <typename T>
+AsyncWrapper(std::future<T>&&, std::shared_ptr<std::atomic_bool>&&) -> AsyncWrapper<T, true>;
 
 } // namespace cpr
 

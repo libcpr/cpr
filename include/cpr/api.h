@@ -85,22 +85,21 @@ void setup_multiperform(MultiPerform& multiperform, Ts&&... ts) {
     setup_multiperform_internal<Ts...>(multiperform, std::forward<Ts>(ts)...);
 }
 
-using session_action_t = cpr::Response(cpr::Session::*)();
+using session_action_t = cpr::Response (cpr::Session::*)();
 
 template <session_action_t SessionAction, typename T>
 void setup_multiasync(std::vector<AsyncWrapper<Response, true>>& responses, T&& parameters) {
-    std::shared_ptr<std::atomic_bool>cancellation_state = std::make_shared<std::atomic_bool>(false);
+    std::shared_ptr<std::atomic_bool> cancellation_state = std::make_shared<std::atomic_bool>(false);
 
-    std::function<Response(T)>execFn { [cancellation_state] (T params) {
-            if(cancellation_state->load()) {
-                return Response{};
-            }
-            cpr::Session s{};
-            s.SetCancellationParam(cancellation_state);
-            apply_set_option(s, std::forward<T>(params));
-            return std::invoke(SessionAction, s);
+    std::function<Response(T)> execFn{[cancellation_state](T params) {
+        if (cancellation_state->load()) {
+            return Response{};
         }
-    };
+        cpr::Session s{};
+        s.SetCancellationParam(cancellation_state);
+        apply_set_option(s, std::forward<T>(params));
+        return std::invoke(SessionAction, s);
+    }};
     responses.emplace_back(GlobalThreadPool::GetInstance()->Submit(std::move(execFn), std::forward<T>(parameters)), std::move(cancellation_state));
 }
 

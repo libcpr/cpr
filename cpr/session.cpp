@@ -246,7 +246,7 @@ void Session::SetWriteCallback(const WriteCallback& write) {
 
 void Session::SetProgressCallback(const ProgressCallback& progress) {
     progresscb_ = progress;
-    if(isCancellable) {
+    if (isCancellable) {
         cancellationcb_.SetProgressCallback(progresscb_);
         return;
     }
@@ -984,6 +984,5 @@ void Session::SetCancellationParam(std::shared_ptr<std::atomic_bool> param) {
     curl_easy_setopt(curl_->handle, CURLOPT_XFERINFODATA, &cancellationcb_);
 #endif
     curl_easy_setopt(curl_->handle, CURLOPT_NOPROGRESS, 0L);
-
 }
 } // namespace cpr

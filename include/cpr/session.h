@@ -3,14 +3,14 @@
 
 #include <cstdint>
 #include <fstream>
-#include <future>
 #include <functional>
+#include <future>
 #include <memory>
 #include <queue>
 
 #include "cpr/accept_encoding.h"
-#include "cpr/auth.h"
 #include "cpr/async_wrapper.h"
+#include "cpr/auth.h"
 #include "cpr/bearer.h"
 #include "cpr/body.h"
 #include "cpr/callback.h"

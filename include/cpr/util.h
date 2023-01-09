@@ -20,7 +20,7 @@ size_t writeFunction(char* ptr, size_t size, size_t nmemb, std::string* data);
 size_t writeFileFunction(char* ptr, size_t size, size_t nmemb, std::ofstream* file);
 size_t writeUserFunction(char* ptr, size_t size, size_t nmemb, const WriteCallback* write);
 
-template<typename T = ProgressCallback>
+template <typename T = ProgressCallback>
 int progressUserFunction(const T* progress, cpr_pf_arg_t dltotal, cpr_pf_arg_t dlnow, cpr_pf_arg_t ultotal, cpr_pf_arg_t ulnow) {
     const int cancel_retval{1};
     static_assert(cancel_retval != CURL_PROGRESSFUNC_CONTINUE);

@@ -14,7 +14,7 @@ static HttpServer* server = new HttpServer();
 // A cancellable AsyncResponse
 using AsyncResponseC = AsyncWrapper<Response, true>;
 
-std::vector<AsyncResponseC> threeHelloWorldReqs () {
+std::vector<AsyncResponseC> threeHelloWorldReqs() {
     const Url hello_url{server->GetBaseUrl() + "/hello.html"};
     return MultiGetAsync(std::tuple{hello_url}, std::tuple{hello_url}, std::tuple{hello_url});
 }
@@ -61,7 +61,7 @@ TEST(AsyncWrapperNonCancellableTests, TestExceptionsNoSharedState) {
 }
 
 TEST(AsyncWrapperCancellableTests, TestExceptionsNoSharedState) {
-     const std::chrono::duration five_secs{std::chrono::seconds(5)};
+    const std::chrono::duration five_secs{std::chrono::seconds(5)};
     const std::chrono::time_point in_five_s{std::chrono::steady_clock::now() + five_secs};
 
     AsyncWrapper test_wrapper{std::future<std::string>{}, std::make_shared<std::atomic_bool>(false)};
@@ -117,7 +117,7 @@ TEST(MultiAsyncBasicTests, MultiAsyncGetTest) {
     const std::string expected_hello{"Hello world!"};
     std::vector<AsyncResponseC> resps{threeHelloWorldReqs()};
 
-    for(AsyncResponseC& resp: resps) {
+    for (AsyncResponseC& resp : resps) {
         EXPECT_EQ(expected_hello, resp.get().text);
     }
 }
@@ -164,12 +164,7 @@ TEST(MultiAsyncBasicTests, MultiAsyncHeadTest) {
     const Url digest_url{server_base + "/digest_auth.html"};
     const Authentication digest_auth{"user", "password", AuthMode::DIGEST};
 
-    std::vector<AsyncResponseC> resps{MultiHeadAsync(
-            std::tuple{hello_url},
-            std::tuple{json_url},
-            std::tuple{notfound_url},
-            std::tuple{digest_url, digest_auth}
-            )};
+    std::vector<AsyncResponseC> resps{MultiHeadAsync(std::tuple{hello_url}, std::tuple{json_url}, std::tuple{notfound_url}, std::tuple{digest_url, digest_auth})};
     Response hello_resp{resps.at(0).get()};
     Response json_resp{resps.at(1).get()};
     Response notfound_resp{resps.at(2).get()};
@@ -235,10 +230,7 @@ TEST(MultiAsyncBasicTests, MultiAsyncPatchTest) {
             "  \"sum\": 11\n"
             "}"};
     const std::string notallowed_text{"Method Not Allowed"};
-    std::vector<AsyncResponseC> resps{MultiPatchAsync(
-            std::tuple{patch_url, pl},
-            std::tuple{patch_not_allowed_url, pl}
-            )};
+    std::vector<AsyncResponseC> resps{MultiPatchAsync(std::tuple{patch_url, pl}, std::tuple{patch_not_allowed_url, pl})};
     const Response success{resps.at(0).get()};
     const Response fail{resps.at(1).get()};
     EXPECT_EQ(expected_text, success.text);
@@ -259,17 +251,15 @@ TEST(MultiAsyncBasicTests, MultiAsyncPostTest) {
     const Multipart form_data{{"x", 5}};
 
     const std::string post_text{
-             "{\n"
+            "{\n"
             "  \"x\": 5,\n"
             "  \"y\": 15,\n"
             "  \"sum\": 20\n"
-            "}"
-    };
+            "}"};
     const std::string form_text{
             "{\n"
             "  \"x\": \"5\"\n"
-            "}"
-    };
+            "}"};
 
     std::vector<AsyncResponseC> resps{MultiPostAsync(std::tuple{post_url, post_data}, std::tuple{form_post_url, form_data})};
 
@@ -287,7 +277,6 @@ TEST(MultiAsyncBasicTests, MultiAsyncPostTest) {
     EXPECT_EQ(std::string{"application/json"}, form_resp.header["content-type"]);
     EXPECT_EQ(201, form_resp.status_code);
     EXPECT_EQ(ErrorCode::OK, form_resp.error.code);
-
 }
 
 TEST(MultiAsyncBasicTests, MultiAsyncPutTest) {
@@ -298,8 +287,7 @@ TEST(MultiAsyncBasicTests, MultiAsyncPutTest) {
     const std::string success_text{
             "{\n"
             "  \"x\": 7\n"
-            "}"
-    };
+            "}"};
     const std::string failure_text{"Method Not Allowed"};
 
     std::vector<AsyncResponseC> resps{MultiPutAsync(std::tuple{put_url, pl}, std::tuple{put_failure_url, pl})};
@@ -329,12 +317,10 @@ TEST(MultiAsyncCancelTests, CancellationOnQueue) {
     const Url hello_url{server->GetBaseUrl() + "/hello.html"};
 
     std::atomic_bool was_called{false};
-    const std::function observer_fn{[&was_called]
-            (cpr_pf_arg_t, cpr_pf_arg_t, cpr_pf_arg_t, cpr_pf_arg_t, intptr_t) -> bool {
-                was_called.store(true);
-                return true;
-            }
-    };
+    const std::function observer_fn{[&was_called](cpr_pf_arg_t, cpr_pf_arg_t, cpr_pf_arg_t, cpr_pf_arg_t, intptr_t) -> bool {
+        was_called.store(true);
+        return true;
+    }};
 
     GlobalThreadPool::GetInstance()->Pause();
     std::vector<AsyncResponseC> resps{MultiGetAsync(std::tuple{hello_url, ProgressCallback{observer_fn}})};
@@ -358,14 +344,12 @@ TEST(MultiAsyncCancelTests, TestCancellationInTransit) {
     std::condition_variable is_called{};
     std::mutex cv_lock{};
     std::unique_lock setup_lock{cv_lock};
-    const std::function observer_fn{[&counter, &is_called, &cv_lock]
-        (cpr_pf_arg_t, cpr_pf_arg_t, cpr_pf_arg_t, cpr_pf_arg_t, intptr_t) -> bool {
-            const std::unique_lock l{cv_lock};
-            counter++;
-            is_called.notify_all();
-            return true;
-        }
-    };
+    const std::function observer_fn{[&counter, &is_called, &cv_lock](cpr_pf_arg_t, cpr_pf_arg_t, cpr_pf_arg_t, cpr_pf_arg_t, intptr_t) -> bool {
+        const std::unique_lock l{cv_lock};
+        counter++;
+        is_called.notify_all();
+        return true;
+    }};
     std::vector<AsyncResponseC> res{cpr::MultiGetAsync(std::tuple{call_url, cpr::ProgressCallback{observer_fn}})};
     is_called.wait(setup_lock);
     EXPECT_LT(0, counter);
@@ -396,12 +380,10 @@ TEST(MultiAsyncCancelTests, TestIntervalOfProgressCallsLowSpeed) {
     std::atomic_size_t counter{0};
     const std::chrono::time_point start{std::chrono::steady_clock::now()};
 
-    const std::function observer_fn{[&counter, N]
-            (cpr_pf_arg_t, cpr_pf_arg_t, cpr_pf_arg_t, cpr_pf_arg_t, intptr_t) -> bool {
-                const size_t current_iteration{++counter}; // to avoid copy elision on return statement
-                return current_iteration < N;
-            }
-    };
+    const std::function observer_fn{[&counter, N](cpr_pf_arg_t, cpr_pf_arg_t, cpr_pf_arg_t, cpr_pf_arg_t, intptr_t) -> bool {
+        const size_t current_iteration{++counter}; // to avoid copy elision on return statement
+        return current_iteration < N;
+    }};
 
     std::vector<AsyncResponseC> resp{MultiGetAsync(std::tuple{call_url, ProgressCallback{observer_fn}})};
     resp.at(0).wait();

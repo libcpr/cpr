@@ -1,10 +1,10 @@
 #ifndef CPR_ASYNC_H
 #define CPR_ASYNC_H
 
-#include "singleton.h"
-#include "threadpool.h"
 #include "async_wrapper.h"
 #include "session.h"
+#include "singleton.h"
+#include "threadpool.h"
 
 namespace cpr {
 
