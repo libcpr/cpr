@@ -14,11 +14,6 @@ static HttpServer* server = new HttpServer();
 // A cancellable AsyncResponse
 using AsyncResponseC = AsyncWrapper<Response, true>;
 
-std::vector<AsyncResponseC> threeHelloWorldReqs() {
-    const Url hello_url{server->GetBaseUrl() + "/hello.html"};
-    return MultiGetAsync(std::tuple{hello_url}, std::tuple{hello_url}, std::tuple{hello_url});
-}
-
 /** This property is tested at compile-time, so if compilation succeeds, it has already been verified. It is, however, useful to structure it as a test for semantic purposes.
  */
 TEST(AsyncWrapperTests, TestConstructorDeductions) {
@@ -114,8 +109,9 @@ TEST(AsyncWrapperCancellableTest, TestWaitFor) {
  * These tests are reproductions of tests from the appropriate test suites, but they guarantee that the multiasync function template produces correctly working instantiations for every Http action.
  */
 TEST(MultiAsyncBasicTests, MultiAsyncGetTest) {
+    const Url hello_url{server->GetBaseUrl() + "/hello.html"};
     const std::string expected_hello{"Hello world!"};
-    std::vector<AsyncResponseC> resps{threeHelloWorldReqs()};
+    std::vector<AsyncResponseC> resps{MultiGetAsync(std::tuple{hello_url}, std::tuple{hello_url}, std::tuple{hello_url})};
 
     for (AsyncResponseC& resp : resps) {
         EXPECT_EQ(expected_hello, resp.get().text);
@@ -357,6 +353,34 @@ TEST(MultiAsyncCancelTests, TestCancellationInTransit) {
     const size_t calls{counter};
 
     std::this_thread::sleep_for(std::chrono::milliseconds{500});
+    EXPECT_EQ(calls, counter.load());
+}
+
+/** Checks that the request is cancelled when the corresponding AsyncResponseC is desturcted
+ */
+TEST(MultiAsyncCancelTests, TestCancellationOnResponseWrapperDestruction) {
+    const Url call_url{server->GetBaseUrl() + "/low_speed_bytes.html"};
+
+    std::atomic_size_t counter{0};
+    std::condition_variable is_called{};
+    std::mutex cv_lock{};
+    std::unique_lock setup_lock{cv_lock};
+    const std::function observer_fn{[&counter, &is_called, &cv_lock](cpr_pf_arg_t, cpr_pf_arg_t, cpr_pf_arg_t, cpr_pf_arg_t, intptr_t) -> bool {
+        const std::unique_lock l{cv_lock};
+        counter++;
+        is_called.notify_all();
+        return true;
+    }};
+
+    // We construct a Request that will not terminate, wait until it is being processed by a thread, and destruct the AsyncResponseC
+    {
+        AsyncResponseC resp{std::move(MultiGetAsync(std::tuple{call_url, ProgressCallback{observer_fn}}).at(0))};
+        is_called.wait(setup_lock);
+        EXPECT_LT(0, counter);
+    }
+
+    const size_t calls{counter};
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
     EXPECT_EQ(calls, counter.load());
 }
 

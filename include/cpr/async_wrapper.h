@@ -38,7 +38,13 @@ class AsyncWrapper {
     AsyncWrapper& operator=(AsyncWrapper&&) noexcept = default;
 
     // Destructor
-    ~AsyncWrapper() = default;
+    ~AsyncWrapper() {
+        if constexpr (isCancellable) {
+            if(is_cancelled) {
+                is_cancelled->store(false);
+            }
+        }
+    }
 
 
     // These methods replicate the behaviour of std::future<T>
