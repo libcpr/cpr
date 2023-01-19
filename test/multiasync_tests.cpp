@@ -1,11 +1,10 @@
-#include <gtest/gtest.h>
-
 #include <string>
 #include <vector>
 
 #include <cpr/cpr.h>
 
 #include "httpServer.hpp"
+#include "multiasync_tests.hpp"
 
 using namespace cpr;
 
@@ -72,7 +71,7 @@ TEST(AsyncWrapperCancellableTests, TestExceptionsNoSharedState) {
     EXPECT_THROW(test_wrapper.wait_until(in_five_s), std::exception);
 }
 
-TEST(AsyncWrapperCancellableTest, TestExceptionsCancelledRequest) {
+TEST(AsyncWrapperCancellableTests, TestExceptionsCancelledRequest) {
     const Url call_url{server->GetBaseUrl() + "/low_speed_bytes.html"};
     const std::chrono::duration five_secs{std::chrono::seconds(5)};
     const std::chrono::time_point in_five_s{std::chrono::steady_clock::now() + five_secs};
@@ -88,7 +87,7 @@ TEST(AsyncWrapperCancellableTest, TestExceptionsCancelledRequest) {
     EXPECT_THROW(test_wrapper.wait_until(in_five_s), std::exception);
 }
 
-TEST(AsyncWrapperCancellableTest, TestWaitFor) {
+TEST(AsyncWrapperCancellableTests, TestWaitFor) {
     constexpr std::chrono::duration wait_for_time{std::chrono::milliseconds(100)};
     constexpr std::chrono::duration teardown_time{std::chrono::milliseconds(10)};
 
@@ -303,6 +302,8 @@ TEST(MultiAsyncBasicTests, MultiAsyncPutTest) {
     EXPECT_EQ(ErrorCode::OK, failure_resp.error.code);
 }
 
+static TestSynchronizationEnv* synchro_env = new TestSynchronizationEnv();
+
 /**
  * We test that cancellation on queue, works, ie libcurl does not get engaged at all
  * To do this, we plant an observer function in the progress call sequence, which
@@ -310,11 +311,10 @@ TEST(MultiAsyncBasicTests, MultiAsyncPutTest) {
  * the function is never called.
  */
 TEST(MultiAsyncCancelTests, CancellationOnQueue) {
+    synchro_env->Reset();
     const Url hello_url{server->GetBaseUrl() + "/hello.html"};
-
-    std::atomic_bool was_called{false};
-    const std::function observer_fn{[&was_called](cpr_pf_arg_t, cpr_pf_arg_t, cpr_pf_arg_t, cpr_pf_arg_t, intptr_t) -> bool {
-        was_called.store(true);
+    const std::function observer_fn{[](cpr_pf_arg_t, cpr_pf_arg_t, cpr_pf_arg_t, cpr_pf_arg_t, intptr_t) -> bool {
+        synchro_env->fn_called.store(true);
         return true;
     }};
 
@@ -322,8 +322,7 @@ TEST(MultiAsyncCancelTests, CancellationOnQueue) {
     std::vector<AsyncResponseC> resps{MultiGetAsync(std::tuple{hello_url, ProgressCallback{observer_fn}})};
     EXPECT_EQ(CancellationResult::success, resps.at(0).Cancel());
     GlobalThreadPool::GetInstance()->Resume();
-
-    std::this_thread::sleep_for(std::chrono::milliseconds{500});
+    const bool was_called{synchro_env->fn_called};
     EXPECT_EQ(false, was_called);
 }
 
@@ -332,56 +331,63 @@ TEST(MultiAsyncCancelTests, CancellationOnQueue) {
  * To achieve this we use a condition variable to ensure that the observer function, wrapped in a
  * cpr::ProgressCallback, is called at least once, and then no further calls are made for half a
  * second after cancellation.
+ *
+ * The usage of the condition variable and mutex to synchronize this procedure is analogous to the section "Example" in https://en.cppreference.com/w/cpp/thread/condition_variable
  */
 TEST(MultiAsyncCancelTests, TestCancellationInTransit) {
     const Url call_url{server->GetBaseUrl() + "/low_speed_bytes.html"};
+    synchro_env->Reset();
 
-    std::atomic_size_t counter{0};
-    std::condition_variable is_called{};
-    std::mutex cv_lock{};
-    std::unique_lock setup_lock{cv_lock};
-    const std::function observer_fn{[&counter, &is_called, &cv_lock](cpr_pf_arg_t, cpr_pf_arg_t, cpr_pf_arg_t, cpr_pf_arg_t, intptr_t) -> bool {
-        const std::unique_lock l{cv_lock};
-        counter++;
-        is_called.notify_all();
+    // 1. Thread running the test acquires cv_lock
+    std::unique_lock setup_lock{synchro_env->test_cv_mutex};
+    const std::function observer_fn{[](cpr_pf_arg_t, cpr_pf_arg_t, cpr_pf_arg_t, cpr_pf_arg_t, intptr_t) -> bool {
+        if (synchro_env->counter == 0) {
+            // 3. in Threadpool, cv_lock is obtained by the worker thread
+            const std::unique_lock l{synchro_env->test_cv_mutex};
+            // 4. is_called is notified
+            synchro_env->test_cv.notify_all();
+        }
+        synchro_env->counter++;
         return true;
     }};
     std::vector<AsyncResponseC> res{cpr::MultiGetAsync(std::tuple{call_url, cpr::ProgressCallback{observer_fn}})};
-    is_called.wait(setup_lock);
-    EXPECT_LT(0, counter);
+    // 2. cv_lock is released, thread waits for notification on is_called, see https://en.cppreference.com/w/cpp/thread/condition_variable/wait
+    synchro_env->test_cv.wait(setup_lock);
+    // 5. execution continues after notification
+    const size_t init_calls{synchro_env->counter};
+    EXPECT_LT(0, init_calls);
     EXPECT_EQ(cpr::CancellationResult::success, res.at(0).Cancel());
-    const size_t calls{counter};
-
-    std::this_thread::sleep_for(std::chrono::milliseconds{500});
-    EXPECT_EQ(calls, counter.load());
+    const size_t calls{synchro_env->counter};
+    std::this_thread::sleep_for(std::chrono::milliseconds{101});
+    const size_t calls_post{synchro_env->counter};
+    EXPECT_LT(calls_post, calls + 2);
 }
 
 /** Checks that the request is cancelled when the corresponding AsyncResponseC is desturcted
  */
 TEST(MultiAsyncCancelTests, TestCancellationOnResponseWrapperDestruction) {
-    const Url call_url{server->GetBaseUrl() + "/low_speed_bytes.html"};
-
-    std::atomic_size_t counter{0};
-    std::condition_variable is_called{};
-    std::mutex cv_lock{};
-    std::unique_lock setup_lock{cv_lock};
-    const std::function observer_fn{[&counter, &is_called, &cv_lock](cpr_pf_arg_t, cpr_pf_arg_t, cpr_pf_arg_t, cpr_pf_arg_t, intptr_t) -> bool {
-        const std::unique_lock l{cv_lock};
-        counter++;
-        is_called.notify_all();
+    const Url call_url{server->GetBaseUrl() + "/hello.html"};
+    synchro_env->Reset();
+    std::unique_lock setup_lock{synchro_env->test_cv_mutex};
+    const std::function observer_fn{[](cpr_pf_arg_t, cpr_pf_arg_t, cpr_pf_arg_t, cpr_pf_arg_t, intptr_t) -> bool {
+        const std::unique_lock l{synchro_env->test_cv_mutex};
+        synchro_env->counter++;
+        synchro_env->test_cv.notify_all();
         return true;
     }};
 
     // We construct a Request that will not terminate, wait until it is being processed by a thread, and destruct the AsyncResponseC
     {
         AsyncResponseC resp{std::move(MultiGetAsync(std::tuple{call_url, ProgressCallback{observer_fn}}).at(0))};
-        is_called.wait(setup_lock);
-        EXPECT_LT(0, counter);
+        synchro_env->test_cv.wait(setup_lock);
+        const size_t init_calls{synchro_env->counter};
+        EXPECT_LT(0, init_calls);
     }
 
-    const size_t calls{counter};
+    const size_t calls{synchro_env->counter};
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    EXPECT_EQ(calls, counter.load());
+    const size_t post_calls{synchro_env->counter};
+    EXPECT_EQ(calls, post_calls);
 }
 
 /**
@@ -399,25 +405,28 @@ TEST(MultiAsyncCancelTests, TestCancellationOnResponseWrapperDestruction) {
 TEST(MultiAsyncCancelTests, TestIntervalOfProgressCallsLowSpeed) {
     const Url call_url{server->GetBaseUrl() + "/low_speed_bytes.html"};
 
+    synchro_env->Reset();
     size_t N{15};
     // This variable will be used to cancel the transaction at the point of the Nth call.
-    std::atomic_size_t counter{0};
     const std::chrono::time_point start{std::chrono::steady_clock::now()};
 
-    const std::function observer_fn{[&counter, N](cpr_pf_arg_t, cpr_pf_arg_t, cpr_pf_arg_t, cpr_pf_arg_t, intptr_t) -> bool {
-        const size_t current_iteration{++counter}; // to avoid copy elision on return statement
-        return current_iteration < N;
+    const std::function observer_fn{[N](cpr_pf_arg_t, cpr_pf_arg_t, cpr_pf_arg_t, cpr_pf_arg_t, intptr_t) -> bool {
+        const size_t current_iteration{++(synchro_env->counter)};
+        return current_iteration <= N;
     }};
+    const ProgressCallback pcall{observer_fn};
 
-    std::vector<AsyncResponseC> resp{MultiGetAsync(std::tuple{call_url, ProgressCallback{observer_fn}})};
+    std::vector<AsyncResponseC> resp{MultiGetAsync(std::tuple{call_url, pcall})};
     resp.at(0).wait();
 
     const std::chrono::duration elapsed_time{std::chrono::steady_clock::now() - start};
     EXPECT_GT(std::chrono::seconds(N), elapsed_time);
+    std::this_thread::sleep_for(std::chrono::milliseconds{101});
 }
 
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
     ::testing::AddGlobalTestEnvironment(server);
+    ::testing::AddGlobalTestEnvironment(synchro_env);
     return RUN_ALL_TESTS();
 }
