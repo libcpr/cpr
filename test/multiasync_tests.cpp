@@ -333,25 +333,30 @@ TEST(MultiAsyncCancelTests, CancellationOnQueue) {
  * second after cancellation.
  *
  * The usage of the condition variable and mutex to synchronize this procedure is analogous to the section "Example" in https://en.cppreference.com/w/cpp/thread/condition_variable
+ * We use the condition variable in our synchronization environment to ensure that the transfer has
+ * started at the time of cancellation, ie the observer function has been called at least once.
  */
 TEST(MultiAsyncCancelTests, TestCancellationInTransit) {
     const Url call_url{server->GetBaseUrl() + "/low_speed_bytes.html"};
     synchro_env->Reset();
 
-    // 1. Thread running the test acquires cv_lock
+    // 1. Thread running the test acquires the condition variable's mutex
     std::unique_lock setup_lock{synchro_env->test_cv_mutex};
     const std::function observer_fn{[](cpr_pf_arg_t, cpr_pf_arg_t, cpr_pf_arg_t, cpr_pf_arg_t, intptr_t) -> bool {
         if (synchro_env->counter == 0) {
-            // 3. in Threadpool, cv_lock is obtained by the worker thread
+            // 3. in Threadpool, the cv mutex is obtained by the worker thread
             const std::unique_lock l{synchro_env->test_cv_mutex};
-            // 4. is_called is notified
+            synchro_env->counter++;
+            // 4. the cv is notified
             synchro_env->test_cv.notify_all();
+        } else {
+            synchro_env->counter++;
         }
-        synchro_env->counter++;
         return true;
     }};
     std::vector<AsyncResponseC> res{cpr::MultiGetAsync(std::tuple{call_url, cpr::ProgressCallback{observer_fn}})};
-    // 2. cv_lock is released, thread waits for notification on is_called, see https://en.cppreference.com/w/cpp/thread/condition_variable/wait
+    // 2. cv mutex is released, thread waits for notification on cv
+    // see https://en.cppreference.com/w/cpp/thread/condition_variable/wait
     synchro_env->test_cv.wait(setup_lock);
     // 5. execution continues after notification
     const size_t init_calls{synchro_env->counter};
