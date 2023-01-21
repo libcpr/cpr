@@ -2,7 +2,6 @@
 #define CPR_ASYNC_H
 
 #include "async_wrapper.h"
-#include "session.h"
 #include "singleton.h"
 #include "threadpool.h"
 
@@ -18,7 +17,7 @@ class GlobalThreadPool : public ThreadPool {
 };
 
 /**
- * Return a wraper for a future, calling future.get() will wait until the task is done and return RetType.
+ * Return a wrapper for a future, calling future.get() will wait until the task is done and return RetType.
  * async(fn, args...)
  * async(std::bind(&Class::mem_fn, &obj))
  * async(std::mem_fn(&Class::mem_fn, &obj))

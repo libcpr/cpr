@@ -8,8 +8,6 @@
 #include "cpr/response.h"
 
 namespace cpr {
-
-
 enum class [[nodiscard]] CancellationResult { failure, success, invalid_operation };
 
 /**
@@ -45,8 +43,6 @@ class AsyncWrapper {
             }
         }
     }
-
-
     // These methods replicate the behaviour of std::future<T>
     [[nodiscard]] T get() {
         if constexpr (isCancellable) {
