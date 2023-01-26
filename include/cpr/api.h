@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "cpr/async.h"
+#include "cpr/async_wrapper.h"
 #include "cpr/auth.h"
 #include "cpr/bearer.h"
 #include "cpr/cprtypes.h"
@@ -17,11 +18,10 @@
 #include "cpr/response.h"
 #include "cpr/session.h"
 #include <cpr/filesystem.h>
-#include <utility>
 
 namespace cpr {
 
-using AsyncResponse = std::future<Response>;
+using AsyncResponse = AsyncWrapper<Response>;
 
 namespace priv {
 
@@ -83,6 +83,32 @@ void setup_multiperform_internal(MultiPerform& multiperform, T&& t, Ts&&... ts) 
 template <typename... Ts>
 void setup_multiperform(MultiPerform& multiperform, Ts&&... ts) {
     setup_multiperform_internal<Ts...>(multiperform, std::forward<Ts>(ts)...);
+}
+
+using session_action_t = cpr::Response (cpr::Session::*)();
+
+template <session_action_t SessionAction, typename T>
+void setup_multiasync(std::vector<AsyncWrapper<Response, true>>& responses, T&& parameters) {
+    std::shared_ptr<std::atomic_bool> cancellation_state = std::make_shared<std::atomic_bool>(false);
+
+    std::function<Response(T)> execFn{[cancellation_state](T params) {
+        if (cancellation_state->load()) {
+            return Response{};
+        }
+        cpr::Session s{};
+        s.SetCancellationParam(cancellation_state);
+        apply_set_option(s, std::forward<T>(params));
+        return std::invoke(SessionAction, s);
+    }};
+    responses.emplace_back(GlobalThreadPool::GetInstance()->Submit(std::move(execFn), std::forward<T>(parameters)), std::move(cancellation_state));
+}
+
+template <session_action_t SessionAction, typename T, typename... Ts>
+void setup_multiasync(std::vector<AsyncWrapper<Response, true>>& responses, T&& head, Ts&&... tail) {
+    setup_multiasync<SessionAction>(responses, std::forward<T>(head));
+    if constexpr (sizeof...(Ts) > 0) {
+        setup_multiasync<SessionAction>(responses, std::forward<Ts>(tail)...);
+    }
 }
 
 } // namespace priv
@@ -245,7 +271,7 @@ Response Download(std::ofstream& file, Ts&&... ts) {
 // Download async method
 template <typename... Ts>
 AsyncResponse DownloadAsync(fs::path local_path, Ts... ts) {
-    return std::async(
+    return AsyncWrapper{std::async(
             std::launch::async,
             [](fs::path local_path_, Ts... ts_) {
 #ifdef CPR_USE_BOOST_FILESYSTEM
@@ -255,7 +281,7 @@ AsyncResponse DownloadAsync(fs::path local_path, Ts... ts) {
 #endif
                 return Download(f, std::move(ts_)...);
             },
-            std::move(local_path), std::move(ts)...);
+            std::move(local_path), std::move(ts)...)};
 }
 
 // Download with user callback
@@ -315,6 +341,55 @@ std::vector<Response> MultiPost(Ts&&... ts) {
     priv::setup_multiperform<Ts...>(multiperform, std::forward<Ts>(ts)...);
     return multiperform.Post();
 }
+
+template <typename... Ts>
+std::vector<AsyncWrapper<Response, true>> MultiGetAsync(Ts&&... ts) {
+    std::vector<AsyncWrapper<Response, true>> ret{};
+    priv::setup_multiasync<&cpr::Session::Get>(ret, std::forward<Ts>(ts)...);
+    return ret;
+}
+
+template <typename... Ts>
+std::vector<AsyncWrapper<Response, true>> MultiDeleteAsync(Ts&&... ts) {
+    std::vector<AsyncWrapper<Response, true>> ret{};
+    priv::setup_multiasync<&cpr::Session::Delete>(ret, std::forward<Ts>(ts)...);
+    return ret;
+}
+
+template <typename... Ts>
+std::vector<AsyncWrapper<Response, true>> MultiHeadAsync(Ts&&... ts) {
+    std::vector<AsyncWrapper<Response, true>> ret{};
+    priv::setup_multiasync<&cpr::Session::Head>(ret, std::forward<Ts>(ts)...);
+    return ret;
+}
+template <typename... Ts>
+std::vector<AsyncWrapper<Response, true>> MultiOptionsAsync(Ts&&... ts) {
+    std::vector<AsyncWrapper<Response, true>> ret{};
+    priv::setup_multiasync<&cpr::Session::Options>(ret, std::forward<Ts>(ts)...);
+    return ret;
+}
+
+template <typename... Ts>
+std::vector<AsyncWrapper<Response, true>> MultiPatchAsync(Ts&&... ts) {
+    std::vector<AsyncWrapper<Response, true>> ret{};
+    priv::setup_multiasync<&cpr::Session::Patch>(ret, std::forward<Ts>(ts)...);
+    return ret;
+}
+
+template <typename... Ts>
+std::vector<AsyncWrapper<Response, true>> MultiPostAsync(Ts&&... ts) {
+    std::vector<AsyncWrapper<Response, true>> ret{};
+    priv::setup_multiasync<&cpr::Session::Post>(ret, std::forward<Ts>(ts)...);
+    return ret;
+}
+
+template <typename... Ts>
+std::vector<AsyncWrapper<Response, true>> MultiPutAsync(Ts&&... ts) {
+    std::vector<AsyncWrapper<Response, true>> ret{};
+    priv::setup_multiasync<&cpr::Session::Put>(ret, std::forward<Ts>(ts)...);
+    return ret;
+}
+
 
 } // namespace cpr
 

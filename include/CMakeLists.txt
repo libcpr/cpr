@@ -10,6 +10,7 @@ target_sources(cpr PRIVATE
     cpr/accept_encoding.h
     cpr/api.h
     cpr/async.h
+    cpr/async_wrapper.h
     cpr/auth.h
     cpr/bearer.h
     cpr/body.h

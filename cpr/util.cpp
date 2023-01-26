@@ -144,14 +144,6 @@ size_t writeUserFunction(char* ptr, size_t size, size_t nmemb, const WriteCallba
     return (*write)({ptr, size}) ? size : 0;
 }
 
-#if LIBCURL_VERSION_NUM < 0x072000
-int progressUserFunction(const ProgressCallback* progress, double dltotal, double dlnow, double ultotal, double ulnow) {
-#else
-int progressUserFunction(const ProgressCallback* progress, curl_off_t dltotal, curl_off_t dlnow, curl_off_t ultotal, curl_off_t ulnow) {
-#endif
-    return (*progress)(dltotal, dlnow, ultotal, ulnow) ? 0 : 1;
-} // namespace cpr::util
-
 int debugUserFunction(CURL* /*handle*/, curl_infotype type, char* data, size_t size, const DebugCallback* debug) {
     (*debug)(static_cast<DebugCallback::InfoType>(type), std::string(data, size));
     return 0;

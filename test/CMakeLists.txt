@@ -63,10 +63,11 @@ add_cpr_test(interceptor)
 add_cpr_test(interceptor_multi)
 add_cpr_test(multiperform)
 add_cpr_test(resolve)
+add_cpr_test(multiasync)
 
 if (ENABLE_SSL_TESTS)
     add_cpr_test(ssl)
-    
+
     # Install all ssl keys and certs. Explicit copy for each file to prevent issues when copying on Windows.
     add_custom_command(TARGET ssl_tests POST_BUILD COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:ssl_tests>/data/certificates $<TARGET_FILE_DIR:ssl_tests>/data/keys)
     add_custom_command(TARGET ssl_tests POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/data/certificates/client.crt $<TARGET_FILE_DIR:ssl_tests>/data/certificates/client.crt)

@@ -3,11 +3,13 @@
 
 #include <cstdint>
 #include <fstream>
+#include <functional>
 #include <future>
 #include <memory>
 #include <queue>
 
 #include "cpr/accept_encoding.h"
+#include "cpr/async_wrapper.h"
 #include "cpr/auth.h"
 #include "cpr/bearer.h"
 #include "cpr/body.h"
@@ -36,11 +38,12 @@
 #include "cpr/timeout.h"
 #include "cpr/unix_socket.h"
 #include "cpr/user_agent.h"
+#include "cpr/util.h"
 #include "cpr/verbose.h"
 
 namespace cpr {
 
-using AsyncResponse = std::future<Response>;
+using AsyncResponse = AsyncWrapper<Response>;
 
 class Interceptor;
 class MultiPerform;
@@ -104,6 +107,9 @@ class Session : public std::enable_shared_from_this<Session> {
     void SetAcceptEncoding(const AcceptEncoding& accept_encoding);
     void SetAcceptEncoding(AcceptEncoding&& accept_encoding);
     void SetLimitRate(const LimitRate& limit_rate);
+
+    // For cancellable requests
+    void SetCancellationParam(std::shared_ptr<std::atomic_bool> param);
 
     // Used in templated functions
     void SetOption(const Url& url);
@@ -223,6 +229,7 @@ class Session : public std::enable_shared_from_this<Session> {
     friend Interceptor;
     friend MultiPerform;
 
+
     bool hasBodyOrPayload_{false};
     bool chunkedTransferEncoding_{false};
     std::shared_ptr<CurlHolder> curl_;
@@ -241,11 +248,14 @@ class Session : public std::enable_shared_from_this<Session> {
     WriteCallback writecb_;
     ProgressCallback progresscb_;
     DebugCallback debugcb_;
+    CancellationCallback cancellationcb_;
+
     size_t response_string_reserve_size_{0};
     std::string response_string_;
     std::string header_string_;
     std::queue<std::shared_ptr<Interceptor>> interceptors_;
     bool isUsedInMultiPerform{false};
+    bool isCancellable{false};
 
     Response makeDownloadRequest();
     Response makeRequest();

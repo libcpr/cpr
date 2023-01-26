@@ -3,7 +3,9 @@
 
 #include "cprtypes.h"
 
+#include <atomic>
 #include <functional>
+#include <optional>
 #include <utility>
 
 namespace cpr {
@@ -53,13 +55,13 @@ class ProgressCallback {
   public:
     ProgressCallback() = default;
     // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
-    ProgressCallback(std::function<bool(cpr_off_t downloadTotal, cpr_off_t downloadNow, cpr_off_t uploadTotal, cpr_off_t uploadNow, intptr_t userdata)> p_callback, intptr_t p_userdata = 0) : userdata(p_userdata), callback(std::move(p_callback)) {}
-    bool operator()(cpr_off_t downloadTotal, cpr_off_t downloadNow, cpr_off_t uploadTotal, cpr_off_t uploadNow) const {
+    ProgressCallback(std::function<bool(cpr_pf_arg_t downloadTotal, cpr_pf_arg_t downloadNow, cpr_pf_arg_t uploadTotal, cpr_pf_arg_t uploadNow, intptr_t userdata)> p_callback, intptr_t p_userdata = 0) : userdata(p_userdata), callback(std::move(p_callback)) {}
+    bool operator()(cpr_pf_arg_t downloadTotal, cpr_pf_arg_t downloadNow, cpr_pf_arg_t uploadTotal, cpr_pf_arg_t uploadNow) const {
         return callback(downloadTotal, downloadNow, uploadTotal, uploadNow, userdata);
     }
 
     intptr_t userdata{};
-    std::function<bool(cpr_off_t downloadTotal, cpr_off_t downloadNow, cpr_off_t uploadTotal, cpr_off_t uploadNow, intptr_t userdata)> callback;
+    std::function<bool(cpr_pf_arg_t downloadTotal, cpr_pf_arg_t downloadNow, cpr_pf_arg_t uploadTotal, cpr_pf_arg_t uploadNow, intptr_t userdata)> callback;
 };
 
 class DebugCallback {
@@ -83,6 +85,26 @@ class DebugCallback {
     intptr_t userdata{};
     std::function<void(InfoType type, std::string data, intptr_t userdata)> callback;
 };
+
+/**
+ * Functor class for progress functions that will be used in cancellable requests.
+ */
+class CancellationCallback {
+  public:
+    CancellationCallback() = default;
+    explicit CancellationCallback(std::shared_ptr<std::atomic_bool>&& cs) : cancellation_state{std::move(cs)} {}
+
+    CancellationCallback(std::shared_ptr<std::atomic_bool>&& cs, ProgressCallback& u_cb) : cancellation_state{std::move(cs)}, user_cb{std::reference_wrapper{u_cb}} {}
+
+    bool operator()(cpr_pf_arg_t dltotal, cpr_pf_arg_t dlnow, cpr_pf_arg_t ultotal, cpr_pf_arg_t ulnow) const;
+
+    void SetProgressCallback(ProgressCallback& u_cb);
+
+  private:
+    std::shared_ptr<std::atomic_bool> cancellation_state;
+    std::optional<std::reference_wrapper<ProgressCallback>> user_cb;
+};
+
 
 } // namespace cpr
 

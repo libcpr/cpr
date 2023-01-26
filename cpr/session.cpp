@@ -246,11 +246,15 @@ void Session::SetWriteCallback(const WriteCallback& write) {
 
 void Session::SetProgressCallback(const ProgressCallback& progress) {
     progresscb_ = progress;
+    if (isCancellable) {
+        cancellationcb_.SetProgressCallback(progresscb_);
+        return;
+    }
 #if LIBCURL_VERSION_NUM < 0x072000
-    curl_easy_setopt(curl_->handle, CURLOPT_PROGRESSFUNCTION, cpr::util::progressUserFunction);
+    curl_easy_setopt(curl_->handle, CURLOPT_PROGRESSFUNCTION, cpr::util::progressUserFunction<ProgressCallback>);
     curl_easy_setopt(curl_->handle, CURLOPT_PROGRESSDATA, &progresscb_);
 #else
-    curl_easy_setopt(curl_->handle, CURLOPT_XFERINFOFUNCTION, cpr::util::progressUserFunction);
+    curl_easy_setopt(curl_->handle, CURLOPT_XFERINFOFUNCTION, cpr::util::progressUserFunction<ProgressCallback>);
     curl_easy_setopt(curl_->handle, CURLOPT_XFERINFODATA, &progresscb_);
 #endif
     curl_easy_setopt(curl_->handle, CURLOPT_NOPROGRESS, 0L);
@@ -968,4 +972,17 @@ void Session::SetOption(const ReserveSize& reserve_size) { SetReserveSize(reserv
 void Session::SetOption(const AcceptEncoding& accept_encoding) { SetAcceptEncoding(accept_encoding); }
 void Session::SetOption(AcceptEncoding&& accept_encoding) { SetAcceptEncoding(accept_encoding); }
 // clang-format on
+
+void Session::SetCancellationParam(std::shared_ptr<std::atomic_bool> param) {
+    cancellationcb_ = CancellationCallback{std::move(param)};
+    isCancellable = true;
+#if LIBCURL_VERSION_NUM < 0x072000
+    curl_easy_setopt(curl_->handle, CURLOPT_PROGRESSFUNCTION, cpr::util::progressUserFunction<CancellationCallback>);
+    curl_easy_setopt(curl_->handle, CURLOPT_PROGRESSDATA, &cancellationcb_);
+#else
+    curl_easy_setopt(curl_->handle, CURLOPT_XFERINFOFUNCTION, cpr::util::progressUserFunction<CancellationCallback>);
+    curl_easy_setopt(curl_->handle, CURLOPT_XFERINFODATA, &cancellationcb_);
+#endif
+    curl_easy_setopt(curl_->handle, CURLOPT_NOPROGRESS, 0L);
+}
 } // namespace cpr

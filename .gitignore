@@ -44,6 +44,7 @@ _site/
 
 # Vim
 .ycm_extra_conf.py*
+*.swp
 
 # VSCode
 .vscode/
@@ -51,6 +52,10 @@ _site/
 
 # clangd
 .cache/
+
+# compilation database
+# used in various editor configurations, such as vim & YcM
+compile_commands.json
 
 # macOS
 .DS_Store
