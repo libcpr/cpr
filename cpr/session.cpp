@@ -131,8 +131,8 @@ void Session::prepareCommon() {
     if (proxies_.has(protocol)) {
         curl_easy_setopt(curl_->handle, CURLOPT_PROXY, proxies_[protocol].c_str());
         if (proxyAuth_.has(protocol)) {
-            curl_easy_setopt(curl_->handle, CURLOPT_PROXYAUTH, CURLAUTH_ANY);
-            curl_easy_setopt(curl_->handle, CURLOPT_PROXYUSERPWD, proxyAuth_[protocol]);
+            curl_easy_setopt(curl_->handle, CURLOPT_PROXYUSERNAME, proxyAuth_.GetUsername(protocol));
+            curl_easy_setopt(curl_->handle, CURLOPT_PROXYPASSWORD, proxyAuth_.GetPassword(protocol));
         }
     }
 
@@ -192,8 +192,8 @@ void Session::prepareCommonDownload() {
     if (proxies_.has(protocol)) {
         curl_easy_setopt(curl_->handle, CURLOPT_PROXY, proxies_[protocol].c_str());
         if (proxyAuth_.has(protocol)) {
-            curl_easy_setopt(curl_->handle, CURLOPT_PROXYAUTH, CURLAUTH_ANY);
-            curl_easy_setopt(curl_->handle, CURLOPT_PROXYUSERPWD, proxyAuth_[protocol]);
+            curl_easy_setopt(curl_->handle, CURLOPT_PROXYUSERNAME, proxyAuth_.GetUsername(protocol));
+            curl_easy_setopt(curl_->handle, CURLOPT_PROXYPASSWORD, proxyAuth_.GetPassword(protocol));
         }
     }
 
@@ -667,8 +667,8 @@ cpr_off_t Session::GetDownloadFileLength() {
     if (proxies_.has(protocol)) {
         curl_easy_setopt(curl_->handle, CURLOPT_PROXY, proxies_[protocol].c_str());
         if (proxyAuth_.has(protocol)) {
-            curl_easy_setopt(curl_->handle, CURLOPT_PROXYAUTH, CURLAUTH_ANY);
-            curl_easy_setopt(curl_->handle, CURLOPT_PROXYUSERPWD, proxyAuth_[protocol]);
+            curl_easy_setopt(curl_->handle, CURLOPT_PROXYUSERNAME, proxyAuth_.GetUsername(protocol));
+            curl_easy_setopt(curl_->handle, CURLOPT_PROXYPASSWORD, proxyAuth_.GetPassword(protocol));
         }
     }
 
