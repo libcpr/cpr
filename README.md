@@ -11,6 +11,18 @@
 * This project is being maintained by [Fabian Sauter](https://github.com/com8) and [Kilian Traub](https://github.com/KingKili).
 * For quick help, and discussion libcpr also offer a [gitter](https://gitter.im/libcpr/community?utm_source=share-link&utm_medium=link&utm_campaign=share-link) chat.
 
+## Supported Releases
+| Release  | Min. C++ Standard | Status | Notes |
+|----------|-------------------|--------|-------|
+| master   | `cpp17` | ![alt text][preview] | |
+| 1.10.x   | `cpp17` | ![alt text][supported] | |
+| 1.9.x    | `cpp11` | ![alt text][supported] | Supported until 01.01.2025 |
+| <= 1.8.x | `cpp11` | ![alt text][unsupported] | |
+
+[unsupported]: https://img.shields.io/badge/-unsupported-red "unsupported"
+[supported]: https://img.shields.io/badge/-supported-green "supported"
+[preview]: https://img.shields.io/badge/-preview-orange "preview"
+
 ## TLDR
 
 C++ Requests is a simple wrapper around [libcurl](http://curl.haxx.se/libcurl) inspired by the excellent [Python Requests](https://github.com/kennethreitz/requests) project.
@@ -83,7 +95,7 @@ Add the following to your `CMakeLists.txt`.
 ```cmake
 include(FetchContent)
 FetchContent_Declare(cpr GIT_REPOSITORY https://github.com/libcpr/cpr.git
-                         GIT_TAG 871ed52d350214a034f6ef8a3b8f51c5ce1bd400) # The commit hash for 1.9.0. Replace with the latest from: https://github.com/libcpr/cpr/releases
+                         GIT_TAG 0817715923c9705e68994eb52ef9df3f6845beba) # The commit hash for 1.10.x. Replace with the latest from: https://github.com/libcpr/cpr/releases
 FetchContent_MakeAvailable(cpr)
 ```
 
@@ -139,8 +151,8 @@ The package can be found here: [NuGet.org](https://www.nuget.org/packages/libcpr
 
 The only explicit requirements are:
 
-* a `C++17` compatible compiler such as Clang or GCC. The minimum required version of GCC is unknown, so if anyone has trouble building this library with a specific version of GCC, do let me know
-* in case you only have a `C++11` compatible compiler available, all versions below cpr 1.9.x are for you. With the upcoming release of cpr 1.10.0, we are switching to `C++17` as a requirement.
+* a `C++17` compatible compiler such as Clang or GCC. The minimum required version of GCC is unknown, so if anyone has trouble building this library with a specific version of GCC, do let us know
+* in case you only have a `C++11` compatible compiler available, all versions below cpr 1.9.x are for you. The 1.10.0 release of cpr switches to `C++17` as a requirement.
 * If you would like to perform https requests `OpenSSL` and its development libraries are required.
 
 ## Building cpr - Using vcpkg
