@@ -16,7 +16,7 @@ const char* ProxyAuthentication::GetUsername(const std::string& protocol) {
 }
 
 const char* ProxyAuthentication::GetPassword(const std::string& protocol) {
-    return proxyAuth_[protocol].username.c_str();
+    return proxyAuth_[protocol].password.c_str();
 }
 
 } // namespace cpr
