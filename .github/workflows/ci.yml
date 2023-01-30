@@ -619,6 +619,7 @@ jobs:
         CPR_BUILD_TESTS: ON
         CPR_BUILD_TESTS_SSL: OFF
         CPR_USE_BOOST_FILESYSTEM: ON
+        CMAKE_OSX_DEPLOYMENT_TARGET: 10.13
       uses: ashutoshvarma/action-cmake-build@master
       with:
         build-dir: ${{github.workspace}}/build
