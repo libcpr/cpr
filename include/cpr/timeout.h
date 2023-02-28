@@ -13,7 +13,7 @@ class Timeout {
     // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
     Timeout(const std::int32_t& milliseconds) : Timeout{std::chrono::milliseconds(milliseconds)} {}
     // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
-    Timeout(const std::chrono::seconds& duration) : ms{1000 * duration.count()} {}
+    Timeout(const std::chrono::seconds& duration) : ms{std::chrono::milliseconds(duration).count()} {}
 
     // No way around since curl uses a long here.
     // NOLINTNEXTLINE(google-runtime-int)
