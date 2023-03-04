@@ -4,8 +4,6 @@
 ![CI](https://github.com/libcpr/cpr/workflows/CI/badge.svg)
 [![Gitter](https://badges.gitter.im/libcpr/community.svg)](https://gitter.im/libcpr/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
-### Expect slower response times as all maintainers are currently on vacation ✈️🏝️ until March 01, 2023.
-
 ## Announcements
 
 * This project is being maintained by [Fabian Sauter](https://github.com/com8) and [Kilian Traub](https://github.com/KingKili).
