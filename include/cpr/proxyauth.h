@@ -3,15 +3,20 @@
 
 #include <initializer_list>
 #include <map>
+#include <string>
 
 #include "cpr/auth.h"
 #include "cpr/util.h"
 
 namespace cpr {
+class ProxyAuthentication;
+
 class EncodedAuthentication {
+    friend ProxyAuthentication;
+
   public:
-    EncodedAuthentication() : username{""}, password{""} {}
-    EncodedAuthentication(std::string username_, std::string password_) : username{cpr::util::urlEncode(username_)}, password{cpr::util::urlEncode(password_)} {}
+    EncodedAuthentication() = default;
+    EncodedAuthentication(const std::string& p_username, const std::string& p_password) : username(util::urlEncode(p_username)), password(util::urlEncode(p_password)) {}
     EncodedAuthentication(const EncodedAuthentication& other) = default;
     EncodedAuthentication(EncodedAuthentication&& old) noexcept = default;
     virtual ~EncodedAuthentication() noexcept;
@@ -19,16 +24,21 @@ class EncodedAuthentication {
     EncodedAuthentication& operator=(EncodedAuthentication&& old) noexcept = default;
     EncodedAuthentication& operator=(const EncodedAuthentication& other) = default;
 
-    std::string username, password;
+    [[nodiscard]] const std::string& GetUsername() const;
+    [[nodiscard]] const std::string& GetPassword() const;
+
+  private:
+    std::string username;
+    std::string password;
 };
 
 class ProxyAuthentication {
   public:
     ProxyAuthentication() = default;
     ProxyAuthentication(const std::initializer_list<std::pair<const std::string, EncodedAuthentication>>& auths) : proxyAuth_{auths} {}
-    ProxyAuthentication(const std::map<std::string, EncodedAuthentication>& auths) : proxyAuth_{auths} {}
+    explicit ProxyAuthentication(const std::map<std::string, EncodedAuthentication>& auths) : proxyAuth_{auths} {}
 
-    bool has(const std::string& protocol) const;
+    [[nodiscard]] bool has(const std::string& protocol) const;
     const char* GetUsername(const std::string& protocol);
     const char* GetPassword(const std::string& protocol);
 
