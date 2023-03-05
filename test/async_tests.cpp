@@ -6,6 +6,8 @@
 #include <cpr/cpr.h>
 #include <cpr/filesystem.h>
 
+#include "cpr/api.h"
+#include "cpr/response.h"
 #include "httpServer.hpp"
 
 using namespace cpr;
@@ -16,7 +18,7 @@ bool write_data(std::string /*data*/, intptr_t /*userdata*/) {
     return true;
 }
 
-TEST(UrlEncodedPostTests, AsyncGetTest) {
+TEST(AsyncTests, AsyncGetTest) {
     Url url{server->GetBaseUrl() + "/hello.html"};
     cpr::AsyncResponse future = cpr::GetAsync(url);
     std::string expected_text{"Hello world!"};
@@ -27,7 +29,7 @@ TEST(UrlEncodedPostTests, AsyncGetTest) {
     EXPECT_EQ(200, response.status_code);
 }
 
-TEST(UrlEncodedPostTests, AsyncGetMultipleTest) {
+TEST(AsyncTests, AsyncGetMultipleTest) {
     Url url{server->GetBaseUrl() + "/hello.html"};
     std::vector<AsyncResponse> responses;
     for (size_t i = 0; i < 10; ++i) {
@@ -43,7 +45,7 @@ TEST(UrlEncodedPostTests, AsyncGetMultipleTest) {
     }
 }
 
-TEST(UrlEncodedPostTests, AsyncGetMultipleReflectTest) {
+TEST(AsyncTests, AsyncGetMultipleReflectTest) {
     Url url{server->GetBaseUrl() + "/hello.html"};
     std::vector<AsyncResponse> responses;
     for (size_t i = 0; i < 100; ++i) {
@@ -63,7 +65,7 @@ TEST(UrlEncodedPostTests, AsyncGetMultipleReflectTest) {
     }
 }
 
-TEST(UrlEncodedPostTests, AsyncDownloadTest) {
+TEST(AsyncTests, AsyncDownloadTest) {
     cpr::Url url{server->GetBaseUrl() + "/download_gzip.html"};
     cpr::AsyncResponse future = cpr::DownloadAsync(fs::path{"/tmp/aync_download"}, url, cpr::Header{{"Accept-Encoding", "gzip"}}, cpr::WriteCallback{write_data, 0});
     cpr::Response response = future.get();
