@@ -365,77 +365,51 @@ void Session::SetProxyAuth(const ProxyAuthentication& proxy_auth) {
 }
 
 void Session::SetMultipart(const Multipart& multipart) {
-    curl_httppost* formpost = nullptr;
-    curl_httppost* lastptr = nullptr;
+    // Make sure, we have a empty multipart to start with:
+    if (curl_->multipart) {
+        curl_mime_free(curl_->multipart);
+    }
+    curl_->multipart = curl_mime_init(curl_->handle);
 
+    // Add all multipart pieces:
     for (const Part& part : multipart.parts) {
-        std::vector<curl_forms> formdata;
-        if (!part.content_type.empty()) {
-            formdata.push_back({CURLFORM_CONTENTTYPE, part.content_type.c_str()});
-        }
         if (part.is_file) {
             for (const File& file : part.files) {
-                formdata.push_back({CURLFORM_COPYNAME, part.name.c_str()});
-                formdata.push_back({CURLFORM_FILE, file.filepath.c_str()});
-                if (file.hasOverridedFilename()) {
-                    formdata.push_back({CURLFORM_FILENAME, file.overrided_filename.c_str()});
+                curl_mimepart* mimePart = curl_mime_addpart(curl_->multipart);
+                if (!part.content_type.empty()) {
+                    curl_mime_type(mimePart, part.content_type.c_str());
                 }
-                formdata.push_back({CURLFORM_END, nullptr});
-                curl_formadd(&formpost, &lastptr, CURLFORM_ARRAY, formdata.data(), CURLFORM_END);
-                formdata.clear();
+
+                curl_mime_filedata(mimePart, file.filepath.c_str());
+                curl_mime_name(mimePart, part.name.c_str());
+
+                if (file.hasOverridedFilename()) {
+                    curl_mime_filename(mimePart, file.overrided_filename.c_str());
+                }
             }
-        } else if (part.is_buffer) {
-            // Do not use formdata, to prevent having to use reinterpreter_cast:
-            curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, part.name.c_str(), CURLFORM_BUFFER, part.value.c_str(), CURLFORM_BUFFERPTR, part.data, CURLFORM_BUFFERLENGTH, part.datalen, CURLFORM_END);
         } else {
-            formdata.push_back({CURLFORM_COPYNAME, part.name.c_str()});
-            formdata.push_back({CURLFORM_COPYCONTENTS, part.value.c_str()});
-            formdata.push_back({CURLFORM_END, nullptr});
-            curl_formadd(&formpost, &lastptr, CURLFORM_ARRAY, formdata.data(), CURLFORM_END);
+            curl_mimepart* mimePart = curl_mime_addpart(curl_->multipart);
+            if (!part.content_type.empty()) {
+                curl_mime_type(mimePart, part.content_type.c_str());
+            }
+            if (part.is_buffer) {
+                // Do not use formdata, to prevent having to use reinterpreter_cast:
+                curl_mime_name(mimePart, part.name.c_str());
+                curl_mime_data(mimePart, part.data, part.datalen);
+                curl_mime_filename(mimePart, part.value.c_str());
+            } else {
+                curl_mime_name(mimePart, part.name.c_str());
+                curl_mime_data(mimePart, part.value.c_str(), CURL_ZERO_TERMINATED);
+            }
         }
     }
-    curl_easy_setopt(curl_->handle, CURLOPT_HTTPPOST, formpost);
-    hasBodyOrPayload_ = true;
 
-    curl_formfree(curl_->formpost);
-    curl_->formpost = formpost;
+    curl_easy_setopt(curl_->handle, CURLOPT_MIMEPOST, curl_->multipart);
+    hasBodyOrPayload_ = true;
 }
 
 void Session::SetMultipart(Multipart&& multipart) {
-    curl_httppost* formpost = nullptr;
-    curl_httppost* lastptr = nullptr;
-
-    for (const Part& part : multipart.parts) {
-        std::vector<curl_forms> formdata;
-        if (!part.content_type.empty()) {
-            formdata.push_back({CURLFORM_CONTENTTYPE, part.content_type.c_str()});
-        }
-        if (part.is_file) {
-            for (const File& file : part.files) {
-                formdata.push_back({CURLFORM_COPYNAME, part.name.c_str()});
-                formdata.push_back({CURLFORM_FILE, file.filepath.c_str()});
-                if (file.hasOverridedFilename()) {
-                    formdata.push_back({CURLFORM_FILENAME, file.overrided_filename.c_str()});
-                }
-                formdata.push_back({CURLFORM_END, nullptr});
-                curl_formadd(&formpost, &lastptr, CURLFORM_ARRAY, formdata.data(), CURLFORM_END);
-                formdata.clear();
-            }
-        } else if (part.is_buffer) {
-            // Do not use formdata, to prevent having to use reinterpreter_cast:
-            curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, part.name.c_str(), CURLFORM_BUFFER, part.value.c_str(), CURLFORM_BUFFERPTR, part.data, CURLFORM_BUFFERLENGTH, part.datalen, CURLFORM_END);
-        } else {
-            formdata.push_back({CURLFORM_COPYNAME, part.name.c_str()});
-            formdata.push_back({CURLFORM_COPYCONTENTS, part.value.c_str()});
-            formdata.push_back({CURLFORM_END, nullptr});
-            curl_formadd(&formpost, &lastptr, CURLFORM_ARRAY, formdata.data(), CURLFORM_END);
-        }
-    }
-    curl_easy_setopt(curl_->handle, CURLOPT_HTTPPOST, formpost);
-    hasBodyOrPayload_ = true;
-
-    curl_formfree(curl_->formpost);
-    curl_->formpost = formpost;
+    SetMultipart(multipart);
 }
 
 void Session::SetRedirect(const Redirect& redirect) {
