@@ -149,8 +149,22 @@ void Session::prepareCommon() {
 
 #if LIBCURL_VERSION_MAJOR >= 7
 #if LIBCURL_VERSION_MINOR >= 71
+#if SUPPORT_SSL_NO_REVOKE
+    // NOLINTNEXTLINE (google-runtime-int)
+    long bitmask{0};
+    curl_easy_setopt(curl_->handle, CURLOPT_SSL_OPTIONS, &bitmask);
+    const bool noRevoke = bitmask & CURLSSLOPT_NO_REVOKE;
+#endif
+
     // Fix loading certs from Windows cert store when using OpenSSL:
     curl_easy_setopt(curl_->handle, CURLOPT_SSL_OPTIONS, CURLSSLOPT_NATIVE_CA);
+
+// Ensure SSL no revoke is still set
+#if SUPPORT_SSL_NO_REVOKE
+    if (noRevoke) {
+        curl_easy_setopt(curl_->handle, CURLOPT_SSL_OPTIONS, CURLSSLOPT_NO_REVOKE);
+    }
+#endif
 #endif
 #endif
 
