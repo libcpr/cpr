@@ -54,7 +54,11 @@ TEST(SslTests, HelloWorldTestFull) {
     std::string crtPath{baseDirPath + "certificates/"};
     std::string keyPath{baseDirPath + "keys/"};
 
-    SslOptions sslOpts = Ssl(ssl::TLSv1{}, ssl::ALPN{false}, ssl::NPN{false}, ssl::CaPath{crtPath + "root-ca.crt"}, ssl::CertFile{crtPath + "client.crt"}, ssl::KeyFile{keyPath + "client.key"}, ssl::PinnedPublicKey{keyPath + "server.pub"}, ssl::VerifyPeer{false}, ssl::VerifyHost{false}, ssl::VerifyStatus{false});
+    SslOptions sslOpts = Ssl(ssl::TLSv1{}, ssl::ALPN{false},
+#if SUPPORT_NPN
+                             ssl::NPN{false},
+#endif // DEBUG
+                             ssl::CaPath{crtPath + "root-ca.crt"}, ssl::CertFile{crtPath + "client.crt"}, ssl::KeyFile{keyPath + "client.key"}, ssl::PinnedPublicKey{keyPath + "server.pub"}, ssl::VerifyPeer{false}, ssl::VerifyHost{false}, ssl::VerifyStatus{false});
     Response response = cpr::Get(url, sslOpts, Timeout{5000}, Verbose{});
     std::string expected_text = "Hello world!";
     EXPECT_EQ(expected_text, response.text);
