@@ -20,7 +20,8 @@ CurlHolder::CurlHolder() {
 
 CurlHolder::~CurlHolder() {
     curl_slist_free_all(chunk);
-    curl_formfree(formpost);
+    curl_slist_free_all(resolveCurlList);
+    curl_mime_free(multipart);
     curl_easy_cleanup(handle);
 }
 

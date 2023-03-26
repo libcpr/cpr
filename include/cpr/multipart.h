@@ -24,9 +24,7 @@ struct Part {
     std::string value;
     std::string content_type;
     Buffer::data_t data{nullptr};
-    // Ignored here since libcurl reqires a long:
-    // NOLINTNEXTLINE(google-runtime-int)
-    long datalen{0};
+    size_t datalen{0};
     bool is_file;
     bool is_buffer;
     bool has_filename;

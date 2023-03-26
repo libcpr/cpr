@@ -6,14 +6,14 @@
 namespace cpr {
 
 struct Buffer {
-    using data_t = const unsigned char*;
+    using data_t = const char*;
 
     template <typename Iterator>
     Buffer(Iterator begin, Iterator end, std::string&& p_filename)
             // Ignored here since libcurl reqires a long.
             // There is also no way around the reinterpret_cast.
             // NOLINTNEXTLINE(google-runtime-int, cppcoreguidelines-pro-type-reinterpret-cast)
-            : data{reinterpret_cast<data_t>(&(*begin))}, datalen{static_cast<long>(std::distance(begin, end))}, filename(std::move(p_filename)) {
+            : data{reinterpret_cast<data_t>(&(*begin))}, datalen{static_cast<size_t>(std::distance(begin, end))}, filename(std::move(p_filename)) {
         is_random_access_iterator(begin, end);
         static_assert(sizeof(*begin) == 1, "Only byte buffers can be used");
     }
@@ -24,7 +24,7 @@ struct Buffer {
     data_t data;
     // Ignored here since libcurl reqires a long:
     // NOLINTNEXTLINE(google-runtime-int)
-    long datalen;
+    size_t datalen;
     const std::string filename;
 };
 
