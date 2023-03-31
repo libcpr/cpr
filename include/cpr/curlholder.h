@@ -28,7 +28,7 @@ struct CurlHolder {
     CURL* handle{nullptr};
     struct curl_slist* chunk{nullptr};
     struct curl_slist* resolveCurlList{nullptr};
-    struct curl_mime* multipart{nullptr};
+    curl_mime* multipart{nullptr};
     std::array<char, CURL_ERROR_SIZE> error{};
 
     CurlHolder();
