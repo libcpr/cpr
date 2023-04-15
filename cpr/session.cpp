@@ -398,7 +398,7 @@ void Session::SetMultipart(const Multipart& multipart) {
                 curl_mime_name(mimePart, part.name.c_str());
 
                 if (file.hasOverridedFilename()) {
-                    curl_mime_filename(mimePart, file.overrided_filename.c_str());
+                    curl_mime_filename(mimePart, file.overriden_filename.c_str());
                 }
             }
         } else {

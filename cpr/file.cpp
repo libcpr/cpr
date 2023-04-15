@@ -2,6 +2,12 @@
 
 namespace cpr {
 
+Files::Files(const std::initializer_list<std::string>& p_filepaths) {
+    for (const std::string& filepath : p_filepaths) {
+        files.emplace_back(filepath);
+    }
+};
+
 Files::iterator Files::begin() {
     return files.begin();
 }
@@ -36,5 +42,19 @@ void Files::push_back(const File& file) {
 
 void Files::pop_back() {
     files.pop_back();
+}
+
+Files& Files::operator=(const Files& other) {
+    if (&other != this) {
+        files = other.files;
+    }
+    return *this;
+}
+
+Files& Files::operator=(Files&& old) noexcept {
+    if (&old != this) {
+        files = std::move(old.files);
+    }
+    return *this;
 }
 } // namespace cpr
