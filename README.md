@@ -136,6 +136,7 @@ Alternatively, you may install a package specific to your Linux distribution. Si
 Currently, we are aware of packages for the following distributions:
 
 * [Arch Linux (AUR)](https://aur.archlinux.org/packages/cpr)
+* [Fedora Linux](https://src.fedoraproject.org/rpms/cpr)
 
 If there's no package for your distribution, try making one! If you do, and it is added to your distribution's repositories, please submit a pull request to add it to the list above. However, please only do this if you plan to actively maintain the package.
 
