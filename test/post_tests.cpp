@@ -361,19 +361,19 @@ TEST(UrlEncodedPostTests, FormPostFileNoCopyTest) {
 
 TEST(UrlEncodedPostTests, FormPostFileNoCopyTestWithOverridedFilename) {
     std::string filename{"test_file"};
-    std::string overrided_filename{"overided_filename"};
+    std::string overriden_filename{"overided_filename"};
     std::string content{"hello world"};
     std::ofstream test_file;
     test_file.open(filename);
     test_file << content;
     test_file.close();
     Url url{server->GetBaseUrl() + "/form_post.html"};
-    Multipart multipart{{"x", File{filename, overrided_filename}}};
+    Multipart multipart{{"x", File{filename, overriden_filename}}};
     Response response = cpr::Post(url, multipart);
     std::string expected_text{
             "{\n"
             "  \"x\": \"" +
-            overrided_filename + "=" + content +
+            overriden_filename + "=" + content +
             "\"\n"
             "}"};
     std::remove(filename.c_str());

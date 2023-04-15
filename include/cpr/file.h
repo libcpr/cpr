@@ -10,37 +10,41 @@
 namespace cpr {
 
 struct File {
-    explicit File(std::string p_filepath, const std::string& p_overrided_filename = {}) : filepath(std::move(p_filepath)), overrided_filename(p_overrided_filename) {}
+    explicit File(std::string p_filepath, const std::string& p_overriden_filename = {}) : filepath(std::move(p_filepath)), overriden_filename(p_overriden_filename) {}
 
-    const std::string filepath;
-    const std::string overrided_filename;
+    std::string filepath;
+    std::string overriden_filename;
 
-    bool hasOverridedFilename() const noexcept {
-        return !overrided_filename.empty();
+    [[nodiscard]] bool hasOverridedFilename() const noexcept {
+        return !overriden_filename.empty();
     };
 };
 
 class Files {
   public:
     Files() = default;
-    Files(const File& p_file) : files{p_file} {};
+    explicit Files(const File& p_file) : files{p_file} {};
+
+    Files(const Files& other) = default;
+    Files(Files&& old) noexcept = default;
+
     Files(const std::initializer_list<File>& p_files) : files{p_files} {};
-    Files(const std::initializer_list<std::string>& p_filepaths) {
-        for (const std::string& filepath : p_filepaths) {
-            files.emplace_back(File(filepath));
-        }
-    };
+    Files(const std::initializer_list<std::string>& p_filepaths);
+
     ~Files() noexcept = default;
+
+    Files& operator=(const Files& other);
+    Files& operator=(Files&& old) noexcept;
 
     using iterator = std::vector<File>::iterator;
     using const_iterator = std::vector<File>::const_iterator;
 
     iterator begin();
     iterator end();
-    const_iterator begin() const;
-    const_iterator end() const;
-    const_iterator cbegin() const;
-    const_iterator cend() const;
+    [[nodiscard]] const_iterator begin() const;
+    [[nodiscard]] const_iterator end() const;
+    [[nodiscard]] const_iterator cbegin() const;
+    [[nodiscard]] const_iterator cend() const;
     void emplace_back(const File& file);
     void push_back(const File& file);
     void pop_back();
