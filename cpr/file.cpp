@@ -6,7 +6,7 @@ Files::Files(const std::initializer_list<std::string>& p_filepaths) {
     for (const std::string& filepath : p_filepaths) {
         files.emplace_back(filepath);
     }
-};
+}
 
 Files::iterator Files::begin() {
     return files.begin();

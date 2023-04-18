@@ -171,9 +171,9 @@ TEST(UrlEncodedPostTests, FormPostMultipleFilesTestLvalue) {
     file2 << content2;
     file2.close();
     File singleFile{"file1"};
-    File singleFileWithOverridedFilename{"file1", "applefile"};
+    File singleFileWithOverridenFilename{"file1", "applefile"};
     Files multipleFiles{"file1", "file2"};
-    Files multipleFilesWithOverridedFilename{
+    Files multipleFilesWithOverridenFilename{
             File{"file1", "applefile"},
             File{"file2", "bananafile"},
     };
@@ -190,7 +190,7 @@ TEST(UrlEncodedPostTests, FormPostMultipleFilesTestLvalue) {
         EXPECT_EQ(ErrorCode::OK, response.error.code);
     }
     {
-        Response response = cpr::Post(url, Multipart{{"files", singleFileWithOverridedFilename}});
+        Response response = cpr::Post(url, Multipart{{"singleFile", singleFileWithOverridenFilename}});
         std::string expected_text{
                 "{\n"
                 "  \"files\": \"applefile=" +
@@ -217,7 +217,7 @@ TEST(UrlEncodedPostTests, FormPostMultipleFilesTestLvalue) {
         EXPECT_EQ(ErrorCode::OK, response.error.code);
     }
     {
-        Response response = cpr::Post(url, Multipart{{"files", multipleFilesWithOverridedFilename}});
+        Response response = cpr::Post(url, Multipart{{"files", multipleFilesWithOverridenFilename}});
         std::string expected_text{
                 "{\n"
                 "  \"files\": \"applefile=" +
@@ -310,7 +310,7 @@ TEST(UrlEncodedPostTests, FormPostMultipleFilesTestRvalue) {
     std::remove(filename2.c_str());
 }
 
-TEST(UrlEncodedPostTests, FormPostFileTestWithOverridedFilename) {
+TEST(UrlEncodedPostTests, FormPostFileTestWithOverridenFilename) {
     std::string filename{"test_file"};
     std::string overided_filename{"overided_filename"};
     std::string content{"hello world"};
@@ -359,7 +359,7 @@ TEST(UrlEncodedPostTests, FormPostFileNoCopyTest) {
     EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
-TEST(UrlEncodedPostTests, FormPostFileNoCopyTestWithOverridedFilename) {
+TEST(UrlEncodedPostTests, FormPostFileNoCopyTestWithOverridenFilename) {
     std::string filename{"test_file"};
     std::string overriden_filename{"overided_filename"};
     std::string content{"hello world"};
