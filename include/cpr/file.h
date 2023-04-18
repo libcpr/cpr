@@ -15,7 +15,7 @@ struct File {
     std::string filepath;
     std::string overriden_filename;
 
-    [[nodiscard]] bool hasOverridedFilename() const noexcept {
+    [[nodiscard]] bool hasOverridenFilename() const noexcept {
         return !overriden_filename.empty();
     };
 };
