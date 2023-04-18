@@ -193,7 +193,7 @@ TEST(UrlEncodedPostTests, FormPostMultipleFilesTestLvalue) {
         Response response = cpr::Post(url, Multipart{{"singleFile", singleFileWithOverridenFilename}});
         std::string expected_text{
                 "{\n"
-                "  \"files\": \"applefile=" +
+                "  \"singleFile\": \"applefile=" +
                 content1 + "\"\n}"};
         EXPECT_EQ(expected_text, response.text);
         EXPECT_EQ(url, response.url);
