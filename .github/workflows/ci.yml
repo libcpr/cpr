@@ -6,7 +6,6 @@ jobs:
     strategy:
       matrix:
         container: ["ubuntu:18.04", "ubuntu:20.04", "ubuntu:22.04",  "ubuntu:23.04"]
-        shared: [ON, OFF]
         systemCurl: [ON, OFF]
         buildType: [Debug, Release]
     runs-on: ubuntu-latest
@@ -27,7 +26,6 @@ jobs:
         CPR_BUILD_TESTS: ON
         CPR_BUILD_TESTS_SSL: ON
         CPR_FORCE_OPENSSL_BACKEND: ON
-        BUILD_SHARED_LIBS: ${{ matrix.shared }}
         USE_SYSTEM_CURL: ${{ matrix.systemCurl }}
       uses: ashutoshvarma/action-cmake-build@master
       with:
@@ -43,7 +41,6 @@ jobs:
     strategy:
       matrix:
         container: ["ubuntu:18.04", "ubuntu:20.04", "ubuntu:22.04",  "ubuntu:23.04"]
-        shared: [ON, OFF]
         systemCurl: [ON, OFF]
         buildType: [Debug, Release]
     runs-on: ubuntu-latest
@@ -64,7 +61,6 @@ jobs:
         CPR_BUILD_TESTS: ON
         CPR_BUILD_TESTS_SSL: ON
         CPR_FORCE_OPENSSL_BACKEND: ON
-        BUILD_SHARED_LIBS: ${{ matrix.shared }}
         USE_SYSTEM_CURL: ${{ matrix.systemCurl }}
       uses: ashutoshvarma/action-cmake-build@master
       with:
@@ -80,7 +76,6 @@ jobs:
     strategy:
       matrix:
         container: ["ubuntu:18.04", "ubuntu:20.04", "ubuntu:22.04",  "ubuntu:23.04"]
-        shared: [ON, OFF]
         buildType: [Debug, Release]
     runs-on: ubuntu-latest
     container: ${{ matrix.container }}
@@ -100,7 +95,6 @@ jobs:
         CPR_BUILD_TESTS: ON
         CPR_BUILD_TESTS_SSL: ON
         CPR_FORCE_MBEDTLS_BACKEND: ON
-        BUILD_SHARED_LIBS: ${{ matrix.shared }}
       uses: ashutoshvarma/action-cmake-build@master
       with:
         build-dir: ${{ github.workspace }}/build
@@ -115,7 +109,6 @@ jobs:
     strategy:
       matrix:
         container: ["ubuntu:18.04", "ubuntu:20.04", "ubuntu:22.04",  "ubuntu:23.04"]
-        shared: [ON, OFF]
         buildType: [Debug, Release]
     runs-on: ubuntu-latest
     container: ${{ matrix.container }}
@@ -135,7 +128,6 @@ jobs:
         CPR_BUILD_TESTS: ON
         CPR_BUILD_TESTS_SSL: ON
         CPR_FORCE_MBEDTLS_BACKEND: ON
-        BUILD_SHARED_LIBS: ${{ matrix.shared }}
       uses: ashutoshvarma/action-cmake-build@master
       with:
         build-dir: ${{ github.workspace }}/build
@@ -150,7 +142,6 @@ jobs:
     strategy:
       matrix:
         container: ["fedora:latest"]
-        shared: [ON, OFF]
         systemCurl: [ON, OFF]
         buildType: [Debug, Release]
     runs-on: ubuntu-latest
@@ -167,7 +158,6 @@ jobs:
         CPR_BUILD_TESTS: ON
         CPR_BUILD_TESTS_SSL: ON
         CPR_FORCE_OPENSSL_BACKEND: ON
-        BUILD_SHARED_LIBS: ${{ matrix.shared }}
         USE_SYSTEM_CURL: ${{ matrix.systemCurl }}
       uses: ashutoshvarma/action-cmake-build@master
       with:
@@ -183,7 +173,6 @@ jobs:
     strategy:
       matrix:
         container: ["fedora:latest"]
-        shared: [ON, OFF]
         systemCurl: [ON, OFF]
         buildType: [Debug, Release]
     runs-on: ubuntu-latest
@@ -200,7 +189,6 @@ jobs:
         CPR_BUILD_TESTS: ON
         CPR_BUILD_TESTS_SSL: ON
         CPR_FORCE_OPENSSL_BACKEND: ON
-        BUILD_SHARED_LIBS: ${{ matrix.shared }}
         USE_SYSTEM_CURL: ${{ matrix.systemCurl }}
       uses: ashutoshvarma/action-cmake-build@master
       with:
@@ -216,7 +204,6 @@ jobs:
     strategy:
       matrix:
         container: ["fedora:latest"]
-        shared: [ON, OFF]
         buildType: [Debug, Release]
     runs-on: ubuntu-latest
     container: ${{ matrix.container }}
@@ -232,7 +219,6 @@ jobs:
         CPR_BUILD_TESTS: ON
         CPR_BUILD_TESTS_SSL: ON
         CPR_FORCE_MBEDTLS_BACKEND: ON
-        BUILD_SHARED_LIBS: ${{ matrix.shared }}
       uses: ashutoshvarma/action-cmake-build@master
       with:
         build-dir: ${{ github.workspace }}/build
@@ -247,7 +233,6 @@ jobs:
     strategy:
       matrix:
         container: ["fedora:latest"]
-        shared: [ON, OFF]
         buildType: [Debug, Release]
     runs-on: ubuntu-latest
     container: ${{ matrix.container }}
@@ -263,7 +248,6 @@ jobs:
         CPR_BUILD_TESTS: ON
         CPR_BUILD_TESTS_SSL: ON
         CPR_FORCE_MBEDTLS_BACKEND: ON
-        BUILD_SHARED_LIBS: ${{ matrix.shared }}
       uses: ashutoshvarma/action-cmake-build@master
       with:
         build-dir: ${{ github.workspace }}/build
@@ -304,7 +288,6 @@ jobs:
   windows22-msvc-ssl:
     strategy:
       matrix:
-        shared: [ON, OFF]
         buildType: [Debug, Release]
     runs-on: windows-2022
     steps:
@@ -315,7 +298,6 @@ jobs:
         CMAKE_GENERATOR: "Visual Studio 17 2022"
         CPR_BUILD_TESTS: ON
         CPR_BUILD_TESTS_SSL: OFF
-        BUILD_SHARED_LIBS: ${{ matrix.shared }}
       uses: ashutoshvarma/action-cmake-build@master
       with:
         build-dir: ${{ github.workspace }}/build
@@ -327,7 +309,6 @@ jobs:
   windows19-msvc-ssl:
     strategy:
       matrix:
-        shared: [ON, OFF]
         buildType: [Debug, Release]
     runs-on: windows-2019
     steps:
@@ -338,7 +319,6 @@ jobs:
         CMAKE_GENERATOR: "Visual Studio 16 2019"
         CPR_BUILD_TESTS: ON
         CPR_BUILD_TESTS_SSL: OFF
-        BUILD_SHARED_LIBS: ${{ matrix.shared }}
       uses: ashutoshvarma/action-cmake-build@master
       with:
         build-dir: ${{ github.workspace }}/build
@@ -350,7 +330,6 @@ jobs:
   windows22-msvc-openssl:
     strategy:
       matrix:
-        shared: [ON, OFF]
         buildType: [Debug, Release]
     runs-on: windows-2022
     steps:
@@ -364,7 +343,6 @@ jobs:
         CPR_BUILD_TESTS: ON
         CPR_BUILD_TESTS_SSL: ON
         CPR_FORCE_OPENSSL_BACKEND: ON
-        BUILD_SHARED_LIBS: ${{ matrix.shared }}
       uses: ashutoshvarma/action-cmake-build@master
       with:
         build-dir: ${{ github.workspace }}/build
@@ -376,7 +354,6 @@ jobs:
   windows19-msvc-openssl:
     strategy:
       matrix:
-        shared: [ON, OFF]
         buildType: [Debug, Release]
     runs-on: windows-2019
     steps:
@@ -390,7 +367,6 @@ jobs:
         CPR_BUILD_TESTS: ON
         CPR_BUILD_TESTS_SSL: ON
         CPR_FORCE_OPENSSL_BACKEND: ON
-        BUILD_SHARED_LIBS: ${{ matrix.shared }}
       uses: ashutoshvarma/action-cmake-build@master
       with:
         build-dir: ${{ github.workspace }}/build
@@ -403,7 +379,6 @@ jobs:
     strategy:
       matrix:
         os: [macos-12, macos-11]
-        shared: [ON, OFF]
         buildType: [Debug, Release]
     runs-on: ${{ matrix.os }}
     steps:
@@ -422,7 +397,6 @@ jobs:
         CPR_BUILD_TESTS: ON
         CPR_BUILD_TESTS_SSL: ON
         CPR_FORCE_OPENSSL_BACKEND: ON
-        BUILD_SHARED_LIBS: ${{ matrix.shared }}
         OPENSSL_ROOT_DIR: "/usr/local/opt/openssl@3"
         OPENSSL_LIBRARIES: "/usr/local/opt/openssl@3/lib"
       uses: ashutoshvarma/action-cmake-build@master
@@ -439,7 +413,6 @@ jobs:
     strategy:
       matrix:
         os: [macos-12, macos-11]
-        shared: [ON, OFF]
         buildType: [Debug, Release]
     runs-on: ${{ matrix.os }}
     steps:
@@ -449,7 +422,6 @@ jobs:
       env:
         CPR_BUILD_TESTS: ON
         CPR_BUILD_TESTS_SSL: OFF
-        BUILD_SHARED_LIBS: ${{ matrix.shared }}
       uses: ashutoshvarma/action-cmake-build@master
       with:
         build-dir: ${{ github.workspace }}/build
@@ -464,7 +436,6 @@ jobs:
     strategy:
       matrix:
         os: [macos-12, macos-11]
-        shared: [ON, OFF]
         buildType: [Debug, Release]
     runs-on: ${{ matrix.os }}
     steps:
@@ -475,7 +446,6 @@ jobs:
         CPR_BUILD_TESTS: ON
         CPR_BUILD_TESTS_SSL: OFF
         CPR_FORCE_DARWINSSL_BACKEND: ON
-        BUILD_SHARED_LIBS: ${{ matrix.shared }}
       uses: ashutoshvarma/action-cmake-build@master
       with:
         build-dir: ${{ github.workspace }}/build
@@ -490,7 +460,6 @@ jobs:
     strategy:
       matrix:
         os: [macos-12, macos-11]
-        shared: [ON, OFF]
         buildType: [Debug, Release]
     runs-on: ${{ matrix.os }}
     steps:
@@ -508,7 +477,6 @@ jobs:
         CPR_BUILD_TESTS_SSL: OFF
         CPR_USE_BOOST_FILESYSTEM: ON
         CPR_FORCE_OPENSSL_BACKEND: ON
-        BUILD_SHARED_LIBS: ${{ matrix.shared }}
         OPENSSL_ROOT_DIR: "/usr/local/opt/openssl@3"
         OPENSSL_LIBRARIES: "/usr/local/opt/openssl@3/lib"
         LDFLAGS: "-L/usr/local/opt/openssl@3/lib"
