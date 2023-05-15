@@ -17,11 +17,8 @@
   </ItemGroup>
   <PropertyGroup>
     <CprLibraries>@(CprLibs)</CprLibraries>
-    </PropertyGroup>
-    <ItemDefinitionGroup>
-    <ClCompile>
-      <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)\$(Platform)\$(Configuration)\include</AdditionalIncludeDirectories>
-    </ClCompile>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
     <Link>
       <AdditionalDependencies>$(CprLibraries);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
