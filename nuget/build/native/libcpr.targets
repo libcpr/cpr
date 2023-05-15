@@ -3,4 +3,9 @@
   <Target Name="PlatformCheck" BeforeTargets="InjectReference" Condition="(('$(Platform)' != 'x86') AND ('$(Platform)' != 'x64')) AND ('$(Platform)' != 'Win32'))">
     <Error  Text="$(MSBuildThisFileName) does not work correctly on this platform: '$(Platform)'. You need to specify platform x86, x64, or Win32." />
   </Target>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)\$(Platform)\$(Configuration)\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
 </Project>
