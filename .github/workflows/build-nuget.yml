@@ -12,14 +12,14 @@ jobs:
   package-windows-latest:
     runs-on: windows-latest
     steps:
-    - name: Set version
+    - name: Set version based on input
       if: ${{ inputs.version }}
       run: echo "RELEASE_VERSION=${{ inputs.version }}" | Out-File -Append -FilePath $env:GITHUB_ENV -Encoding utf8
-    - name: Set env
+    - name: Set version based on ref
       if: ${{ !inputs.version }}
       run: echo "RELEASE_VERSION=$($env:GITHUB_REF -replace 'refs/.*/', '')" | Out-File -Append -FilePath $env:GITHUB_ENV -Encoding utf8
     - name: Print Version
-      run: echo "XXX VERSION ${{ env.RELEASE_VERSION }}"
+      run: echo "NuGet version will be '${{ env.RELEASE_VERSION }}'"
     - name: Checkout
       uses: actions/checkout@v3
       with:
@@ -92,8 +92,6 @@ jobs:
         install-options: --prefix ${{github.workspace}}\install --config Debug
     - name: "[Debug_x64] Copy install files for Debug_x64"
       run: xcopy /e /i /y ${{github.workspace}}\install ${{github.workspace}}\nuget\build\native\x64\Debug
-    - name: Set env
-      run: echo "RELEASE_VERSION=$($env:GITHUB_REF -replace 'refs/.*/', '')" | Out-File -Append -FilePath $env:GITHUB_ENV -Encoding utf8
     - name: "Copy Readme.md"
       run: xcopy /y ${{github.workspace}}\README.md ${{github.workspace}}\nuget
     - name: "Create NuGet package"
@@ -106,7 +104,7 @@ jobs:
       with:
         name: artifact-nuget
         path: ${{github.workspace}}\*.nupkg
-    # - name: "Publish package to NuGet.org"
-    #   env:
-    #     NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
-    #   run: nuget push ${{github.workspace}}\*.nupkg $ENV:NUGET_API_KEY -Source https://api.nuget.org/v3/index.json
+    - name: "Publish package to NuGet.org"
+      env:
+        NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+      run: nuget push ${{github.workspace}}\*.nupkg $ENV:NUGET_API_KEY -Source https://api.nuget.org/v3/index.json
