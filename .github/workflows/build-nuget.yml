@@ -2,14 +2,28 @@ name: Build NuGet Package
 on:
   push:
     tags: [ '[0-9]+.[0-9]+.[0-9]+' ]
-  pull_request:
-    tags: [ '[0-9]+.[0-9]+.[0-9]+' ]
   workflow_dispatch:
+    inputs:
+      version:
+        description: 'The optional semantic version number. If not supplied the branch/tag will be used.'
+        type: string
+      no_publish:
+          description: 'Prevent publishing the NuGet package. Just build it and then upload it as an artifact.'
+          type: boolean
+          default: false
 
 jobs:
   package-windows-latest:
     runs-on: windows-latest
     steps:
+    - name: Set version based on input
+      if: ${{ inputs.version }}
+      run: echo "RELEASE_VERSION=${{ inputs.version }}" | Out-File -Append -FilePath $env:GITHUB_ENV -Encoding utf8
+    - name: Set version based on ref
+      if: ${{ !inputs.version }}
+      run: echo "RELEASE_VERSION=$($env:GITHUB_REF -replace 'refs/.*/', '')" | Out-File -Append -FilePath $env:GITHUB_ENV -Encoding utf8
+    - name: Print Version
+      run: echo "NuGet version will be '${{ env.RELEASE_VERSION }}'"
     - name: Checkout
       uses: actions/checkout@v3
       with:
@@ -82,17 +96,11 @@ jobs:
         install-options: --prefix ${{github.workspace}}\install --config Debug
     - name: "[Debug_x64] Copy install files for Debug_x64"
       run: xcopy /e /i /y ${{github.workspace}}\install ${{github.workspace}}\nuget\build\native\x64\Debug
-    - name: "Get latest release tag"
-      uses: oprypin/find-latest-tag@v1
-      with:
-        repository: libcpr/cpr
-        releases-only: true
-      id: find_release_tag
     - name: "Copy Readme.md"
       run: xcopy /y ${{github.workspace}}\README.md ${{github.workspace}}\nuget
     - name: "Create NuGet package"
       env: 
-        VERSION: ${{ steps.find_release_tag.outputs.tag }}
+        VERSION: ${{ env.RELEASE_VERSION }}
         COMMIT_HASH: ${{ github.sha }}
       run: nuget pack ${{github.workspace}}\nuget\libcpr.nuspec -OutputDirectory ${{github.workspace}} -Properties "VERSION=$ENV:VERSION;COMMIT_HASH=$ENV:COMMIT_HASH"
     - name: "Upload artifact"
@@ -101,6 +109,7 @@ jobs:
         name: artifact-nuget
         path: ${{github.workspace}}\*.nupkg
     - name: "Publish package to NuGet.org"
+      if: ${{ !inputs.no_publish }}
       env:
         NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
       run: nuget push ${{github.workspace}}\*.nupkg $ENV:NUGET_API_KEY -Source https://api.nuget.org/v3/index.json
