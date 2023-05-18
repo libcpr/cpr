@@ -8,6 +8,10 @@ jobs:
   package-windows-latest:
     runs-on: windows-latest
     steps:
+    - name: Print
+      run: echo "RELEASE_VERSION=$($env:GITHUB_REF -replace 'refs/.*/', '')"
+    - name: Set env
+      run: echo "RELEASE_VERSION=$($env:GITHUB_REF -replace 'refs/.*/', '')" | Out-File -Append -FilePath $env:GITHUB_ENV -Encoding utf8
     - name: Checkout
       uses: actions/checkout@v3
       with:
@@ -81,7 +85,7 @@ jobs:
     - name: "[Debug_x64] Copy install files for Debug_x64"
       run: xcopy /e /i /y ${{github.workspace}}\install ${{github.workspace}}\nuget\build\native\x64\Debug
     - name: Set env
-      run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+      run: echo "RELEASE_VERSION=$($env:GITHUB_REF -replace 'refs/.*/', '')" | Out-File -Append -FilePath $env:GITHUB_ENV -Encoding utf8
     - name: "Copy Readme.md"
       run: xcopy /y ${{github.workspace}}\README.md ${{github.workspace}}\nuget
     - name: "Create NuGet package"
