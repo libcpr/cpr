@@ -94,7 +94,7 @@ jobs:
       with:
         name: artifact-nuget
         path: ${{github.workspace}}\*.nupkg
-    - name: "Publish package to NuGet.org"
-      env:
-        NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
-      run: nuget push ${{github.workspace}}\*.nupkg $ENV:NUGET_API_KEY -Source https://api.nuget.org/v3/index.json
+    # - name: "Publish package to NuGet.org"
+    #   env:
+    #     NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+    #   run: nuget push ${{github.workspace}}\*.nupkg $ENV:NUGET_API_KEY -Source https://api.nuget.org/v3/index.json
