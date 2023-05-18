@@ -3,7 +3,6 @@ on:
   push:
       tags: [ '[0-9]+.[0-9]+.[0-9]+' ]
   pull_request:
-      tags: [ '[0-9]+.[0-9]+.[0-9]+' ]
 
 jobs:
   package-ubuntu-latest-amd64:
