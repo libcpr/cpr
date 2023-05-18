@@ -2,9 +2,6 @@ name: Build NuGet Package
 on:
   push:
     tags: [ '[0-9]+.[0-9]+.[0-9]+' ]
-  pull_request:
-    tags: [ '[0-9]+.[0-9]+.[0-9]+' ]
-  workflow_dispatch:
 
 jobs:
   package-windows-latest:
