@@ -3,15 +3,24 @@ on:
   push:
     tags: [ '[0-9]+.[0-9]+.[0-9]+' ]
   workflow_dispatch:
+    inputs:
+      version:
+        description: 'The semantic version number'
+        required: true
+        type: environment
 
 jobs:
   package-windows-latest:
     runs-on: windows-latest
     steps:
-    - name: Print
-      run: echo "RELEASE_VERSION=$($env:GITHUB_REF -replace 'refs/.*/', '')"
+    - name: Set version
+      if: ${{ inputs.version }}
+      run: echo "RELEASE_VERSION=${{ inputs.version }}" | Out-File -Append -FilePath $env:GITHUB_ENV -Encoding utf8
     - name: Set env
+      if: ${{ !inputs.version }}
       run: echo "RELEASE_VERSION=$($env:GITHUB_REF -replace 'refs/.*/', '')" | Out-File -Append -FilePath $env:GITHUB_ENV -Encoding utf8
+    - name: Print Version
+      run: echo "XXX VERSION ${{ env.RELEASE_VERSION }}"
     - name: Checkout
       uses: actions/checkout@v3
       with:
