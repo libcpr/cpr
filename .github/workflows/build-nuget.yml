@@ -7,6 +7,10 @@ on:
       version:
         description: 'The optional semantic version number. If not supplied the branch/tag will be used.'
         type: string
+      no_publish:
+          description: 'Prevent publishing the NuGet package. Just build it and then upload it as an artifact.'
+          type: boolean
+          default: false
 
 jobs:
   package-windows-latest:
@@ -105,6 +109,7 @@ jobs:
         name: artifact-nuget
         path: ${{github.workspace}}\*.nupkg
     - name: "Publish package to NuGet.org"
+      if: ${{ !inputs.no_publish }}
       env:
         NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
       run: nuget push ${{github.workspace}}\*.nupkg $ENV:NUGET_API_KEY -Source https://api.nuget.org/v3/index.json
