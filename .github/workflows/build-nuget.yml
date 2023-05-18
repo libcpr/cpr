@@ -5,9 +5,8 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'The semantic version number'
-        required: true
-        type: environment
+        description: 'The optional semantic version number. If not supplied the branch/tag will be used.'
+        type: string
 
 jobs:
   package-windows-latest:
