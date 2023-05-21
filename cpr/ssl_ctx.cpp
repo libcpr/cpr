@@ -9,6 +9,11 @@
 #include <openssl/safestack.h>
 #include <openssl/ssl.h>
 
+// Ensure we include 'applink.c' at least once on Window to fix "OPENSSL_Uplink(00007FFCE387ED50,08): no OPENSSL_Applink".
+#ifdef _WIN32
+#include <openssl/applink.c>
+#endif // _WIN32
+
 namespace cpr {
 
 /**
