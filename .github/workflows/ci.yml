@@ -76,9 +76,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Update package list
-      run: apt update
+      run: sudo apt update
     - name: Install Dependencies
-      run: apt install -y git libssl-dev libmbedtls-dev cmake build-essential
+      run: sudo apt install -y git libssl-dev libmbedtls-dev cmake build-essential
     - name: Setup cmake
       uses: jwlawson/actions-setup-cmake@v1.13
       with:
