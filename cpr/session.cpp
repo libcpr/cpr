@@ -166,8 +166,7 @@ void Session::prepareCommon() {
         }
     }
 
-#if LIBCURL_VERSION_MAJOR >= 7
-#if LIBCURL_VERSION_MINOR >= 21
+#if LIBCURL_VERSION_NUM >= 0x072100
     if (acceptEncoding_.empty()) {
         /* enable all supported built-in compressions */
         curl_easy_setopt(curl_->handle, CURLOPT_ACCEPT_ENCODING, "");
@@ -175,10 +174,8 @@ void Session::prepareCommon() {
         curl_easy_setopt(curl_->handle, CURLOPT_ACCEPT_ENCODING, acceptEncoding_.getString().c_str());
     }
 #endif
-#endif
 
-#if LIBCURL_VERSION_MAJOR >= 7
-#if LIBCURL_VERSION_MINOR >= 71
+#if LIBCURL_VERSION_NUM >= 0x077100
 #if SUPPORT_SSL_NO_REVOKE
     // NOLINTNEXTLINE (google-runtime-int)
     long bitmask{0};
@@ -194,7 +191,6 @@ void Session::prepareCommon() {
     if (noRevoke) {
         curl_easy_setopt(curl_->handle, CURLOPT_SSL_OPTIONS, CURLSSLOPT_NO_REVOKE);
     }
-#endif
 #endif
 #endif
 
