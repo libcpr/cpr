@@ -1,13 +1,17 @@
+#include <algorithm>
 #include <cstdint>
 #include <cstdlib>
 #include <gtest/gtest.h>
 
 #include <chrono>
+#include <stdexcept>
 #include <string>
 
 #include <cpr/cpr.h>
 #include <curl/curl.h>
+#include <vector>
 
+#include "cpr/accept_encoding.h"
 #include "httpServer.hpp"
 
 using namespace cpr;
@@ -1098,18 +1102,40 @@ TEST(BasicTests, ReserveResponseString) {
     EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
+std::vector<std::string> Split(const std::string& s) {
+    std::vector<std::string> encodings;
+    std::stringstream ss(s);
+    std::string encoding;
+
+    while (std::getline(ss, encoding, ',')) {
+        encoding.erase(std::remove_if(encoding.begin(), encoding.end(), isspace), encoding.end()); // Trim
+        encodings.push_back(encoding);
+    }
+
+    return encodings;
+}
+
+void CompareEncodings(const std::string& response, const std::vector<std::string>& expected) {
+    const std::vector<std::string> responseVec = Split(response);
+
+    EXPECT_EQ(responseVec.size(), expected.size());
+    for (const std::string& encoding : expected) {
+        EXPECT_TRUE(std::find(responseVec.begin(), responseVec.end(), encoding) != responseVec.end());
+    }
+}
+
 TEST(BasicTests, AcceptEncodingTestWithMethodsStringMap) {
     Url url{server->GetBaseUrl() + "/check_accept_encoding.html"};
     Session session;
     session.SetUrl(url);
     session.SetAcceptEncoding({{AcceptEncodingMethods::deflate, AcceptEncodingMethods::gzip, AcceptEncodingMethods::zlib}});
     Response response = session.Get();
-    std::string expected_text{"deflate, gzip, zlib"};
-    EXPECT_EQ(expected_text, response.text);
+
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
     EXPECT_EQ(ErrorCode::OK, response.error.code);
+    CompareEncodings(response.text, std::vector<std::string>{"deflate", "gzip", "zlib"});
 }
 
 TEST(BasicTests, AcceptEncodingTestWithMethodsStringMapLValue) {
@@ -1119,12 +1145,12 @@ TEST(BasicTests, AcceptEncodingTestWithMethodsStringMapLValue) {
     AcceptEncoding accept_encoding{{AcceptEncodingMethods::deflate, AcceptEncodingMethods::gzip, AcceptEncodingMethods::zlib}};
     session.SetAcceptEncoding(accept_encoding);
     Response response = session.Get();
-    std::string expected_text{"deflate, gzip, zlib"};
-    EXPECT_EQ(expected_text, response.text);
+
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
     EXPECT_EQ(ErrorCode::OK, response.error.code);
+    CompareEncodings(response.text, std::vector<std::string>{"deflate", "gzip", "zlib"});
 }
 
 TEST(BasicTests, AcceptEncodingTestWithCostomizedString) {
@@ -1133,12 +1159,12 @@ TEST(BasicTests, AcceptEncodingTestWithCostomizedString) {
     session.SetUrl(url);
     session.SetAcceptEncoding({{"deflate", "gzip", "zlib"}});
     Response response = session.Get();
-    std::string expected_text{"deflate, gzip, zlib"};
-    EXPECT_EQ(expected_text, response.text);
+
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
     EXPECT_EQ(ErrorCode::OK, response.error.code);
+    CompareEncodings(response.text, std::vector<std::string>{"deflate", "gzip", "zlib"});
 }
 
 TEST(BasicTests, AcceptEncodingTestWithCostomizedStringLValue) {
@@ -1148,12 +1174,34 @@ TEST(BasicTests, AcceptEncodingTestWithCostomizedStringLValue) {
     AcceptEncoding accept_encoding{{"deflate", "gzip", "zlib"}};
     session.SetAcceptEncoding(accept_encoding);
     Response response = session.Get();
-    std::string expected_text{"deflate, gzip, zlib"};
-    EXPECT_EQ(expected_text, response.text);
+
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
     EXPECT_EQ(ErrorCode::OK, response.error.code);
+    CompareEncodings(response.text, std::vector<std::string>{"deflate", "gzip", "zlib"});
+}
+
+TEST(BasicTests, AcceptEncodingTestDisabled) {
+    Url url{server->GetBaseUrl() + "/header_reflect.html"};
+    Session session;
+    session.SetUrl(url);
+    session.SetAcceptEncoding({AcceptEncodingMethods::disabled});
+    Response response = session.Get();
+
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+    // Ensure no 'Accept-Encoding' header got added
+    EXPECT_TRUE(response.header.find("Accept-Encoding") == response.header.end());
+}
+
+TEST(BasicTests, AcceptEncodingTestDisabledMultipleThrow) {
+    Url url{server->GetBaseUrl() + "/header_reflect.html"};
+    Session session;
+    session.SetUrl(url);
+    session.SetAcceptEncoding({AcceptEncodingMethods::disabled, AcceptEncodingMethods::deflate});
+    EXPECT_THROW(session.Get(), std::invalid_argument);
 }
 
 TEST(BasicTests, DisableHeaderExpect100ContinueTest) {
