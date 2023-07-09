@@ -1,14 +1,17 @@
 #include "cpr/accept_encoding.h"
 
 #include <algorithm>
+#include <cassert>
+#include <initializer_list>
 #include <iterator>
 #include <numeric>
+#include <stdexcept>
 
 namespace cpr {
 
 AcceptEncoding::AcceptEncoding(const std::initializer_list<AcceptEncodingMethods>& methods) {
     methods_.clear();
-    std::transform(methods.begin(), methods.end(), std::back_inserter(methods_), [&](cpr::AcceptEncodingMethods method) { return cpr::AcceptEncodingMethodsStringMap.at(method); });
+    std::transform(methods.begin(), methods.end(), std::inserter(methods_, methods_.begin()), [&](cpr::AcceptEncodingMethods method) { return cpr::AcceptEncodingMethodsStringMap.at(method); });
 }
 
 AcceptEncoding::AcceptEncoding(const std::initializer_list<std::string>& string_methods) : methods_{string_methods} {}
@@ -18,8 +21,17 @@ bool AcceptEncoding::empty() const noexcept {
 }
 
 const std::string AcceptEncoding::getString() const {
-    std::string methodsString = std::accumulate(std::next(methods_.begin()), methods_.end(), methods_[0], [](std::string a, std::string b) { return std::move(a) + ", " + std::move(b); });
-    return methodsString;
+    return std::accumulate(std::next(methods_.begin()), methods_.end(), *methods_.begin(), [](std::string a, std::string b) { return std::move(a) + ", " + std::move(b); });
+}
+
+[[nodiscard]] bool AcceptEncoding::disabled() const {
+    if (methods_.find(cpr::AcceptEncodingMethodsStringMap.at(AcceptEncodingMethods::disabled)) != methods_.end()) {
+        if (methods_.size() != 1) {
+            throw std::invalid_argument("AcceptEncoding does not accept any other values if 'disabled' is present. You set the following encodings: " + getString());
+        }
+        return true;
+    }
+    return false;
 }
 
 } // namespace cpr

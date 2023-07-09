@@ -138,8 +138,11 @@ void Session::prepareCommon() {
 
 #if LIBCURL_VERSION_NUM >= 0x072100
     if (acceptEncoding_.empty()) {
-        /* enable all supported built-in compressions */
+        // Enable all supported built-in compressions
         curl_easy_setopt(curl_->handle, CURLOPT_ACCEPT_ENCODING, "");
+    } else if (acceptEncoding_.disabled()) {
+        // Disable curl adding the 'Accept-Encoding' header
+        curl_easy_setopt(curl_->handle, CURLOPT_ACCEPT_ENCODING, nullptr);
     } else {
         curl_easy_setopt(curl_->handle, CURLOPT_ACCEPT_ENCODING, acceptEncoding_.getString().c_str());
     }

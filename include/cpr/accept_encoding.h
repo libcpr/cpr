@@ -5,7 +5,7 @@
 #include <initializer_list>
 #include <map>
 #include <string>
-#include <vector>
+#include <unordered_set>
 
 namespace cpr {
 
@@ -14,21 +14,26 @@ enum class AcceptEncodingMethods {
     deflate,
     zlib,
     gzip,
+    disabled,
 };
 
-static const std::map<AcceptEncodingMethods, std::string> AcceptEncodingMethodsStringMap{{AcceptEncodingMethods::identity, "identity"}, {AcceptEncodingMethods::deflate, "deflate"}, {AcceptEncodingMethods::zlib, "zlib"}, {AcceptEncodingMethods::gzip, "gzip"}};
+// NOLINTNEXTLINE(cert-err58-cpp)
+static const std::map<AcceptEncodingMethods, std::string> AcceptEncodingMethodsStringMap{{AcceptEncodingMethods::identity, "identity"}, {AcceptEncodingMethods::deflate, "deflate"}, {AcceptEncodingMethods::zlib, "zlib"}, {AcceptEncodingMethods::gzip, "gzip"}, {AcceptEncodingMethods::disabled, "disabled"}};
 
 class AcceptEncoding {
   public:
     AcceptEncoding() = default;
+    // NOLINTNEXTLINE(google-explicit-constructor)
     AcceptEncoding(const std::initializer_list<AcceptEncodingMethods>& methods);
+    // NOLINTNEXTLINE(google-explicit-constructor)
     AcceptEncoding(const std::initializer_list<std::string>& methods);
 
-    bool empty() const noexcept;
-    const std::string getString() const;
+    [[nodiscard]] bool empty() const noexcept;
+    [[nodiscard]] const std::string getString() const;
+    [[nodiscard]] bool disabled() const;
 
   private:
-    std::vector<std::string> methods_;
+    std::unordered_set<std::string> methods_;
 };
 
 } // namespace cpr
