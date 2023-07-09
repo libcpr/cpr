@@ -62,10 +62,10 @@ class Cookies {
     bool encode{true};
 
     // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
-    Cookies(bool p_encode = true) : encode{p_encode} {};
-    Cookies(const std::initializer_list<cpr::Cookie>& cookies, bool p_encode = true) : encode{p_encode}, cookies_{cookies} {};
+    Cookies(bool p_encode = true) : encode{p_encode} {}
+    Cookies(const std::initializer_list<cpr::Cookie>& cookies, bool p_encode = true) : encode{p_encode}, cookies_{cookies} {}
     // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
-    Cookies(const cpr::Cookie& cookie, bool p_encode = true) : encode{p_encode}, cookies_{cookie} {};
+    Cookies(const cpr::Cookie& cookie, bool p_encode = true) : encode{p_encode}, cookies_{cookie} {}
 
     cpr::Cookie& operator[](size_t pos);
     const std::string GetEncoded(const CurlHolder& holder) const;

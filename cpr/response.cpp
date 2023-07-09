@@ -11,7 +11,7 @@ Response::Response(std::shared_ptr<CurlHolder> curl, std::string&& p_text, std::
     char* url_string{nullptr};
     curl_easy_getinfo(curl_->handle, CURLINFO_EFFECTIVE_URL, &url_string);
     url = Url(url_string);
-#if LIBCURL_VERSION_NUM >= 0x073700
+#if LIBCURL_VERSION_NUM >= 0x073700 // 7.55.0 
     curl_easy_getinfo(curl_->handle, CURLINFO_SIZE_DOWNLOAD_T, &downloaded_bytes);
     curl_easy_getinfo(curl_->handle, CURLINFO_SIZE_UPLOAD_T, &uploaded_bytes);
 #else

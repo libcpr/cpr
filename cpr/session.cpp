@@ -97,7 +97,7 @@ Session::Session() : curl_(new CurlHolder()) {
     curl_easy_setopt(curl_->handle, CURLOPT_NOSIGNAL, 1L);
 #endif
 
-#if LIBCURL_VERSION_NUM >= 0x071900
+#if LIBCURL_VERSION_NUM >= 0x071900 // 7.25.0 
     curl_easy_setopt(curl_->handle, CURLOPT_TCP_KEEPALIVE, 1L);
 #endif
 }
@@ -136,7 +136,7 @@ void Session::prepareCommon() {
         }
     }
 
-#if LIBCURL_VERSION_NUM >= 0x072100
+#if LIBCURL_VERSION_NUM >= 0x071506 // 7.21.6
     if (acceptEncoding_.empty()) {
         // Enable all supported built-in compressions
         curl_easy_setopt(curl_->handle, CURLOPT_ACCEPT_ENCODING, "");
@@ -148,7 +148,7 @@ void Session::prepareCommon() {
     }
 #endif
 
-#if LIBCURL_VERSION_NUM >= 0x077100
+#if LIBCURL_VERSION_NUM >= 0x071900 // 7.25.0
 #if SUPPORT_SSL_NO_REVOKE
     // NOLINTNEXTLINE (google-runtime-int)
     long bitmask{0};
@@ -263,7 +263,7 @@ void Session::SetProgressCallback(const ProgressCallback& progress) {
         cancellationcb_.SetProgressCallback(progresscb_);
         return;
     }
-#if LIBCURL_VERSION_NUM < 0x072000
+#if LIBCURL_VERSION_NUM < 0x072000 // 7.32.0
     curl_easy_setopt(curl_->handle, CURLOPT_PROGRESSFUNCTION, cpr::util::progressUserFunction<ProgressCallback>);
     curl_easy_setopt(curl_->handle, CURLOPT_PROGRESSDATA, &progresscb_);
 #else
@@ -517,7 +517,7 @@ void Session::SetSslOptions(const SslOptions& options) {
 #endif
     curl_easy_setopt(curl_->handle, CURLOPT_SSL_VERIFYPEER, options.verify_peer ? ON : OFF);
     curl_easy_setopt(curl_->handle, CURLOPT_SSL_VERIFYHOST, options.verify_host ? 2L : 0L);
-#if LIBCURL_VERSION_NUM >= 0x072900
+#if LIBCURL_VERSION_NUM >= 0x072900 // 7.41.0
     curl_easy_setopt(curl_->handle, CURLOPT_SSL_VERIFYSTATUS, options.verify_status ? ON : OFF);
 #endif
 
@@ -963,7 +963,7 @@ void Session::SetOption(AcceptEncoding&& accept_encoding) { SetAcceptEncoding(ac
 void Session::SetCancellationParam(std::shared_ptr<std::atomic_bool> param) {
     cancellationcb_ = CancellationCallback{std::move(param)};
     isCancellable = true;
-#if LIBCURL_VERSION_NUM < 0x072000
+#if LIBCURL_VERSION_NUM < 0x072000 // 7.32.0
     curl_easy_setopt(curl_->handle, CURLOPT_PROGRESSFUNCTION, cpr::util::progressUserFunction<CancellationCallback>);
     curl_easy_setopt(curl_->handle, CURLOPT_PROGRESSDATA, &cancellationcb_);
 #else

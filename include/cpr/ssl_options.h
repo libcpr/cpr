@@ -15,59 +15,59 @@
 #define __LIBCURL_VERSION_LT(major, minor) ((LIBCURL_VERSION_MAJOR < (major)) || ((LIBCURL_VERSION_MAJOR == (major)) && (LIBCURL_VERSION_MINOR < (minor))))
 
 #ifndef SUPPORT_ALPN
-#define SUPPORT_ALPN __LIBCURL_VERSION_GTE(7, 36)
+#define SUPPORT_ALPN LIBCURL_VERSION_NUM >= 0x072400 // 7.36.0
 #endif
 #ifndef SUPPORT_NPN
-#define SUPPORT_NPN __LIBCURL_VERSION_GTE(7, 36) && __LIBCURL_VERSION_LT(7, 86)
+#define SUPPORT_NPN LIBCURL_VERSION_NUM >= 0x072400 && LIBCURL_VERSION_NUM <= 0x078600 // 7.36.0 - 7.86.0
 #endif
 
 #ifndef SUPPORT_SSLv2
-#define SUPPORT_SSLv2 __LIBCURL_VERSION_LT(7, 19)
+#define SUPPORT_SSLv2 LIBCURL_VERSION_NUM <= 0x071300 // 7.19.0
 #endif
 #ifndef SUPPORT_SSLv3
-#define SUPPORT_SSLv3 __LIBCURL_VERSION_LT(7, 39)
+#define SUPPORT_SSLv3 LIBCURL_VERSION_NUM <= 0x072700 // 7.39.0
 #endif
 #ifndef SUPPORT_TLSv1_0
-#define SUPPORT_TLSv1_0 __LIBCURL_VERSION_GTE(7, 34)
+#define SUPPORT_TLSv1_0 LIBCURL_VERSION_NUM >= 0x072200 // 7.34.0
 #endif
 #ifndef SUPPORT_TLSv1_1
-#define SUPPORT_TLSv1_1 __LIBCURL_VERSION_GTE(7, 34)
+#define SUPPORT_TLSv1_1 LIBCURL_VERSION_NUM >= 0x072200 // 7.34.0
 #endif
 #ifndef SUPPORT_TLSv1_2
-#define SUPPORT_TLSv1_2 __LIBCURL_VERSION_GTE(7, 34)
+#define SUPPORT_TLSv1_2 LIBCURL_VERSION_NUM >= 0x072200 // 7.34.0
 #endif
 #ifndef SUPPORT_TLSv1_3
-#define SUPPORT_TLSv1_3 __LIBCURL_VERSION_GTE(7, 52)
+#define SUPPORT_TLSv1_3 LIBCURL_VERSION_NUM >= 0x073400 // 7.52.0
 #endif
 #ifndef SUPPORT_MAX_TLS_VERSION
-#define SUPPORT_MAX_TLS_VERSION __LIBCURL_VERSION_GTE(7, 54)
+#define SUPPORT_MAX_TLS_VERSION LIBCURL_VERSION_NUM >= 0x073600 // 7.54.0
 #endif
 #ifndef SUPPORT_MAX_TLSv1_1
-#define SUPPORT_MAX_TLSv1_1 __LIBCURL_VERSION_GTE(7, 54)
+#define SUPPORT_MAX_TLSv1_1 LIBCURL_VERSION_NUM >= 0x073600 // 7.54.0
 #endif
 #ifndef SUPPORT_MAX_TLSv1_2
-#define SUPPORT_MAX_TLSv1_2 __LIBCURL_VERSION_GTE(7, 54)
+#define SUPPORT_MAX_TLSv1_2 LIBCURL_VERSION_NUM >= 0x073600 // 7.54.0
 #endif
 #ifndef SUPPORT_MAX_TLSv1_3
-#define SUPPORT_MAX_TLSv1_3 __LIBCURL_VERSION_GTE(7, 54)
+#define SUPPORT_MAX_TLSv1_3 LIBCURL_VERSION_NUM >= 0x073600 // 7.54.0
 #endif
 #ifndef SUPPORT_TLSv13_CIPHERS
-#define SUPPORT_TLSv13_CIPHERS __LIBCURL_VERSION_GTE(7, 61)
+#define SUPPORT_TLSv13_CIPHERS LIBCURL_VERSION_NUM >= 0x073D00 // 7.61.0
 #endif
 #ifndef SUPPORT_SESSIONID_CACHE
-#define SUPPORT_SESSIONID_CACHE __LIBCURL_VERSION_GTE(7, 16)
+#define SUPPORT_SESSIONID_CACHE LIBCURL_VERSION_NUM >= 0x071000 // 7.16.0
 #endif
 #ifndef SUPPORT_SSL_FALSESTART
-#define SUPPORT_SSL_FALSESTART __LIBCURL_VERSION_GTE(7, 42)
+#define SUPPORT_SSL_FALSESTART LIBCURL_VERSION_NUM >= 0x072A00 // 7.42.0
 #endif
 #ifndef SUPPORT_SSL_NO_REVOKE
-#define SUPPORT_SSL_NO_REVOKE __LIBCURL_VERSION_GTE(7, 44)
+#define SUPPORT_SSL_NO_REVOKE LIBCURL_VERSION_NUM >= 0x072C00 // 7.44.0
 #endif
 #ifndef SUPPORT_CURLOPT_SSLKEY_BLOB
-#define SUPPORT_CURLOPT_SSLKEY_BLOB __LIBCURL_VERSION_GTE(7, 71)
+#define SUPPORT_CURLOPT_SSLKEY_BLOB LIBCURL_VERSION_NUM >= 0x074700 // 7.71.0
 #endif
 #ifndef SUPPORT_CURLOPT_SSL_CTX_FUNCTION
-#define SUPPORT_CURLOPT_SSL_CTX_FUNCTION __LIBCURL_VERSION_GTE(7, 11)
+#define SUPPORT_CURLOPT_SSL_CTX_FUNCTION LIBCURL_VERSION_NUM >= 0x070B00 // 7.11.0
 #endif
 
 namespace cpr {
@@ -109,7 +109,7 @@ class DerCert : public CertFile {
     // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
     DerCert(fs::path&& p_filename) : CertFile(std::move(p_filename)) {}
 
-    virtual ~DerCert() = default;
+    ~DerCert() override = default;
 
     const char* GetCertType() const override {
         return "DER";
@@ -169,7 +169,7 @@ class DerKey : public KeyFile {
     template <typename FileType, typename PassType>
     DerKey(FileType&& p_filename, PassType p_password) : KeyFile(std::forward<FileType>(p_filename), std::move(p_password)) {}
 
-    virtual ~DerKey() = default;
+    ~DerKey() override = default;
 
     const char* GetKeyType() const override {
         return "DER";

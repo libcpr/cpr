@@ -117,7 +117,7 @@ TEST(HeadTests, AuthenticationFailureHeadTest) {
 
 TEST(HeadTests, BearerSuccessHeadTest) {
     Url url{server->GetBaseUrl() + "/bearer_token.html"};
-#if CPR_LIBCURL_VERSION_NUM >= 0x073D00
+#if CPR_LIBCURL_VERSION_NUM >= 0x073D00 // 7.61.0
     Response response = cpr::Get(url, Bearer{"the_token"});
 #else
     Response response = cpr::Get(url, Header{{"Authorization", "Bearer the_token"}});
