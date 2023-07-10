@@ -103,15 +103,6 @@ if(CPR_ENABLE_CPPCHECK)
     include(cmake/cppcheck.cmake)
 endif()
 
-if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
-else()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic -Werror")
-    if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-        # Disable C++98 compatibility support in clang: https://github.com/libcpr/cpr/issues/927
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-nonportable-system-include-path -Wno-exit-time-destructors -Wno-undef -Wno-global-constructors")
-    endif()
-endif()
-
 # SSL
 if(CPR_ENABLE_SSL)
     if(CPR_FORCE_OPENSSL_BACKEND OR CPR_FORCE_WINSSL_BACKEND OR CPR_FORCE_DARWINSSL_BACKEND OR CPR_FORCE_MBEDTLS_BACKEND)
@@ -371,6 +362,14 @@ if(CPR_BUILD_TESTS)
     restore_variable(DESTINATION CMAKE_CXX_CLANG_TIDY BACKUP CMAKE_CXX_CLANG_TIDY_BKP)
 endif()
 
+if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+else()
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic -Werror")
+    if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+        # Disable C++98 compatibility support in clang: https://github.com/libcpr/cpr/issues/927
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-nonportable-system-include-path -Wno-exit-time-destructors -Wno-undef -Wno-global-constructors -Wno-switch-enum -Wno-old-style-cast -Wno-covered-switch-default")
+    endif()
+endif()
 
 add_subdirectory(cpr)
 add_subdirectory(include)

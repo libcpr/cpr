@@ -15,9 +15,17 @@
 #if defined(_Win32)
 #include <Windows.h>
 #else
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreserved-macro-identifier"
+#pragma clang diagnostic ignored "-Wunused-macros"
+#endif
 // https://en.cppreference.com/w/c/string/byte/memset
 // NOLINTNEXTLINE(bugprone-reserved-identifier, cert-dcl37-c, cert-dcl51-cpp, cppcoreguidelines-macro-usage)
 #define __STDC_WANT_LIB_EXT1__ 1
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 #include <cstring>
 #endif
 

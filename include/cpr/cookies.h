@@ -23,7 +23,7 @@ class Cookie {
      * std::chrono::system_clock::time_point::min() won't work on Windows due to the min, max clash there.
      * So we fall back to std::chrono::system_clock::from_time_t(0) for the minimum value here.
      **/
-    Cookie(const std::string& name, const std::string& value, const std::string& domain = "", bool p_isIncludingSubdomains = false, const std::string& path = "/", bool p_isHttpsOnly = false, std::chrono::system_clock::time_point expires = std::chrono::system_clock::from_time_t(0)) : name_{name}, value_{value}, domain_{domain}, includeSubdomains_{p_isIncludingSubdomains}, path_{path}, httpsOnly_{p_isHttpsOnly}, expires_{expires} {};
+    Cookie(const std::string& name, const std::string& value, const std::string& domain = "", bool p_isIncludingSubdomains = false, const std::string& path = "/", bool p_isHttpsOnly = false, std::chrono::system_clock::time_point expires = std::chrono::system_clock::from_time_t(0)) : name_{name}, value_{value}, domain_{domain}, includeSubdomains_{p_isIncludingSubdomains}, path_{path}, httpsOnly_{p_isHttpsOnly}, expires_{expires} {}
     const std::string GetDomain() const;
     bool IsIncludingSubdomains() const;
     const std::string GetPath() const;

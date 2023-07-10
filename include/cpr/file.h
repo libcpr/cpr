@@ -17,19 +17,19 @@ struct File {
 
     [[nodiscard]] bool hasOverridenFilename() const noexcept {
         return !overriden_filename.empty();
-    };
+    }
 };
 
 class Files {
   public:
     Files() = default;
     // NOLINTNEXTLINE(google-explicit-constructor)
-    Files(const File& p_file) : files{p_file} {};
+    Files(const File& p_file) : files{p_file} {}
 
     Files(const Files& other) = default;
     Files(Files&& old) noexcept = default;
 
-    Files(const std::initializer_list<File>& p_files) : files{p_files} {};
+    Files(const std::initializer_list<File>& p_files) : files{p_files} {}
     Files(const std::initializer_list<std::string>& p_filepaths);
 
     ~Files() noexcept = default;

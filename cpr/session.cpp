@@ -624,7 +624,6 @@ void Session::SetHttpVersion(const HttpVersion& version) {
 
         default: // Should not happen
             throw std::invalid_argument("Invalid/Unknown HTTP version type.");
-            break;
     }
 }
 

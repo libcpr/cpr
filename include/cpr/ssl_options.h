@@ -11,9 +11,6 @@
 #include "cpr/util.h"
 #include <utility>
 
-#define __LIBCURL_VERSION_GTE(major, minor) ((LIBCURL_VERSION_MAJOR > (major)) || ((LIBCURL_VERSION_MAJOR == (major)) && (LIBCURL_VERSION_MINOR >= (minor))))
-#define __LIBCURL_VERSION_LT(major, minor) ((LIBCURL_VERSION_MAJOR < (major)) || ((LIBCURL_VERSION_MAJOR == (major)) && (LIBCURL_VERSION_MINOR < (minor))))
-
 #ifndef SUPPORT_ALPN
 #define SUPPORT_ALPN LIBCURL_VERSION_NUM >= 0x072400 // 7.36.0
 #endif
