@@ -577,11 +577,11 @@ void Session::SetInterface(const Interface& iface) {
 }
 
 void Session::SetLocalPort(const LocalPort& local_port) {
-    curl_easy_setopt(curl_->handle, CURLOPT_LOCALPORT, local_port);
+    curl_easy_setopt(curl_->handle, CURLOPT_LOCALPORT, static_cast<long>(static_cast<uint16_t>(local_port)));
 }
 
 void Session::SetLocalPortRange(const LocalPortRange& local_port_range) {
-    curl_easy_setopt(curl_->handle, CURLOPT_LOCALPORTRANGE, local_port_range);
+    curl_easy_setopt(curl_->handle, CURLOPT_LOCALPORTRANGE, static_cast<long>(static_cast<uint16_t>(local_port_range)));
 }
 
 void Session::SetHttpVersion(const HttpVersion& version) {

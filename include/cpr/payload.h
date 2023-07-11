@@ -15,7 +15,7 @@ class Payload : public CurlContainer<Pair> {
             Add(*pair);
         }
     }
-    Payload(const std::initializer_list<Pair>& pairs);
+    Payload(const std::initializer_list<Pair>& pairs) : CurlContainer<Pair>(pairs) {}
 };
 
 } // namespace cpr
