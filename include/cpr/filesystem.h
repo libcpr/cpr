@@ -3,6 +3,7 @@
 
 // Include filesystem into the namespace "fs" from either "filesystem" or "experimental/filesystem" or "boost/filesystem"
 #ifdef CPR_USE_BOOST_FILESYSTEM
+#define BOOST_FILESYSTEM_VERSION 4 // Use the latest, with the closest behavior to std::filesystem.
 #include <boost/filesystem.hpp>
 namespace fs = boost::filesystem;
 // cppcheck-suppress preprocessorErrorDirective
