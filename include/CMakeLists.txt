@@ -6,7 +6,6 @@ target_include_directories(cpr PUBLIC
     $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/cpr_generated_includes/>)
 
 target_sources(cpr PRIVATE
-
     # Header files (useful in IDEs)
     cpr/accept_encoding.h
     cpr/api.h

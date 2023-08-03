@@ -81,7 +81,7 @@ Session::Session() : curl_(new CurlHolder()) {
     curl_easy_setopt(curl_->handle, CURLOPT_NOSIGNAL, 1L);
 #endif
 
-#if LIBCURL_VERSION_NUM >= 0x071900
+#if LIBCURL_VERSION_NUM >= 0x071900 // 7.25.0
     curl_easy_setopt(curl_->handle, CURLOPT_TCP_KEEPALIVE, 1L);
 #endif
 }
@@ -166,7 +166,7 @@ void Session::prepareCommon() {
         }
     }
 
-#if LIBCURL_VERSION_NUM >= 0x072100
+#if LIBCURL_VERSION_NUM >= 0x071506 // 7.21.6
     if (acceptEncoding_.empty()) {
         /* enable all supported built-in compressions */
         curl_easy_setopt(curl_->handle, CURLOPT_ACCEPT_ENCODING, "");
@@ -175,7 +175,7 @@ void Session::prepareCommon() {
     }
 #endif
 
-#if LIBCURL_VERSION_NUM >= 0x077100
+#if LIBCURL_VERSION_NUM >= 0x071900 // 7.25.0
 #if SUPPORT_SSL_NO_REVOKE
     // NOLINTNEXTLINE (google-runtime-int)
     long bitmask{0};
@@ -254,7 +254,7 @@ void Session::SetWriteCallback(const WriteCallback& write) {
 
 void Session::SetProgressCallback(const ProgressCallback& progress) {
     progresscb_ = progress;
-#if LIBCURL_VERSION_NUM < 0x072000
+#if LIBCURL_VERSION_NUM < 0x072000 // 7.32.0
     curl_easy_setopt(curl_->handle, CURLOPT_PROGRESSFUNCTION, cpr::util::progressUserFunction);
     curl_easy_setopt(curl_->handle, CURLOPT_PROGRESSDATA, &progresscb_);
 #else
@@ -491,7 +491,7 @@ void Session::SetSslOptions(const SslOptions& options) {
 #endif
     curl_easy_setopt(curl_->handle, CURLOPT_SSL_VERIFYPEER, options.verify_peer ? ON : OFF);
     curl_easy_setopt(curl_->handle, CURLOPT_SSL_VERIFYHOST, options.verify_host ? 2L : 0L);
-#if LIBCURL_VERSION_NUM >= 0x072900
+#if LIBCURL_VERSION_NUM >= 0x072900 // 7.41.0
     curl_easy_setopt(curl_->handle, CURLOPT_SSL_VERIFYSTATUS, options.verify_status ? ON : OFF);
 #endif
 
@@ -551,11 +551,11 @@ void Session::SetInterface(const Interface& iface) {
 }
 
 void Session::SetLocalPort(const LocalPort& local_port) {
-    curl_easy_setopt(curl_->handle, CURLOPT_LOCALPORT, local_port);
+    curl_easy_setopt(curl_->handle, CURLOPT_LOCALPORT, static_cast<long>(static_cast<uint16_t>(local_port)));
 }
 
 void Session::SetLocalPortRange(const LocalPortRange& local_port_range) {
-    curl_easy_setopt(curl_->handle, CURLOPT_LOCALPORTRANGE, local_port_range);
+    curl_easy_setopt(curl_->handle, CURLOPT_LOCALPORTRANGE, static_cast<long>(static_cast<uint16_t>(local_port_range)));
 }
 
 void Session::SetHttpVersion(const HttpVersion& version) {
@@ -598,7 +598,6 @@ void Session::SetHttpVersion(const HttpVersion& version) {
 
         default: // Should not happen
             throw std::invalid_argument("Invalid/Unknown HTTP version type.");
-            break;
     }
 }
 

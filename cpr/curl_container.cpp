@@ -33,7 +33,7 @@ const std::string CurlContainer<Parameter>::GetContent(const CurlHolder& holder)
             content += escapedKey + "=";
             content += escapedValue;
         }
-    };
+    }
 
     return content;
 }

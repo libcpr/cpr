@@ -13,7 +13,9 @@ class CertInfo {
 
   public:
     CertInfo() = default;
-    CertInfo(const std::initializer_list<std::string>& entry) : cert_info_{entry} {};
+    CertInfo(const CertInfo& other) = default;
+    CertInfo(CertInfo&& old) = default;
+    CertInfo(const std::initializer_list<std::string>& entry) : cert_info_{entry} {}
     ~CertInfo() noexcept = default;
 
     using iterator = std::vector<std::string>::iterator;

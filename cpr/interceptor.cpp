@@ -25,7 +25,7 @@ Response Interceptor::proceed(Session& session, ProceedHttpMethod httpMethod) {
         case ProceedHttpMethod::PUT_REQUEST:
             return session.Put();
         default:
-            throw std::invalid_argument{"Can't procceed the session with the provided http method!"};
+            throw std::invalid_argument{"Can't proceed the session with the provided http method!"};
     }
 }
 
