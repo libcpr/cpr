@@ -33,7 +33,8 @@ Checks: '*,
 -bugprone-easily-swappable-parameters,
 -modernize-return-braced-init-list,
 -cppcoreguidelines-avoid-magic-numbers,
--readability-magic-numbers
+-readability-magic-numbers,
+-cppcoreguidelines-avoid-do-while
 '
 WarningsAsErrors: '*'
 HeaderFilterRegex: 'src/*.hpp'
