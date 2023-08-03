@@ -328,9 +328,10 @@ TEST(CallbackHeadTests, CallbackHeadFunctionTextReferenceTest) {
 TEST(CallbackPostTests, CallbackPostLambdaStatusTest) {
     Url url{server->GetBaseUrl() + "/url_post.html"};
     Payload payload{{"x", "5"}};
-    int status_code = 0;
+    // NOLINTNEXTLINE(google-runtime-int)
+    long status_code = 0;
     auto future = cpr::PostCallback(
-            [&status_code](Response r) {
+            [&status_code](const Response& r) {
                 status_code = r.status_code;
                 return r.status_code;
             },
@@ -345,7 +346,7 @@ TEST(CallbackPostTests, CallbackPostLambdaTextTest) {
     Payload payload{{"x", "5"}};
     std::string expected_text{};
     auto future = cpr::PostCallback(
-            [&expected_text](Response r) {
+            [&expected_text](const Response& r) {
                 expected_text = r.text;
                 return r.text;
             },
@@ -358,7 +359,8 @@ TEST(CallbackPostTests, CallbackPostLambdaTextTest) {
 TEST(CallbackPostTests, CallbackPostLambdaStatusReferenceTest) {
     Url url{server->GetBaseUrl() + "/url_post.html"};
     Payload payload{{"x", "5"}};
-    int status_code = 0;
+    // NOLINTNEXTLINE(google-runtime-int)
+    long status_code = 0;
     auto future = cpr::PostCallback(
             [&status_code](const Response& r) {
                 status_code = r.status_code;
@@ -863,7 +865,7 @@ TEST(CallbackDataTests, CallbackHeaderFunctionTextTest) {
     Url url{server->GetBaseUrl() + "/url_post.html"};
     std::vector<std::string> expected_headers{"HTTP/1.1 201 Created\r\n", "Content-Type: application/json\r\n", "\r\n"};
     std::set<std::string> response_headers;
-    Post(url, HeaderCallback{[&response_headers](std::string header, intptr_t /*userdata*/) -> bool {
+    Post(url, HeaderCallback{[&response_headers](const std::string& header, intptr_t /*userdata*/) -> bool {
              response_headers.insert(header);
              return true;
          }});
@@ -886,7 +888,7 @@ TEST(CallbackDataTests, CallbackWriteFunctionTextTest) {
             "  \"x\": 5\n"
             "}"};
     std::string response_text;
-    Post(url, Payload{{"x", "5"}}, WriteCallback{[&response_text](std::string header, intptr_t /*userdata*/) -> bool {
+    Post(url, Payload{{"x", "5"}}, WriteCallback{[&response_text](const std::string& header, intptr_t /*userdata*/) -> bool {
              response_text.append(header);
              return true;
          }});
@@ -902,7 +904,8 @@ TEST(CallbackDataTests, CallbackProgressFunctionCancelTest) {
 TEST(CallbackDataTests, CallbackProgressFunctionTotalTest) {
     Url url{server->GetBaseUrl() + "/url_post.html"};
     Body body{"x=5"};
-    size_t response_upload = 0, response_download = 0;
+    size_t response_upload = 0;
+    size_t response_download = 0;
     Response response = Post(url, body, ProgressCallback{[&](size_t downloadTotal, size_t /*downloadNow*/, size_t uploadTotal, size_t /*uploadNow*/, intptr_t /*userdata*/) -> bool {
                                  response_upload = uploadTotal;
                                  response_download = downloadTotal;
@@ -916,7 +919,7 @@ TEST(CallbackDataTests, CallbackDebugFunctionTextTest) {
     Url url{server->GetBaseUrl() + "/url_post.html"};
     Body body{"x=5"};
     std::string debug_body;
-    Response response = Post(url, body, DebugCallback{[&](DebugCallback::InfoType type, std::string data, intptr_t /*userdata*/) {
+    Response response = Post(url, body, DebugCallback{[&](DebugCallback::InfoType type, const std::string& data, intptr_t /*userdata*/) {
                                  if (type == DebugCallback::InfoType::DATA_OUT) {
                                      debug_body = data;
                                  }
