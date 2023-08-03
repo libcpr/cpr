@@ -1019,20 +1019,33 @@ TEST(CurlHolderManipulateTests, CustomOptionTest) {
 TEST(LocalPortTests, SetLocalPortTest) {
     Url url{server->GetBaseUrl() + "/local_port.html"};
     Session session;
-    session.SetUrl(url);
-    std::uint16_t const local_port = 60252; // beware of HttpServer::GetPort when changing
-    std::uint16_t const local_port_range = 5000;
-    session.SetLocalPort(local_port);
-    session.SetLocalPortRange(local_port_range);
-    // expected response: body contains port number in specified range
-    // NOTE: even when trying up to 5000 ports there is the chance that all of them are occupied.
-    // It would be possible to also check here for ErrorCode::INTERNAL_ERROR but that somehow seems
-    // wrong as then this test would pass in case SetLocalPort does not work at all
-    // or in other words: we have to assume that at least one port in the specified range is free.
-    Response response = session.Get();
+    uint16_t local_port{0};
+    uint16_t local_port_range{0};
+    Response response;
+
+    // Try up to 10 times to get a free local port
+    for (size_t i = 0; i < 10; i++) {
+        session.SetUrl(url);
+        local_port = 40252 + (i * 100); // beware of HttpServer::GetPort when changing
+        local_port_range = 7000;
+        session.SetLocalPort(local_port);
+        session.SetLocalPortRange(local_port_range);
+        // expected response: body contains port number in specified range
+        // NOTE: even when trying up to 7000 ports there is the chance that all of them are occupied.
+        // It would be possible to also check here for ErrorCode::INTERNAL_ERROR but that somehow seems
+        // wrong as then this test would pass in case SetLocalPort does not work at all
+        // or in other words: we have to assume that at least one port in the specified range is free.
+        response = session.Get();
+
+        if (response.error.code != ErrorCode::INTERNAL_ERROR) {
+            break;
+        }
+    }
+
     EXPECT_EQ(200, response.status_code);
     EXPECT_EQ(ErrorCode::OK, response.error.code);
-    std::uint16_t port_from_response = std::strtoul(response.text.c_str(), nullptr, 10);
+    // NOLINTNEXTLINE(google-runtime-int)
+    unsigned long port_from_response = std::strtoul(response.text.c_str(), nullptr, 10);
     EXPECT_EQ(errno, 0);
     EXPECT_GE(port_from_response, local_port);
     EXPECT_LE(port_from_response, local_port + local_port_range);
@@ -1041,19 +1054,32 @@ TEST(LocalPortTests, SetLocalPortTest) {
 TEST(LocalPortTests, SetOptionTest) {
     Url url{server->GetBaseUrl() + "/local_port.html"};
     Session session;
-    session.SetUrl(url);
-    std::uint16_t const local_port = 60551; // beware of HttpServer::GetPort when changing
-    std::uint16_t const local_port_range = 5000;
-    session.SetOption(LocalPort(local_port));
-    session.SetOption(LocalPortRange(local_port_range));
-    // expected response: body contains port number in specified range
-    // NOTE: even when trying up to 5000 ports there is the chance that all of them are occupied.
-    // It would be possible to also check here for ErrorCode::INTERNAL_ERROR but that somehow seems
-    // wrong as then this test would pass in case SetOption(LocalPort) does not work at all
-    // or in other words: we have to assume that at least one port in the specified range is free.
-    Response response = session.Get();
+    uint16_t local_port{0};
+    uint16_t local_port_range{0};
+    Response response;
+
+    // Try up to 10 times to get a free local port
+    for (size_t i = 0; i < 10; i++) {
+        session.SetUrl(url);
+        local_port = 30252 + (i * 100); // beware of HttpServer::GetPort when changing
+        local_port_range = 7000;
+        session.SetOption(LocalPort(local_port));
+        session.SetOption(LocalPortRange(local_port_range));
+        // expected response: body contains port number in specified range
+        // NOTE: even when trying up to 7000 ports there is the chance that all of them are occupied.
+        // It would be possible to also check here for ErrorCode::INTERNAL_ERROR but that somehow seems
+        // wrong as then this test would pass in case SetLocalPort does not work at all
+        // or in other words: we have to assume that at least one port in the specified range is free.
+        response = session.Get();
+
+        if (response.error.code != ErrorCode::INTERNAL_ERROR) {
+            break;
+        }
+    }
+
     EXPECT_EQ(200, response.status_code);
     EXPECT_EQ(ErrorCode::OK, response.error.code);
+    // NOLINTNEXTLINE(google-runtime-int)
     unsigned long port_from_response = std::strtoul(response.text.c_str(), nullptr, 10);
     EXPECT_EQ(errno, 0);
     EXPECT_GE(port_from_response, local_port);
