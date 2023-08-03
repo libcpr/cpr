@@ -15,6 +15,8 @@ jobs:
       run: apt update
     - name: Install Dependencies
       run: apt install -y git libssl-dev cmake build-essential clang libcurl4-openssl-dev
+      env:
+        DEBIAN_FRONTEND: noninteractive
     - name: Setup cmake
       uses: jwlawson/actions-setup-cmake@v1.13
       with:
@@ -50,6 +52,8 @@ jobs:
       run: apt update
     - name: Install Dependencies
       run: apt install -y git libssl-dev cmake build-essential libcurl4-openssl-dev
+      env:
+        DEBIAN_FRONTEND: noninteractive
     - name: Setup cmake
       uses: jwlawson/actions-setup-cmake@v1.13
       with:
@@ -79,6 +83,8 @@ jobs:
       run: sudo apt update
     - name: Install Dependencies
       run: sudo apt install -y git libssl-dev libmbedtls-dev cmake build-essential
+      env:
+        DEBIAN_FRONTEND: noninteractive
     - name: Setup cmake
       uses: jwlawson/actions-setup-cmake@v1.13
       with:
