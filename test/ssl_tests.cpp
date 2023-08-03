@@ -154,13 +154,13 @@ TEST(SslTests, LoadCertFromBufferTestSimpel) {
 }
 #endif
 
-fs::path getBasePath(const std::string& execPath) {
+fs::path GetBasePath(const std::string& execPath) {
     return fs::path(fs::path{execPath}.parent_path().string() + "/").make_preferred();
 }
 
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
-    fs::path baseDirPath = fs::path{getBasePath(argv[0]).string() + "data/"};
+    fs::path baseDirPath = fs::path{GetBasePath(argv[0]).string() + "data/"};
     fs::path serverCertPath = fs::path{baseDirPath}.append("certificates/server.crt");
     fs::path serverKeyPath = fs::path{baseDirPath}.append("keys/server.key");
     server = new HttpsServer(std::move(baseDirPath), std::move(serverCertPath), std::move(serverKeyPath));
