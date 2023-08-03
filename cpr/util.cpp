@@ -17,7 +17,9 @@
 #else
 #ifdef __clang__
 #pragma clang diagnostic push
+#if __has_warning("-Wreserved-macro-identifier") // Not all versions of clang support this flag like the one used on Ubuntu 18.04
 #pragma clang diagnostic ignored "-Wreserved-macro-identifier"
+#endif
 #pragma clang diagnostic ignored "-Wunused-macros"
 #endif
 // https://en.cppreference.com/w/c/string/byte/memset
