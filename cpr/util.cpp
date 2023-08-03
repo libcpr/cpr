@@ -15,9 +15,19 @@
 #if defined(_Win32)
 #include <Windows.h>
 #else
+#ifdef __clang__
+#pragma clang diagnostic push
+#if __has_warning("-Wreserved-macro-identifier") // Not all versions of clang support this flag like the one used on Ubuntu 18.04
+#pragma clang diagnostic ignored "-Wreserved-macro-identifier"
+#endif
+#pragma clang diagnostic ignored "-Wunused-macros"
+#endif
 // https://en.cppreference.com/w/c/string/byte/memset
 // NOLINTNEXTLINE(bugprone-reserved-identifier, cert-dcl37-c, cert-dcl51-cpp, cppcoreguidelines-macro-usage)
 #define __STDC_WANT_LIB_EXT1__ 1
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 #include <cstring>
 #endif
 

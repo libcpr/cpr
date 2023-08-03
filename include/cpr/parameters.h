@@ -10,7 +10,7 @@ namespace cpr {
 class Parameters : public CurlContainer<Parameter> {
   public:
     Parameters() = default;
-    Parameters(const std::initializer_list<Parameter>& parameters);
+    Parameters(const std::initializer_list<Parameter>& parameters) : CurlContainer<Parameter>(parameters) {}
 };
 
 } // namespace cpr

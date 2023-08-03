@@ -1,5 +1,5 @@
-#ifndef _CPR_STATUS_CODES
-#define _CPR_STATUS_CODES
+#ifndef CPR_STATUS_CODES
+#define CPR_STATUS_CODES
 #include <cstdint>
 namespace cpr {
 namespace status {
