@@ -622,6 +622,24 @@ TEST(MultipartTests, SetMultipartValueTest) {
     EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
+TEST(MultipartTests, SetMultipartVectorPartsTest) {
+    Url url{server->GetBaseUrl() + "/form_post.html"};
+    Session session;
+    session.SetUrl(url);
+    Multipart multipart{std::vector<Part>{Part{"x", "5"}}};
+    session.SetMultipart(multipart);
+    Response response = session.Post();
+    std::string expected_text{
+            "{\n"
+            "  \"x\": \"5\"\n"
+            "}"};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
+    EXPECT_EQ(201, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
 TEST(BodyTests, SetBodyTest) {
     Url url{server->GetBaseUrl() + "/url_post.html"};
     Session session;

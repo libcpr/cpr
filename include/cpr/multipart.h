@@ -34,6 +34,8 @@ struct Part {
 class Multipart {
   public:
     Multipart(const std::initializer_list<Part>& parts);
+    Multipart(const std::vector<Part>& parts);
+    Multipart(const std::vector<Part>&& parts);
 
     std::vector<Part> parts;
 };
