@@ -73,7 +73,7 @@ TEST(ErrorTests, LowSpeedBytesFailure) {
 
 TEST(ErrorTests, ProxyFailure) {
     Url url{server->GetBaseUrl() + "/hello.html"};
-    Response response = cpr::Get(url, cpr::Proxies{{"http", "http://bad_host/"}});
+    Response response = cpr::Get(url, cpr::Proxies{{"http", "http://bad_host.libcpr.org"}});
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(0, response.status_code);
     EXPECT_EQ(ErrorCode::PROXY_RESOLUTION_FAILURE, response.error.code);
