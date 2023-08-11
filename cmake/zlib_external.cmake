@@ -14,8 +14,10 @@ FetchContent_Declare(zlib
                     USES_TERMINAL_DOWNLOAD TRUE)
 FetchContent_MakeAvailable(zlib)
 
+add_library(ZLIB::ZLIB ALIAS zlib)
+
 # Fix Windows zlib dll names from "zlibd1.dll" to "zlib.dll":
-if(WIN32)
+if(WIN32 AND BUILD_SHARED_LIBS)
     set_target_properties(zlib PROPERTIES OUTPUT_NAME "zlib")
     set_target_properties(zlib PROPERTIES DEBUG_POSTFIX "")
     set_target_properties(zlib PROPERTIES SUFFIX ".dll")
