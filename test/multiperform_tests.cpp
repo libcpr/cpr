@@ -4,8 +4,8 @@
 #include <memory>
 #include <string>
 
-#include <cpr/api.h>
-#include <cpr/cpr.h>
+#include "cpr/api.h"
+#include "cpr/cpr.h"
 #include <curl/curl.h>
 
 #include "httpServer.hpp"
