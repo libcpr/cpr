@@ -10,11 +10,9 @@ set(ZLIB_ENABLE_TESTS OFF CACHE INTERNAL "" FORCE)
 
 FetchContent_Declare(zlib
                     GIT_REPOSITORY https://github.com/zlib-ng/zlib-ng
-                    GIT_TAG 2.0.6
+                    GIT_TAG 2.1.3
                     USES_TERMINAL_DOWNLOAD TRUE)
 FetchContent_MakeAvailable(zlib)
-
-add_library(ZLIB::ZLIB ALIAS zlib)
 
 # Fix Windows zlib dll names from "zlibd1.dll" to "zlib.dll":
 if(WIN32 AND BUILD_SHARED_LIBS)
