@@ -204,7 +204,6 @@ else()
     # * from command line:
     #     -DCURL_ZLIB=OFF
     # * from CMake script:
-    #     SET(CURL_ZLIB OFF CACHE STRING "" FORCE)
     if (CURL_ZLIB OR CURL_ZLIB STREQUAL AUTO OR NOT DEFINED CACHE{CURL_ZLIB})
         include(cmake/zlib_external.cmake)
     endif()
@@ -303,8 +302,8 @@ if(CPR_BUILD_TESTS)
         clear_variable(DESTINATION CMAKE_CXX_CLANG_TIDY BACKUP CMAKE_CXX_CLANG_TIDY_BKP)
 
         FetchContent_Declare(googletest
-                             URL                    https://github.com/google/googletest/archive/release-1.11.0.tar.gz
-                             URL_HASH               SHA256=b4870bf121ff7795ba20d20bcdd8627b8e088f2d1dab299a031c1034eddc93d5 # the file hash for release-1.11.0.tar.gz
+                             URL                    https://github.com/google/googletest/archive/refs/tags/v1.14.0.tar.gz
+                             URL_HASH               SHA256=8ad598c73ad796e0d8280b082cebd82a630d73e73cd3c70057938a6501bba5d7 # the file hash for release-1.14.0.tar.gz
                              USES_TERMINAL_DOWNLOAD TRUE)   # <---- This is needed only for Ninja to show download progress
         FetchContent_MakeAvailable(googletest)
 
