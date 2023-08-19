@@ -1,6 +1,6 @@
 name: "Test cppcheck"
 
-on: [push, workflow_dispatch]
+on: [push, workflow_dispatch, pull_request] # Trigger for every push as well as for every pull request. Yes, this will run stuff twice in case we create a PR from inside this repo. I'm open for better solutions, where I do not have to specify each brach individually for the 'push' trigger.
 
 jobs:
   cppcheck:

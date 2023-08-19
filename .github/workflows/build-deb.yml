@@ -1,7 +1,8 @@
 name: Build Debian Package
 on:
   push:
-      tags: [ '[0-9]+.[0-9]+.[0-9]+' ]
+      tags:
+        - 1.**
   pull_request:
 
 jobs:
@@ -33,4 +34,3 @@ jobs:
       with:
         name: artifact-deb
         path: ./*.deb
-
