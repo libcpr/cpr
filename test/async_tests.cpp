@@ -3,8 +3,8 @@
 #include <string>
 #include <vector>
 
-#include <cpr/cpr.h>
-#include <cpr/filesystem.h>
+#include "cpr/cpr.h"
+#include "cpr/filesystem.h"
 
 #include "cpr/api.h"
 #include "cpr/response.h"

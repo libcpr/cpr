@@ -7,7 +7,7 @@
 #include <stdexcept>
 #include <string>
 
-#include <cpr/cpr.h>
+#include "cpr/cpr.h"
 #include <curl/curl.h>
 #include <vector>
 
