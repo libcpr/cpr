@@ -25,11 +25,11 @@ const std::string CurlContainer<Parameter>::GetContent(const CurlHolder& holder)
             content += "&";
         }
 
-        std::string escapedKey = encode ? holder.urlEncode(parameter.key) : parameter.key;
+        const std::string escapedKey = encode ? holder.urlEncode(parameter.key) : parameter.key;
         if (parameter.value.empty()) {
             content += escapedKey;
         } else {
-            std::string escapedValue = encode ? holder.urlEncode(parameter.value) : parameter.value;
+            const std::string escapedValue = encode ? holder.urlEncode(parameter.value) : parameter.value;
             content += escapedKey + "=";
             content += escapedValue;
         }
@@ -45,7 +45,7 @@ const std::string CurlContainer<Pair>::GetContent(const CurlHolder& holder) cons
         if (!content.empty()) {
             content += "&";
         }
-        std::string escaped = encode ? holder.urlEncode(element.value) : element.value;
+        const std::string escaped = encode ? holder.urlEncode(element.value) : element.value;
         content += element.key + "=" + escaped;
     }
 
