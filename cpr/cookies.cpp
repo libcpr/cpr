@@ -26,7 +26,7 @@ const std::chrono::system_clock::time_point Cookie::GetExpires() const {
 const std::string Cookie::GetExpiresString() const {
     std::stringstream ss;
     std::tm tm{};
-    std::time_t tt = std::chrono::system_clock::to_time_t(expires_);
+    const std::time_t tt = std::chrono::system_clock::to_time_t(expires_);
 #ifdef _WIN32
     gmtime_s(&tm, &tt);
 #else

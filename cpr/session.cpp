@@ -71,7 +71,7 @@ void Session::SetBearer(const Bearer& token) {
 Session::Session() : curl_(new CurlHolder()) {
     // Set up some sensible defaults
     curl_version_info_data* version_info = curl_version_info(CURLVERSION_NOW);
-    std::string version = "curl/" + std::string{version_info->version};
+    const std::string version = "curl/" + std::string{version_info->version};
     curl_easy_setopt(curl_->handle, CURLOPT_USERAGENT, version.c_str());
     SetRedirect(Redirect());
     curl_easy_setopt(curl_->handle, CURLOPT_NOPROGRESS, 1L);
@@ -90,7 +90,7 @@ Response Session::makeDownloadRequest() {
     assert(curl_->handle);
 
     if (!interceptors_.empty()) {
-        std::shared_ptr<Interceptor> interceptor = interceptors_.front();
+        const std::shared_ptr<Interceptor> interceptor = interceptors_.front();
         interceptors_.pop();
         return interceptor->intercept(*this);
     }
@@ -100,13 +100,13 @@ Response Session::makeDownloadRequest() {
 
     const std::string parametersContent = parameters_.GetContent(*curl_);
     if (!parametersContent.empty()) {
-        Url new_url{url_ + "?" + parametersContent};
+        const Url new_url{url_ + "?" + parametersContent};
         curl_easy_setopt(curl_->handle, CURLOPT_URL, new_url.c_str());
     } else {
         curl_easy_setopt(curl_->handle, CURLOPT_URL, url_.c_str());
     }
 
-    std::string protocol = url_.str().substr(0, url_.str().find(':'));
+    const std::string protocol = url_.str().substr(0, url_.str().find(':'));
     if (proxies_.has(protocol)) {
         curl_easy_setopt(curl_->handle, CURLOPT_PROXY, proxies_[protocol].c_str());
         if (proxyAuth_.has(protocol)) {
@@ -126,7 +126,7 @@ Response Session::makeDownloadRequest() {
         curl_easy_setopt(curl_->handle, CURLOPT_HEADERDATA, &header_string);
     }
 
-    CURLcode curl_error = curl_easy_perform(curl_->handle);
+    const CURLcode curl_error = curl_easy_perform(curl_->handle);
 
     if (!headercb_.callback) {
         curl_easy_setopt(curl_->handle, CURLOPT_HEADERFUNCTION, nullptr);
@@ -150,14 +150,14 @@ void Session::prepareCommon() {
 
     const std::string parametersContent = parameters_.GetContent(*curl_);
     if (!parametersContent.empty()) {
-        Url new_url{url_ + "?" + parametersContent};
+        const Url new_url{url_ + "?" + parametersContent};
         curl_easy_setopt(curl_->handle, CURLOPT_URL, new_url.c_str());
     } else {
         curl_easy_setopt(curl_->handle, CURLOPT_URL, url_.c_str());
     }
 
     // Proxy:
-    std::string protocol = url_.str().substr(0, url_.str().find(':'));
+    const std::string protocol = url_.str().substr(0, url_.str().find(':'));
     if (proxies_.has(protocol)) {
         curl_easy_setopt(curl_->handle, CURLOPT_PROXY, proxies_[protocol].c_str());
         if (proxyAuth_.has(protocol)) {
@@ -217,12 +217,12 @@ void Session::prepareCommon() {
 Response Session::makeRequest() {
     if (!interceptors_.empty()) {
         // At least one interceptor exists -> Execute its intercept function
-        std::shared_ptr<Interceptor> interceptor = interceptors_.front();
+        const std::shared_ptr<Interceptor> interceptor = interceptors_.front();
         interceptors_.pop();
         return interceptor->intercept(*this);
     }
 
-    CURLcode curl_error = curl_easy_perform(curl_->handle);
+    const CURLcode curl_error = curl_easy_perform(curl_->handle);
     return Complete(curl_error);
 }
 
@@ -602,12 +602,12 @@ void Session::SetHttpVersion(const HttpVersion& version) {
 }
 
 void Session::SetRange(const Range& range) {
-    std::string range_str = range.str();
+    const std::string range_str = range.str();
     curl_easy_setopt(curl_->handle, CURLOPT_RANGE, range_str.c_str());
 }
 
 void Session::SetMultiRange(const MultiRange& multi_range) {
-    std::string multi_range_str = multi_range.str();
+    const std::string multi_range_str = multi_range.str();
     curl_easy_setopt(curl_->handle, CURLOPT_RANGE, multi_range_str.c_str());
 }
 
@@ -627,7 +627,7 @@ cpr_off_t Session::GetDownloadFileLength() {
     cpr_off_t downloadFileLenth = -1;
     curl_easy_setopt(curl_->handle, CURLOPT_URL, url_.c_str());
 
-    std::string protocol = url_.str().substr(0, url_.str().find(':'));
+    const std::string protocol = url_.str().substr(0, url_.str().find(':'));
     if (proxies_.has(protocol)) {
         curl_easy_setopt(curl_->handle, CURLOPT_PROXY, proxies_[protocol].c_str());
         if (proxyAuth_.has(protocol)) {
