@@ -2,8 +2,8 @@
 
 #include <string>
 
-#include <cpr/cprtypes.h>
-#include <cpr/util.h>
+#include "cpr/cprtypes.h"
+#include "cpr/util.h"
 
 using namespace cpr;
 

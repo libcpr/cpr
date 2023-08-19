@@ -6,7 +6,7 @@
 #include <thread>
 #include <vector>
 
-#include <cpr/cpr.h>
+#include "cpr/cpr.h"
 
 #include "cpr/cprtypes.h"
 #include "httpServer.hpp"
