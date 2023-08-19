@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include <cpr/cpr.h>
+#include "cpr/cpr.h"
 
 #include "cpr/api.h"
 #include "cpr/callback.h"
