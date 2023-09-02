@@ -172,6 +172,22 @@ TEST(CookiesTests, ClientSetCookiesTest) {
     EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
+TEST(CookiesTests, UnencodedCookiesTest) {
+    Url url{server->GetBaseUrl() + "/cookies_reflect.html"};
+    Cookies cookies{
+            {"SID", "31d4d  %$  96e407aad42", "127.0.0.1", false, "/", true, std::chrono::system_clock::from_time_t(3905119080)},
+            {"lang", "en-US", "127.0.0.1", false, "/", true, std::chrono::system_clock::from_time_t(3905119080)},
+    };
+    cookies.encode = false;
+    Response response = cpr::Get(url, cookies);
+    std::string expected_text{"SID=31d4d  %$  96e407aad42; lang=en-US;"};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
 TEST(ParameterTests, SingleParameterTest) {
     Url url{server->GetBaseUrl() + "/hello.html"};
     Parameters parameters{{"key", "value"}};
