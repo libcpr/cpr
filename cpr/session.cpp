@@ -174,11 +174,11 @@ void Session::prepareCommon() {
         response_string_.reserve(response_string_reserve_size_);
     }
     header_string_.clear();
-    if (!this->writecb_.callback) {
+    if (!cbs_->writecb_.callback) {
         curl_easy_setopt(curl_->handle, CURLOPT_WRITEFUNCTION, cpr::util::writeFunction);
         curl_easy_setopt(curl_->handle, CURLOPT_WRITEDATA, &response_string_);
     }
-    if (!this->headercb_.callback) {
+    if (!cbs_->headercb_.callback) {
         curl_easy_setopt(curl_->handle, CURLOPT_HEADERFUNCTION, cpr::util::writeFunction);
         curl_easy_setopt(curl_->handle, CURLOPT_HEADERDATA, &header_string_);
     }
@@ -213,9 +213,9 @@ void Session::prepareCommonDownload() {
     curl_->error[0] = '\0';
 
     header_string_.clear();
-    if (headercb_.callback) {
+    if (cbs_->headercb_.callback) {
         curl_easy_setopt(curl_->handle, CURLOPT_HEADERFUNCTION, cpr::util::headerUserFunction);
-        curl_easy_setopt(curl_->handle, CURLOPT_HEADERDATA, &headercb_);
+        curl_easy_setopt(curl_->handle, CURLOPT_HEADERDATA, &cbs_->headercb_);
     } else {
         curl_easy_setopt(curl_->handle, CURLOPT_HEADERFUNCTION, cpr::util::writeFunction);
         curl_easy_setopt(curl_->handle, CURLOPT_HEADERDATA, &header_string_);
@@ -237,46 +237,46 @@ void Session::SetLimitRate(const LimitRate& limit_rate) {
 }
 
 void Session::SetReadCallback(const ReadCallback& read) {
-    readcb_ = read;
+    cbs_->readcb_ = read;
     curl_easy_setopt(curl_->handle, CURLOPT_INFILESIZE_LARGE, read.size);
     curl_easy_setopt(curl_->handle, CURLOPT_POSTFIELDSIZE_LARGE, read.size);
     curl_easy_setopt(curl_->handle, CURLOPT_READFUNCTION, cpr::util::readUserFunction);
-    curl_easy_setopt(curl_->handle, CURLOPT_READDATA, &readcb_);
+    curl_easy_setopt(curl_->handle, CURLOPT_READDATA, &cbs_->readcb_);
     chunkedTransferEncoding_ = read.size == -1;
 }
 
 void Session::SetHeaderCallback(const HeaderCallback& header) {
     curl_easy_setopt(curl_->handle, CURLOPT_HEADERFUNCTION, cpr::util::headerUserFunction);
-    headercb_ = header;
-    curl_easy_setopt(curl_->handle, CURLOPT_HEADERDATA, &headercb_);
+    cbs_->headercb_ = header;
+    curl_easy_setopt(curl_->handle, CURLOPT_HEADERDATA, &cbs_->headercb_);
 }
 
 void Session::SetWriteCallback(const WriteCallback& write) {
     curl_easy_setopt(curl_->handle, CURLOPT_WRITEFUNCTION, cpr::util::writeUserFunction);
-    writecb_ = write;
-    curl_easy_setopt(curl_->handle, CURLOPT_WRITEDATA, &writecb_);
+    cbs_->writecb_ = write;
+    curl_easy_setopt(curl_->handle, CURLOPT_WRITEDATA, &cbs_->writecb_);
 }
 
 void Session::SetProgressCallback(const ProgressCallback& progress) {
-    progresscb_ = progress;
+    cbs_->progresscb_ = progress;
     if (isCancellable) {
-        cancellationcb_.SetProgressCallback(progresscb_);
+        cbs_->cancellationcb_.SetProgressCallback(cbs_->progresscb_);
         return;
     }
 #if LIBCURL_VERSION_NUM < 0x072000 // 7.32.0
     curl_easy_setopt(curl_->handle, CURLOPT_PROGRESSFUNCTION, cpr::util::progressUserFunction<ProgressCallback>);
-    curl_easy_setopt(curl_->handle, CURLOPT_PROGRESSDATA, &progresscb_);
+    curl_easy_setopt(curl_->handle, CURLOPT_PROGRESSDATA, &cbs_->progresscb_);
 #else
     curl_easy_setopt(curl_->handle, CURLOPT_XFERINFOFUNCTION, cpr::util::progressUserFunction<ProgressCallback>);
-    curl_easy_setopt(curl_->handle, CURLOPT_XFERINFODATA, &progresscb_);
+    curl_easy_setopt(curl_->handle, CURLOPT_XFERINFODATA, &cbs_->progresscb_);
 #endif
     curl_easy_setopt(curl_->handle, CURLOPT_NOPROGRESS, 0L);
 }
 
 void Session::SetDebugCallback(const DebugCallback& debug) {
     curl_easy_setopt(curl_->handle, CURLOPT_DEBUGFUNCTION, cpr::util::debugUserFunction);
-    debugcb_ = debug;
-    curl_easy_setopt(curl_->handle, CURLOPT_DEBUGDATA, &debugcb_);
+    cbs_->debugcb_ = debug;
+    curl_easy_setopt(curl_->handle, CURLOPT_DEBUGDATA, &cbs_->debugcb_);
     curl_easy_setopt(curl_->handle, CURLOPT_VERBOSE, 1L);
 }
 
@@ -824,7 +824,7 @@ void Session::PreparePost() {
     if (hasBodyOrPayload_) {
         curl_easy_setopt(curl_->handle, CURLOPT_CUSTOMREQUEST, nullptr);
     } else {
-        curl_easy_setopt(curl_->handle, CURLOPT_POSTFIELDS, readcb_.callback ? nullptr : "");
+        curl_easy_setopt(curl_->handle, CURLOPT_POSTFIELDS, cbs_->readcb_.callback ? nullptr : "");
         curl_easy_setopt(curl_->handle, CURLOPT_CUSTOMREQUEST, "POST");
     }
     prepareCommon();
@@ -832,7 +832,7 @@ void Session::PreparePost() {
 
 void Session::PreparePut() {
     curl_easy_setopt(curl_->handle, CURLOPT_NOBODY, 0L);
-    if (!hasBodyOrPayload_ && readcb_.callback) {
+    if (!hasBodyOrPayload_ && cbs_->readcb_.callback) {
         /**
          * Yes, this one has to be CURLOPT_POSTFIELDS even if we are performing a PUT request.
          * In case we don't set this one, performing a POST-request with PUT won't work.
@@ -879,7 +879,7 @@ Response Session::Complete(CURLcode curl_error) {
 }
 
 Response Session::CompleteDownload(CURLcode curl_error) {
-    if (!headercb_.callback) {
+    if (!cbs_->headercb_.callback) {
         curl_easy_setopt(curl_->handle, CURLOPT_HEADERFUNCTION, nullptr);
         curl_easy_setopt(curl_->handle, CURLOPT_HEADERDATA, 0);
     }
@@ -960,14 +960,14 @@ void Session::SetOption(AcceptEncoding&& accept_encoding) { SetAcceptEncoding(ac
 // clang-format on
 
 void Session::SetCancellationParam(std::shared_ptr<std::atomic_bool> param) {
-    cancellationcb_ = CancellationCallback{std::move(param)};
+    cbs_->cancellationcb_ = CancellationCallback{std::move(param)};
     isCancellable = true;
 #if LIBCURL_VERSION_NUM < 0x072000 // 7.32.0
     curl_easy_setopt(curl_->handle, CURLOPT_PROGRESSFUNCTION, cpr::util::progressUserFunction<CancellationCallback>);
-    curl_easy_setopt(curl_->handle, CURLOPT_PROGRESSDATA, &cancellationcb_);
+    curl_easy_setopt(curl_->handle, CURLOPT_PROGRESSDATA, &cbs_->cancellationcb_);
 #else
     curl_easy_setopt(curl_->handle, CURLOPT_XFERINFOFUNCTION, cpr::util::progressUserFunction<CancellationCallback>);
-    curl_easy_setopt(curl_->handle, CURLOPT_XFERINFODATA, &cancellationcb_);
+    curl_easy_setopt(curl_->handle, CURLOPT_XFERINFODATA, &cbs_->cancellationcb_);
 #endif
     curl_easy_setopt(curl_->handle, CURLOPT_NOPROGRESS, 0L);
 }
