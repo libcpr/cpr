@@ -239,16 +239,22 @@ class Session : public std::enable_shared_from_this<Session> {
     ProxyAuthentication proxyAuth_;
     Header header_;
     AcceptEncoding acceptEncoding_;
-    /**
-     * Will be set by the read callback.
-     * Ensures that the "Transfer-Encoding" is set to "chunked", if not overriden in header_.
-     **/
-    ReadCallback readcb_;
-    HeaderCallback headercb_;
-    WriteCallback writecb_;
-    ProgressCallback progresscb_;
-    DebugCallback debugcb_;
-    CancellationCallback cancellationcb_;
+
+
+    struct Callbacks {
+        /**
+         * Will be set by the read callback.
+         * Ensures that the "Transfer-Encoding" is set to "chunked", if not overriden in header_.
+         **/
+        ReadCallback readcb_;
+        HeaderCallback headercb_;
+        WriteCallback writecb_;
+        ProgressCallback progresscb_;
+        DebugCallback debugcb_;
+        CancellationCallback cancellationcb_;
+    };
+
+    std::unique_ptr<Callbacks> cbs_{std::make_unique<Callbacks>()};
 
     size_t response_string_reserve_size_{0};
     std::string response_string_;
