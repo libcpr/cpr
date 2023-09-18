@@ -125,6 +125,12 @@ add_executable(your_target_name your_target_name.cpp)
 target_link_libraries(your_target_name PRIVATE cpr::cpr)
 ```
 
+#### CPack
+You may also use cpack to generate a Debian package after building with:
+```Bash
+$ cpack -G DEB
+```
+
 ### Bazel
 
 Please refer to [hedronvision/bazel-make-cc-https-easy](https://github.com/hedronvision/bazel-make-cc-https-easy).
