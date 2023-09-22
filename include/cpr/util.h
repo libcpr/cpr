@@ -14,6 +14,7 @@ namespace cpr::util {
 
 Header parseHeader(const std::string& headers, std::string* status_line = nullptr, std::string* reason = nullptr);
 Cookies parseCookies(curl_slist* raw_cookies);
+Cookie parseCookie(const std::string& raw_cookie);
 size_t readUserFunction(char* ptr, size_t size, size_t nitems, const ReadCallback* read);
 size_t headerUserFunction(char* ptr, size_t size, size_t nmemb, const HeaderCallback* header);
 size_t writeFunction(char* ptr, size_t size, size_t nmemb, std::string* data);

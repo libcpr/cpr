@@ -44,25 +44,29 @@ enum class CurlHTTPCookieField : size_t {
 };
 
 Cookies parseCookies(curl_slist* raw_cookies) {
-    const int CURL_HTTP_COOKIE_SIZE = static_cast<int>(CurlHTTPCookieField::Value) + 1;
     Cookies cookies;
     for (curl_slist* nc = raw_cookies; nc; nc = nc->next) {
-        std::vector<std::string> tokens = cpr::util::split(nc->data, '\t');
-        while (tokens.size() < CURL_HTTP_COOKIE_SIZE) {
-            tokens.emplace_back("");
-        }
-        const std::time_t expires = static_cast<time_t>(std::stoul(tokens.at(static_cast<size_t>(CurlHTTPCookieField::Expires))));
-        cookies.emplace_back(Cookie{
-                tokens.at(static_cast<size_t>(CurlHTTPCookieField::Name)),
-                tokens.at(static_cast<size_t>(CurlHTTPCookieField::Value)),
-                tokens.at(static_cast<size_t>(CurlHTTPCookieField::Domain)),
-                isTrue(tokens.at(static_cast<size_t>(CurlHTTPCookieField::IncludeSubdomains))),
-                tokens.at(static_cast<size_t>(CurlHTTPCookieField::Path)),
-                isTrue(tokens.at(static_cast<size_t>(CurlHTTPCookieField::HttpsOnly))),
-                std::chrono::system_clock::from_time_t(expires),
-        });
+        cookies.emplace_back(parseCookie(nc->data));
     }
     return cookies;
+}
+
+Cookie parseCookie(const std::string& raw_cookie) {
+    static const int CURL_HTTP_COOKIE_SIZE = static_cast<int>(CurlHTTPCookieField::Value) + 1;
+    std::vector<std::string> tokens = cpr::util::split(raw_cookie, '\t');
+    while (tokens.size() < CURL_HTTP_COOKIE_SIZE) {
+        tokens.emplace_back("");
+    }
+    const std::time_t expires = static_cast<time_t>(std::stoul(tokens.at(static_cast<size_t>(CurlHTTPCookieField::Expires))));
+    return Cookie{
+            tokens.at(static_cast<size_t>(CurlHTTPCookieField::Name)),
+            tokens.at(static_cast<size_t>(CurlHTTPCookieField::Value)),
+            tokens.at(static_cast<size_t>(CurlHTTPCookieField::Domain)),
+            isTrue(tokens.at(static_cast<size_t>(CurlHTTPCookieField::IncludeSubdomains))),
+            tokens.at(static_cast<size_t>(CurlHTTPCookieField::Path)),
+            isTrue(tokens.at(static_cast<size_t>(CurlHTTPCookieField::HttpsOnly))),
+            std::chrono::system_clock::from_time_t(expires),
+    };
 }
 
 Header parseHeader(const std::string& headers, std::string* status_line, std::string* reason) {
