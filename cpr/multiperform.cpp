@@ -1,6 +1,7 @@
 #include "cpr/multiperform.h"
 
 #include "cpr/interceptor.h"
+#include "cpr/multipart.h"
 #include "cpr/response.h"
 #include "cpr/session.h"
 #include <algorithm>
@@ -16,6 +17,13 @@ MultiPerform::~MultiPerform() {
     // Unlock all sessions
     for (const std::pair<std::shared_ptr<Session>, HttpMethod>& pair : sessions_) {
         pair.first->isUsedInMultiPerform = false;
+
+        // Remove easy handle from multi handle
+        const CURLMcode error_code = curl_multi_remove_handle(multicurl_->handle, pair.first->curl_->handle);
+        if (error_code) {
+            std::cerr << "curl_multi_remove_handle() failed, code " << static_cast<int>(error_code) << std::endl;
+            return;
+        }
     }
 }
 
