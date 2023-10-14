@@ -863,7 +863,7 @@ TEST(CallbackDataTests, CallbackHeaderFunctionCancelTest) {
 
 TEST(CallbackDataTests, CallbackHeaderFunctionTextTest) {
     Url url{server->GetBaseUrl() + "/url_post.html"};
-    std::vector<std::string> expected_headers{"HTTP/1.1 201 OK\r\n", "Content-Type: application/json\r\n", "\r\n"};
+    std::vector<std::string> expected_headers{"HTTP/1.1 201 Created\r\n", "Content-Type: application/json\r\n", "\r\n"};
     std::set<std::string> response_headers;
     Post(url, HeaderCallback{[&response_headers](const std::string& header, intptr_t /*userdata*/) -> bool {
              response_headers.insert(header);

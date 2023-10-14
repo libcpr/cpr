@@ -301,8 +301,8 @@ if(CPR_BUILD_TESTS)
     clear_variable(DESTINATION CMAKE_CXX_CLANG_TIDY BACKUP CMAKE_CXX_CLANG_TIDY_BKP)
 
     FetchContent_Declare(mongoose 
-                         URL                    https://github.com/cesanta/mongoose/archive/6.18.tar.gz
-                         URL_HASH               SHA256=f5c10346abc9c72f7cac7885d853ca064fb09aad57580433941a8fd7a3543769 # the hash for 6.18.tar.gz
+                         URL                    https://github.com/cesanta/mongoose/archive/7.7.tar.gz
+                         URL_HASH               SHA256=4e5733dae31c3a81156af63ca9aa3a6b9b736547f21f23c3ab2f8e3f1ecc16c0 # the hash for 7.7.tar.gz
                          USES_TERMINAL_DOWNLOAD TRUE)   # <---- This is needed only for Ninja to show download progress
     # We can not use FetchContent_MakeAvailable, since we need to patch mongoose to use CMake
     if (NOT mongoose_POPULATED)

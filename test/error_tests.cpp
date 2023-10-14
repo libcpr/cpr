@@ -60,14 +60,14 @@ TEST(ErrorTests, ChronoConnectTimeoutFailure) {
 TEST(ErrorTests, LowSpeedTimeFailure) {
     Url url{server->GetBaseUrl() + "/low_speed.html"};
     Response response = cpr::Get(url, cpr::LowSpeed{1000, 1});
-    EXPECT_EQ(0, response.status_code);
+    // Do not check for the HTTP status code, since libcurl always provides the status code of the header if it was received
     EXPECT_EQ(ErrorCode::OPERATION_TIMEDOUT, response.error.code);
 }
 
 TEST(ErrorTests, LowSpeedBytesFailure) {
     Url url{server->GetBaseUrl() + "/low_speed_bytes.html"};
     Response response = cpr::Get(url, cpr::LowSpeed{1000, 1});
-    EXPECT_EQ(0, response.status_code);
+    // Do not check for the HTTP status code, since libcurl always provides the status code of the header if it was received
     EXPECT_EQ(ErrorCode::OPERATION_TIMEDOUT, response.error.code);
 }
 

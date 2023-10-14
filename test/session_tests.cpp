@@ -418,7 +418,7 @@ TEST(TimeoutTests, SetTimeoutLowSpeed) {
     session.SetTimeout(1000);
     Response response = session.Get();
     EXPECT_EQ(url, response.url);
-    EXPECT_FALSE(response.status_code == 200);
+    // Do not check for the HTTP status code, since libcurl always provides the status code of the header if it was received
     EXPECT_EQ(ErrorCode::OPERATION_TIMEDOUT, response.error.code);
 }
 
@@ -561,10 +561,7 @@ TEST(MultipartTests, SetMultipartTest) {
     session.SetUrl(url);
     session.SetMultipart({{"x", "5"}});
     Response response = session.Post();
-    std::string expected_text{
-            "{\n"
-            "  \"x\": 5\n"
-            "}"};
+    std::string expected_text{"{\n  \"x\": \"5\"\n}"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
@@ -579,10 +576,7 @@ TEST(MultipartTests, SetMultipartValueTest) {
     Multipart multipart{{"x", "5"}};
     session.SetMultipart(multipart);
     Response response = session.Post();
-    std::string expected_text{
-            "{\n"
-            "  \"x\": 5\n"
-            "}"};
+    std::string expected_text{"{\n  \"x\": \"5\"\n}"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
