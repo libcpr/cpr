@@ -227,7 +227,7 @@ else()
     endif()
 
     if (CPR_ENABLE_SSL)
-        set(SSL_ENABLED ON CACHE INTERNAL "" FORCE)
+        set(CURL_ENABLE_SSL ON CACHE INTERNAL "" FORCE)
         if(ANDROID)
             set(CURL_CA_PATH "/system/etc/security/cacerts" CACHE INTERNAL "")
         elseif(CPR_SKIP_CA_BUNDLE_SEARCH)
@@ -243,29 +243,32 @@ else()
         endif()
 
         if(SSL_BACKEND_USED STREQUAL "WinSSL")
-            set(CMAKE_USE_SCHANNEL ON CACHE INTERNAL "" FORCE)
+            set(CURL_USE_SCHANNEL ON CACHE INTERNAL "" FORCE)
+            set(CURL_WINDOWS_SSPI ON CACHE INTERNAL "" FORCE)
         endif()
 
         if(SSL_BACKEND_USED STREQUAL "OpenSSL")
-            set(CMAKE_USE_OPENSSL ON CACHE INTERNAL "" FORCE)
+            set(CURL_USE_OPENSSL ON CACHE INTERNAL "" FORCE)
         endif()
 
         if(SSL_BACKEND_USED STREQUAL "DarwinSSL")
-            set(CMAKE_USE_SECTRANSP ON CACHE INTERNAL "" FORCE)
+            set(CURL_USE_SECTRANSP ON CACHE INTERNAL "" FORCE)
         endif()
 
         if(SSL_BACKEND_USED STREQUAL "MbedTLS")
-            set(CMAKE_USE_MBEDTLS ON CACHE INTERNAL "" FORCE)
+            set(CURL_USE_MBEDTLS ON CACHE INTERNAL "" FORCE)
         endif()
 
         message(STATUS "Enabled curl SSL")
     else()
-        set(SSL_ENABLED OFF CACHE INTERNAL "" FORCE)
+        set(CURL_ENABLE_SSL OFF CACHE INTERNAL "" FORCE)
+
         set(CURL_CA_PATH "none" CACHE INTERNAL "" FORCE)
-        set(CMAKE_USE_SCHANNEL OFF CACHE INTERNAL "" FORCE)
-        set(CMAKE_USE_OPENSSL OFF CACHE INTERNAL "" FORCE)
-        set(CMAKE_USE_SECTRANSP OFF CACHE INTERNAL "" FORCE)
-        set(CMAKE_USE_MBEDTLS OFF CACHE INTERNAL "" FORCE)
+        set(CURL_USE_SCHANNEL OFF CACHE INTERNAL "" FORCE)
+        set(CURL_WINDOWS_SSPI OFF CACHE INTERNAL "" FORCE)
+        set(CURL_USE_OPENSSL OFF CACHE INTERNAL "" FORCE)
+        set(CURL_USE_SECTRANSP OFF CACHE INTERNAL "" FORCE)
+        set(CURL_USE_MBEDTLS OFF CACHE INTERNAL "" FORCE)
         message(STATUS "Disabled curl SSL")
     endif()
     # Disable linting for curl
@@ -275,19 +278,12 @@ else()
         cmake_policy(SET CMP0135 NEW)
     endif()
     FetchContent_Declare(curl
-                         URL                    https://github.com/curl/curl/releases/download/curl-7_80_0/curl-7.80.0.tar.xz
-                         URL_HASH               SHA256=a132bd93188b938771135ac7c1f3ac1d3ce507c1fcbef8c471397639214ae2ab # the file hash for curl-7.80.0.tar.xz
+                         URL                    https://github.com/curl/curl/releases/download/curl-8_4_0/curl-8.4.0.tar.xz
+                         URL_HASH               SHA256=16c62a9c4af0f703d28bda6d7bbf37ba47055ad3414d70dec63e2e6336f2a82d # the file hash for curl-8.4.0.tar.xz
                          USES_TERMINAL_DOWNLOAD TRUE)   # <---- This is needed only for Ninja to show download progress
     FetchContent_MakeAvailable(curl)
 
     restore_variable(DESTINATION CMAKE_CXX_CLANG_TIDY BACKUP CMAKE_CXX_CLANG_TIDY_BKP)
-
-    # Group under the "external" project folder in IDEs such as Visual Studio.
-    if(BUILD_CURL_EXE)
-        set_property(TARGET curl PROPERTY FOLDER "external")
-    endif()
-        
-    set_property(TARGET libcurl PROPERTY FOLDER "external")
 endif()
 
 # GTest configuration
