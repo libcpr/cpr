@@ -6,6 +6,7 @@
 #include <functional>
 #include <future>
 #include <memory>
+#include <optional>
 #include <queue>
 
 #include "cpr/accept_encoding.h"
@@ -230,8 +231,10 @@ class Session : public std::enable_shared_from_this<Session> {
     friend MultiPerform;
 
 
-    bool hasBodyOrPayload_{false};
     bool chunkedTransferEncoding_{false};
+    std::optional<cpr::Payload> payload_;
+    std::optional<cpr::Body> body_;
+    std::optional<cpr::Multipart> multipart_;
     std::shared_ptr<CurlHolder> curl_;
     Url url_;
     Parameters parameters_;
@@ -269,9 +272,11 @@ class Session : public std::enable_shared_from_this<Session> {
     Response intercept();
     void prepareCommon();
     void prepareCommonDownload();
-    void SetHeaderInternal();
+    void prepareHeader();
     std::shared_ptr<Session> GetSharedPtrFromThis();
     CURLcode DoEasyPerform();
+    void prepareBodyPayloadOrMultipart() const;
+    [[nodiscard]] bool hasBodyOrPayload() const;
 };
 
 template <typename Then>

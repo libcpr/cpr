@@ -1,11 +1,13 @@
 #include "cpr/session.h"
 
 #include <algorithm>
+#include <cassert>
 #include <cstdlib>
 #include <cstring>
 #include <fstream>
 #include <functional>
 #include <iostream>
+#include <optional>
 #include <stdexcept>
 #include <string>
 
@@ -37,7 +39,7 @@ CURLcode Session::DoEasyPerform() {
     return curl_easy_perform(curl_->handle);
 }
 
-void Session::SetHeaderInternal() {
+void Session::prepareHeader() {
     curl_slist* chunk = nullptr;
     for (const std::pair<const std::string, std::string>& item : header_) {
         std::string header_string = item.first;
@@ -97,7 +99,7 @@ Session::Session() : curl_(new CurlHolder()) {
     curl_easy_setopt(curl_->handle, CURLOPT_NOSIGNAL, 1L);
 #endif
 
-#if LIBCURL_VERSION_NUM >= 0x071900 // 7.25.0 
+#if LIBCURL_VERSION_NUM >= 0x071900 // 7.25.0
     curl_easy_setopt(curl_->handle, CURLOPT_TCP_KEEPALIVE, 1L);
 #endif
 }
@@ -115,8 +117,11 @@ Response Session::makeDownloadRequest() {
 void Session::prepareCommon() {
     assert(curl_->handle);
 
+    // Set Content:
+    prepareBodyPayloadOrMultipart();
+
     // Set Header:
-    SetHeaderInternal();
+    prepareHeader();
 
     const std::string parametersContent = parameters_.GetContent(*curl_);
     if (!parametersContent.empty()) {
@@ -191,7 +196,7 @@ void Session::prepareCommonDownload() {
     assert(curl_->handle);
 
     // Set Header:
-    SetHeaderInternal();
+    prepareHeader();
 
     const std::string parametersContent = parameters_.GetContent(*curl_);
     if (!parametersContent.empty()) {
@@ -348,17 +353,19 @@ void Session::SetUserAgent(const UserAgent& ua) {
 }
 
 void Session::SetPayload(const Payload& payload) {
-    hasBodyOrPayload_ = true;
-    const std::string content = payload.GetContent(*curl_);
-    curl_easy_setopt(curl_->handle, CURLOPT_POSTFIELDSIZE_LARGE, static_cast<curl_off_t>(content.length()));
-    curl_easy_setopt(curl_->handle, CURLOPT_COPYPOSTFIELDS, content.c_str());
+    payload_ = payload;
+
+    // Either a body, multipart or a payload is allowed.
+    body_ = std::nullopt;
+    multipart_ = std::nullopt;
 }
 
 void Session::SetPayload(Payload&& payload) {
-    hasBodyOrPayload_ = true;
-    const std::string content = payload.GetContent(*curl_);
-    curl_easy_setopt(curl_->handle, CURLOPT_POSTFIELDSIZE_LARGE, static_cast<curl_off_t>(content.length()));
-    curl_easy_setopt(curl_->handle, CURLOPT_COPYPOSTFIELDS, content.c_str());
+    payload_ = std::move(payload);
+
+    // Either a body, multipart or a payload is allowed.
+    body_ = std::nullopt;
+    multipart_ = std::nullopt;
 }
 
 void Session::SetProxies(const Proxies& proxies) {
@@ -378,51 +385,19 @@ void Session::SetProxyAuth(const ProxyAuthentication& proxy_auth) {
 }
 
 void Session::SetMultipart(const Multipart& multipart) {
-    // Make sure, we have a empty multipart to start with:
-    if (curl_->multipart) {
-        curl_mime_free(curl_->multipart);
-    }
-    curl_->multipart = curl_mime_init(curl_->handle);
+    multipart_ = multipart;
 
-    // Add all multipart pieces:
-    for (const Part& part : multipart.parts) {
-        if (part.is_file) {
-            for (const File& file : part.files) {
-                curl_mimepart* mimePart = curl_mime_addpart(curl_->multipart);
-                if (!part.content_type.empty()) {
-                    curl_mime_type(mimePart, part.content_type.c_str());
-                }
-
-                curl_mime_filedata(mimePart, file.filepath.c_str());
-                curl_mime_name(mimePart, part.name.c_str());
-
-                if (file.hasOverridenFilename()) {
-                    curl_mime_filename(mimePart, file.overriden_filename.c_str());
-                }
-            }
-        } else {
-            curl_mimepart* mimePart = curl_mime_addpart(curl_->multipart);
-            if (!part.content_type.empty()) {
-                curl_mime_type(mimePart, part.content_type.c_str());
-            }
-            if (part.is_buffer) {
-                // Do not use formdata, to prevent having to use reinterpreter_cast:
-                curl_mime_name(mimePart, part.name.c_str());
-                curl_mime_data(mimePart, part.data, part.datalen);
-                curl_mime_filename(mimePart, part.value.c_str());
-            } else {
-                curl_mime_name(mimePart, part.name.c_str());
-                curl_mime_data(mimePart, part.value.c_str(), CURL_ZERO_TERMINATED);
-            }
-        }
-    }
-
-    curl_easy_setopt(curl_->handle, CURLOPT_MIMEPOST, curl_->multipart);
-    hasBodyOrPayload_ = true;
+    // Either a body, multipart or a payload is allowed.
+    body_ = std::nullopt;
+    payload_ = std::nullopt;
 }
 
 void Session::SetMultipart(Multipart&& multipart) {
-    SetMultipart(multipart);
+    multipart_ = std::move(multipart);
+
+    // Either a body, multipart or a payload is allowed.
+    body_ = std::nullopt;
+    payload_ = std::nullopt;
 }
 
 void Session::SetRedirect(const Redirect& redirect) {
@@ -450,15 +425,19 @@ void Session::SetCookies(const Cookies& cookies) {
 }
 
 void Session::SetBody(const Body& body) {
-    hasBodyOrPayload_ = true;
-    curl_easy_setopt(curl_->handle, CURLOPT_POSTFIELDSIZE_LARGE, static_cast<curl_off_t>(body.str().length()));
-    curl_easy_setopt(curl_->handle, CURLOPT_POSTFIELDS, body.c_str());
+    body_ = body;
+
+    // Either a body, multipart or a payload is allowed.
+    payload_ = std::nullopt;
+    multipart_ = std::nullopt;
 }
 
 void Session::SetBody(Body&& body) {
-    hasBodyOrPayload_ = true;
-    curl_easy_setopt(curl_->handle, CURLOPT_POSTFIELDSIZE_LARGE, static_cast<curl_off_t>(body.str().length()));
-    curl_easy_setopt(curl_->handle, CURLOPT_COPYPOSTFIELDS, body.c_str());
+    body_ = std::move(body);
+
+    // Either a body, multipart or a payload is allowed.
+    payload_ = std::nullopt;
+    multipart_ = std::nullopt;
 }
 
 void Session::SetLowSpeed(const LowSpeed& low_speed) {
@@ -788,7 +767,7 @@ void Session::PrepareDelete() {
 void Session::PrepareGet() {
     // In case there is a body or payload for this request, we create a custom GET-Request since a
     // GET-Request with body is based on the HTTP RFC **not** a leagal request.
-    if (hasBodyOrPayload_) {
+    if (hasBodyOrPayload()) {
         curl_easy_setopt(curl_->handle, CURLOPT_NOBODY, 0L);
         curl_easy_setopt(curl_->handle, CURLOPT_CUSTOMREQUEST, "GET");
     } else {
@@ -821,7 +800,7 @@ void Session::PreparePost() {
     curl_easy_setopt(curl_->handle, CURLOPT_NOBODY, 0L);
 
     // In case there is no body or payload set it to an empty post:
-    if (hasBodyOrPayload_) {
+    if (hasBodyOrPayload()) {
         curl_easy_setopt(curl_->handle, CURLOPT_CUSTOMREQUEST, nullptr);
     } else {
         curl_easy_setopt(curl_->handle, CURLOPT_POSTFIELDS, cbs_->readcb_.callback ? nullptr : "");
@@ -832,7 +811,7 @@ void Session::PreparePost() {
 
 void Session::PreparePut() {
     curl_easy_setopt(curl_->handle, CURLOPT_NOBODY, 0L);
-    if (!hasBodyOrPayload_ && cbs_->readcb_.callback) {
+    if (!hasBodyOrPayload() && cbs_->readcb_.callback) {
         /**
          * Yes, this one has to be CURLOPT_POSTFIELDS even if we are performing a PUT request.
          * In case we don't set this one, performing a POST-request with PUT won't work.
@@ -871,9 +850,6 @@ Response Session::Complete(CURLcode curl_error) {
     Cookies cookies = util::parseCookies(raw_cookies);
     curl_slist_free_all(raw_cookies);
 
-    // Reset the has no body property:
-    hasBodyOrPayload_ = false;
-
     std::string errorMsg = curl_->error.data();
     return Response(curl_, std::move(response_string_), std::move(header_string_), std::move(cookies), Error(curl_error, std::move(errorMsg)));
 }
@@ -907,6 +883,77 @@ Response Session::intercept() {
     const std::shared_ptr<Interceptor> interceptor = interceptors_.front();
     interceptors_.pop();
     return interceptor->intercept(*this);
+}
+
+void Session::prepareBodyPayloadOrMultipart() const {
+    // Either a body, multipart or a payload is allowed.
+
+    if (payload_) {
+        assert(!body_);
+        assert(!multipart_);
+
+        const std::string content = payload_->GetContent(*curl_);
+        curl_easy_setopt(curl_->handle, CURLOPT_POSTFIELDSIZE_LARGE, static_cast<curl_off_t>(content.length()));
+        curl_easy_setopt(curl_->handle, CURLOPT_COPYPOSTFIELDS, content.c_str());
+    }
+
+    if (body_) {
+        assert(!payload_);
+        assert(!multipart_);
+
+        curl_easy_setopt(curl_->handle, CURLOPT_POSTFIELDSIZE_LARGE, static_cast<curl_off_t>(body_->str().length()));
+        curl_easy_setopt(curl_->handle, CURLOPT_COPYPOSTFIELDS, body_->c_str());
+    }
+
+    if (multipart_) {
+        assert(!payload_);
+        assert(!body_);
+
+        // Make sure, we have a empty multipart to start with:
+        if (curl_->multipart) {
+            curl_mime_free(curl_->multipart);
+        }
+        curl_->multipart = curl_mime_init(curl_->handle);
+
+        // Add all multipart pieces:
+        for (const Part& part : multipart_->parts) {
+            if (part.is_file) {
+                for (const File& file : part.files) {
+                    curl_mimepart* mimePart = curl_mime_addpart(curl_->multipart);
+                    if (!part.content_type.empty()) {
+                        curl_mime_type(mimePart, part.content_type.c_str());
+                    }
+
+                    curl_mime_filedata(mimePart, file.filepath.c_str());
+                    curl_mime_name(mimePart, part.name.c_str());
+
+                    if (file.hasOverridenFilename()) {
+                        curl_mime_filename(mimePart, file.overriden_filename.c_str());
+                    }
+                }
+            } else {
+                curl_mimepart* mimePart = curl_mime_addpart(curl_->multipart);
+                if (!part.content_type.empty()) {
+                    curl_mime_type(mimePart, part.content_type.c_str());
+                }
+                if (part.is_buffer) {
+                    // Do not use formdata, to prevent having to use reinterpreter_cast:
+                    curl_mime_name(mimePart, part.name.c_str());
+                    curl_mime_data(mimePart, part.data, part.datalen);
+                    curl_mime_filename(mimePart, part.value.c_str());
+                } else {
+                    curl_mime_name(mimePart, part.name.c_str());
+                    curl_mime_data(mimePart, part.value.c_str(), CURL_ZERO_TERMINATED);
+                }
+            }
+        }
+
+        curl_easy_setopt(curl_->handle, CURLOPT_MIMEPOST, curl_->multipart);
+    }
+}
+
+[[nodiscard]] bool Session::hasBodyOrPayload() const {
+    return payload_ || body_;
 }
 
 // clang-format off
