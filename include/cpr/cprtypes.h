@@ -94,13 +94,13 @@ class StringHolder {
     const std::string& str() {
         return str_;
     }
-    const std::string& str() const {
+    [[nodiscard]] const std::string& str() const {
         return str_;
     }
-    const char* c_str() const {
+    [[nodiscard]] const char* c_str() const {
         return str_.c_str();
     }
-    const char* data() const {
+    [[nodiscard]] const char* data() const {
         return str_.data();
     }
 

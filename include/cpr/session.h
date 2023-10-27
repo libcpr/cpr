@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <queue>
+#include <variant>
 
 #include "cpr/accept_encoding.h"
 #include "cpr/async_wrapper.h"
@@ -232,9 +233,7 @@ class Session : public std::enable_shared_from_this<Session> {
 
 
     bool chunkedTransferEncoding_{false};
-    std::optional<cpr::Payload> payload_;
-    std::optional<cpr::Body> body_;
-    std::optional<cpr::Multipart> multipart_;
+    std::variant<std::monostate, cpr::Payload, cpr::Body, cpr::Multipart> content_{std::monostate{}};
     std::shared_ptr<CurlHolder> curl_;
     Url url_;
     Parameters parameters_;
@@ -276,6 +275,9 @@ class Session : public std::enable_shared_from_this<Session> {
     std::shared_ptr<Session> GetSharedPtrFromThis();
     CURLcode DoEasyPerform();
     void prepareBodyPayloadOrMultipart() const;
+    /**
+     * Returns true in case content_ is of type cpr::Body or cpr::Payload.
+     **/
     [[nodiscard]] bool hasBodyOrPayload() const;
 };
 

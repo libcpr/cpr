@@ -12,10 +12,12 @@
 #include <string>
 
 #include <curl/curl.h>
+#include <variant>
 
 #include "cpr/async.h"
 #include "cpr/cprtypes.h"
 #include "cpr/interceptor.h"
+#include "cpr/multipart.h"
 #include "cpr/util.h"
 
 #if SUPPORT_CURLOPT_SSL_CTX_FUNCTION
@@ -353,19 +355,11 @@ void Session::SetUserAgent(const UserAgent& ua) {
 }
 
 void Session::SetPayload(const Payload& payload) {
-    payload_ = payload;
-
-    // Either a body, multipart or a payload is allowed.
-    body_ = std::nullopt;
-    multipart_ = std::nullopt;
+    content_ = payload;
 }
 
 void Session::SetPayload(Payload&& payload) {
-    payload_ = std::move(payload);
-
-    // Either a body, multipart or a payload is allowed.
-    body_ = std::nullopt;
-    multipart_ = std::nullopt;
+    content_ = std::move(payload);
 }
 
 void Session::SetProxies(const Proxies& proxies) {
@@ -385,19 +379,11 @@ void Session::SetProxyAuth(const ProxyAuthentication& proxy_auth) {
 }
 
 void Session::SetMultipart(const Multipart& multipart) {
-    multipart_ = multipart;
-
-    // Either a body, multipart or a payload is allowed.
-    body_ = std::nullopt;
-    payload_ = std::nullopt;
+    content_ = multipart;
 }
 
 void Session::SetMultipart(Multipart&& multipart) {
-    multipart_ = std::move(multipart);
-
-    // Either a body, multipart or a payload is allowed.
-    body_ = std::nullopt;
-    payload_ = std::nullopt;
+    content_ = std::move(multipart);
 }
 
 void Session::SetRedirect(const Redirect& redirect) {
@@ -425,19 +411,11 @@ void Session::SetCookies(const Cookies& cookies) {
 }
 
 void Session::SetBody(const Body& body) {
-    body_ = body;
-
-    // Either a body, multipart or a payload is allowed.
-    payload_ = std::nullopt;
-    multipart_ = std::nullopt;
+    content_ = body;
 }
 
 void Session::SetBody(Body&& body) {
-    body_ = std::move(body);
-
-    // Either a body, multipart or a payload is allowed.
-    payload_ = std::nullopt;
-    multipart_ = std::nullopt;
+    content_ = std::move(body);
 }
 
 void Session::SetLowSpeed(const LowSpeed& low_speed) {
@@ -888,27 +866,15 @@ Response Session::intercept() {
 void Session::prepareBodyPayloadOrMultipart() const {
     // Either a body, multipart or a payload is allowed.
 
-    if (payload_) {
-        assert(!body_);
-        assert(!multipart_);
-
-        const std::string content = payload_->GetContent(*curl_);
-        curl_easy_setopt(curl_->handle, CURLOPT_POSTFIELDSIZE_LARGE, static_cast<curl_off_t>(content.length()));
-        curl_easy_setopt(curl_->handle, CURLOPT_COPYPOSTFIELDS, content.c_str());
-    }
-
-    if (body_) {
-        assert(!payload_);
-        assert(!multipart_);
-
-        curl_easy_setopt(curl_->handle, CURLOPT_POSTFIELDSIZE_LARGE, static_cast<curl_off_t>(body_->str().length()));
-        curl_easy_setopt(curl_->handle, CURLOPT_COPYPOSTFIELDS, body_->c_str());
-    }
-
-    if (multipart_) {
-        assert(!payload_);
-        assert(!body_);
-
+    if (std::holds_alternative<cpr::Payload>(content_)) {
+        const std::string payload = std::get<cpr::Payload>(content_).GetContent(*curl_);
+        curl_easy_setopt(curl_->handle, CURLOPT_POSTFIELDSIZE_LARGE, static_cast<curl_off_t>(payload.length()));
+        curl_easy_setopt(curl_->handle, CURLOPT_COPYPOSTFIELDS, payload.c_str());
+    } else if (std::holds_alternative<cpr::Body>(content_)) {
+        const std::string& body = std::get<cpr::Body>(content_).str();
+        curl_easy_setopt(curl_->handle, CURLOPT_POSTFIELDSIZE_LARGE, static_cast<curl_off_t>(body.length()));
+        curl_easy_setopt(curl_->handle, CURLOPT_COPYPOSTFIELDS, body.c_str());
+    } else if (std::holds_alternative<cpr::Multipart>(content_)) {
         // Make sure, we have a empty multipart to start with:
         if (curl_->multipart) {
             curl_mime_free(curl_->multipart);
@@ -916,7 +882,8 @@ void Session::prepareBodyPayloadOrMultipart() const {
         curl_->multipart = curl_mime_init(curl_->handle);
 
         // Add all multipart pieces:
-        for (const Part& part : multipart_->parts) {
+        const cpr::Multipart& multipart = std::get<cpr::Multipart>(content_);
+        for (const Part& part : multipart.parts) {
             if (part.is_file) {
                 for (const File& file : part.files) {
                     curl_mimepart* mimePart = curl_mime_addpart(curl_->multipart);
@@ -953,7 +920,7 @@ void Session::prepareBodyPayloadOrMultipart() const {
 }
 
 [[nodiscard]] bool Session::hasBodyOrPayload() const {
-    return payload_ || body_;
+    return std::holds_alternative<cpr::Body>(content_) || std::holds_alternative<cpr::Payload>(content_);
 }
 
 // clang-format off
