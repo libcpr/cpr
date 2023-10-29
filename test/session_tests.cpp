@@ -25,6 +25,42 @@ bool write_data(std::string /*data*/, intptr_t /*userdata*/) {
     return true;
 }
 
+TEST(SessionGetTests, GetMultipleTimes) {
+    Url url{server->GetBaseUrl() + "/hello.html"};
+    Session session;
+    session.SetUrl(url);
+    std::string expected_text{"Hello world!"};
+
+    for (size_t i = 0; i < 100; i++) {
+        Response response = session.Get();
+        EXPECT_EQ(expected_text, response.text);
+        EXPECT_EQ(url, response.url);
+        EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+        EXPECT_EQ(200, response.status_code);
+        EXPECT_EQ(ErrorCode::OK, response.error.code);
+    }
+}
+
+TEST(SessionPostTests, PostMultipleTimes) {
+    Url url{server->GetBaseUrl() + "/url_post.html"};
+    Session session;
+    session.SetUrl(url);
+    session.SetPayload({{"x", "5"}});
+    std::string expected_text{
+            "{\n"
+            "  \"x\": 5\n"
+            "}"};
+
+    for (size_t i = 0; i < 100; i++) {
+        Response response = session.Post();
+        EXPECT_EQ(expected_text, response.text);
+        EXPECT_EQ(url, response.url);
+        EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
+        EXPECT_EQ(201, response.status_code);
+        EXPECT_EQ(ErrorCode::OK, response.error.code);
+    }
+}
+
 TEST(RedirectTests, TemporaryDefaultRedirectTest) {
     Url url{server->GetBaseUrl() + "/temporary_redirect.html"};
     Session session;
