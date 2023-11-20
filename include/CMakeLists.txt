@@ -72,7 +72,7 @@ else()
       STDCXXFS_SUPPORTED
       "${CMAKE_CURRENT_BINARY_DIR}/stdcxxfs"
       SOURCES "${PROJECT_SOURCE_DIR}/cmake/std_fs_support_test.cpp"
-      LINK_OPTIONS "-lstdc++fs"
+      LINK_LIBRARIES "stdc++fs"
       CXX_STANDARD 17
       CXX_STANDARD_REQUIRED ON
       CXX_EXTENSIONS OFF
@@ -84,7 +84,7 @@ else()
         CXXFS_SUPPORTED
         "${CMAKE_CURRENT_BINARY_DIR}/cxxfs"
         SOURCES "${PROJECT_SOURCE_DIR}/cmake/std_fs_support_test.cpp"
-        LINK_OPTIONS "-lc++fs"
+        LINK_LIBRARIES "c++fs"
         CXX_STANDARD 17
         CXX_STANDARD_REQUIRED ON
         CXX_EXTENSIONS OFF
