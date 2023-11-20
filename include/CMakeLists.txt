@@ -63,7 +63,7 @@ else()
     STD_FS_SUPPORTED
     "${CMAKE_CURRENT_BINARY_DIR}/std_fs"
     SOURCES "${PROJECT_SOURCE_DIR}/cmake/std_fs_support_test.cpp"
-    CXX_STANDARD 17
+    CXX_STANDARD ${CMAKE_CXX_STANDARD}
     CXX_STANDARD_REQUIRED ON
     CXX_EXTENSIONS OFF
   )
@@ -73,7 +73,7 @@ else()
       "${CMAKE_CURRENT_BINARY_DIR}/stdcxxfs"
       SOURCES "${PROJECT_SOURCE_DIR}/cmake/std_fs_support_test.cpp"
       LINK_LIBRARIES "stdc++fs"
-      CXX_STANDARD 17
+      CXX_STANDARD ${CMAKE_CXX_STANDARD}
       CXX_STANDARD_REQUIRED ON
       CXX_EXTENSIONS OFF
     )
@@ -85,7 +85,7 @@ else()
         "${CMAKE_CURRENT_BINARY_DIR}/cxxfs"
         SOURCES "${PROJECT_SOURCE_DIR}/cmake/std_fs_support_test.cpp"
         LINK_LIBRARIES "c++fs"
-        CXX_STANDARD 17
+        CXX_STANDARD ${CMAKE_CXX_STANDARD}
         CXX_STANDARD_REQUIRED ON
         CXX_EXTENSIONS OFF
       )
