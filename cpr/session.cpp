@@ -163,8 +163,10 @@ void Session::prepareCommon() {
     const bool noRevoke = bitmask & CURLSSLOPT_NO_REVOKE;
 #endif
 
+#if LIBCURL_VERSION_NUM >= 0x074700 // 7.71.0
     // Fix loading certs from Windows cert store when using OpenSSL:
     curl_easy_setopt(curl_->handle, CURLOPT_SSL_OPTIONS, CURLSSLOPT_NATIVE_CA);
+#endif
 
 // Ensure SSL no revoke is still set
 #if SUPPORT_SSL_NO_REVOKE
