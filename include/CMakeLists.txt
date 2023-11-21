@@ -58,10 +58,44 @@ if(CPR_USE_BOOST_FILESYSTEM)
   if(Boost_FOUND)
     target_link_libraries(cpr PUBLIC Boost::filesystem)
   endif()
-endif()
-
-if (((CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 9.1) OR (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND NOT WIN32)) AND NOT CPR_USE_BOOST_FILESYSTEM AND NOT CMAKE_SYSTEM_NAME STREQUAL "Android")
-    target_link_libraries(cpr PUBLIC stdc++fs)
+else()
+  try_compile(
+    STD_FS_SUPPORTED
+    "${CMAKE_CURRENT_BINARY_DIR}/std_fs"
+    SOURCES "${PROJECT_SOURCE_DIR}/cmake/std_fs_support_test.cpp"
+    CXX_STANDARD ${CMAKE_CXX_STANDARD}
+    CXX_STANDARD_REQUIRED ON
+    CXX_EXTENSIONS OFF
+  )
+  if(NOT STD_FS_SUPPORTED)
+    try_compile(
+      STDCXXFS_SUPPORTED
+      "${CMAKE_CURRENT_BINARY_DIR}/stdcxxfs"
+      SOURCES "${PROJECT_SOURCE_DIR}/cmake/std_fs_support_test.cpp"
+      LINK_LIBRARIES "stdc++fs"
+      CXX_STANDARD ${CMAKE_CXX_STANDARD}
+      CXX_STANDARD_REQUIRED ON
+      CXX_EXTENSIONS OFF
+    )
+    if(STDCXXFS_SUPPORTED)
+      target_link_libraries(cpr PUBLIC stdc++fs)
+    else()
+      try_compile(
+        CXXFS_SUPPORTED
+        "${CMAKE_CURRENT_BINARY_DIR}/cxxfs"
+        SOURCES "${PROJECT_SOURCE_DIR}/cmake/std_fs_support_test.cpp"
+        LINK_LIBRARIES "c++fs"
+        CXX_STANDARD ${CMAKE_CXX_STANDARD}
+        CXX_STANDARD_REQUIRED ON
+        CXX_EXTENSIONS OFF
+      )
+      if(CXXFS_SUPPORTED)
+        target_link_libraries(cpr PUBLIC c++fs)
+      else()
+        message(FATAL_ERROR "Your compiler does not support the `<filesystem>` include or cpr is unable to determine the proper compiler flags for it.")
+      endif()
+    endif()
+  endif()
 endif()
 
 install(DIRECTORY cpr DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
