@@ -231,7 +231,7 @@ void secureStringClear(std::string& s) {
 
 bool isTrue(const std::string& s) {
     std::string temp_string{s};
-    std::transform(temp_string.begin(), temp_string.end(), temp_string.begin(), [](unsigned char c) { return std::tolower(c); });
+    std::transform(temp_string.begin(), temp_string.end(), temp_string.begin(), [](unsigned char c) { return static_cast<unsigned char>(std::tolower(c)); });
     return temp_string == "true";
 }
 
