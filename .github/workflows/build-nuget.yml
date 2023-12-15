@@ -104,7 +104,7 @@ jobs:
         COMMIT_HASH: ${{ github.sha }}
       run: nuget pack ${{github.workspace}}\nuget\libcpr.nuspec -OutputDirectory ${{github.workspace}} -Properties "VERSION=$ENV:VERSION;COMMIT_HASH=$ENV:COMMIT_HASH"
     - name: "Upload artifact"
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: artifact-nuget
         path: ${{github.workspace}}\*.nupkg
