@@ -1,0 +1,27 @@
+name: Update GIT_TAG In Readme
+on:
+  release:
+    types: [published]
+
+# Workflow configuration
+env:
+  OUTPUT_BRANCH: "master"
+  COMMIT_MESSAGE: "Update GIT_TAG on new release"
+
+jobs:
+  update-git-tag:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+    - name: "Checkout"
+      uses: actions/checkout@v3
+      with:
+        ref: ${{github.sha}}
+    - name: "Replace GIT_TAG"
+      run: sed -i -re 's/(GIT_TAG) [0-9a-f]+/\1 ${{github.sha}}/' README.md
+    - name: "Commit changes"
+      uses: stefanzweifel/git-auto-commit-action@v5
+      with:
+        commit_message: ${{env.COMMIT_MESSAGE}}
+        branch: ${{env.OUTPUT_BRANCH}}
