@@ -1,24 +1,59 @@
 #include "cpr/session.h"
 
-#include <algorithm>
+#include <atomic>
 #include <cassert>
+#include <cstdint>
 #include <cstdlib>
 #include <cstring>
 #include <fstream>
-#include <functional>
 #include <iostream>
-#include <optional>
+#include <memory>
 #include <stdexcept>
 #include <string>
+#include <utility>
+#include <variant>
+#include <vector>
 
 #include <curl/curl.h>
-#include <variant>
+#include <curl/curlver.h>
+#include <curl/easy.h>
+#include <curl/system.h>
 
+#include "cpr/accept_encoding.h"
 #include "cpr/async.h"
+#include "cpr/auth.h"
+#include "cpr/bearer.h"
+#include "cpr/body.h"
+#include "cpr/callback.h"
+#include "cpr/connect_timeout.h"
+#include "cpr/cookies.h"
 #include "cpr/cprtypes.h"
+#include "cpr/curlholder.h"
+#include "cpr/error.h"
+#include "cpr/file.h"
+#include "cpr/http_version.h"
 #include "cpr/interceptor.h"
+#include "cpr/interface.h"
+#include "cpr/limit_rate.h"
+#include "cpr/local_port.h"
+#include "cpr/local_port_range.h"
+#include "cpr/low_speed.h"
 #include "cpr/multipart.h"
+#include "cpr/parameters.h"
+#include "cpr/payload.h"
+#include "cpr/proxies.h"
+#include "cpr/proxyauth.h"
+#include "cpr/range.h"
+#include "cpr/redirect.h"
+#include "cpr/reserve_size.h"
+#include "cpr/resolve.h"
+#include "cpr/response.h"
+#include "cpr/ssl_options.h"
+#include "cpr/timeout.h"
+#include "cpr/unix_socket.h"
+#include "cpr/user_agent.h"
 #include "cpr/util.h"
+#include "cpr/verbose.h"
 
 #if SUPPORT_CURLOPT_SSL_CTX_FUNCTION
 #include "cpr/ssl_ctx.h"
@@ -35,7 +70,7 @@ constexpr long OFF = 0L;
 
 CURLcode Session::DoEasyPerform() {
     if (isUsedInMultiPerform) {
-        std::cerr << "curl_easy_perform cannot be executed if the CURL handle is used in a MultiPerform." << std::endl;
+        std::cerr << "curl_easy_perform cannot be executed if the CURL handle is used in a MultiPerform.\n";
         return CURLcode::CURLE_FAILED_INIT;
     }
     return curl_easy_perform(curl_->handle);
@@ -972,7 +1007,7 @@ void Session::SetOption(const Range& range) { SetRange(range); }
 void Session::SetOption(const MultiRange& multi_range) { SetMultiRange(multi_range); }
 void Session::SetOption(const ReserveSize& reserve_size) { SetReserveSize(reserve_size.size); }
 void Session::SetOption(const AcceptEncoding& accept_encoding) { SetAcceptEncoding(accept_encoding); }
-void Session::SetOption(AcceptEncoding&& accept_encoding) { SetAcceptEncoding(accept_encoding); }
+void Session::SetOption(AcceptEncoding&& accept_encoding) { SetAcceptEncoding(std::move(accept_encoding)); }
 // clang-format on
 
 void Session::SetCancellationParam(std::shared_ptr<std::atomic_bool> param) {

@@ -1,6 +1,12 @@
 #include "cpr/interceptor.h"
-
-#include <exception>
+#include "cpr/callback.h"
+#include "cpr/multiperform.h"
+#include "cpr/response.h"
+#include "cpr/session.h"
+#include <cstddef>
+#include <iosfwd>
+#include <stdexcept>
+#include <vector>
 
 namespace cpr {
 

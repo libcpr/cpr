@@ -1,5 +1,5 @@
 #include "cpr/callback.h"
-#include <curl/curl.h>
+#include "cpr/cprtypes.h"
 #include <functional>
 
 namespace cpr {

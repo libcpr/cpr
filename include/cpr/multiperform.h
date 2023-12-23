@@ -87,7 +87,7 @@ class MultiPerform {
     std::vector<Response> MakeDownloadRequest();
 
     void DoMultiPerform();
-    std::vector<Response> ReadMultiInfo(std::function<Response(Session&, CURLcode)>&& complete_function);
+    std::vector<Response> ReadMultiInfo(const std::function<Response(Session&, CURLcode)>& complete_function);
 
     std::vector<std::pair<std::shared_ptr<Session>, HttpMethod>> sessions_;
     std::unique_ptr<CurlMultiHolder> multicurl_;

@@ -1,6 +1,7 @@
 #include "cpr/error.h"
-
+#include <cstdint>
 #include <curl/curl.h>
+#include <curl/curlver.h>
 
 namespace cpr {
 ErrorCode Error::getErrorCodeForCurlError(std::int32_t curl_code) {

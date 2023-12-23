@@ -2,10 +2,9 @@
 #define CPR_CURL_HOLDER_H
 
 #include <array>
+#include <curl/curl.h>
 #include <mutex>
 #include <string>
-
-#include <curl/curl.h>
 
 namespace cpr {
 struct CurlHolder {
@@ -42,12 +41,12 @@ struct CurlHolder {
     /**
      * Uses curl_easy_escape(...) for escaping the given string.
      **/
-    std::string urlEncode(const std::string& s) const;
+    [[nodiscard]] std::string urlEncode(const std::string& s) const;
 
     /**
      * Uses curl_easy_unescape(...) for unescaping the given string.
      **/
-    std::string urlDecode(const std::string& s) const;
+    [[nodiscard]] std::string urlDecode(const std::string& s) const;
 };
 } // namespace cpr
 

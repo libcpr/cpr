@@ -1,4 +1,7 @@
 #include "cpr/file.h"
+#include <initializer_list>
+#include <string>
+#include <utility>
 
 namespace cpr {
 

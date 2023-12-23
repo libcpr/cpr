@@ -1,4 +1,5 @@
 #include "cpr/redirect.h"
+#include <cstdint>
 
 namespace cpr {
 PostRedirectFlags operator|(PostRedirectFlags lhs, PostRedirectFlags rhs) {

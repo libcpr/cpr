@@ -1,11 +1,12 @@
 #include "cpr/accept_encoding.h"
 
 #include <algorithm>
-#include <cassert>
 #include <initializer_list>
 #include <iterator>
 #include <numeric>
 #include <stdexcept>
+#include <string>
+#include <utility>
 
 namespace cpr {
 

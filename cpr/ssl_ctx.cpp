@@ -1,13 +1,19 @@
 
 #include "cpr/ssl_ctx.h"
+#include "cpr/ssl_options.h"
+#include <curl/curl.h>
+#include <iostream>
 
 #if SUPPORT_CURLOPT_SSL_CTX_FUNCTION
 
 #ifdef OPENSSL_BACKEND_USED
 
-#include <openssl/err.h>
-#include <openssl/safestack.h>
+#include <openssl/bio.h>
+#include <openssl/pem.h>
 #include <openssl/ssl.h>
+#include <openssl/types.h>
+#include <openssl/x509.h>
+#include <openssl/x509_vfy.h>
 
 namespace cpr {
 
@@ -22,7 +28,7 @@ namespace cpr {
 CURLcode sslctx_function_load_ca_cert_from_buffer(CURL* /*curl*/, void* sslctx, void* raw_cert_buf) {
     // Check arguments
     if (raw_cert_buf == nullptr || sslctx == nullptr) {
-        printf("Invalid callback arguments\n");
+        std::cerr << "Invalid callback arguments!\n";
         return CURLE_ABORTED_BY_CALLBACK;
     }
 
@@ -39,7 +45,7 @@ CURLcode sslctx_function_load_ca_cert_from_buffer(CURL* /*curl*/, void* sslctx, 
     // Load the PEM formatted certicifate into an X509 structure which OpenSSL can use.
     PEM_read_bio_X509(bio, &cert, nullptr, nullptr);
     if (cert == nullptr) {
-        printf("PEM_read_bio_X509 failed\n");
+        std::cerr << "PEM_read_bio_X509 failed!\n";
         return CURLE_ABORTED_BY_CALLBACK;
     }
 
@@ -49,7 +55,7 @@ CURLcode sslctx_function_load_ca_cert_from_buffer(CURL* /*curl*/, void* sslctx, 
     // Add the loaded certificate to the verification storage
     const int status = X509_STORE_add_cert(store, cert);
     if (status == 0) {
-        printf("Error adding certificate\n");
+        std::cerr << "Error adding certificate!\n";
         return CURLE_ABORTED_BY_CALLBACK;
     }
 

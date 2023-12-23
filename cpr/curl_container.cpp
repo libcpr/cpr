@@ -1,7 +1,9 @@
 #include "cpr/curl_container.h"
+#include "cpr/curlholder.h"
 #include <algorithm>
+#include <initializer_list>
 #include <iterator>
-
+#include <string>
 
 namespace cpr {
 template <class T>

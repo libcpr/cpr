@@ -1,6 +1,10 @@
 #include "cpr/cookies.h"
+#include "cpr/curlholder.h"
+#include <chrono>
 #include <ctime>
 #include <iomanip>
+#include <sstream>
+#include <string>
 
 namespace cpr {
 const std::string Cookie::GetDomain() const {
@@ -30,6 +34,7 @@ const std::string Cookie::GetExpiresString() const {
 #ifdef _WIN32
     gmtime_s(&tm, &tt);
 #else
+    // NOLINTNEXTLINE(misc-include-cleaner) False positive since <ctime> is included
     gmtime_r(&tt, &tm);
 #endif
     ss << std::put_time(&tm, "%a, %d %b %Y %H:%M:%S GMT");

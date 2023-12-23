@@ -1,5 +1,6 @@
 #include "cpr/timeout.h"
 
+#include <chrono>
 #include <limits>
 #include <stdexcept>
 #include <string>
@@ -10,7 +11,7 @@ namespace cpr {
 // No way around since curl uses a long here.
 // NOLINTNEXTLINE(google-runtime-int)
 long Timeout::Milliseconds() const {
-    static_assert(std::is_same<std::chrono::milliseconds, decltype(ms)>::value, "Following casting expects milliseconds.");
+    static_assert(std::is_same_v<std::chrono::milliseconds, decltype(ms)>, "Following casting expects milliseconds.");
 
     // No way around since curl uses a long here.
     // NOLINTNEXTLINE(google-runtime-int)
