@@ -129,7 +129,7 @@ t4V1hHbjQ9G2nRS44qS3MAUGAytlcANBAC4NoQ31kHfp64R9gGNjTYrr2SNXHyEq
             }
             EXPECT_EQ(*expectedEntry_it, *entry_it);
         }
-        std::cout << std::endl;
+        std::cout << '\n';
     }
 }
 

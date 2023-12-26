@@ -1,6 +1,6 @@
 #include "cpr/curlmultiholder.h"
-
 #include <cassert>
+#include <curl/multi.h>
 
 namespace cpr {
 

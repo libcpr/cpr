@@ -870,7 +870,7 @@ TEST(CallbackDataTests, CallbackHeaderFunctionTextTest) {
              return true;
          }});
     for (std::string& header : expected_headers) {
-        std::cout << header << std::endl;
+        std::cout << header << '\n';
         EXPECT_TRUE(response_headers.count(header));
     }
 }
