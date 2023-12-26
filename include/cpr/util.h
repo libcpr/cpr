@@ -23,7 +23,9 @@ size_t writeUserFunction(char* ptr, size_t size, size_t nmemb, const WriteCallba
 template <typename T = ProgressCallback>
 int progressUserFunction(const T* progress, cpr_pf_arg_t dltotal, cpr_pf_arg_t dlnow, cpr_pf_arg_t ultotal, cpr_pf_arg_t ulnow) {
     const int cancel_retval{1};
+#ifdef CURL_PROGRESSFUNC_CONTINUE // Not always defined. Ref: https://github.com/libcpr/cpr/issues/932
     static_assert(cancel_retval != CURL_PROGRESSFUNC_CONTINUE);
+#endif // CURL_PROGRESSFUNC_CONTINUE
     return (*progress)(dltotal, dlnow, ultotal, ulnow) ? 0 : cancel_retval;
 }
 int debugUserFunction(CURL* handle, curl_infotype type, char* data, size_t size, const DebugCallback* debug);
