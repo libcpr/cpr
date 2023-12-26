@@ -54,7 +54,7 @@ target_sources(cpr PRIVATE
 
 # Filesystem
 if(CPR_USE_BOOST_FILESYSTEM)
-  find_package(Boost 1.44 REQUIRED COMPONENTS filesystem)
+  find_package(Boost 1.77 REQUIRED COMPONENTS filesystem)
   if(Boost_FOUND)
     target_link_libraries(cpr PUBLIC Boost::filesystem)
   endif()
