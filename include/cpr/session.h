@@ -54,11 +54,11 @@ class Session : public std::enable_shared_from_this<Session> {
   public:
     Session();
     Session(const Session& other) = delete;
-    Session(Session&& old) = default;
+    Session(Session&& old) = delete;
 
     ~Session() = default;
 
-    Session& operator=(Session&& old) noexcept = default;
+    Session& operator=(Session&& old) noexcept = delete;
     Session& operator=(const Session& other) = delete;
 
     void SetUrl(const Url& url);
