@@ -11,9 +11,15 @@
 #include <openssl/bio.h>
 #include <openssl/pem.h>
 #include <openssl/ssl.h>
-#include <openssl/types.h>
 #include <openssl/x509.h>
 #include <openssl/x509_vfy.h>
+
+// openssl/types.h was added in later version of openssl and is therefore not always available.
+// This is for example the case on Ubuntu 20.04.
+// We try to include it if available to satisfy clang-tidy.
+#if __has_include(<openssl/types.h>)
+#include <openssl/types.h>
+#endif
 
 namespace cpr {
 
