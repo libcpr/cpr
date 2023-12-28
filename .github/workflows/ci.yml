@@ -22,7 +22,7 @@ jobs:
       with:
         cmake-version: '3.22.x'
     - name: Checkout
-      uses: actions/checkout@v3.1.0
+      uses: actions/checkout@v4
     - name: "Build & Test"
       env:
         CPR_BUILD_TESTS: ON
@@ -59,7 +59,7 @@ jobs:
       with:
         cmake-version: '3.22.x'
     - name: Checkout
-      uses: actions/checkout@v3.1.0
+      uses: actions/checkout@v4
     - name: "Build & Test"
       env:
         CPR_BUILD_TESTS: ON
@@ -90,7 +90,7 @@ jobs:
       with:
         cmake-version: '3.22.x'
     - name: Checkout
-      uses: actions/checkout@v3.1.0
+      uses: actions/checkout@v4
     - name: "Build & Test"
       env:
         CPR_BUILD_TESTS: ON
@@ -118,7 +118,7 @@ jobs:
     - name: Install Dependencies
       run: dnf install -y gcc clang git gcc gdb make openssl-devel libcurl-devel cmake
     - name: Checkout
-      uses: actions/checkout@v3.1.0
+      uses: actions/checkout@v4
     - name: "Build & Test"
       env:
         CPR_BUILD_TESTS: ON
@@ -149,7 +149,7 @@ jobs:
     - name: Install Dependencies
       run: dnf install -y gcc clang git gcc gdb make openssl-devel libcurl-devel cmake
     - name: Checkout
-      uses: actions/checkout@v3.1.0
+      uses: actions/checkout@v4
     - name: "Build & Test"
       env:
         CPR_BUILD_TESTS: ON
@@ -178,7 +178,7 @@ jobs:
     - name: Install Dependencies
       run: dnf install -y gcc clang git gcc gdb make openssl-devel libasan libubsan liblsan libtsan cmake
     - name: Checkout
-      uses: actions/checkout@v3.1.0
+      uses: actions/checkout@v4
     - name: "Build & Test"
       env:
         CPR_BUILD_TESTS: ON
@@ -200,7 +200,7 @@ jobs:
     runs-on: windows-latest
     steps:
     - name: Checkout
-      uses: actions/checkout@v3.1.0
+      uses: actions/checkout@v4
     - name: "Build & Test"
       env:
         CMAKE_GENERATOR: "Visual Studio 17 2022"
@@ -220,7 +220,7 @@ jobs:
     - name: Install OpenSSL
       run: choco install openssl -y
     - name: Checkout
-      uses: actions/checkout@v3.1.0
+      uses: actions/checkout@v4
     - name: "Build & Test"
       env:
         CMAKE_GENERATOR: "Visual Studio 17 2022"
@@ -247,7 +247,7 @@ jobs:
         export CPPFLAGS="-I/usr/local/opt/openssl@3/include"
         export PKG_CONFIG_PATH="/usr/local/opt/openssl@3/lib/pkgconfig"
     - name: Checkout
-      uses: actions/checkout@v3.1.0
+      uses: actions/checkout@v4
     - name: "Build & Test"
       env:
         CPR_BUILD_TESTS: ON
@@ -272,7 +272,7 @@ jobs:
     runs-on: macos-latest
     steps:
     - name: Checkout
-      uses: actions/checkout@v3.1.0
+      uses: actions/checkout@v4
     - name: "Build & Test"
       env:
         CPR_BUILD_TESTS: ON
@@ -291,7 +291,7 @@ jobs:
     runs-on: macos-latest
     steps:
     - name: Checkout
-      uses: actions/checkout@v3.1.0
+      uses: actions/checkout@v4
     - name: "Build & Test"
       env:
         CPR_BUILD_TESTS: ON
@@ -318,7 +318,7 @@ jobs:
         echo 'export PATH="/usr/local/opt/openssl@3/bin:$PATH"' >> /Users/runner/.bash_profile
         source ~/.bash_profile
     - name: Checkout
-      uses: actions/checkout@v3.1.0
+      uses: actions/checkout@v4
     - name: "Build & Test"
       env:
         CPR_BUILD_TESTS: ON
