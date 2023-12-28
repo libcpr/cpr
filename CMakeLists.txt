@@ -280,6 +280,12 @@ else()
     restore_variable(DESTINATION CMAKE_CXX_CLANG_TIDY BACKUP CMAKE_CXX_CLANG_TIDY_BKP)
 endif()
 
+# Add the NOMINMAX macro for windows to curl to prevent issues with std::min and std::max down the line.
+# Ref: https://github.com/libcpr/cpr/issues/957
+if(WIN32)
+        target_compile_definitions(CURL::libcurl PUBLIC NOMINMAX)
+endif()
+
 # GTest configuration
 if(CPR_BUILD_TESTS)
     if(CPR_USE_SYSTEM_GTEST)
