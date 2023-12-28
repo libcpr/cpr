@@ -14,6 +14,6 @@ jobs:
     - name: Install clang-tidy
       run: sudo dnf install -y clang-tools-extra
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     - name: Check format
       uses: RafikFarhad/clang-format-github-action@v3.0.0
