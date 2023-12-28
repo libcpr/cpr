@@ -38,7 +38,7 @@ class AsyncWrapper {
     // Destructor
     ~AsyncWrapper() {
         if constexpr (isCancellable) {
-            if(is_cancelled) {
+            if (is_cancelled) {
                 is_cancelled->store(true);
             }
         }
