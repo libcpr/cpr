@@ -14,7 +14,7 @@ jobs:
     - name: Install clang-tidy
       run: sudo dnf install -y clang-tools-extra
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     - name: "[Release g++] Build & Test"
       env:
         CPR_BUILD_TESTS: ON
