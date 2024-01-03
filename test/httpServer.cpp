@@ -1,4 +1,5 @@
 #include "httpServer.hpp"
+#include <array>
 #include <chrono>
 #include <string>
 #include <system_error>
@@ -394,12 +395,12 @@ void HttpServer::OnRequestUrlPost(mg_connection* conn, mg_http_message* msg) {
 
     std::string headers = "Content-Type: application/json\r\n";
 
-    char x[100];
-    char y[100];
-    mg_http_get_var(&(msg->body), "x", x, sizeof(x));
-    mg_http_get_var(&(msg->body), "y", y, sizeof(y));
-    std::string x_string{x};
-    std::string y_string{y};
+    std::array<char, 100> x{0};
+    std::array<char, 100> y{0};
+    mg_http_get_var(&(msg->body), "x", x.data(), x.size());
+    mg_http_get_var(&(msg->body), "y", y.data(), y.size());
+    std::string x_string{x.data()};
+    std::string y_string{y.data()};
     std::string response;
     if (y_string.empty()) {
         response = std::string{
@@ -418,7 +419,7 @@ void HttpServer::OnRequestUrlPost(mg_connection* conn, mg_http_message* msg) {
                 y_string +
                 ",\n"
                 "  \"sum\": " +
-                std::to_string(atoi(x) + atoi(y)) +
+                std::to_string(atoi(x.data()) + atoi(y.data())) +
                 "\n"
                 "}"};
     }
@@ -519,12 +520,12 @@ void HttpServer::OnRequestDeleteNotAllowed(mg_connection* conn, mg_http_message*
 
 void HttpServer::OnRequestPut(mg_connection* conn, mg_http_message* msg) {
     if (std::string{msg->method.ptr, msg->method.len} == std::string{"PUT"}) {
-        char x[100];
-        char y[100];
-        mg_http_get_var(&(msg->body), "x", x, sizeof(x));
-        mg_http_get_var(&(msg->body), "y", y, sizeof(y));
-        std::string x_string = std::string{x};
-        std::string y_string = std::string{y};
+        std::array<char, 100> x{0};
+        std::array<char, 100> y{0};
+        mg_http_get_var(&(msg->body), "x", x.data(), x.size());
+        mg_http_get_var(&(msg->body), "y", y.data(), y.size());
+        std::string x_string{x.data()};
+        std::string y_string{y.data()};
         std::string headers = "Content-Type: application/json\r\n";
         std::string response;
         if (y_string.empty()) {
@@ -544,7 +545,7 @@ void HttpServer::OnRequestPut(mg_connection* conn, mg_http_message* msg) {
                     y_string +
                     ",\n"
                     "  \"sum\": " +
-                    std::to_string(atoi(x) + atoi(y)) +
+                    std::to_string(atoi(x.data()) + atoi(y.data())) +
                     "\n"
                     "}"};
         }
@@ -591,12 +592,12 @@ void HttpServer::OnRequestPutNotAllowed(mg_connection* conn, mg_http_message* ms
 
 void HttpServer::OnRequestPatch(mg_connection* conn, mg_http_message* msg) {
     if (std::string{msg->method.ptr, msg->method.len} == std::string{"PATCH"}) {
-        char x[100];
-        char y[100];
-        mg_http_get_var(&(msg->body), "x", x, sizeof(x));
-        mg_http_get_var(&(msg->body), "y", y, sizeof(y));
-        std::string x_string = std::string{x};
-        std::string y_string = std::string{y};
+        std::array<char, 100> x{0};
+        std::array<char, 100> y{0};
+        mg_http_get_var(&(msg->body), "x", x.data(), x.size());
+        mg_http_get_var(&(msg->body), "y", y.data(), y.size());
+        std::string x_string{x.data()};
+        std::string y_string{y.data()};
         std::string headers = "Content-Type: application/json\r\n";
         std::string response;
         if (y_string.empty()) {
@@ -616,7 +617,7 @@ void HttpServer::OnRequestPatch(mg_connection* conn, mg_http_message* msg) {
                     y_string +
                     ",\n"
                     "  \"sum\": " +
-                    std::to_string(atoi(x) + atoi(y)) +
+                    std::to_string(atoi(x.data()) + atoi(y.data())) +
                     "\n"
                     "}"};
         }
