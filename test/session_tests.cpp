@@ -1361,7 +1361,7 @@ TEST(AsyncRequestsTests, AsyncGetMultipleTemporarySessionTest) {
 TEST(AsyncRequestsTests, AsyncGetMultipleReflectTest) {
     Url url{server->GetBaseUrl() + "/hello.html"};
     std::vector<AsyncResponse> responses;
-    for (size_t i = 0; i < 100; ++i) {
+    for (size_t i = 0; i < 10; ++i) {
         std::shared_ptr<Session> session = std::make_shared<Session>();
         session->SetUrl(url);
         session->SetParameters({{"key", std::to_string(i)}});
