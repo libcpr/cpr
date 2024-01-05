@@ -241,11 +241,11 @@ jobs:
     - name: Install OpenSSL
       run: |
         brew install openssl
-        echo 'export PATH="/usr/local/opt/openssl@3/bin:$PATH"' >> /Users/runner/.bash_profile
+        echo 'export PATH="/usr/local/opt/openssl/bin:$PATH"' >> /Users/runner/.bash_profile
         source ~/.bash_profile
-        export LDFLAGS="-L/usr/local/opt/openssl@3/lib"
-        export CPPFLAGS="-I/usr/local/opt/openssl@3/include"
-        export PKG_CONFIG_PATH="/usr/local/opt/openssl@3/lib/pkgconfig"
+        export LDFLAGS="-L/usr/local/opt/openssl/lib"
+        export CPPFLAGS="-I/usr/local/opt/openssl/include"
+        export PKG_CONFIG_PATH="/usr/local/opt/openssl/lib/pkgconfig"
     - name: Checkout
       uses: actions/checkout@v3
     - name: "Build & Test"
@@ -253,8 +253,8 @@ jobs:
         CPR_BUILD_TESTS: ON
         CPR_BUILD_TESTS_SSL: ON
         CPR_FORCE_OPENSSL_BACKEND: ON
-        OPENSSL_ROOT_DIR: "/usr/local/opt/openssl@3"
-        OPENSSL_LIBRARIES: "/usr/local/opt/openssl@3/lib"
+        OPENSSL_ROOT_DIR: "/usr/local/opt/openssl"
+        OPENSSL_LIBRARIES: "/usr/local/opt/openssl/lib"
       uses: ashutoshvarma/action-cmake-build@master
       with:
         build-dir: ${{ github.workspace }}/build
@@ -315,7 +315,7 @@ jobs:
     - name: Install OpenSSL
       run: |
         brew install openssl
-        echo 'export PATH="/usr/local/opt/openssl@3/bin:$PATH"' >> /Users/runner/.bash_profile
+        echo 'export PATH="/usr/local/opt/openssl/bin:$PATH"' >> /Users/runner/.bash_profile
         source ~/.bash_profile
     - name: Checkout
       uses: actions/checkout@v3
@@ -325,11 +325,11 @@ jobs:
         CPR_BUILD_TESTS_SSL: OFF
         CPR_USE_BOOST_FILESYSTEM: ON
         CPR_FORCE_OPENSSL_BACKEND: ON
-        OPENSSL_ROOT_DIR: "/usr/local/opt/openssl@3"
-        OPENSSL_LIBRARIES: "/usr/local/opt/openssl@3/lib"
-        LDFLAGS: "-L/usr/local/opt/openssl@3/lib"
-        CPPFLAGS: "-I/usr/local/opt/openssl@3/include"
-        PKG_CONFIG_PATH: "/usr/local/opt/openssl@3/lib/pkgconfig"
+        OPENSSL_ROOT_DIR: "/usr/local/opt/openssl"
+        OPENSSL_LIBRARIES: "/usr/local/opt/openssl/lib"
+        LDFLAGS: "-L/usr/local/opt/openssl/lib"
+        CPPFLAGS: "-I/usr/local/opt/openssl/include"
+        PKG_CONFIG_PATH: "/usr/local/opt/openssl/lib/pkgconfig"
       uses: ashutoshvarma/action-cmake-build@master
       with:
         build-dir: ${{ github.workspace }}/build
