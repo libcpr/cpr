@@ -151,15 +151,13 @@ Response Session::makeDownloadRequest() {
     return CompleteDownload(curl_error);
 }
 
-void Session::prepareCommon() {
+void Session::prepareCommonShared() {
     assert(curl_->handle);
-
-    // Set Content:
-    prepareBodyPayloadOrMultipart();
 
     // Set Header:
     prepareHeader();
 
+    // URL parameter:
     const std::string parametersContent = parameters_.GetContent(*curl_);
     if (!parametersContent.empty()) {
         const Url new_url{url_ + "?" + parametersContent};
@@ -213,48 +211,45 @@ void Session::prepareCommon() {
 
     curl_->error[0] = '\0';
 
+    // Clear the response
     response_string_.clear();
     if (response_string_reserve_size_ > 0) {
         response_string_.reserve(response_string_reserve_size_);
     }
-    header_string_.clear();
+
+    // Enable so we are able to retrieve certificate information:
+    curl_easy_setopt(curl_->handle, CURLOPT_CERTINFO, 1L);
+}
+
+void Session::prepareCommon() {
+    assert(curl_->handle);
+
+    // Everything else:
+    prepareCommonShared();
+
+    // Set Content:
+    prepareBodyPayloadOrMultipart();
+
     if (!cbs_->writecb_.callback) {
         curl_easy_setopt(curl_->handle, CURLOPT_WRITEFUNCTION, cpr::util::writeFunction);
         curl_easy_setopt(curl_->handle, CURLOPT_WRITEDATA, &response_string_);
     }
+
+    header_string_.clear();
     if (!cbs_->headercb_.callback) {
         curl_easy_setopt(curl_->handle, CURLOPT_HEADERFUNCTION, cpr::util::writeFunction);
         curl_easy_setopt(curl_->handle, CURLOPT_HEADERDATA, &header_string_);
     }
-
-    // Enable so we are able to retrive certificate information:
-    curl_easy_setopt(curl_->handle, CURLOPT_CERTINFO, 1L);
 }
 
 void Session::prepareCommonDownload() {
     assert(curl_->handle);
 
+    // Everything else:
+    prepareCommonShared();
+
     // Set Header:
     prepareHeader();
-
-    const std::string parametersContent = parameters_.GetContent(*curl_);
-    if (!parametersContent.empty()) {
-        const Url new_url{url_ + "?" + parametersContent};
-        curl_easy_setopt(curl_->handle, CURLOPT_URL, new_url.c_str());
-    } else {
-        curl_easy_setopt(curl_->handle, CURLOPT_URL, url_.c_str());
-    }
-
-    const std::string protocol = url_.str().substr(0, url_.str().find(':'));
-    if (proxies_.has(protocol)) {
-        curl_easy_setopt(curl_->handle, CURLOPT_PROXY, proxies_[protocol].c_str());
-        if (proxyAuth_.has(protocol)) {
-            curl_easy_setopt(curl_->handle, CURLOPT_PROXYUSERNAME, proxyAuth_.GetUsername(protocol));
-            curl_easy_setopt(curl_->handle, CURLOPT_PROXYPASSWORD, proxyAuth_.GetPassword(protocol));
-        }
-    }
-
-    curl_->error[0] = '\0';
 
     header_string_.clear();
     if (cbs_->headercb_.callback) {

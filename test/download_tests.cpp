@@ -3,6 +3,7 @@
 
 #include <string>
 
+#include "cpr/accept_encoding.h"
 #include "cpr/cpr.h"
 
 #include "cpr/api.h"
@@ -18,10 +19,21 @@ bool write_data(std::string /*data*/, intptr_t /*userdata*/) {
     return true;
 }
 
-TEST(DownloadTests, DownloadGzip) {
+TEST(DownloadTests, DownloadHeaderGzip) {
     cpr::Url url{server->GetBaseUrl() + "/download_gzip.html"};
     cpr::Session session;
     session.SetHeader(cpr::Header{{"Accept-Encoding", "gzip"}});
+    session.SetUrl(url);
+    cpr::Response response = session.Download(cpr::WriteCallback{write_data, 0});
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(cpr::ErrorCode::OK, response.error.code);
+}
+
+TEST(DownloadTests, DownloadAcceptEncodingGzip) {
+    cpr::Url url{server->GetBaseUrl() + "/download_gzip.html"};
+    cpr::Session session;
+    session.SetAcceptEncoding(cpr::AcceptEncoding{cpr::AcceptEncodingMethods::gzip});
     session.SetUrl(url);
     cpr::Response response = session.Download(cpr::WriteCallback{write_data, 0});
     EXPECT_EQ(url, response.url);
