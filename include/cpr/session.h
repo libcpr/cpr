@@ -269,7 +269,17 @@ class Session : public std::enable_shared_from_this<Session> {
     Response makeRequest();
     Response proceed();
     Response intercept();
+    /**
+     * Prepares the curl object for a request with everything used by all requests.
+     **/
+    void prepareCommonShared();
+    /**
+     * Prepares the curl object for a request with everything used by all non download related requests.
+     **/
     void prepareCommon();
+    /**
+     * Prepares the curl object for a request with everything used by the download request.
+     **/
     void prepareCommonDownload();
     void prepareHeader();
     std::shared_ptr<Session> GetSharedPtrFromThis();
