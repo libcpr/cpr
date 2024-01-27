@@ -161,12 +161,8 @@ int debugUserFunction(CURL* /*handle*/, curl_infotype type, char* data, size_t s
     return 0;
 }
 
-int sslCtxUserFunction(CURL* /*handle*/, void* ssl_ctx, const SslCtxCallback* callback) {
-    bool res = (*callback)(ssl_ctx);
-
-    // Note: The SslCtxCallback returns true if everything succeded and false otherwise.
-    // However in CURL 0 indicates success
-    return res ? 0 : 1;
+CURLcode sslCtxUserFunction(CURL* /*handle*/, void* ssl_ctx, const SslCtxCallback* callback) {
+    return (*callback)(ssl_ctx);
 }
 
 /**

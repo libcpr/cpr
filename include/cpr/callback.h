@@ -111,18 +111,15 @@ class CancellationCallback {
 class SslCtxCallback {
   public:
     SslCtxCallback() = default;
-    explicit SslCtxCallback(std::function<bool(void* ssl_ctx, intptr_t clientp)> p_callback, intptr_t p_userdata = 0) : userdata(p_userdata), callback(std::move(p_callback)) {}
+    explicit SslCtxCallback(std::function<CURLcode(void* ssl_ctx, intptr_t clientp)> p_callback, intptr_t p_userdata = 0) : userdata(p_userdata), callback(std::move(p_callback)) {}
 
-    /**
-     * Returns true if callback succeeded. Returns false otherwise.
-     */
-    bool operator()(void* ssl_ctx) const {
+    CURLcode operator()(void* ssl_ctx) const {
         return callback(ssl_ctx, userdata);
     }
 
   private:
     intptr_t userdata{};
-    std::function<bool(void* ssl_ctx, intptr_t clientp)> callback;
+    std::function<CURLcode(void* ssl_ctx, intptr_t clientp)> callback;
 };
 
 } // namespace cpr
