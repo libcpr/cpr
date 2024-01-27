@@ -319,11 +319,13 @@ void Session::SetDebugCallback(const DebugCallback& debug) {
     curl_easy_setopt(curl_->handle, CURLOPT_VERBOSE, 1L);
 }
 
+#ifdef SSL_CTX_CALLBACK_ENABLED
 void Session::SetSslCtxCallback(const SslCtxCallback& ssl_ctx) {
     curl_easy_setopt(curl_->handle, CURLOPT_SSL_CTX_FUNCTION, cpr::util::sslCtxUserFunction);
     cbs_->ssl_ctxcb_ = ssl_ctx;
     curl_easy_setopt(curl_->handle, CURLOPT_SSL_CTX_DATA, &cbs_->ssl_ctxcb_);
 }
+#endif // SSL_CTX_CALLBACK_ENABLED
 
 void Session::SetUrl(const Url& url) {
     url_ = url;
@@ -969,7 +971,9 @@ void Session::SetOption(const HeaderCallback& header) { SetHeaderCallback(header
 void Session::SetOption(const WriteCallback& write) { SetWriteCallback(write); }
 void Session::SetOption(const ProgressCallback& progress) { SetProgressCallback(progress); }
 void Session::SetOption(const DebugCallback& debug) { SetDebugCallback(debug); }
+#ifdef SSL_CTX_CALLBACK_ENABLED
 void Session::SetOption(const SslCtxCallback& ssl_ctx){ SetSslCtxCallback(ssl_ctx); }
+#endif // SSL_CTX_CALLBACK_ENABLED
 void Session::SetOption(const Url& url) { SetUrl(url); }
 void Session::SetOption(const Parameters& parameters) { SetParameters(parameters); }
 void Session::SetOption(Parameters&& parameters) { SetParameters(std::move(parameters)); }

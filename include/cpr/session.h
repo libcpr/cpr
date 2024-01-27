@@ -96,7 +96,9 @@ class Session : public std::enable_shared_from_this<Session> {
     void SetWriteCallback(const WriteCallback& write);
     void SetProgressCallback(const ProgressCallback& progress);
     void SetDebugCallback(const DebugCallback& debug);
+#ifdef SSL_CTX_CALLBACK_ENABLED
     void SetSslCtxCallback(const SslCtxCallback& ssl_ctx);
+#endif // SSL_CTX_CALLBACK_ENABLED
     void SetVerbose(const Verbose& verbose);
     void SetInterface(const Interface& iface);
     void SetLocalPort(const LocalPort& local_port);
@@ -146,7 +148,9 @@ class Session : public std::enable_shared_from_this<Session> {
     void SetOption(const WriteCallback& write);
     void SetOption(const ProgressCallback& progress);
     void SetOption(const DebugCallback& debug);
+#ifdef SSL_CTX_CALLBACK_ENABLED
     void SetOption(const SslCtxCallback& ssl_ctx);
+#endif
     void SetOption(const LowSpeed& low_speed);
     void SetOption(const VerifySsl& verify);
     void SetOption(const Verbose& verbose);
