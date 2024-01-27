@@ -10,7 +10,6 @@
 #include <utility>
 
 namespace cpr {
-
 class ReadCallback {
   public:
     ReadCallback() = default;
