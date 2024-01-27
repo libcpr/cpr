@@ -108,13 +108,13 @@ class CancellationCallback {
 /**
  * Functor class for certificate functions that will be used just before the initialization of an SSL connection.
  */
-class CertificateCallback {
+class SslCtxCallback {
   public:
-    CertificateCallback() = default;
-    explicit CertificateCallback(std::function<bool(void* ssl_ctx, intptr_t clientp)> p_callback, intptr_t p_userdata = 0) : userdata(p_userdata), callback(std::move(p_callback)) {}
+    SslCtxCallback() = default;
+    explicit SslCtxCallback(std::function<bool(void* ssl_ctx, intptr_t clientp)> p_callback, intptr_t p_userdata = 0) : userdata(p_userdata), callback(std::move(p_callback)) {}
 
     /**
-     * Returns true if the validation succeeded. Returns false otherwise.
+     * Returns true if callback succeeded. Returns false otherwise.
      */
     bool operator()(void* ssl_ctx) const {
         return callback(ssl_ctx, userdata);
