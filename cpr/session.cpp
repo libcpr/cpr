@@ -282,6 +282,12 @@ void Session::SetLimitRate(const LimitRate& limit_rate) {
     curl_easy_setopt(curl_->handle, CURLOPT_MAX_SEND_SPEED_LARGE, limit_rate.uprate);
 }
 
+#if SUPPORT_CURLOPT_SSL_CTX_FUNCTION
+void Session::SetSslCtxCallback(const SslCtxCallback& ssl_ctx) {
+    cbs_->sslctxcb_ = ssl_ctx;
+}
+#endif
+
 void Session::SetReadCallback(const ReadCallback& read) {
     cbs_->readcb_ = read;
     curl_easy_setopt(curl_->handle, CURLOPT_INFILESIZE_LARGE, read.size);
@@ -543,8 +549,17 @@ void Session::SetSslOptions(const SslOptions& options) {
 #if SUPPORT_CURLOPT_SSL_CTX_FUNCTION
 #ifdef OPENSSL_BACKEND_USED
     if (!options.ca_buffer.empty()) {
-        curl_easy_setopt(curl_->handle, CURLOPT_SSL_CTX_FUNCTION, sslctx_function_load_ca_cert_from_buffer);
+        if (cbs_->sslctxcb_.callback) {
+            throw std::logic_error{"Using both cpr::SslCtxCallback and SslOptions::ca_buffer at the same time is not supported. Use either one. To implement SslOptions::ca_buffer take a look into cpr/ssl_ctx.{cpp,h}."};
+        }
+
+        curl_easy_setopt(curl_->handle, CURLOPT_SSL_CTX_FUNCTION, tryLoadCaCertFromBuffer);
         curl_easy_setopt(curl_->handle, CURLOPT_SSL_CTX_DATA, options.ca_buffer.c_str());
+    }
+
+    if (cbs_->sslctxcb_.callback) {
+        cbs_->sslctxcb_.SetCurlHolder(curl_);
+        curl_easy_setopt(curl_->handle, CURLOPT_SSL_CTX_FUNCTION, &cbs_->sslctxcb_);
     }
 #endif
 #endif
@@ -991,6 +1006,9 @@ void Session::prepareBodyPayloadOrMultipart() const {
 void Session::SetOption(const Resolve& resolve) { SetResolve(resolve); }
 void Session::SetOption(const std::vector<Resolve>& resolves) { SetResolves(resolves); }
 void Session::SetOption(const ReadCallback& read) { SetReadCallback(read); }
+#if SUPPORT_CURLOPT_SSL_CTX_FUNCTION
+    void Session::SetOption(const SslCtxCallback& ssl_ctx) { SetSslCtxCallback(ssl_ctx); }
+#endif
 void Session::SetOption(const HeaderCallback& header) { SetHeaderCallback(header); }
 void Session::SetOption(const WriteCallback& write) { SetWriteCallback(write); }
 void Session::SetOption(const ProgressCallback& progress) { SetProgressCallback(progress); }

@@ -32,15 +32,6 @@
 
 namespace cpr {
 
-/**
- * The ssl_ctx parameter is actually a pointer to the SSL library's SSL_CTX for OpenSSL.
- * If an error is returned from the callback no attempt to establish a connection is made and
- * the perform operation will return the callback's error code.
- *
- * Sources: https://curl.se/libcurl/c/CURLOPT_SSL_CTX_FUNCTION.html
- *          https://curl.se/libcurl/c/CURLOPT_SSL_CTX_DATA.html
- */
-
 template <auto fn>
 struct deleter_from_fn {
     template <typename T>
@@ -66,7 +57,15 @@ inline std::string get_openssl_print_errors() {
     return oss.str();
 }
 
-CURLcode sslctx_function_load_ca_cert_from_buffer(CURL* /*curl*/, void* sslctx, void* raw_cert_buf) {
+/**
+ * The ssl_ctx parameter is actually a pointer to the SSL library's SSL_CTX for OpenSSL.
+ * If an error is returned from the callback no attempt to establish a connection is made and
+ * the perform operation will return the callback's error code.
+ *
+ * Sources: https://curl.se/libcurl/c/CURLOPT_SSL_CTX_FUNCTION.html
+ *          https://curl.se/libcurl/c/CURLOPT_SSL_CTX_DATA.html
+ */
+CURLcode tryLoadCaCertFromBuffer(CURL* /*curl*/, void* sslctx, void* raw_cert_buf) {
     // Check arguments
     if (raw_cert_buf == nullptr || sslctx == nullptr) {
         std::cerr << "Invalid callback arguments!\n";
