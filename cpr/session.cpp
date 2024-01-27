@@ -319,6 +319,12 @@ void Session::SetDebugCallback(const DebugCallback& debug) {
     curl_easy_setopt(curl_->handle, CURLOPT_VERBOSE, 1L);
 }
 
+void Session::SetCertificateCallback(const CertificateCallback& certificate) {
+    curl_easy_setopt(curl_->handle, CURLOPT_SSL_CTX_FUNCTION, cpr::util::certificateUserFunction);
+    cbs_->certificatecb_ = certificate;
+    curl_easy_setopt(curl_->handle, CURLOPT_SSL_CTX_DATA, &cbs_->certificatecb_);
+}
+
 void Session::SetUrl(const Url& url) {
     url_ = url;
 }
@@ -963,6 +969,7 @@ void Session::SetOption(const HeaderCallback& header) { SetHeaderCallback(header
 void Session::SetOption(const WriteCallback& write) { SetWriteCallback(write); }
 void Session::SetOption(const ProgressCallback& progress) { SetProgressCallback(progress); }
 void Session::SetOption(const DebugCallback& debug) { SetDebugCallback(debug); }
+void Session::SetOption(const CertificateCallback& certificate){ SetCertificateCallback(certificate); }
 void Session::SetOption(const Url& url) { SetUrl(url); }
 void Session::SetOption(const Parameters& parameters) { SetParameters(parameters); }
 void Session::SetOption(Parameters&& parameters) { SetParameters(std::move(parameters)); }

@@ -29,6 +29,7 @@ int progressUserFunction(const T* progress, cpr_pf_arg_t dltotal, cpr_pf_arg_t d
     return (*progress)(dltotal, dlnow, ultotal, ulnow) ? 0 : cancel_retval;
 }
 int debugUserFunction(CURL* handle, curl_infotype type, char* data, size_t size, const DebugCallback* debug);
+int certificateUserFunction(CURL* handle, void* ssl_ctx, const CertificateCallback* callback);
 std::vector<std::string> split(const std::string& to_split, char delimiter);
 std::string urlEncode(const std::string& s);
 std::string urlDecode(const std::string& s);
