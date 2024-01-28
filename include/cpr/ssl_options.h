@@ -320,6 +320,7 @@ class CaPath {
 };
 
 #if SUPPORT_CURLOPT_SSL_CTX_FUNCTION
+#ifdef OPENSSL_BACKEND_USED
 class CaBuffer {
   public:
     // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
@@ -327,6 +328,7 @@ class CaBuffer {
 
     const std::string buffer;
 };
+#endif // OPENSSL_BACKEND_USED
 #endif
 
 // specify a Certificate Revocation List file
@@ -436,7 +438,9 @@ struct SslOptions {
     // We don't use fs::path here, as this leads to problems using windows
     std::string ca_path;
 #if SUPPORT_CURLOPT_SSL_CTX_FUNCTION
+#ifdef OPENSSL_BACKEND_USED
     std::string ca_buffer;
+#endif // OPENSSL_BACKEND_USED
 #endif
     // We don't use fs::path here, as this leads to problems using windows
     std::string crl_file;
@@ -568,9 +572,11 @@ struct SslOptions {
         ca_path = opt.filename.string();
     }
 #if SUPPORT_CURLOPT_SSL_CTX_FUNCTION
+#ifdef OPENSSL_BACKEND_USED
     void SetOption(const ssl::CaBuffer& opt) {
         ca_buffer = opt.buffer;
     }
+#endif // OPENSSL_BACKEND_USED
 #endif
     void SetOption(const ssl::Crl& opt) {
         crl_file = opt.filename.string();

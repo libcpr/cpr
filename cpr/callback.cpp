@@ -1,11 +1,13 @@
 #include <functional>
+#ifdef OPENSSL_BACKEND_USED
 #include <iostream>
+#endif // OPENSSL_BACKEND_USED
 
 #include "cpr/callback.h"
 #include "cpr/cprtypes.h"
 #include <curl/curl.h>
 
-#if SUPPORT_CURLOPT_SSL_CTX_FUNCTION
+#ifdef OPENSSL_BACKEND_USED
 #include <openssl/bio.h>
 #include <openssl/pem.h>
 #include <openssl/ssl.h>
@@ -21,7 +23,7 @@
 #else
 #include <openssl/ossl_typ.h>
 #endif
-#endif // SUPPORT_CURLOPT_SSL_CTX_FUNCTION
+#endif // OPENSSL_BACKEND_USED
 
 namespace cpr {
 
@@ -33,7 +35,7 @@ bool CancellationCallback::operator()(cpr_pf_arg_t dltotal, cpr_pf_arg_t dlnow, 
     return user_cb ? (cont_operation && (*user_cb)(dltotal, dlnow, ultotal, ulnow)) : cont_operation;
 }
 
-#if SUPPORT_CURLOPT_SSL_CTX_FUNCTION
+#ifdef OPENSSL_BACKEND_USED
 namespace ssl {
 /**
  * The ssl_ctx parameter is actually a pointer to the SSL library's SSL_CTX for OpenSSL.
@@ -87,5 +89,5 @@ CURLcode tryLoadCaCertFromBuffer(CURL* /*curl*/, void* sslctx, void* raw_cert_bu
     return CURLE_OK;
 }
 } // namespace ssl
-#endif // SUPPORT_CURLOPT_SSL_CTX_FUNCTION
+#endif // OPENSSL_BACKEND_USED
 } // namespace cpr
