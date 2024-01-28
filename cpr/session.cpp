@@ -546,13 +546,16 @@ void Session::SetSslOptions(const SslOptions& options) {
         curl_easy_setopt(curl_->handle, CURLOPT_SSL_CTX_FUNCTION, ssl::tryLoadCaCertFromBuffer);
         curl_easy_setopt(curl_->handle, CURLOPT_SSL_CTX_DATA, options.ca_buffer.c_str());
     }
+#endif
 
     if (options.ssl_ctx_cb.callback) {
         cbs_->sslctxcb_ = options.ssl_ctx_cb;
         cbs_->sslctxcb_.SetCurlHolder(curl_);
         curl_easy_setopt(curl_->handle, CURLOPT_SSL_CTX_FUNCTION, cpr::util::sslCtxUserFunction);
         curl_easy_setopt(curl_->handle, CURLOPT_SSL_CTX_DATA, &cbs_->sslctxcb_);
-    } else if (options.ca_buffer.empty()) {
+    }
+#ifdef OPENSSL_BACKEND_USED
+    else if (options.ca_buffer.empty()) {
         curl_easy_setopt(curl_->handle, CURLOPT_SSL_CTX_FUNCTION, nullptr);
     }
 #endif

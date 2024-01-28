@@ -153,7 +153,9 @@ class SslCtxCallback {
     }
 };
 
+#ifdef OPENSSL_BACKEND_USED
 CURLcode tryLoadCaCertFromBuffer(CURL* curl, void* sslctx, void* raw_cert_buf);
+#endif
 } // namespace ssl
 #endif
 } // namespace cpr
