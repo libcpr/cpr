@@ -26,7 +26,6 @@ add_library(cpr
         response.cpp
         redirect.cpp
         interceptor.cpp
-        ssl_ctx.cpp
         curlmultiholder.cpp
         multiperform.cpp)
 
@@ -34,7 +33,7 @@ add_library(cpr::cpr ALIAS cpr)
 
 target_link_libraries(cpr PUBLIC CURL::libcurl) # todo should be private, but first dependencies in ssl_options need to be removed
 
-# Fix missing OpenSSL includes for Windows since in 'ssl_ctx.cpp' we include OpenSSL directly
+# Fix missing OpenSSL includes for Windows since in 'ssl_options.cpp' we include OpenSSL directly
 if(SSL_BACKEND_USED STREQUAL "OpenSSL")
         target_link_libraries(cpr PRIVATE OpenSSL::SSL)
         target_include_directories(cpr PRIVATE ${OPENSSL_INCLUDE_DIR})

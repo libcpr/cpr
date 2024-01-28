@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 #include <variant>
+#include <vector>
 
 #include "cpr/accept_encoding.h"
 #include "cpr/async_wrapper.h"
@@ -36,7 +37,6 @@
 #include "cpr/reserve_size.h"
 #include "cpr/resolve.h"
 #include "cpr/response.h"
-#include "cpr/ssl_ctx.h"
 #include "cpr/ssl_options.h"
 #include "cpr/timeout.h"
 #include "cpr/unix_socket.h"
@@ -91,20 +91,6 @@ class Session : public std::enable_shared_from_this<Session> {
     void SetVerifySsl(const VerifySsl& verify);
     void SetUnixSocket(const UnixSocket& unix_socket);
     void SetSslOptions(const SslOptions& options);
-#if SUPPORT_CURLOPT_SSL_CTX_FUNCTION
-    /**
-     * This callback function gets called by libcurl just before the initialization of an SSL connection
-     * after having processed all other SSL related options to give a last chance to an application
-     * to modify the behavior of the SSL initialization.
-     *
-     * If an error is returned from the callback no attempt to establish a connection is made
-     * and the perform operation returns the callback's error code.
-     * For no error return CURLE_OK from inside 'curl/curl.h'
-     *
-     * More/Source: https://curl.se/libcurl/c/CURLOPT_SSL_CTX_FUNCTION.html
-     **/
-    void SetSslCtxCallback(const SslCtxCallback& ssl_ctx);
-#endif
     void SetReadCallback(const ReadCallback& read);
     void SetHeaderCallback(const HeaderCallback& header);
     void SetWriteCallback(const WriteCallback& write);
@@ -155,9 +141,6 @@ class Session : public std::enable_shared_from_this<Session> {
     void SetOption(Body&& body);
     void SetOption(const Body& body);
     void SetOption(const ReadCallback& read);
-#if SUPPORT_CURLOPT_SSL_CTX_FUNCTION
-    void SetOption(const SslCtxCallback& ssl_ctx);
-#endif
     void SetOption(const HeaderCallback& header);
     void SetOption(const WriteCallback& write);
     void SetOption(const ProgressCallback& progress);
@@ -266,7 +249,7 @@ class Session : public std::enable_shared_from_this<Session> {
          * Ensures that the "Transfer-Encoding" is set to "chunked", if not overriden in header_.
          **/
         ReadCallback readcb_;
-        SslCtxCallback sslctxcb_;
+        ssl::SslCtxCallback sslctxcb_;
         HeaderCallback headercb_;
         WriteCallback writecb_;
         ProgressCallback progresscb_;

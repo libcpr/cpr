@@ -1,13 +1,25 @@
 #ifndef CPR_CALLBACK_H
 #define CPR_CALLBACK_H
 
-#include "cprtypes.h"
+#include "cpr/cprtypes.h"
+#include "cpr/curlholder.h"
 
 #include <atomic>
-#include <cstdint>
+#include <cassert>
 #include <functional>
 #include <optional>
 #include <utility>
+
+/**
+ * Needs to be defined here instead of inside ssl_options.h to avoid having to include ssl_options.h leading to a circular include.
+ **/
+#ifdef CPR_SSL_CTX_CALLBACK_ENABLED
+#ifndef SUPPORT_CURLOPT_SSL_CTX_FUNCTION
+#define SUPPORT_CURLOPT_SSL_CTX_FUNCTION LIBCURL_VERSION_NUM >= 0x070B00 // 7.11.0
+#else
+#define SUPPORT_CURLOPT_SSL_CTX_FUNCTION false
+#endif
+#endif
 
 namespace cpr {
 class ReadCallback {
@@ -105,7 +117,44 @@ class CancellationCallback {
     std::optional<std::reference_wrapper<ProgressCallback>> user_cb;
 };
 
+#if SUPPORT_CURLOPT_SSL_CTX_FUNCTION
+namespace ssl {
+/**
+ * This callback function gets called by libcurl just before the initialization of an SSL connection
+ * after having processed all other SSL related options to give a last chance to an application
+ * to modify the behavior of the SSL initialization.
+ *
+ * If an error is returned from the callback no attempt to establish a connection is made
+ * and the perform operation returns the callback's error code.
+ * For no error return CURLE_OK from inside 'curl/curl.h'
+ *
+ * More/Source: https://curl.se/libcurl/c/CURLOPT_SSL_CTX_FUNCTION.html
+ **/
+class SslCtxCallback {
+  public:
+    std::function<CURLcode(const std::shared_ptr<CurlHolder>& curl_holder, void* ssl_ctx, intptr_t userdata)> callback{};
+    intptr_t userdata{};
+    std::shared_ptr<CurlHolder> curl_holder{nullptr};
 
+    SslCtxCallback() = default;
+    // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
+    SslCtxCallback(const std::function<CURLcode(const std::shared_ptr<CurlHolder>& p_curl_holder, void* p_ssl_ctx, intptr_t p_userdata)>& p_callback, intptr_t p_userdata = 0) : callback(p_callback), userdata(p_userdata) {}
+
+    CURLcode operator()(CURL* p_curl, void* p_ssl_ctx) const {
+        // We use our own way of passing arguments curl and the client pointer to the function.
+        assert(p_curl == curl_holder->handle);
+
+        return callback(curl_holder, p_ssl_ctx, userdata);
+    }
+
+    void SetCurlHolder(const std::shared_ptr<CurlHolder>& p_curl_holder) {
+        this->curl_holder = p_curl_holder;
+    }
+};
+
+CURLcode tryLoadCaCertFromBuffer(CURL* curl, void* sslctx, void* raw_cert_buf);
+} // namespace ssl
+#endif
 } // namespace cpr
 
 #endif

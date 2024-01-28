@@ -57,10 +57,6 @@
 #include "cpr/util.h"
 #include "cpr/verbose.h"
 
-#if SUPPORT_CURLOPT_SSL_CTX_FUNCTION
-#include "cpr/ssl_ctx.h"
-#endif
-
 
 namespace cpr {
 // Ignored here since libcurl reqires a long:
@@ -281,12 +277,6 @@ void Session::SetLimitRate(const LimitRate& limit_rate) {
     curl_easy_setopt(curl_->handle, CURLOPT_MAX_RECV_SPEED_LARGE, limit_rate.downrate);
     curl_easy_setopt(curl_->handle, CURLOPT_MAX_SEND_SPEED_LARGE, limit_rate.uprate);
 }
-
-#if SUPPORT_CURLOPT_SSL_CTX_FUNCTION
-void Session::SetSslCtxCallback(const SslCtxCallback& ssl_ctx) {
-    cbs_->sslctxcb_ = ssl_ctx;
-}
-#endif
 
 void Session::SetReadCallback(const ReadCallback& read) {
     cbs_->readcb_ = read;
@@ -549,17 +539,21 @@ void Session::SetSslOptions(const SslOptions& options) {
 #if SUPPORT_CURLOPT_SSL_CTX_FUNCTION
 #ifdef OPENSSL_BACKEND_USED
     if (!options.ca_buffer.empty()) {
-        if (cbs_->sslctxcb_.callback) {
-            throw std::logic_error{"Using both cpr::SslCtxCallback and SslOptions::ca_buffer at the same time is not supported. Use either one. To implement SslOptions::ca_buffer take a look into cpr/ssl_ctx.{cpp,h}."};
+        if (options.ssl_ctx_cb.callback) {
+            throw std::logic_error{"Using both cpr::SslCtxCallback and SslOptions::ca_buffer at the same time is not supported. Use either one. To implement SslOptions::ca_buffer take a look into cpr/ssl_options.cpp."};
         }
 
-        curl_easy_setopt(curl_->handle, CURLOPT_SSL_CTX_FUNCTION, tryLoadCaCertFromBuffer);
+        curl_easy_setopt(curl_->handle, CURLOPT_SSL_CTX_FUNCTION, ssl::tryLoadCaCertFromBuffer);
         curl_easy_setopt(curl_->handle, CURLOPT_SSL_CTX_DATA, options.ca_buffer.c_str());
     }
 
-    if (cbs_->sslctxcb_.callback) {
+    if (options.ssl_ctx_cb.callback) {
+        cbs_->sslctxcb_ = options.ssl_ctx_cb;
         cbs_->sslctxcb_.SetCurlHolder(curl_);
-        curl_easy_setopt(curl_->handle, CURLOPT_SSL_CTX_FUNCTION, &cbs_->sslctxcb_);
+        curl_easy_setopt(curl_->handle, CURLOPT_SSL_CTX_FUNCTION, cpr::util::sslCtxUserFunction);
+        curl_easy_setopt(curl_->handle, CURLOPT_SSL_CTX_DATA, &cbs_->sslctxcb_);
+    } else if (options.ca_buffer.empty()) {
+        curl_easy_setopt(curl_->handle, CURLOPT_SSL_CTX_FUNCTION, nullptr);
     }
 #endif
 #endif
@@ -1006,9 +1000,6 @@ void Session::prepareBodyPayloadOrMultipart() const {
 void Session::SetOption(const Resolve& resolve) { SetResolve(resolve); }
 void Session::SetOption(const std::vector<Resolve>& resolves) { SetResolves(resolves); }
 void Session::SetOption(const ReadCallback& read) { SetReadCallback(read); }
-#if SUPPORT_CURLOPT_SSL_CTX_FUNCTION
-    void Session::SetOption(const SslCtxCallback& ssl_ctx) { SetSslCtxCallback(ssl_ctx); }
-#endif
 void Session::SetOption(const HeaderCallback& header) { SetHeaderCallback(header); }
 void Session::SetOption(const WriteCallback& write) { SetWriteCallback(write); }
 void Session::SetOption(const ProgressCallback& progress) { SetProgressCallback(progress); }

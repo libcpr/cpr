@@ -1,9 +1,7 @@
 #ifndef CPR_SSLOPTIONS_H
 #define CPR_SSLOPTIONS_H
 
-#include <memory>
 #include <string>
-#include <vector>
 
 #include "cpr/filesystem.h"
 #include <curl/curl.h>
@@ -62,9 +60,6 @@
 #endif
 #ifndef SUPPORT_CURLOPT_SSLKEY_BLOB
 #define SUPPORT_CURLOPT_SSLKEY_BLOB LIBCURL_VERSION_NUM >= 0x074700 // 7.71.0
-#endif
-#ifndef SUPPORT_CURLOPT_SSL_CTX_FUNCTION
-#define SUPPORT_CURLOPT_SSL_CTX_FUNCTION LIBCURL_VERSION_NUM >= 0x070B00 // 7.11.0
 #endif
 
 namespace cpr {
@@ -406,7 +401,6 @@ class NoRevoke {
 
     bool enabled = false;
 };
-
 } // namespace ssl
 
 struct SslOptions {
@@ -452,6 +446,10 @@ struct SslOptions {
 #endif
 #if SUPPORT_SESSIONID_CACHE
     bool session_id_cache = true;
+#endif
+
+#if SUPPORT_CURLOPT_SSL_CTX_FUNCTION
+    ssl::SslCtxCallback ssl_ctx_cb{};
 #endif
 
     ~SslOptions() noexcept {
@@ -588,6 +586,22 @@ struct SslOptions {
 #if SUPPORT_SESSIONID_CACHE
     void SetOption(const ssl::SessionIdCache& opt) {
         session_id_cache = opt.enabled;
+    }
+#endif
+#if SUPPORT_CURLOPT_SSL_CTX_FUNCTION
+    /**
+     * This callback function gets called by libcurl just before the initialization of an SSL connection
+     * after having processed all other SSL related options to give a last chance to an application
+     * to modify the behavior of the SSL initialization.
+     *
+     * If an error is returned from the callback no attempt to establish a connection is made
+     * and the perform operation returns the callback's error code.
+     * For no error return CURLE_OK from inside 'curl/curl.h'
+     *
+     * More/Source: https://curl.se/libcurl/c/CURLOPT_SSL_CTX_FUNCTION.html
+     **/
+    void SetOption(const ssl::SslCtxCallback& opt) {
+        ssl_ctx_cb = opt;
     }
 #endif
 };
