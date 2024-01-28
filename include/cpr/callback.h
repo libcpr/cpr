@@ -143,6 +143,7 @@ class SslCtxCallback {
     CURLcode operator()(CURL* p_curl, void* p_ssl_ctx) const {
         // We use our own way of passing arguments curl and the client pointer to the function.
         assert(p_curl == curl_holder->handle);
+        (void) p_curl;
 
         return callback(curl_holder, p_ssl_ctx, userdata);
     }
