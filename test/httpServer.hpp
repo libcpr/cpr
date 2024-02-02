@@ -45,6 +45,7 @@ class HttpServer : public AbstractServer {
     static void OnRequestBodyGet(mg_connection* conn, mg_http_message* msg);
     static void OnRequestJsonPost(mg_connection* conn, mg_http_message* msg);
     static void OnRequestFormPost(mg_connection* conn, mg_http_message* msg);
+    static void OnRequestFileUploadPost(mg_connection* conn, mg_http_message* msg);
     static void OnRequestDelete(mg_connection* conn, mg_http_message* msg);
     static void OnRequestDeleteNotAllowed(mg_connection* conn, mg_http_message* msg);
     static void OnRequestPut(mg_connection* conn, mg_http_message* msg);

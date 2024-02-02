@@ -64,6 +64,7 @@ add_cpr_test(interceptor_multi)
 add_cpr_test(multiperform)
 add_cpr_test(resolve)
 add_cpr_test(multiasync)
+add_cpr_test(file_upload)
 
 if (ENABLE_SSL_TESTS)
     add_cpr_test(ssl)
@@ -78,5 +79,9 @@ if (ENABLE_SSL_TESTS)
     add_custom_command(TARGET ssl_tests POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/data/keys/server.key $<TARGET_FILE_DIR:ssl_tests>/data/keys/server.key)
     add_custom_command(TARGET ssl_tests POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/data/keys/server.pub $<TARGET_FILE_DIR:ssl_tests>/data/keys/server.pub)
 endif()
+
+add_custom_command(TARGET file_upload_tests POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/data/test_file_hello_äüöp_2585_你好.txt $<TARGET_FILE_DIR:file_upload_tests>/data/test_file_hello_äüöp_2585_你好.txt)
+add_custom_command(TARGET file_upload_tests POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/data/test_file_hello_äüöp_2585.txt $<TARGET_FILE_DIR:file_upload_tests>/data/test_file_hello_äüöp_2585.txt)
+add_custom_command(TARGET file_upload_tests POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/data/test_file.txt $<TARGET_FILE_DIR:file_upload_tests>/data/test_file.txt)
 
 file(INSTALL data DESTINATION data)
