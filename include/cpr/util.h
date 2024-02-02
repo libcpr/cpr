@@ -8,7 +8,7 @@
 #include "cpr/callback.h"
 #include "cpr/cookies.h"
 #include "cpr/cprtypes.h"
-#include "cpr/curlholder.h"
+#include <curl/curl.h>
 
 namespace cpr::util {
 
@@ -19,6 +19,7 @@ size_t headerUserFunction(char* ptr, size_t size, size_t nmemb, const HeaderCall
 size_t writeFunction(char* ptr, size_t size, size_t nmemb, std::string* data);
 size_t writeFileFunction(char* ptr, size_t size, size_t nmemb, std::ofstream* file);
 size_t writeUserFunction(char* ptr, size_t size, size_t nmemb, const WriteCallback* write);
+CURLcode sslCtxUserFunction(CURL* curl, void* sslctx, const ssl::SslCtxCallback* ctx);
 
 template <typename T = ProgressCallback>
 int progressUserFunction(const T* progress, cpr_pf_arg_t dltotal, cpr_pf_arg_t dlnow, cpr_pf_arg_t ultotal, cpr_pf_arg_t ulnow) {

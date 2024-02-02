@@ -1,3 +1,5 @@
+#include <cstddef>
+#include <cstdint>
 #include <gtest/gtest.h>
 
 #include <chrono>
@@ -9,6 +11,7 @@
 #include "cpr/filesystem.h"
 #include "cpr/ssl_options.h"
 
+#include "curl/curl.h"
 #include "httpsServer.hpp"
 
 
@@ -151,6 +154,43 @@ TEST(SslTests, LoadCertFromBufferTestSimpel) {
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
     EXPECT_EQ(ErrorCode::OK, response.error.code) << response.error.message;
+}
+
+TEST(SslTests, LoadCertFromBufferAndCallbackThrowTest) {
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+
+    Url url{server->GetBaseUrl() + "/hello.html"};
+
+    std::string baseDirPath{server->getBaseDirPath()};
+    std::string crtPath{baseDirPath + "certificates/"};
+    std::string certBuffer = loadCertificateFromFile(crtPath + "root-ca.crt");
+
+    cpr::ssl::SslCtxCallback sslCtxCb{[](const std::shared_ptr<CurlHolder>& /*curl_holder*/, void* /*ssl_ctx*/, intptr_t /*userdata*/) { return CURLE_OK; }};
+
+    SslOptions sslOpts = Ssl(ssl::CaBuffer{std::move(certBuffer)}, sslCtxCb);
+
+    EXPECT_THROW(cpr::Get(url, sslOpts, Verbose{}), std::logic_error);
+}
+
+TEST(SslTests, SslCtxCallbackTest) {
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+
+    Url url{server->GetBaseUrl() + "/hello.html"};
+
+    size_t count{0};
+    cpr::ssl::SslCtxCallback sslCtxCb{[](const std::shared_ptr<CurlHolder>& /*curl_holder*/, void* /*ssl_ctx*/, intptr_t userdata) {
+                                          // NOLINTNEXTLINE (cppcoreguidelines-pro-type-reinterpret-cast)
+                                          size_t* count = reinterpret_cast<size_t*>(userdata);
+                                          (*count)++;
+                                          return CURLE_OK;
+                                      },
+                                      // NOLINTNEXTLINE (cppcoreguidelines-pro-type-reinterpret-cast)
+                                      reinterpret_cast<intptr_t>(&count)};
+
+    SslOptions sslOpts = Ssl(sslCtxCb);
+
+    cpr::Get(url, sslOpts);
+    EXPECT_EQ(count, 1);
 }
 #endif
 
