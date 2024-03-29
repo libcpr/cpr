@@ -12,6 +12,7 @@
 #include <ios>
 #include <sstream>
 #include <string>
+#include <type_traits>
 #include <vector>
 
 #if defined(_Win32)
@@ -53,7 +54,7 @@ Cookies parseCookies(curl_slist* raw_cookies) {
         while (tokens.size() < CURL_HTTP_COOKIE_SIZE) {
             tokens.emplace_back("");
         }
-        const std::time_t expires = static_cast<time_t>(std::stoul(tokens.at(static_cast<size_t>(CurlHTTPCookieField::Expires))));
+        const std::time_t expires = sTimestampToT(tokens.at(static_cast<size_t>(CurlHTTPCookieField::Expires)));
         cookies.emplace_back(Cookie{
                 tokens.at(static_cast<size_t>(CurlHTTPCookieField::Name)),
                 tokens.at(static_cast<size_t>(CurlHTTPCookieField::Value)),
@@ -235,6 +236,25 @@ bool isTrue(const std::string& s) {
     std::string temp_string{s};
     std::transform(temp_string.begin(), temp_string.end(), temp_string.begin(), [](unsigned char c) { return static_cast<unsigned char>(std::tolower(c)); });
     return temp_string == "true";
+}
+
+time_t sTimestampToT(const std::string& st) {
+    // NOLINTNEXTLINE(google-runtime-int)
+    if (std::is_same_v<time_t, unsigned long>) {
+        return static_cast<time_t>(std::stoul(st));
+    }
+    // NOLINTNEXTLINE(google-runtime-int)
+    if (std::is_same_v<time_t, unsigned long long>) {
+        return static_cast<time_t>(std::stoull(st));
+    }
+    if (std::is_same_v<time_t, int>) {
+        return static_cast<time_t>(std::stoi(st));
+    }
+    // NOLINTNEXTLINE(google-runtime-int)
+    if (std::is_same_v<time_t, long>) {
+        return static_cast<time_t>(std::stol(st));
+    }
+    return static_cast<time_t>(std::stoll(st));
 }
 
 } // namespace cpr::util
