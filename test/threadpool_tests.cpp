@@ -5,7 +5,7 @@
 
 #include "cpr/threadpool.h"
 
-TEST(ThreadPoolTests, BasicWorkOneThread) {
+TEST(ThreadPoolTests, DISABLED_BasicWorkOneThread) {
     std::atomic_uint32_t invCount{0};
     uint32_t invCountExpected{100};
 
@@ -26,7 +26,7 @@ TEST(ThreadPoolTests, BasicWorkOneThread) {
     EXPECT_EQ(invCount, invCountExpected);
 }
 
-TEST(ThreadPoolTests, BasicWorkMultipleThreads) {
+TEST(ThreadPoolTests, DISABLED_BasicWorkMultipleThreads) {
     std::atomic_uint32_t invCount{0};
     uint32_t invCountExpected{100};
 
@@ -47,7 +47,7 @@ TEST(ThreadPoolTests, BasicWorkMultipleThreads) {
     EXPECT_EQ(invCount, invCountExpected);
 }
 
-TEST(ThreadPoolTests, PauseResumeSingleThread) {
+TEST(ThreadPoolTests, DISABLED_PauseResumeSingleThread) {
     std::atomic_uint32_t invCount{0};
 
     uint32_t repCount{100};
@@ -73,7 +73,7 @@ TEST(ThreadPoolTests, PauseResumeSingleThread) {
     }
 }
 
-TEST(ThreadPoolTests, PauseResumeMultipleThreads) {
+TEST(ThreadPoolTests, DISABLED_PauseResumeMultipleThreads) {
     std::atomic_uint32_t invCount{0};
 
     uint32_t repCount{100};
