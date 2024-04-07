@@ -1,5 +1,6 @@
 #include "cpr/threadpool.h"
 #include <chrono>
+#include <cstddef>
 #include <ctime>
 #include <memory>
 #include <mutex>
@@ -32,17 +33,21 @@ int ThreadPool::Start(size_t start_threads) {
 }
 
 int ThreadPool::Stop() {
+    std::unique_lock status_lock(status_wait_mutex);
     if (status == STOP) {
         return -1;
     }
 
     status = STOP;
+    status_wait_cond.notify_all();
     task_cond.notify_all();
+
     for (auto& i : threads) {
         if (i.thread->joinable()) {
             i.thread->join();
         }
     }
+
     threads.clear();
     cur_thread_num = 0;
     idle_thread_num = 0;
@@ -57,15 +62,18 @@ int ThreadPool::Pause() {
 }
 
 int ThreadPool::Resume() {
+    std::unique_lock status_lock(status_wait_mutex);
     if (status == PAUSE) {
         status = RUNNING;
+        status_wait_cond.notify_all();
     }
     return 0;
 }
 
 int ThreadPool::Wait() {
     while (true) {
-        if (status == STOP || (tasks.empty() && idle_thread_num == cur_thread_num)) {
+        size_t tCount = tasks.size();
+        if (status == STOP || (tCount == 0 && idle_thread_num == cur_thread_num)) {
             break;
         }
         std::this_thread::yield();
@@ -80,8 +88,9 @@ bool ThreadPool::CreateThread() {
     std::thread* thread = new std::thread([this] {
         bool initialRun = true;
         while (status != STOP) {
-            while (status == PAUSE) {
-                std::this_thread::yield();
+            {
+                std::unique_lock status_lock(status_wait_mutex);
+                status_wait_cond.wait(status_lock, [this]() { return status != Status::PAUSE; });
             }
 
             Task task;
@@ -146,8 +155,6 @@ void ThreadPool::DelThread(std::thread::id id) {
         } else if (iter->id == id) {
             iter->status = STOP;
             iter->stop_time = time(nullptr);
-
-            task_cond.notify_all();
         }
         ++iter;
     }

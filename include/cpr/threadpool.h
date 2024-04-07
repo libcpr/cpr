@@ -119,10 +119,15 @@ class ThreadPool {
     };
 
     std::atomic<Status> status{Status::STOP};
+    std::condition_variable status_wait_cond{};
+    std::mutex status_wait_mutex{};
+
     std::atomic<size_t> cur_thread_num{0};
     std::atomic<size_t> idle_thread_num{0};
+
     std::list<ThreadData> threads{};
     std::mutex thread_mutex{};
+
     std::queue<Task> tasks{};
     std::mutex task_mutex{};
     std::condition_variable task_cond{};
