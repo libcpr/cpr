@@ -34,7 +34,9 @@ Checks: '*,
 -modernize-return-braced-init-list,
 -cppcoreguidelines-avoid-magic-numbers,
 -readability-magic-numbers,
--cppcoreguidelines-avoid-do-while
+-cppcoreguidelines-avoid-do-while,
+-llvmlibc-inline-function-decl,
+-altera-struct-pack-align
 '
 WarningsAsErrors: '*'
 HeaderFilterRegex: 'src/*.hpp'

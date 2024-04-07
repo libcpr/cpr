@@ -25,27 +25,38 @@ class ThreadPool {
     using Task = std::function<void()>;
 
     explicit ThreadPool(size_t min_threads = CPR_DEFAULT_THREAD_POOL_MIN_THREAD_NUM, size_t max_threads = CPR_DEFAULT_THREAD_POOL_MAX_THREAD_NUM, std::chrono::milliseconds max_idle_ms = CPR_DEFAULT_THREAD_POOL_MAX_IDLE_TIME);
+    ThreadPool(const ThreadPool& other) = delete;
+    ThreadPool(ThreadPool&& old) = delete;
 
     virtual ~ThreadPool();
+
+    ThreadPool& operator=(const ThreadPool& other) = delete;
+    ThreadPool& operator=(ThreadPool&& old) = delete;
 
     void SetMinThreadNum(size_t min_threads) {
         min_thread_num = min_threads;
     }
+
     void SetMaxThreadNum(size_t max_threads) {
         max_thread_num = max_threads;
     }
+
     void SetMaxIdleTime(std::chrono::milliseconds ms) {
         max_idle_time = ms;
     }
+
     size_t GetCurrentThreadNum() {
         return cur_thread_num;
     }
+
     size_t GetIdleThreadNum() {
         return idle_thread_num;
     }
+
     bool IsStarted() {
         return status != STOP;
     }
+
     bool IsStopped() {
         return status == STOP;
     }
