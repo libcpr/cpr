@@ -118,14 +118,14 @@ class ThreadPool {
         time_t stop_time;
     };
 
-    std::atomic<Status> status;
-    std::atomic<size_t> cur_thread_num;
-    std::atomic<size_t> idle_thread_num;
-    std::list<ThreadData> threads;
-    std::mutex thread_mutex;
-    std::queue<Task> tasks;
-    std::mutex task_mutex;
-    std::condition_variable task_cond;
+    std::atomic<Status> status{Status::STOP};
+    std::atomic<size_t> cur_thread_num{0};
+    std::atomic<size_t> idle_thread_num{0};
+    std::list<ThreadData> threads{};
+    std::mutex thread_mutex{};
+    std::queue<Task> tasks{};
+    std::mutex task_mutex{};
+    std::condition_variable task_cond{};
 };
 
 } // namespace cpr

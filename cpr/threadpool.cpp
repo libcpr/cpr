@@ -8,7 +8,7 @@
 
 namespace cpr {
 
-ThreadPool::ThreadPool(size_t min_threads, size_t max_threads, std::chrono::milliseconds max_idle_ms) : min_thread_num(min_threads), max_thread_num(max_threads), max_idle_time(max_idle_ms), status(STOP), cur_thread_num(0), idle_thread_num(0) {}
+ThreadPool::ThreadPool(size_t min_threads, size_t max_threads, std::chrono::milliseconds max_idle_ms) : min_thread_num(min_threads), max_thread_num(max_threads), max_idle_time(max_idle_ms) {}
 
 ThreadPool::~ThreadPool() {
     Stop();
@@ -35,6 +35,7 @@ int ThreadPool::Stop() {
     if (status == STOP) {
         return -1;
     }
+
     status = STOP;
     task_cond.notify_all();
     for (auto& i : threads) {
@@ -145,6 +146,8 @@ void ThreadPool::DelThread(std::thread::id id) {
         } else if (iter->id == id) {
             iter->status = STOP;
             iter->stop_time = time(nullptr);
+
+            task_cond.notify_all();
         }
         ++iter;
     }
