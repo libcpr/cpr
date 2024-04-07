@@ -59,11 +59,13 @@ TEST(ThreadPoolTests, PauseResumeSingleThread) {
     tp.Start(0);
 
     for (size_t i = 0; i < repCount; ++i) {
+        tp.Pause();
         EXPECT_EQ(invCount, i * invBunchSize);
 
         for (size_t e = 0; e < invBunchSize; ++e) {
             tp.Submit([&invCount]() -> void { invCount++; });
         }
+        tp.Resume();
         // Wait for the thread pool to finish its work
         tp.Wait();
 
@@ -83,11 +85,13 @@ TEST(ThreadPoolTests, PauseResumeMultipleThreads) {
     tp.Start(0);
 
     for (size_t i = 0; i < repCount; ++i) {
+        tp.Pause();
         EXPECT_EQ(invCount, i * invBunchSize);
 
         for (size_t e = 0; e < invBunchSize; ++e) {
             tp.Submit([&invCount]() -> void { invCount++; });
         }
+        tp.Resume();
         // Wait for the thread pool to finish its work
         tp.Wait();
 
