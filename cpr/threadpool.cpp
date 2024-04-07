@@ -33,7 +33,7 @@ int ThreadPool::Start(size_t start_threads) {
 }
 
 int ThreadPool::Stop() {
-    std::unique_lock status_lock(status_wait_mutex);
+    const std::unique_lock status_lock(status_wait_mutex);
     if (status == STOP) {
         return -1;
     }
@@ -62,7 +62,7 @@ int ThreadPool::Pause() {
 }
 
 int ThreadPool::Resume() {
-    std::unique_lock status_lock(status_wait_mutex);
+    const std::unique_lock status_lock(status_wait_mutex);
     if (status == PAUSE) {
         status = RUNNING;
         status_wait_cond.notify_all();
@@ -72,8 +72,7 @@ int ThreadPool::Resume() {
 
 int ThreadPool::Wait() {
     while (true) {
-        size_t tCount = tasks.size();
-        if (status == STOP || (tCount == 0 && idle_thread_num == cur_thread_num)) {
+        if (status == STOP || (tasks.empty() && idle_thread_num == cur_thread_num)) {
             break;
         }
         std::this_thread::yield();
