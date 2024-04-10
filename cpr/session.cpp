@@ -931,7 +931,7 @@ void Session::prepareBodyPayloadOrMultipart() const {
                         curl_mime_filename(mimePart, file.overriden_filename.c_str());
                     } else {
                         // NOLINTNEXTLINE (misc-include-cleaner)
-                        curl_mime_filename(mimePart, std::filesystem::path(file.filepath).filename().c_str());
+                        curl_mime_filename(mimePart, fs::path(file.filepath).filename().c_str());
                     }
                 }
             } else {
