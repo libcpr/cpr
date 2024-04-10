@@ -34,7 +34,7 @@
     }                                                                        \
     void Class::ExitInstance() {                                             \
         std::call_once(Class::s_exitFlag, []() {                             \
-            assert(s_pInstance0);                                            \
+            assert(s_pInstance);                                             \
             delete s_pInstance;                                              \
             s_pInstance = nullptr;                                           \
         });                                                                  \
