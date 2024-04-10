@@ -29,7 +29,7 @@ TEST(FileUploadTests, AsciiFileName) {
     EXPECT_NE(baseDirPath, std::nullopt);
 
     // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
-    cpr::fs::path filePath = baseDirPath->append("test_file.txt");
+    cpr::fs::path filePath = *baseDirPath / "test_file.txt";
 
     cpr::Multipart mp{{cpr::Part("file_name", cpr::File(filePath.string()))}};
     cpr::Url url{server->GetBaseUrl() + "/post_file_upload.html"};
@@ -51,7 +51,7 @@ TEST(FileUploadTests, NonAsciiFileName) {
     EXPECT_NE(baseDirPath, std::nullopt);
 
     // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
-    cpr::fs::path filePath = baseDirPath->append("test_file_hello_äüöp_2585.txt");
+    cpr::fs::path filePath = *baseDirPath / "test_file_hello_äüöp_2585.txt";
 
     cpr::Multipart mp{{cpr::Part("file_name", cpr::File(filePath.string()))}};
     cpr::Url url{server->GetBaseUrl() + "/post_file_upload.html"};
@@ -73,7 +73,7 @@ TEST(FileUploadTests, ChineseFileName) {
     EXPECT_NE(baseDirPath, std::nullopt);
 
     // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
-    cpr::fs::path filePath = baseDirPath->append("test_file_hello_äüöp_2585_你好.txt");
+    cpr::fs::path filePath = *baseDirPath / "test_file_hello_äüöp_2585.txt";
 
     cpr::Multipart mp{{cpr::Part("file_name", cpr::File(filePath.string()))}};
     cpr::Url url{server->GetBaseUrl() + "/post_file_upload.html"};
