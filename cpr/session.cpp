@@ -31,6 +31,7 @@
 #include "cpr/curlholder.h"
 #include "cpr/error.h"
 #include "cpr/file.h"
+#include "cpr/filesystem.h" // IWYU pragma: keep
 #include "cpr/http_version.h"
 #include "cpr/interceptor.h"
 #include "cpr/interface.h"
@@ -928,6 +929,9 @@ void Session::prepareBodyPayloadOrMultipart() const {
 
                     if (file.hasOverridenFilename()) {
                         curl_mime_filename(mimePart, file.overriden_filename.c_str());
+                    } else {
+                        // NOLINTNEXTLINE (misc-include-cleaner)
+                        curl_mime_filename(mimePart, std::filesystem::path(file.filepath).filename().c_str());
                     }
                 }
             } else {
