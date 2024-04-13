@@ -64,6 +64,7 @@ add_cpr_test(interceptor_multi)
 add_cpr_test(multiperform)
 add_cpr_test(resolve)
 add_cpr_test(multiasync)
+add_cpr_test(threadpool)
 
 if (ENABLE_SSL_TESTS)
     add_cpr_test(ssl)
