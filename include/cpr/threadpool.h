@@ -16,7 +16,7 @@
 #define CPR_DEFAULT_THREAD_POOL_MAX_THREAD_NUM std::thread::hardware_concurrency()
 
 constexpr size_t CPR_DEFAULT_THREAD_POOL_MIN_THREAD_NUM = 1;
-constexpr std::chrono::milliseconds CPR_DEFAULT_THREAD_POOL_MAX_IDLE_TIME{60000};
+constexpr std::chrono::milliseconds CPR_DEFAULT_THREAD_POOL_MAX_IDLE_TIME{250};
 
 namespace cpr {
 
@@ -25,27 +25,38 @@ class ThreadPool {
     using Task = std::function<void()>;
 
     explicit ThreadPool(size_t min_threads = CPR_DEFAULT_THREAD_POOL_MIN_THREAD_NUM, size_t max_threads = CPR_DEFAULT_THREAD_POOL_MAX_THREAD_NUM, std::chrono::milliseconds max_idle_ms = CPR_DEFAULT_THREAD_POOL_MAX_IDLE_TIME);
+    ThreadPool(const ThreadPool& other) = delete;
+    ThreadPool(ThreadPool&& old) = delete;
 
     virtual ~ThreadPool();
+
+    ThreadPool& operator=(const ThreadPool& other) = delete;
+    ThreadPool& operator=(ThreadPool&& old) = delete;
 
     void SetMinThreadNum(size_t min_threads) {
         min_thread_num = min_threads;
     }
+
     void SetMaxThreadNum(size_t max_threads) {
         max_thread_num = max_threads;
     }
+
     void SetMaxIdleTime(std::chrono::milliseconds ms) {
         max_idle_time = ms;
     }
+
     size_t GetCurrentThreadNum() {
         return cur_thread_num;
     }
+
     size_t GetIdleThreadNum() {
         return idle_thread_num;
     }
+
     bool IsStarted() {
         return status != STOP;
     }
+
     bool IsStopped() {
         return status == STOP;
     }
@@ -107,14 +118,19 @@ class ThreadPool {
         time_t stop_time;
     };
 
-    std::atomic<Status> status;
-    std::atomic<size_t> cur_thread_num;
-    std::atomic<size_t> idle_thread_num;
-    std::list<ThreadData> threads;
-    std::mutex thread_mutex;
-    std::queue<Task> tasks;
-    std::mutex task_mutex;
-    std::condition_variable task_cond;
+    std::atomic<Status> status{Status::STOP};
+    std::condition_variable status_wait_cond{};
+    std::mutex status_wait_mutex{};
+
+    std::atomic<size_t> cur_thread_num{0};
+    std::atomic<size_t> idle_thread_num{0};
+
+    std::list<ThreadData> threads{};
+    std::mutex thread_mutex{};
+
+    std::queue<Task> tasks{};
+    std::mutex task_mutex{};
+    std::condition_variable task_cond{};
 };
 
 } // namespace cpr
