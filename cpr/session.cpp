@@ -8,6 +8,7 @@
 #include <fstream>
 #include <iostream>
 #include <memory>
+#include <optional>
 #include <stdexcept>
 #include <string>
 #include <utility>
@@ -145,8 +146,9 @@ Session::Session() : curl_(new CurlHolder()) {
 
 Response Session::makeDownloadRequest() {
     auto r = intercept();
-    if (r.has_value())
+    if (r.has_value()) {
         return r.value();
+    }
 
     const CURLcode curl_error = DoEasyPerform();
 
@@ -265,8 +267,9 @@ void Session::prepareCommonDownload() {
 
 Response Session::makeRequest() {
     auto r = intercept();
-    if (r.has_value())
+    if (r.has_value()) {
         return r.value();
+    }
 
     const CURLcode curl_error = DoEasyPerform();
 
@@ -895,10 +898,11 @@ Response Session::proceed() {
 }
 
 std::optional<Response> Session::intercept() {
-    if (current_interceptor_ == interceptors_.end())
+    if (current_interceptor_ == interceptors_.end()) {
         current_interceptor_ = first_interceptor_;
-    else
+    } else {
         current_interceptor_++;
+    }
 
     if (current_interceptor_ != interceptors_.end()) {
         auto icpt = current_interceptor_;

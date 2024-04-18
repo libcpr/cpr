@@ -13,6 +13,7 @@
 #include <iosfwd>
 #include <iostream>
 #include <memory>
+#include <optional>
 #include <stdexcept>
 #include <utility>
 #include <vector>
@@ -158,8 +159,9 @@ std::vector<Response> MultiPerform::ReadMultiInfo(const std::function<Response(S
 
 std::vector<Response> MultiPerform::MakeRequest() {
     auto r = intercept();
-    if (r.has_value())
+    if (r.has_value()) {
         return r.value();
+    }
 
     DoMultiPerform();
     return ReadMultiInfo([](Session& session, CURLcode curl_error) -> Response { return session.Complete(curl_error); });
@@ -167,8 +169,9 @@ std::vector<Response> MultiPerform::MakeRequest() {
 
 std::vector<Response> MultiPerform::MakeDownloadRequest() {
     auto r = intercept();
-    if (r.has_value())
+    if (r.has_value()) {
         return r.value();
+    }
 
     DoMultiPerform();
     return ReadMultiInfo([](Session& session, CURLcode curl_error) -> Response { return session.CompleteDownload(curl_error); });
@@ -329,10 +332,11 @@ std::vector<Response> MultiPerform::proceed() {
 }
 
 std::optional<std::vector<Response>> MultiPerform::intercept() {
-    if (current_interceptor_ == interceptors_.end())
+    if (current_interceptor_ == interceptors_.end()) {
         current_interceptor_ = first_interceptor_;
-    else
+    } else {
         current_interceptor_++;
+    }
 
     if (current_interceptor_ != interceptors_.end()) {
         auto icpt = current_interceptor_;

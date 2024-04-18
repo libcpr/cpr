@@ -261,12 +261,13 @@ class Session : public std::enable_shared_from_this<Session> {
     size_t response_string_reserve_size_{0};
     std::string response_string_;
     std::string header_string_;
+    // Container type is required to keep iterator valid on elem insertion. E.g. list but not vector.
     using InterceptorsContainer = std::list<std::shared_ptr<Interceptor>>;
     InterceptorsContainer interceptors_;
     // Currently running interceptor
-    InterceptorsContainer::iterator current_interceptor_;
+    InterceptorsContainer::const_iterator current_interceptor_;
     // Interceptor within the chain where to start with each repeated request
-    InterceptorsContainer::iterator first_interceptor_;
+    InterceptorsContainer::const_iterator first_interceptor_;
     bool isUsedInMultiPerform{false};
     bool isCancellable{false};
 
