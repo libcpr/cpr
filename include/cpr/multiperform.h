@@ -81,7 +81,7 @@ class MultiPerform {
     template <typename... DownloadArgTypes>
     void PrepareDownload(DownloadArgTypes... args);
 
-    std::optional<std::vector<Response>> intercept();
+    const std::optional<std::vector<Response>> intercept();
     std::vector<Response> proceed();
     std::vector<Response> MakeRequest();
     std::vector<Response> MakeDownloadRequest();

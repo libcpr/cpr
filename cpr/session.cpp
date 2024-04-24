@@ -145,7 +145,7 @@ Session::Session() : curl_(new CurlHolder()) {
 }
 
 Response Session::makeDownloadRequest() {
-    auto r = intercept();
+    const std::optional<Response> r = intercept();
     if (r.has_value()) {
         return r.value();
     }
@@ -266,7 +266,7 @@ void Session::prepareCommonDownload() {
 }
 
 Response Session::makeRequest() {
-    auto r = intercept();
+    const std::optional<Response> r = intercept();
     if (r.has_value()) {
         return r.value();
     }
@@ -886,7 +886,7 @@ Response Session::CompleteDownload(CURLcode curl_error) {
 }
 
 void Session::AddInterceptor(const std::shared_ptr<Interceptor>& pinterceptor) {
-    // shall only add before first interceptor run
+    // Shall only add before first interceptor run
     assert(current_interceptor_ == interceptors_.end());
     interceptors_.push_back(pinterceptor);
     first_interceptor_ = interceptors_.begin();
@@ -897,7 +897,7 @@ Response Session::proceed() {
     return makeRequest();
 }
 
-std::optional<Response> Session::intercept() {
+const std::optional<Response> Session::intercept() {
     if (current_interceptor_ == interceptors_.end()) {
         current_interceptor_ = first_interceptor_;
     } else {
@@ -910,7 +910,7 @@ std::optional<Response> Session::intercept() {
         first_interceptor_ = current_interceptor_;
         ++first_interceptor_;
 
-        auto r = (*current_interceptor_)->intercept(*this);
+        const std::optional<Response> r = (*current_interceptor_)->intercept(*this);
 
         first_interceptor_ = icpt;
 

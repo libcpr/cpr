@@ -274,7 +274,7 @@ class Session : public std::enable_shared_from_this<Session> {
     Response makeDownloadRequest();
     Response makeRequest();
     Response proceed();
-    std::optional<Response> intercept();
+    const std::optional<Response> intercept();
     /**
      * Prepares the curl object for a request with everything used by all requests.
      **/

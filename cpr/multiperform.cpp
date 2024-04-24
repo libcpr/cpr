@@ -6,6 +6,7 @@
 #include "cpr/response.h"
 #include "cpr/session.h"
 #include <algorithm>
+#include <cassert>
 #include <cstddef>
 #include <curl/curl.h>
 #include <curl/multi.h>
@@ -158,7 +159,7 @@ std::vector<Response> MultiPerform::ReadMultiInfo(const std::function<Response(S
 }
 
 std::vector<Response> MultiPerform::MakeRequest() {
-    auto r = intercept();
+    const std::optional<std::vector<Response>> r = intercept();
     if (r.has_value()) {
         return r.value();
     }
@@ -168,7 +169,7 @@ std::vector<Response> MultiPerform::MakeRequest() {
 }
 
 std::vector<Response> MultiPerform::MakeDownloadRequest() {
-    auto r = intercept();
+    const std::optional<std::vector<Response>> r = intercept();
     if (r.has_value()) {
         return r.value();
     }
@@ -331,7 +332,7 @@ std::vector<Response> MultiPerform::proceed() {
     return MakeRequest();
 }
 
-std::optional<std::vector<Response>> MultiPerform::intercept() {
+const std::optional<std::vector<Response>> MultiPerform::intercept() {
     if (current_interceptor_ == interceptors_.end()) {
         current_interceptor_ = first_interceptor_;
     } else {
@@ -344,7 +345,7 @@ std::optional<std::vector<Response>> MultiPerform::intercept() {
         first_interceptor_ = current_interceptor_;
         ++first_interceptor_;
 
-        auto r = (*current_interceptor_)->intercept(*this);
+        const std::optional<std::vector<Response>> r = (*current_interceptor_)->intercept(*this);
 
         first_interceptor_ = icpt;
 
@@ -354,6 +355,8 @@ std::optional<std::vector<Response>> MultiPerform::intercept() {
 }
 
 void MultiPerform::AddInterceptor(const std::shared_ptr<InterceptorMulti>& pinterceptor) {
+    // Shall only add before first interceptor run
+    assert(current_interceptor_ == interceptors_.end());
     interceptors_.push_back(pinterceptor);
     first_interceptor_ = interceptors_.begin();
 }
