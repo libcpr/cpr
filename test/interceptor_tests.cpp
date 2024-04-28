@@ -127,6 +127,19 @@ class ChangeRequestMethodToPatchInterceptor : public Interceptor {
     }
 };
 
+class RetryInterceptor : public Interceptor {
+  public:
+    Response intercept(Session& session) override {
+        // Proceed the chain
+        Response response = proceed(session);
+
+        // retried request
+        response = proceed(session);
+
+        return response;
+    }
+};
+
 TEST(InterceptorTest, HiddenUrlRewriteInterceptorTest) {
     Url url{server->GetBaseUrl() + "/basic.json"};
     Session session;
@@ -148,6 +161,32 @@ TEST(InterceptorTest, ChangeStatusCodeInterceptorTest) {
     Response response = session.Get();
 
     long expected_status_code{12345};
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(expected_status_code, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+
+    // second request
+    response = session.Get();
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(expected_status_code, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
+TEST(InterceptorTest, RetryInterceptorTest) {
+    Url url{server->GetBaseUrl() + "/hello.html"};
+    Session session;
+    session.SetUrl(url);
+    session.AddInterceptor(std::make_shared<RetryInterceptor>());
+    session.AddInterceptor(std::make_shared<ChangeStatusCodeInterceptor>());
+    Response response = session.Get();
+
+    long expected_status_code{12345};
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(expected_status_code, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+
+    // second request
+    response = session.Get();
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(expected_status_code, response.status_code);
     EXPECT_EQ(ErrorCode::OK, response.error.code);

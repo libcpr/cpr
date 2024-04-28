@@ -6,6 +6,7 @@
 #include "cpr/response.h"
 #include "cpr/session.h"
 #include <algorithm>
+#include <cassert>
 #include <cstddef>
 #include <curl/curl.h>
 #include <curl/multi.h>
@@ -13,13 +14,17 @@
 #include <iosfwd>
 #include <iostream>
 #include <memory>
+#include <optional>
 #include <stdexcept>
 #include <utility>
 #include <vector>
 
 namespace cpr {
 
-MultiPerform::MultiPerform() : multicurl_(new CurlMultiHolder()) {}
+MultiPerform::MultiPerform() : multicurl_(new CurlMultiHolder()) {
+    current_interceptor_ = interceptors_.end();
+    first_interceptor_ = interceptors_.end();
+}
 
 MultiPerform::~MultiPerform() {
     // Unlock all sessions
@@ -154,8 +159,9 @@ std::vector<Response> MultiPerform::ReadMultiInfo(const std::function<Response(S
 }
 
 std::vector<Response> MultiPerform::MakeRequest() {
-    if (!interceptors_.empty()) {
-        return intercept();
+    const std::optional<std::vector<Response>> r = intercept();
+    if (r.has_value()) {
+        return r.value();
     }
 
     DoMultiPerform();
@@ -163,8 +169,9 @@ std::vector<Response> MultiPerform::MakeRequest() {
 }
 
 std::vector<Response> MultiPerform::MakeDownloadRequest() {
-    if (!interceptors_.empty()) {
-        return intercept();
+    const std::optional<std::vector<Response>> r = intercept();
+    if (r.has_value()) {
+        return r.value();
     }
 
     DoMultiPerform();
@@ -325,15 +332,33 @@ std::vector<Response> MultiPerform::proceed() {
     return MakeRequest();
 }
 
-std::vector<Response> MultiPerform::intercept() {
-    // At least one interceptor exists -> Execute its intercept function
-    const std::shared_ptr<InterceptorMulti> interceptor = interceptors_.front();
-    interceptors_.pop();
-    return interceptor->intercept(*this);
+const std::optional<std::vector<Response>> MultiPerform::intercept() {
+    if (current_interceptor_ == interceptors_.end()) {
+        current_interceptor_ = first_interceptor_;
+    } else {
+        current_interceptor_++;
+    }
+
+    if (current_interceptor_ != interceptors_.end()) {
+        auto icpt = current_interceptor_;
+        // Nested makeRequest() start at first_interceptor_, thus excluding previous interceptors.
+        first_interceptor_ = current_interceptor_;
+        ++first_interceptor_;
+
+        const std::optional<std::vector<Response>> r = (*current_interceptor_)->intercept(*this);
+
+        first_interceptor_ = icpt;
+
+        return r;
+    }
+    return std::nullopt;
 }
 
 void MultiPerform::AddInterceptor(const std::shared_ptr<InterceptorMulti>& pinterceptor) {
-    interceptors_.push(pinterceptor);
+    // Shall only add before first interceptor run
+    assert(current_interceptor_ == interceptors_.end());
+    interceptors_.push_back(pinterceptor);
+    first_interceptor_ = interceptors_.begin();
 }
 
 } // namespace cpr

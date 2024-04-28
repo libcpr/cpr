@@ -81,7 +81,7 @@ class MultiPerform {
     template <typename... DownloadArgTypes>
     void PrepareDownload(DownloadArgTypes... args);
 
-    std::vector<Response> intercept();
+    const std::optional<std::vector<Response>> intercept();
     std::vector<Response> proceed();
     std::vector<Response> MakeRequest();
     std::vector<Response> MakeDownloadRequest();
@@ -93,7 +93,12 @@ class MultiPerform {
     std::unique_ptr<CurlMultiHolder> multicurl_;
     bool is_download_multi_perform{false};
 
-    std::queue<std::shared_ptr<InterceptorMulti>> interceptors_;
+    using InterceptorsContainer = std::list<std::shared_ptr<InterceptorMulti>>;
+    InterceptorsContainer interceptors_;
+    // Currently running interceptor
+    InterceptorsContainer::iterator current_interceptor_;
+    // Interceptor within the chain where to start with each repeated request
+    InterceptorsContainer::iterator first_interceptor_;
 };
 
 template <typename CurrentDownloadArgType>
