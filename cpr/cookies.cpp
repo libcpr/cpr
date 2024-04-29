@@ -100,7 +100,7 @@ void Cookies::emplace_back(const Cookie& str) {
     cookies_.emplace_back(str);
 }
 
-bool Cookies::empty() {
+bool Cookies::empty() const {
     cookies_.empty();
 }
 
