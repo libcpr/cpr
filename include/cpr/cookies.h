@@ -80,6 +80,7 @@ class Cookies {
     const_iterator cbegin() const;
     const_iterator cend() const;
     void emplace_back(const Cookie& str);
+    [[nodiscard]] bool empty() const;
     void push_back(const Cookie& str);
     void pop_back();
 
