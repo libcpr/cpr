@@ -101,7 +101,7 @@ void Cookies::emplace_back(const Cookie& str) {
 }
 
 bool Cookies::empty() const {
-    cookies_.empty();
+    return cookies_.empty();
 }
 
 void Cookies::push_back(const Cookie& str) {
