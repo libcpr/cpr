@@ -1,10 +1,12 @@
 
 #include "cpr/ssl_ctx.h"
 #include "cpr/ssl_options.h"
+#include <cstddef>
 #include <curl/curl.h>
 #include <iostream>
 #include <memory>
 #include <sstream>
+#include <string>
 
 #if SUPPORT_CURLOPT_SSL_CTX_FUNCTION
 
@@ -13,6 +15,7 @@
 #include <openssl/bio.h>
 #include <openssl/err.h>
 #include <openssl/pem.h>
+#include <openssl/pemerr.h>
 #include <openssl/ssl.h>
 #include <openssl/x509.h>
 #include <openssl/x509_vfy.h>
@@ -75,12 +78,12 @@ CURLcode sslctx_function_load_ca_cert_from_buffer(CURL* /*curl*/, void* sslctx, 
 
     // Create a memory BIO using the data of cert_buf.
     // Note: It is assumed, that cert_buf is nul terminated and its length is determined by strlen.
-    bio_ptr bio{BIO_new_mem_buf(static_cast<char*>(raw_cert_buf), -1)};
+    const bio_ptr bio{BIO_new_mem_buf(static_cast<char*>(raw_cert_buf), -1)};
 
     bool at_least_got_one = false;
     for (;;) {
         // Load the PEM formatted certicifate into an X509 structure which OpenSSL can use.
-        x509_ptr x{PEM_read_bio_X509_AUX(bio.get(), nullptr, nullptr, nullptr)};
+        const x509_ptr x{PEM_read_bio_X509_AUX(bio.get(), nullptr, nullptr, nullptr)};
         if (x == nullptr) {
             if ((ERR_GET_REASON(ERR_peek_last_error()) == PEM_R_NO_START_LINE) && at_least_got_one) {
                 ERR_clear_error();
