@@ -23,6 +23,22 @@ default_days            = 3650
 default_md              = sha256
 policy                  = policy_cn_supplied
 
+[sub_ca]
+name                    = sub-ca
+name_opt                = utf8,esc_ctrl,multiline,lname,align
+home                    = ./${ENV::CA_PATH}
+database                = $home/db/index
+serial                  = $home/db/serial
+certificate             = ./${ENV::CRT_PATH}/$name.crt
+private_key             = ./${ENV::KEY_PATH}/$name.key
+RANDFILE                = $home/private/random
+new_certs_dir           = $home/certificates
+unique_subject          = no
+copy_extensions         = none
+default_days            = 3650
+default_md              = sha256
+policy                  = policy_cn_supplied
+
 [policy_cn_supplied]
 countryName             = optional
 stateOrProvinceName     = optional
@@ -47,13 +63,13 @@ keyUsage                = critical,keyCertSign
 subjectKeyIdentifier    = hash
 nameConstraints         = @name_constraints
 
-
 [server_ext]
 authorityKeyIdentifier  = keyid:always
 basicConstraints        = critical,CA:false
 extendedKeyUsage        = clientAuth,serverAuth
 keyUsage                = critical,digitalSignature,keyEncipherment
 subjectKeyIdentifier    = hash
+subjectAltName          = DNS:localhost,IP:127.0.0.1,IP:::1
 
 [client_ext]
 authorityKeyIdentifier  = keyid:always

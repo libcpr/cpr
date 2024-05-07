@@ -21,6 +21,7 @@ openssl rand -hex 16  > $CA_PATH/db/serial
 
 # Generate all private keys
 openssl genpkey -algorithm ed25519 -out $KEY_PATH/root-ca.key
+openssl genpkey -algorithm ed25519 -out $KEY_PATH/sub-ca.key
 openssl genpkey -algorithm ed25519 -out $KEY_PATH/server.key
 openssl genpkey -algorithm ed25519 -out $KEY_PATH/client.key
 
@@ -39,6 +40,16 @@ openssl ca -batch \
     -extensions ca_ext \
     -in root-ca.csr -out $CRT_PATH/root-ca.crt -notext
 
+# Create a Certificate Signing request for the Sub CA
+openssl req -new \
+    -config sub-ca.cnf -out sub-ca.csr \
+    -key $KEY_PATH/sub-ca.key
+
+# Issue the Sub CA
+openssl ca -batch \
+    -config root-ca.cnf \
+    -extensions ca_ext \
+    -in sub-ca.csr -out $CRT_PATH/sub-ca.crt -notext
 
 # Create a Certificate Signing request for the server certificate
 openssl req -new \
@@ -49,11 +60,10 @@ openssl req -text -in server.csr -noout
 # Issue the server certificate
 openssl ca -batch \
     -config root-ca.cnf \
+    -name sub_ca \
     -extensions server_ext \
-    -extfile server.cnf -extensions ext \
     -in server.csr -out $CRT_PATH/server.crt -notext \
     -days 1825
-
 
 # Create a Certificate Signing request for the client certificate
 openssl req -new \
@@ -63,11 +73,13 @@ openssl req -new \
 # Issue the client certificate
 openssl ca -batch \
     -config root-ca.cnf \
+    -name sub_ca \
     -extensions client_ext \
     -in client.csr -out $CRT_PATH/client.crt -notext \
     -days 1825
 
-
+cp $CRT_PATH/sub-ca.crt $CRT_PATH/ca-bundle.crt
+cat $CRT_PATH/root-ca.crt >> $CRT_PATH/ca-bundle.crt
 
 # Clean up
 # IMPORTANT: If new certificates should be issued, $CA_PATH and its files MUST NOT be deleted!
