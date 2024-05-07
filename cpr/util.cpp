@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <cctype>
 #include <chrono>
+#include <cstdint>
 #include <ctime>
 #include <curl/curl.h>
 #include <fstream>
