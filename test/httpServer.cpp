@@ -476,6 +476,26 @@ void HttpServer::OnRequestFormPost(mg_connection* conn, mg_http_message* msg) {
     mg_http_reply(conn, 201, headers.c_str(), response.c_str());
 }
 
+void HttpServer::OnRequestFileUploadPost(mg_connection* conn, mg_http_message* msg) {
+    size_t pos{0};
+    mg_http_part part{};
+
+    std::string headers = "Content-Type: application/json\r\n";
+    std::string response{};
+    response += "{\n";
+    while ((pos = mg_http_next_multipart(msg->body, pos, &part)) > 0) {
+        response += "  \"" + std::string(part.name.ptr, part.name.len) + "\": \"";
+        if (!std::string(part.filename.ptr, part.filename.len).empty()) {
+            response += std::string(part.filename.ptr, part.filename.len) + "=";
+        }
+        response += std::string(part.body.ptr, part.body.len) + "\",\n";
+    }
+    response.erase(response.find_last_not_of(",\n") + 1);
+    response += "\n}";
+
+    mg_http_reply(conn, 201, headers.c_str(), response.c_str());
+}
+
 void HttpServer::OnRequestDelete(mg_connection* conn, mg_http_message* msg) {
     bool has_json_header = false;
     for (mg_http_header& header : msg->headers) {
@@ -888,6 +908,8 @@ void HttpServer::OnRequest(mg_connection* conn, mg_http_message* msg) {
         OnRequestJsonPost(conn, msg);
     } else if (uri == "/form_post.html") {
         OnRequestFormPost(conn, msg);
+    } else if (uri == "/post_file_upload.html") {
+        OnRequestFileUploadPost(conn, msg);
     } else if (uri == "/post_reflect.html") {
         OnRequestPostReflect(conn, msg);
     } else if (uri == "/delete.html") {
