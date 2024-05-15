@@ -36,7 +36,7 @@ TEST(SslTests, HelloWorldTestSimpel) {
     std::string crtPath{baseDirPath + "certificates/"};
     std::string keyPath{baseDirPath + "keys/"};
 
-    SslOptions sslOpts = Ssl(ssl::CaPath{crtPath + "root-ca.crt"}, ssl::CertFile{crtPath + "client.crt"}, ssl::KeyFile{keyPath + "client.key"}, ssl::VerifyPeer{false}, ssl::PinnedPublicKey{keyPath + "server.pub"}, ssl::VerifyHost{false}, ssl::VerifyStatus{false});
+    SslOptions sslOpts = Ssl(ssl::CaInfo{crtPath + "ca-bundle.crt"}, ssl::CertFile{crtPath + "client.crt"}, ssl::KeyFile{keyPath + "client.key"}, ssl::VerifyPeer{true}, ssl::PinnedPublicKey{keyPath + "server.pub"}, ssl::VerifyHost{true}, ssl::VerifyStatus{false});
     Response response = cpr::Get(url, sslOpts, Timeout{5000}, Verbose{});
     std::string expected_text = "Hello world!";
     EXPECT_EQ(expected_text, response.text);
@@ -58,7 +58,7 @@ TEST(SslTests, HelloWorldTestFull) {
 #if SUPPORT_NPN
                              ssl::NPN{false},
 #endif // DEBUG
-                             ssl::CaPath{crtPath + "root-ca.crt"}, ssl::CertFile{crtPath + "client.crt"}, ssl::KeyFile{keyPath + "client.key"}, ssl::PinnedPublicKey{keyPath + "server.pub"}, ssl::VerifyPeer{false}, ssl::VerifyHost{false}, ssl::VerifyStatus{false});
+                             ssl::CaInfo{crtPath + "ca-bundle.crt"}, ssl::CertFile{crtPath + "client.crt"}, ssl::KeyFile{keyPath + "client.key"}, ssl::PinnedPublicKey{keyPath + "server.pub"}, ssl::VerifyPeer{true}, ssl::VerifyHost{true}, ssl::VerifyStatus{false});
     Response response = cpr::Get(url, sslOpts, Timeout{5000}, Verbose{});
     std::string expected_text = "Hello world!";
     EXPECT_EQ(expected_text, response.text);
@@ -76,7 +76,7 @@ TEST(SslTests, GetCertInfos) {
     std::string crtPath{baseDirPath + "certificates/"};
     std::string keyPath{baseDirPath + "keys/"};
 
-    SslOptions sslOpts = Ssl(ssl::CaPath{crtPath + "root-ca.crt"}, ssl::CertFile{crtPath + "client.crt"}, ssl::KeyFile{keyPath + "client.key"}, ssl::VerifyPeer{false}, ssl::VerifyHost{false}, ssl::VerifyStatus{false});
+    SslOptions sslOpts = Ssl(ssl::CaInfo{crtPath + "ca-bundle.crt"}, ssl::CertFile{crtPath + "client.crt"}, ssl::KeyFile{keyPath + "client.key"}, ssl::VerifyPeer{true}, ssl::VerifyHost{true}, ssl::VerifyStatus{false});
 
     Response response = cpr::Get(url, sslOpts, Timeout{5000}, Verbose{});
     std::vector<CertInfo> certInfos = response.GetCertInfos();
@@ -85,26 +85,31 @@ TEST(SslTests, GetCertInfos) {
     std::vector<CertInfo> expectedCertInfos{
             CertInfo{
                     "Subject:CN = test-server",
-                    "Issuer:C = GB, O = Example, CN = Root CA",
+                    "Issuer:C = GB, O = Example, CN = Sub CA",
                     "Version:2",
-                    "Serial Number:28c252871ec62a626a98006b0bf2888f",
+                    "Serial Number:acbefc2cde5b900b55548396556765d4",
                     "Signature Algorithm:ED25519",
                     "Public Key Algorithm:ED25519",
+                    "X509v3 Authority Key Identifier:9B:B1:9B:21:61:DC:66:2B:3A:AD:ED:84:F1:05:B6:CE:99:82:C1:FC",
+                    "X509v3 Basic Constraints:CA:FALSE",
+                    "X509v3 Extended Key Usage:TLS Web Client Authentication, TLS Web Server Authentication",
+                    "X509v3 Key Usage:Digital Signature, Key Encipherment",
+                    "X509v3 Subject Key Identifier:66:47:54:F8:25:97:56:9A:52:56:35:B4:A7:52:60:0C:E7:4F:33:09",
                     "X509v3 Subject Alternative Name:DNS:localhost, IP Address:127.0.0.1, IP Address:0:0:0:0:0:0:0:1",
-                    "X509v3 Subject Key Identifier:39:C1:81:38:01:DC:55:38:E5:2F:4E:7A:D0:4C:84:7B:B7:27:D3:AF",
-                    "X509v3 Authority Key Identifier:E4:F2:F3:85:0E:B7:85:75:84:76:E3:43:D1:B6:9D:14:B8:E2:A4:B7",
-                    "Start date:Jun 29 11:33:07 2022 GMT",
-                    "Expire date:Jun 28 11:33:07 2027 GMT",
-                    "Signature:2e:0d:a1:0d:f5:90:77:e9:eb:84:7d:80:63:63:4d:8a:eb:d9:23:57:1f:21:2a:ed:81:b4:a8:58:b9:00:1b:cb:5c:90:1b:33:6b:f6:ec:42:20:63:54:d6:60:ee:37:14:1b:1c:95:0b:33:ea:67:29:d4:cc:d9:7e:34:fd:47:04:",
+                    "Start date:May  7 10:18:22 2024 GMT",
+                    "Expire date:May  6 10:18:22 2029 GMT",
+                    "Signature:6d:63:d9:11:a3:9b:c7:9f:b6:23:12:27:e9:34:e0:a1:a3:20:be:fb:df:80:fe:53:08:9d:8c:e4:82:42:76:c2:55:13:e8:7c:86:83:33:0b:9a:9f:92:2a:3f:de:e9:32:78:c0:b1:bc:3f:42:e9:17:f9:9f:6c:15:35:a3:01:09:",
                     R"(Cert:-----BEGIN CERTIFICATE-----
-MIIBdTCCASegAwIBAgIQKMJShx7GKmJqmABrC/KIjzAFBgMrZXAwMTELMAkGA1UE
-BhMCR0IxEDAOBgNVBAoMB0V4YW1wbGUxEDAOBgNVBAMMB1Jvb3QgQ0EwHhcNMjIw
-NjI5MTEzMzA3WhcNMjcwNjI4MTEzMzA3WjAWMRQwEgYDVQQDDAt0ZXN0LXNlcnZl
-cjAqMAUGAytlcAMhAI64JU5RjfdEG1KQMxS5DQWkiGlKIQO7ye4mNFq9QleTo3Aw
-bjAsBgNVHREEJTAjgglsb2NhbGhvc3SHBH8AAAGHEAAAAAAAAAAAAAAAAAAAAAEw
-HQYDVR0OBBYEFDnBgTgB3FU45S9OetBMhHu3J9OvMB8GA1UdIwQYMBaAFOTy84UO
-t4V1hHbjQ9G2nRS44qS3MAUGAytlcANBAC4NoQ31kHfp64R9gGNjTYrr2SNXHyEq
-7YG0qFi5ABvLXJAbM2v27EIgY1TWYO43FBsclQsz6mcp1MzZfjT9RwQ=
+MIIBtDCCAWagAwIBAgIRAKy+/CzeW5ALVVSDllVnZdQwBQYDK2VwMDAxCzAJBgNV
+BAYTAkdCMRAwDgYDVQQKDAdFeGFtcGxlMQ8wDQYDVQQDDAZTdWIgQ0EwHhcNMjQw
+NTA3MTAxODIyWhcNMjkwNTA2MTAxODIyWjAWMRQwEgYDVQQDDAt0ZXN0LXNlcnZl
+cjAqMAUGAytlcAMhACdLUqJFSyspgGKJiXNlnOLU2dO/TLV+b8aIZNAX7EuVo4Gu
+MIGrMB8GA1UdIwQYMBaAFJuxmyFh3GYrOq3thPEFts6ZgsH8MAwGA1UdEwEB/wQC
+MAAwHQYDVR0lBBYwFAYIKwYBBQUHAwIGCCsGAQUFBwMBMA4GA1UdDwEB/wQEAwIF
+oDAdBgNVHQ4EFgQUZkdU+CWXVppSVjW0p1JgDOdPMwkwLAYDVR0RBCUwI4IJbG9j
+YWxob3N0hwR/AAABhxAAAAAAAAAAAAAAAAAAAAABMAUGAytlcANBAG1j2RGjm8ef
+tiMSJ+k04KGjIL7734D+UwidjOSCQnbCVRPofIaDMwuan5IqP97pMnjAsbw/QukX
++Z9sFTWjAQk=
 -----END CERTIFICATE-----
 )",
             },
@@ -142,8 +147,8 @@ TEST(SslTests, LoadCertFromBufferTestSimpel) {
     std::string baseDirPath{server->getBaseDirPath()};
     std::string crtPath{baseDirPath + "certificates/"};
     std::string keyPath{baseDirPath + "keys/"};
-    std::string certBuffer = loadCertificateFromFile(crtPath + "root-ca.crt");
-    SslOptions sslOpts = Ssl(ssl::CaBuffer{std::move(certBuffer)}, ssl::CertFile{crtPath + "client.crt"}, ssl::KeyFile{keyPath + "client.key"}, ssl::VerifyPeer{false}, ssl::VerifyHost{false}, ssl::VerifyStatus{false});
+    std::string certBuffer = loadCertificateFromFile(crtPath + "ca-bundle.crt");
+    SslOptions sslOpts = Ssl(ssl::CaBuffer{std::move(certBuffer)}, ssl::CertFile{crtPath + "client.crt"}, ssl::KeyFile{keyPath + "client.key"}, ssl::VerifyPeer{true}, ssl::VerifyHost{true}, ssl::VerifyStatus{false});
     Response response = cpr::Get(url, sslOpts, Timeout{5000}, Verbose{});
     std::string expected_text = "Hello world!";
     EXPECT_EQ(expected_text, response.text);

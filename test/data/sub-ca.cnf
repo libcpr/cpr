@@ -1,0 +1,25 @@
+[req]
+default_bits            = 4096
+encrypt_key             = yes
+default_md              = sha256
+utf8                    = yes
+string_mask             = utf8only
+prompt                  = no
+distinguished_name      = sub_ca_dn
+req_extensions          = sub_ca_ext
+
+[sub_ca_dn]
+countryName             = "GB"
+organizationName        = "Example"
+commonName              = "Sub CA"
+
+[sub_ca_ext]
+basicConstraints        = critical,CA:true
+keyUsage                = critical,keyCertSign
+subjectKeyIdentifier    = hash
+nameConstraints         = @name_constraints
+
+[name_constraints]
+permitted;DNS.0=localhost
+permitted;IP.0=127.0.0.1/255.0.0.0
+permitted;IP.1=::1/ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff
