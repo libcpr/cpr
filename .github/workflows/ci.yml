@@ -1,10 +1,11 @@
 name: CI
 on: [push, workflow_dispatch, pull_request] # Trigger for every push as well as for every pull request. Yes, this will run stuff twice in case we create a PR from inside this repo. I'm open for better solutions, where I do not have to specify each brach individually for the 'push' trigger.
 
-# Enable verbose output.
-# Repeat up to 5 times to deal with flaky tests.
 env:
+  # Enable verbose output.
+  # Repeat up to 5 times to deal with flaky tests.
   CTEST_OPTIONS: "-V --repeat until-pass:5"
+  # The OpenSSL path for CI runs. Found via 'brew info openssl'.
   MACOS_OPENSSL_ROOT_DIR: "/opt/homebrew/Cellar/openssl@3/3.3.0"
 
 jobs:
@@ -289,9 +290,6 @@ jobs:
     - name: Install OpenSSL
       run: |
         brew install openssl
-        echo 'export PATH="${{ env.MACOS_OPENSSL_ROOT_DIR }}/bin:$PATH"' >> /Users/runner/.bash_profile
-        source ~/.bash_profile
-        brew info openssl
     - name: Checkout
       uses: actions/checkout@v3
     - name: "Build & Test"
