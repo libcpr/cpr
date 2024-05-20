@@ -1,6 +1,11 @@
 name: CI
 on: [push, workflow_dispatch, pull_request] # Trigger for every push as well as for every pull request. Yes, this will run stuff twice in case we create a PR from inside this repo. I'm open for better solutions, where I do not have to specify each brach individually for the 'push' trigger.
 
+# Enable verbose output.
+# Repeat up to 5 times to deal with flaky tests.
+env:
+  CTEST_OPTIONS: "-V --repeat until-pass:5"
+
 jobs:
   ubuntu-clang-openssl:
     strategy:
@@ -37,7 +42,7 @@ jobs:
         cxx: clang++
         build-type: ${{ matrix.buildType }}
         run-test: true
-        ctest-options: -V
+        ctest-options: ${{ env.CTEST_OPTIONS }}
 
   ubuntu-gcc-openssl:
     strategy:
@@ -74,7 +79,7 @@ jobs:
         cxx: g++
         build-type: ${{ matrix.buildType }}
         run-test: true
-        ctest-options: -V
+        ctest-options: ${{ env.CTEST_OPTIONS }}
 
   ubuntu-gcc-mbedtls:
     runs-on: ubuntu-latest
@@ -104,7 +109,7 @@ jobs:
         cxx: g++
         build-type: Release
         run-test: true
-        ctest-options: -V
+        ctest-options: ${{ env.CTEST_OPTIONS }}
 
   fedora-clang-openssl:
     strategy:
@@ -133,7 +138,7 @@ jobs:
         cxx: clang++
         build-type: Release
         run-test: true
-        ctest-options: -V
+        ctest-options: ${{ env.CTEST_OPTIONS }}
 
   fedora-gcc-openssl:
     strategy:
@@ -164,7 +169,7 @@ jobs:
         cxx: g++
         build-type: ${{ matrix.buildType }}
         run-test: true
-        ctest-options: -V
+        ctest-options: ${{ env.CTEST_OPTIONS }}
 
   fedora-gcc-ssl-sanitizer:
     strategy:
@@ -191,7 +196,7 @@ jobs:
         cxx: g++
         build-type: ${{ matrix.buildType }}
         run-test: true
-        ctest-options: -V
+        ctest-options: ${{ env.CTEST_OPTIONS }}
 
   windows-msvc-ssl:
     strategy:
@@ -212,7 +217,7 @@ jobs:
         source-dir: ${{ github.workspace }}
         build-type: ${{ matrix.buildType }}
         run-test: true
-        ctest-options: -V
+        ctest-options: ${{ env.CTEST_OPTIONS }}
 
   windows-msvc-openssl:
     runs-on: windows-latest
@@ -233,7 +238,7 @@ jobs:
         source-dir: ${{ github.workspace }}
         build-type: Release
         run-test: true
-        ctest-options: -V
+        ctest-options: ${{ env.CTEST_OPTIONS }}
 
   macos-clang-openssl:
     runs-on: macos-latest
@@ -263,7 +268,7 @@ jobs:
         cxx: clang++
         build-type: Release
         run-test: true
-        ctest-options: -V
+        ctest-options: ${{ env.CTEST_OPTIONS }}
 
   macos-clang-ssl:
     strategy:
@@ -285,7 +290,7 @@ jobs:
         cxx: clang++
         build-type: ${{ matrix.buildType }}
         run-test: true
-        ctest-options: -V
+        ctest-options: ${{ env.CTEST_OPTIONS }}
 
   macos-clang-darwinssl:
     runs-on: macos-latest
@@ -305,7 +310,7 @@ jobs:
         cxx: clang++
         build-type: Release
         run-test: true
-        ctest-options: -V
+        ctest-options: ${{ env.CTEST_OPTIONS }}
 
   macos-clang-openssl-boost:
     runs-on: macos-latest
@@ -338,4 +343,4 @@ jobs:
         cxx: clang++
         build-type: Release
         run-test: true
-        ctest-options: -V
+        ctest-options: ${{ env.CTEST_OPTIONS }}
