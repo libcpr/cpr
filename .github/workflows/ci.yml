@@ -5,6 +5,7 @@ on: [push, workflow_dispatch, pull_request] # Trigger for every push as well as 
 # Repeat up to 5 times to deal with flaky tests.
 env:
   CTEST_OPTIONS: "-V --repeat until-pass:5"
+  MACOS_OPENSSL_ROOT_DIR: "/opt/homebrew/Cellar/openssl@3/3.3.0"
 
 jobs:
   ubuntu-clang-openssl:
@@ -239,37 +240,7 @@ jobs:
         build-type: Release
         run-test: true
         ctest-options: ${{ env.CTEST_OPTIONS }}
-
-  macos-clang-openssl:
-    runs-on: macos-latest
-    steps:
-    - name: Install OpenSSL
-      run: |
-        brew install openssl
-        echo 'export PATH="/usr/local/opt/openssl/bin:$PATH"' >> /Users/runner/.bash_profile
-        source ~/.bash_profile
-    - name: Checkout
-      uses: actions/checkout@v3
-    - name: "Build & Test"
-      env:
-        CPR_BUILD_TESTS: ON
-        CPR_BUILD_TESTS_SSL: ON
-        CPR_FORCE_OPENSSL_BACKEND: ON
-        OPENSSL_ROOT_DIR: "/usr/local/opt/openssl"
-        OPENSSL_LIBRARIES: "/usr/local/opt/openssl/lib"
-        LDFLAGS: "-L/usr/local/opt/openssl/lib"
-        CPPFLAGS: "-I/usr/local/opt/openssl/include"
-        PKG_CONFIG_PATH: "/usr/local/opt/openssl/lib/pkgconfig"
-      uses: ashutoshvarma/action-cmake-build@master
-      with:
-        build-dir: ${{ github.workspace }}/build
-        source-dir: ${{ github.workspace }}
-        cc: clang
-        cxx: clang++
-        build-type: Release
-        run-test: true
-        ctest-options: ${{ env.CTEST_OPTIONS }}
-
+  
   macos-clang-ssl:
     strategy:
       matrix:
@@ -312,6 +283,37 @@ jobs:
         run-test: true
         ctest-options: ${{ env.CTEST_OPTIONS }}
 
+  macos-clang-openssl:
+    runs-on: macos-latest
+    steps:
+    - name: Install OpenSSL
+      run: |
+        brew install openssl
+        echo 'export PATH="${{ env.MACOS_OPENSSL_ROOT_DIR }}/bin:$PATH"' >> /Users/runner/.bash_profile
+        source ~/.bash_profile
+        brew info openssl
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: "Build & Test"
+      env:
+        CPR_BUILD_TESTS: ON
+        CPR_BUILD_TESTS_SSL: ON
+        CPR_FORCE_OPENSSL_BACKEND: ON
+        OPENSSL_ROOT_DIR: "${{ env.MACOS_OPENSSL_ROOT_DIR }}"
+        OPENSSL_LIBRARIES: "${{ env.MACOS_OPENSSL_ROOT_DIR }}/lib"
+        LDFLAGS: "-L${{ env.MACOS_OPENSSL_ROOT_DIR }}/lib"
+        CPPFLAGS: "-I${{ env.MACOS_OPENSSL_ROOT_DIR }}/include"
+        PKG_CONFIG_PATH: "${{ env.MACOS_OPENSSL_ROOT_DIR }}/lib/pkgconfig"
+      uses: ashutoshvarma/action-cmake-build@master
+      with:
+        build-dir: ${{ github.workspace }}/build
+        source-dir: ${{ github.workspace }}
+        cc: clang
+        cxx: clang++
+        build-type: Release
+        run-test: true
+        ctest-options: ${{ env.CTEST_OPTIONS }}
+  
   macos-clang-openssl-boost:
     runs-on: macos-latest
     steps:
@@ -320,21 +322,19 @@ jobs:
     - name: Install OpenSSL
       run: |
         brew install openssl
-        echo 'export PATH="/usr/local/opt/openssl/bin:$PATH"' >> /Users/runner/.bash_profile
-        source ~/.bash_profile
     - name: Checkout
       uses: actions/checkout@v3
     - name: "Build & Test"
       env:
         CPR_BUILD_TESTS: ON
         CPR_BUILD_TESTS_SSL: ON
-        CPR_USE_BOOST_FILESYSTEM: ON
         CPR_FORCE_OPENSSL_BACKEND: ON
-        OPENSSL_ROOT_DIR: "/usr/local/opt/openssl"
-        OPENSSL_LIBRARIES: "/usr/local/opt/openssl/lib"
-        LDFLAGS: "-L/usr/local/opt/openssl/lib"
-        CPPFLAGS: "-I/usr/local/opt/openssl/include"
-        PKG_CONFIG_PATH: "/usr/local/opt/openssl/lib/pkgconfig"
+        CPR_USE_BOOST_FILESYSTEM: ON
+        OPENSSL_ROOT_DIR: "${{ env.MACOS_OPENSSL_ROOT_DIR }}"
+        OPENSSL_LIBRARIES: "${{ env.MACOS_OPENSSL_ROOT_DIR }}/lib"
+        LDFLAGS: "-L${{ env.MACOS_OPENSSL_ROOT_DIR }}/lib"
+        CPPFLAGS: "-I${{ env.MACOS_OPENSSL_ROOT_DIR }}/include"
+        PKG_CONFIG_PATH: "${{ env.MACOS_OPENSSL_ROOT_DIR }}/lib/pkgconfig"
       uses: ashutoshvarma/action-cmake-build@master
       with:
         build-dir: ${{ github.workspace }}/build
