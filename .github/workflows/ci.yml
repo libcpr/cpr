@@ -288,8 +288,7 @@ jobs:
     runs-on: macos-latest
     steps:
     - name: Install OpenSSL
-      run: |
-        brew install openssl
+      run: brew install openssl
     - name: Checkout
       uses: actions/checkout@v3
     - name: "Build & Test"
@@ -318,8 +317,7 @@ jobs:
     - name: Install Boost
       run: brew install boost
     - name: Install OpenSSL
-      run: |
-        brew install openssl
+      run: brew install openssl
     - name: Checkout
       uses: actions/checkout@v3
     - name: "Build & Test"
