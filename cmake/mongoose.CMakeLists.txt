@@ -8,5 +8,8 @@ target_include_directories(mongoose PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 if(ENABLE_SSL_TESTS)
     # Enable mongoose SSL
     target_compile_definitions(mongoose PUBLIC MG_ENABLE_OPENSSL)
-    target_link_libraries(mongoose PRIVATE OpenSSL::SSL)
+    target_link_libraries(mongoose PUBLIC OpenSSL::SSL)
+
+    # Fix macOS and Windows invalid OpenSSL include path
+    target_include_directories(mongoose PUBLIC "${OPENSSL_INCLUDE_DIR}")
 endif()
