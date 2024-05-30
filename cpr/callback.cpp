@@ -1,7 +1,10 @@
 #include <functional>
 #ifdef OPENSSL_BACKEND_USED
+#include <cstddef>
 #include <iostream>
+#include <memory>
 #include <sstream>
+#include <string>
 #endif // OPENSSL_BACKEND_USED
 
 #include "cpr/callback.h"
