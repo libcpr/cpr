@@ -10,6 +10,7 @@
 #include <cstddef>
 #include <curl/curl.h>
 #include <curl/multi.h>
+#include <curl/curlver.h>
 #include <functional>
 #include <iosfwd>
 #include <iostream>
@@ -110,9 +111,16 @@ void MultiPerform::DoMultiPerform() {
 
         if (still_running) {
             const int timeout_ms{250};
+#if LIBCURL_VERSION_NUM >= 0x074200 // 7.66.0
             error_code = curl_multi_poll(multicurl_->handle, nullptr, 0, timeout_ms, nullptr);
             if (error_code) {
                 std::cerr << "curl_multi_poll() failed, code " << static_cast<int>(error_code) << '\n';
+#else
+            error_code = curl_multi_wait(multicurl_->handle, nullptr, 0, timeout_ms, nullptr);
+            if (error_code) {
+                std::cerr << "curl_multi_wait() failed, code " << static_cast<int>(error_code) << '\n';
+
+#endif
                 break;
             }
         }
