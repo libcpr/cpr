@@ -71,16 +71,9 @@ Cookies parseCookies(curl_slist* raw_cookies) {
 
 Header parseHeader(const std::string& headers, std::string* status_line, std::string* reason) {
     Header header;
-    std::vector<std::string> lines;
     std::istringstream stream(headers);
-    {
-        std::string line;
-        while (std::getline(stream, line, '\n')) {
-            lines.push_back(line);
-        }
-    }
-
-    for (std::string& line : lines) {
+    std::string line;
+    while (std::getline(stream, line, '\n')) {
         if (line.substr(0, 5) == "HTTP/") {
             // set the status_line if it was given
             if ((status_line != nullptr) || (reason != nullptr)) {
