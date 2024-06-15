@@ -272,8 +272,8 @@ else()
         cmake_policy(SET CMP0135 NEW)
     endif()
     FetchContent_Declare(curl
-                         URL                    https://github.com/curl/curl/releases/download/curl-8_4_0/curl-8.4.0.tar.xz
-                         URL_HASH               SHA256=16c62a9c4af0f703d28bda6d7bbf37ba47055ad3414d70dec63e2e6336f2a82d # the file hash for curl-8.4.0.tar.xz
+                         URL                    https://github.com/curl/curl/releases/download/curl-8_7_1/curl-8.7.1.tar.xz
+                         URL_HASH               SHA256=6fea2aac6a4610fbd0400afb0bcddbe7258a64c63f1f68e5855ebc0c659710cd # the file hash for curl-8.7.1.tar.xz
                          USES_TERMINAL_DOWNLOAD TRUE)   # <---- This is needed only for Ninja to show download progress
     FetchContent_MakeAvailable(curl)
 
