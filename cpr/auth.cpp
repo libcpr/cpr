@@ -2,35 +2,23 @@
 #include "cpr/util.h"
 
 #include <string_view>
-#include <utility>
 
 namespace cpr {
 
 Authentication::Authentication(std::string_view username, std::string_view password, AuthMode auth_mode) : auth_mode_{auth_mode} {
-    auth_string_.reserve(username.size() + 1 + password.size());
-    auth_string_ += username;
-    auth_string_ += ':';
-    auth_string_ += password;
-}
-
-Authentication::Authentication(Authentication&& old) noexcept : auth_string_{std::move(old.auth_string_)}, auth_mode_{old.auth_mode_} {
-    old.auth_string_.resize(old.auth_string_.capacity());
-}
-
-Authentication& Authentication::operator=(Authentication&& old) noexcept {
-    auth_mode_ = old.auth_mode_;
-    util::secureStringClear(auth_string_);
-    auth_string_ = std::move(old.auth_string_);
-    old.auth_string_.resize(old.auth_string_.capacity());
-    return *this;
+    auth_string_.reserve(username.size() + 1 + password.size() + 1);
+    auth_string_.insert(auth_string_.end(), username.begin(), username.end());
+    auth_string_.push_back(':');
+    auth_string_.insert(auth_string_.end(), password.begin(), password.end());
+    auth_string_.push_back('\0');
 }
 
 Authentication::~Authentication() noexcept {
-    util::secureStringClear(auth_string_);
+    util::secureClear(auth_string_.data(), auth_string_.size());
 }
 
 const char* Authentication::GetAuthString() const noexcept {
-    return auth_string_.c_str();
+    return auth_string_.data();
 }
 
 AuthMode Authentication::GetAuthMode() const noexcept {
