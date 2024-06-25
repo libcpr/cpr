@@ -1,9 +1,8 @@
 #ifndef CPR_AUTH_H
 #define CPR_AUTH_H
 
-#include <string>
-
-#include <utility>
+#include <string_view>
+#include <vector>
 
 namespace cpr {
 
@@ -11,7 +10,7 @@ enum class AuthMode { BASIC, DIGEST, NTLM };
 
 class Authentication {
   public:
-    Authentication(std::string username, std::string password, AuthMode auth_mode) : auth_string_{std::move(username) + ":" + std::move(password)}, auth_mode_{std::move(auth_mode)} {}
+    Authentication(std::string_view username, std::string_view password, AuthMode auth_mode);
     Authentication(const Authentication& other) = default;
     Authentication(Authentication&& old) noexcept = default;
     ~Authentication() noexcept;
@@ -23,7 +22,7 @@ class Authentication {
     AuthMode GetAuthMode() const noexcept;
 
   private:
-    std::string auth_string_;
+    std::vector<char> auth_string_; // includes null terminator
     AuthMode auth_mode_;
 };
 

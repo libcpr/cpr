@@ -187,20 +187,18 @@ std::string urlDecode(const std::string& s) {
 }
 
 #if defined(__STDC_LIB_EXT1__)
-void secureStringClear(std::string& s) {
-    if (s.empty()) {
+void secureClear(void* data, size_t size) {
+    if (!data || !size) {
         return;
     }
-    memset_s(&s.front(), s.length(), 0, s.length());
-    s.clear();
+    memset_s(&data, size, 0, size);
 }
 #elif defined(_WIN32)
-void secureStringClear(std::string& s) {
-    if (s.empty()) {
+void secureClear(void* data, size_t size) {
+    if (!data || !size) {
         return;
     }
-    SecureZeroMemory(&s.front(), s.length());
-    s.clear();
+    SecureZeroMemory(data, size);
 }
 #else
 #if defined(__clang__)
@@ -209,14 +207,11 @@ void secureStringClear(std::string& s) {
 #pragma GCC push_options   // g++
 #pragma GCC optimize("O0") // g++
 #endif
-void secureStringClear(std::string& s) {
-    if (s.empty()) {
+void secureClear(void* data, size_t size) {
+    if (!data || !size) {
         return;
     }
-    // NOLINTNEXTLINE (readability-container-data-pointer)
-    char* ptr = &(s[0]);
-    memset(ptr, '\0', s.length());
-    s.clear();
+    memset(data, '\0', size);
 }
 
 #if defined(__clang__)
@@ -225,6 +220,14 @@ void secureStringClear(std::string& s) {
 #pragma GCC pop_options // g++
 #endif
 #endif
+
+void secureStringClear(std::string& s) {
+    if (s.empty()) {
+        return;
+    }
+    secureClear(s.data(), s.size());
+    s.clear();
+}
 
 bool isTrue(const std::string& s) {
     std::string temp_string{s};
