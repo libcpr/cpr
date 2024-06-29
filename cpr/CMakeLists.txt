@@ -32,6 +32,12 @@ add_library(cpr
 
 add_library(cpr::cpr ALIAS cpr)
 
+# Add the NOMINMAX macro for windows to curl to prevent issues with std::min and std::max down the line.
+# Ref: https://github.com/libcpr/cpr/issues/957
+if(WIN32)
+        target_compile_definitions(cpr PUBLIC NOMINMAX)
+endif()
+
 target_link_libraries(cpr PUBLIC CURL::libcurl) # todo should be private, but first dependencies in ssl_options need to be removed
 
 # Fix missing OpenSSL includes for Windows since in 'ssl_ctx.cpp' we include OpenSSL directly
