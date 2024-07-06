@@ -386,6 +386,10 @@ void Session::SetAuth(const Authentication& auth) {
             curl_easy_setopt(curl_->handle, CURLOPT_HTTPAUTH, CURLAUTH_NTLM);
             curl_easy_setopt(curl_->handle, CURLOPT_USERPWD, auth.GetAuthString());
             break;
+        case AuthMode::NEGOTIATE:
+            curl_easy_setopt(curl_->handle, CURLOPT_HTTPAUTH, CURLAUTH_NEGOTIATE);
+            curl_easy_setopt(curl_->handle, CURLOPT_USERPWD, auth.GetAuthString());
+            break;
     }
 }
 
