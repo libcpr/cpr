@@ -37,7 +37,7 @@ Response::Response(std::shared_ptr<CurlHolder> curl, std::string&& p_text, std::
     curl_easy_getinfo(curl_->handle, CURLINFO_REDIRECT_COUNT, &redirect_count);
 }
 
-std::vector<CertInfo> Response::GetCertInfos() {
+std::vector<CertInfo> Response::GetCertInfos() const {
     assert(curl_);
     assert(curl_->handle);
     curl_certinfo* ci{nullptr};
