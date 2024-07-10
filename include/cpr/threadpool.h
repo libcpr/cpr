@@ -82,7 +82,7 @@ class ThreadPool {
             CreateThread();
         }
         using RetType = decltype(fn(args...));
-        auto task = std::make_shared<std::packaged_task<RetType()> >(std::bind(std::forward<Fn>(fn), std::forward<Args>(args)...));
+        auto task = std::make_shared<std::packaged_task<RetType()>>([fn = std::forward<Fn>(fn), args...]() mutable { return std::invoke(fn, args...); });
         std::future<RetType> future = task->get_future();
         {
             std::lock_guard<std::mutex> locker(task_mutex);
