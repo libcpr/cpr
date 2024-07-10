@@ -122,7 +122,7 @@ class ChangeRequestMethodToDeleteInterceptorMulti : public InterceptorMulti {
     }
 };
 
-bool write_data(std::string /*data*/, intptr_t /*userdata*/) {
+bool write_data(const std::string_view& /*data*/, intptr_t /*userdata*/) {
     return true;
 }
 

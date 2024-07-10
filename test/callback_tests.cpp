@@ -857,7 +857,7 @@ TEST(CallbackDataTests, CallbackReadFunctionChunkedTest) {
 
 TEST(CallbackDataTests, CallbackHeaderFunctionCancelTest) {
     Url url{server->GetBaseUrl() + "/url_post.html"};
-    Response response = Post(url, HeaderCallback{[](std::string /*header*/, intptr_t /*userdata*/) -> bool { return false; }});
+    Response response = Post(url, HeaderCallback{[](const std::string_view& /*header*/, intptr_t /*userdata*/) -> bool { return false; }});
     EXPECT_EQ(response.error.code, ErrorCode::REQUEST_CANCELLED);
 }
 
@@ -865,8 +865,8 @@ TEST(CallbackDataTests, CallbackHeaderFunctionTextTest) {
     Url url{server->GetBaseUrl() + "/url_post.html"};
     std::vector<std::string> expected_headers{"HTTP/1.1 201 Created\r\n", "Content-Type: application/json\r\n", "\r\n"};
     std::set<std::string> response_headers;
-    Post(url, HeaderCallback{[&response_headers](const std::string& header, intptr_t /*userdata*/) -> bool {
-             response_headers.insert(header);
+    Post(url, HeaderCallback{[&response_headers](const std::string_view& header, intptr_t /*userdata*/) -> bool {
+             response_headers.insert(std::string{header});
              return true;
          }});
     for (std::string& header : expected_headers) {
@@ -877,7 +877,7 @@ TEST(CallbackDataTests, CallbackHeaderFunctionTextTest) {
 
 TEST(CallbackDataTests, CallbackWriteFunctionCancelTest) {
     Url url{server->GetBaseUrl() + "/url_post.html"};
-    Response response = Post(url, WriteCallback{[](std::string /*header*/, intptr_t /*userdata*/) -> bool { return false; }});
+    Response response = Post(url, WriteCallback{[](const std::string_view& /*header*/, intptr_t /*userdata*/) -> bool { return false; }});
     EXPECT_EQ(response.error.code, ErrorCode::REQUEST_CANCELLED);
 }
 
@@ -888,7 +888,7 @@ TEST(CallbackDataTests, CallbackWriteFunctionTextTest) {
             "  \"x\": 5\n"
             "}"};
     std::string response_text;
-    Post(url, Payload{{"x", "5"}}, WriteCallback{[&response_text](const std::string& header, intptr_t /*userdata*/) -> bool {
+    Post(url, Payload{{"x", "5"}}, WriteCallback{[&response_text](const std::string_view& header, intptr_t /*userdata*/) -> bool {
              response_text.append(header);
              return true;
          }});
