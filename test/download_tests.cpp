@@ -15,7 +15,7 @@
 
 static cpr::HttpServer* server = new cpr::HttpServer();
 
-bool write_data(std::string /*data*/, intptr_t /*userdata*/) {
+bool write_data(const std::string_view& /*data*/, intptr_t /*userdata*/) {
     return true;
 }
 
@@ -123,7 +123,7 @@ TEST(DownloadTests, RangeTestMultipleRangesOption) {
     EXPECT_EQ(download_size, response.downloaded_bytes);
 }
 
-bool real_write_data(std::string data, intptr_t userdata) {
+bool real_write_data(const std::string_view& data, intptr_t userdata) {
     // NOLINTNEXTLINE (cppcoreguidelines-pro-type-reinterpret-cast)
     std::string* dst = reinterpret_cast<std::string*>(userdata);
     *dst += data;

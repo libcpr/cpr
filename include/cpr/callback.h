@@ -29,26 +29,26 @@ class HeaderCallback {
   public:
     HeaderCallback() = default;
     // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
-    HeaderCallback(std::function<bool(std::string header, intptr_t userdata)> p_callback, intptr_t p_userdata = 0) : userdata(p_userdata), callback(std::move(p_callback)) {}
-    bool operator()(std::string header) const {
-        return callback(std::move(header), userdata);
+    HeaderCallback(std::function<bool(const std::string_view& header, intptr_t userdata)> p_callback, intptr_t p_userdata = 0) : userdata(p_userdata), callback(std::move(p_callback)) {}
+    bool operator()(const std::string_view& header) const {
+        return callback(header, userdata);
     }
 
     intptr_t userdata{};
-    std::function<bool(std::string header, intptr_t userdata)> callback;
+    std::function<bool(const std::string_view& header, intptr_t userdata)> callback;
 };
 
 class WriteCallback {
   public:
     WriteCallback() = default;
     // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
-    WriteCallback(std::function<bool(std::string data, intptr_t userdata)> p_callback, intptr_t p_userdata = 0) : userdata(p_userdata), callback(std::move(p_callback)) {}
-    bool operator()(std::string data) const {
-        return callback(std::move(data), userdata);
+    WriteCallback(std::function<bool(const std::string_view& data, intptr_t userdata)> p_callback, intptr_t p_userdata = 0) : userdata(p_userdata), callback(std::move(p_callback)) {}
+    bool operator()(const std::string_view& data) const {
+        return callback(data, userdata);
     }
 
     intptr_t userdata{};
-    std::function<bool(std::string data, intptr_t userdata)> callback;
+    std::function<bool(const std::string_view& data, intptr_t userdata)> callback;
 };
 
 class ProgressCallback {

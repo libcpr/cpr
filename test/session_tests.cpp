@@ -21,7 +21,7 @@ static HttpServer* server = new HttpServer();
 std::chrono::milliseconds sleep_time{50};
 std::chrono::seconds zero{0};
 
-bool write_data(std::string /*data*/, intptr_t /*userdata*/) {
+bool write_data(const std::string_view& /*data*/, intptr_t /*userdata*/) {
     return true;
 }
 
