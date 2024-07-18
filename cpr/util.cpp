@@ -104,7 +104,11 @@ Header parseHeader(const std::string& headers, std::string* status_line, std::st
                 std::string value = line.substr(found + 1);
                 value.erase(0, value.find_first_not_of("\t "));
                 value.resize(std::min<size_t>(value.size(), value.find_last_not_of("\t\n\r ") + 1));
-                header[line.substr(0, found)] = value;
+                if (auto it = header.find(line.substr(0, found)); it != header.end()) {
+                    it->second = it->second + ", " + value;
+                } else {
+                    header[line.substr(0, found)] = value;
+                }
             }
         }
     }
