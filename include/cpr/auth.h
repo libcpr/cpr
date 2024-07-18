@@ -12,10 +12,8 @@ class Authentication {
   public:
     Authentication(std::string_view username, std::string_view password, AuthMode auth_mode);
     Authentication(const Authentication& other) = default;
-    Authentication(Authentication&& old) noexcept;
     ~Authentication() noexcept;
 
-    Authentication& operator=(Authentication&& old) noexcept;
     Authentication& operator=(const Authentication& other) = default;
 
     const char* GetAuthString() const noexcept;
