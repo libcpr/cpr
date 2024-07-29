@@ -156,6 +156,10 @@ For Windows, there is also a libcpr NuGet package available. Currently, x86 and 
 
 The package can be found here: [NuGet.org](https://www.nuget.org/packages/libcpr/)
 
+### Port for macOS
+
+On macOS you may install cpr via [MacPorts.org](https://ports.macports.org/port/cpr) (arm64, x86_64, powerpc)
+
 ## Requirements
 
 The only explicit requirements are:
