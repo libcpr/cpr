@@ -165,10 +165,17 @@ if(CPR_ENABLE_SSL)
 endif()
 
 if(SSL_BACKEND_USED STREQUAL "OpenSSL")
-# Fix missing OpenSSL includes for Windows since in 'ssl_ctx.cpp' we include OpenSSL directly
+# Fix missing OpenSSL includes for Windows since in 'ssl_options.cpp' we include OpenSSL directly
 find_package(OpenSSL REQUIRED)
     add_compile_definitions(OPENSSL_BACKEND_USED)
 endif()
+
+if (SSL_BACKEND_USED STREQUAL "OpenSSL" OR SSL_BACKEND_USED STREQUAL "MbedTLS")
+    # CURLOPT_SSL_CTX_FUNCTION works for libcurl powered by OpenSSL, wolfSSL, mbedTLS or BearSSL.
+    # If libcurl was built against another SSL library this functionality is absent.
+    # Ref: https://curl.se/libcurl/c/CURLOPT_SSL_CTX_FUNCTION.html
+    add_compile_definitions(CPR_SSL_CTX_CALLBACK_ENABLED)
+endif ()
 
 # Curl configuration
 if(CPR_USE_SYSTEM_CURL)
