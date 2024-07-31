@@ -206,6 +206,11 @@ void Session::prepareCommonShared() {
     curl_easy_setopt(curl_->handle, CURLOPT_SSL_OPTIONS, CURLSSLOPT_NATIVE_CA);
 #endif
 
+#if LIBCURL_VERSION_NUM >= 0x074600 // 7.70.0
+    // Ignore certificate revocation checks in case of missing or offline distribution points, on Windows:
+    curl_easy_setopt(curl_->handle, CURLOPT_SSL_OPTIONS, CURLSSLOPT_REVOKE_BEST_EFFORT);
+#endif
+
 // Ensure SSL no revoke is still set
 #if SUPPORT_SSL_NO_REVOKE
     if (noRevoke) {
