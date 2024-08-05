@@ -193,27 +193,6 @@ void Session::prepareCommonShared() {
     }
 #endif
 
-#if LIBCURL_VERSION_NUM >= 0x071900 // 7.25.0
-#if SUPPORT_SSL_NO_REVOKE
-    // NOLINTNEXTLINE (google-runtime-int)
-    long bitmask{0};
-    curl_easy_setopt(curl_->handle, CURLOPT_SSL_OPTIONS, &bitmask);
-    const bool noRevoke = bitmask & CURLSSLOPT_NO_REVOKE;
-#endif
-
-#if LIBCURL_VERSION_NUM >= 0x074700 // 7.71.0
-    // Fix loading certs from Windows cert store when using OpenSSL:
-    curl_easy_setopt(curl_->handle, CURLOPT_SSL_OPTIONS, CURLSSLOPT_NATIVE_CA);
-#endif
-
-// Ensure SSL no revoke is still set
-#if SUPPORT_SSL_NO_REVOKE
-    if (noRevoke) {
-        curl_easy_setopt(curl_->handle, CURLOPT_SSL_OPTIONS, CURLSSLOPT_NO_REVOKE);
-    }
-#endif
-#endif
-
     curl_->error[0] = '\0';
 
     // Clear the response
@@ -532,6 +511,10 @@ void Session::SetSslOptions(const SslOptions& options) {
 #if SUPPORT_SSL_NO_REVOKE
     if (options.ssl_no_revoke) {
         curl_easy_setopt(curl_->handle, CURLOPT_SSL_OPTIONS, CURLSSLOPT_NO_REVOKE);
+        curl_easy_setopt(curl_->handle, CURLOPT_PROXY_SSL_OPTIONS, CURLSSLOPT_NO_REVOKE);
+    } else {
+        curl_easy_setopt(curl_->handle, CURLOPT_SSL_OPTIONS, CURLSSLOPT_REVOKE_BEST_EFFORT);
+        curl_easy_setopt(curl_->handle, CURLOPT_PROXY_SSL_OPTIONS, CURLSSLOPT_REVOKE_BEST_EFFORT);
     }
 #endif
     if (!options.ca_info.empty()) {
