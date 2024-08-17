@@ -1,3 +1,5 @@
+#include <chrono>
+#include <cstddef>
 #include <gtest/gtest.h>
 
 #include <array>
@@ -5,6 +7,7 @@
 #include <fstream>
 #include <string>
 
+#include "cpr/cookies.h"
 #include "cpr/cpr.h"
 #include "cpr/multipart.h"
 
@@ -630,10 +633,17 @@ TEST(UrlEncodedPostTests, PostWithNoBodyTest) {
 }
 
 static std::string getTimestamp() {
-    char buf[1000];
-    time_t now = time(0);
-    struct tm* tm = gmtime(&now);
-    strftime(buf, sizeof buf, "%a, %d %b %Y %H:%M:%S GMT", tm);
+    const std::chrono::system_clock::time_point tp = std::chrono::system_clock::now();
+    const time_t timeT = std::chrono::system_clock::to_time_t(tp);
+    // NOLINTNEXTLINE(concurrency-mt-unsafe)
+    struct tm* tm = gmtime(&timeT);
+
+    std::string buf;
+    buf.resize(EXPIRES_STRING_SIZE);
+
+    const size_t s = strftime(buf.data(), buf.size(), "%a, %d %b %Y %H:%M:%S GMT", tm);
+    EXPECT_GT(s, 0);
+    buf.resize(s);
     return buf;
 }
 
