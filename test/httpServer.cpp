@@ -143,12 +143,10 @@ void HttpServer::OnRequestLowSpeedBytes(mg_connection* conn, mg_http_message* /*
 }
 
 void HttpServer::OnRequestBasicCookies(mg_connection* conn, mg_http_message* /*msg*/) {
-    time_t expires_time = 3905119080; // Expires=Wed, 30 Sep 2093 03:18:00 GMT
-    std::array<char, EXPIRES_STRING_SIZE> expires_string;
-    std::strftime(expires_string.data(), expires_string.size(), "%a, %d %b %Y %H:%M:%S GMT", gmtime(&expires_time));
+    const std::string expires = "Wed, 30 Sep 2093 03:18:00 GMT";
 
-    std::string cookie1{"SID=31d4d96e407aad42; Expires=" + std::string(expires_string.data()) + "; Secure"};
-    std::string cookie2{"lang=en-US; Expires=" + std::string(expires_string.data()) + "; Secure"};
+    std::string cookie1{"SID=31d4d96e407aad42; Expires=" + expires + "; Secure"};
+    std::string cookie2{"lang=en-US; Expires=" + expires + "; Secure"};
     std::string headers =
             "Content-Type: text/html\r\n"
             "Set-Cookie: " +
@@ -162,12 +160,10 @@ void HttpServer::OnRequestBasicCookies(mg_connection* conn, mg_http_message* /*m
 }
 
 void HttpServer::OnRequestEmptyCookies(mg_connection* conn, mg_http_message* /*msg*/) {
-    time_t expires_time = 3905119080; // Expires=Wed, 30 Sep 2093 03:18:00 GMT
-    std::array<char, EXPIRES_STRING_SIZE> expires_string;
-    std::strftime(expires_string.data(), sizeof(expires_string), "%a, %d %b %Y %H:%M:%S GMT", gmtime(&expires_time));
+    const std::string expires = "Wed, 30 Sep 2093 03:18:00 GMT";
 
-    std::string cookie1{"SID=; Expires=" + std::string(expires_string.data()) + "; Secure"};
-    std::string cookie2{"lang=; Expires=" + std::string(expires_string.data()) + "; Secure"};
+    std::string cookie1{"SID=; Expires=" + expires + "; Secure"};
+    std::string cookie2{"lang=; Expires=" + expires + "; Secure"};
     std::string headers =
             "Content-Type: text/html\r\n"
             "Set-Cookie: " +
@@ -181,7 +177,7 @@ void HttpServer::OnRequestEmptyCookies(mg_connection* conn, mg_http_message* /*m
 }
 
 void HttpServer::OnRequestCookiesReflect(mg_connection* conn, mg_http_message* msg) {
-    mg_str* request_cookies;
+    mg_str* request_cookies{nullptr};
     if ((request_cookies = mg_http_get_header(msg, "Cookie")) == nullptr) {
         std::string errorMessage{"Cookie not found"};
         SendError(conn, 400, errorMessage);
@@ -193,19 +189,17 @@ void HttpServer::OnRequestCookiesReflect(mg_connection* conn, mg_http_message* m
 }
 
 void HttpServer::OnRequestRedirectionWithChangingCookies(mg_connection* conn, mg_http_message* msg) {
-    time_t expires_time = 3905119080; // Expires=Wed, 30 Sep 2093 03:18:00 GMT
-    std::array<char, EXPIRES_STRING_SIZE> expires_string;
-    std::strftime(expires_string.data(), sizeof(expires_string), "%a, %d %b %Y %H:%M:%S GMT", gmtime(&expires_time));
+    const std::string expires = "Wed, 30 Sep 2093 03:18:00 GMT";
 
-    mg_str* request_cookies;
+    mg_str* request_cookies{nullptr};
     std::string cookie_str;
     if ((request_cookies = mg_http_get_header(msg, "Cookie")) != nullptr) {
         cookie_str = std::string{request_cookies->ptr, request_cookies->len};
     }
 
     if (cookie_str.find("SID=31d4d96e407aad42") == std::string::npos) {
-        std::string cookie1{"SID=31d4d96e407aad42; Expires=" + std::string(expires_string.data()) + "; Secure"};
-        std::string cookie2{"lang=en-US; Expires=" + std::string(expires_string.data()) + "; Secure"};
+        std::string cookie1{"SID=31d4d96e407aad42; Expires=" + expires + "; Secure"};
+        std::string cookie2{"lang=en-US; Expires=" + expires + "; Secure"};
         std::string headers =
                 "Content-Type: text/html\r\n"
                 "Location: http://127.0.0.1:61936/redirection_with_changing_cookies.html\r\n"
