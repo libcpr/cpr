@@ -118,6 +118,16 @@ cmake .. -DCPR_USE_SYSTEM_CURL=ON
 cmake --build . --parallel
 sudo cmake --install .
 ```
+#### Build Static Library
+As an alternative if you want to switch between a static or shared version of cpr use ['-DBUILD_SHARED_LIBS=ON/OFF'](https://cmake.org/cmake/help/latest/variable/BUILD_SHARED_LIBS.html).
+```Bash
+git clone https://github.com/libcpr/cpr.git
+cd cpr && mkdir build && cd build
+cmake .. -DCPR_USE_SYSTEM_CURL=ON -DBUILD_SHARED_LIBS=OFF
+cmake --build . --parallel
+sudo cmake --install .
+```
+
 In your `CMakeLists.txt`:
 ```cmake
 find_package(cpr REQUIRED)
