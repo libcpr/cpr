@@ -1,3 +1,4 @@
+#include <functional>
 #include <string>
 #include <vector>
 
@@ -313,7 +314,7 @@ static TestSynchronizationEnv* synchro_env = new TestSynchronizationEnv();
 TEST(MultiAsyncCancelTests, CancellationOnQueue) {
     synchro_env->Reset();
     const Url hello_url{server->GetBaseUrl() + "/hello.html"};
-    const std::function observer_fn{[](cpr_pf_arg_t, cpr_pf_arg_t, cpr_pf_arg_t, cpr_pf_arg_t, intptr_t) -> bool {
+    const std::function<bool(cpr_pf_arg_t, cpr_pf_arg_t, cpr_pf_arg_t, cpr_pf_arg_t, intptr_t)> observer_fn{[](cpr_pf_arg_t, cpr_pf_arg_t, cpr_pf_arg_t, cpr_pf_arg_t, intptr_t) -> bool {
         synchro_env->fn_called.store(true);
         return true;
     }};
@@ -342,7 +343,7 @@ TEST(MultiAsyncCancelTests, TestCancellationInTransit) {
 
     // 1. Thread running the test acquires the condition variable's mutex
     std::unique_lock setup_lock{synchro_env->test_cv_mutex};
-    const std::function observer_fn{[](cpr_pf_arg_t, cpr_pf_arg_t, cpr_pf_arg_t, cpr_pf_arg_t, intptr_t) -> bool {
+    const std::function<bool(cpr_pf_arg_t, cpr_pf_arg_t, cpr_pf_arg_t, cpr_pf_arg_t, intptr_t)> observer_fn{[](cpr_pf_arg_t, cpr_pf_arg_t, cpr_pf_arg_t, cpr_pf_arg_t, intptr_t) -> bool {
         if (synchro_env->counter == 0) {
             // 3. in Threadpool, the cv mutex is obtained by the worker thread
             const std::unique_lock l{synchro_env->test_cv_mutex};
@@ -374,7 +375,7 @@ TEST(MultiAsyncCancelTests, TestCancellationOnResponseWrapperDestruction) {
     const Url call_url{server->GetBaseUrl() + "/hello.html"};
     synchro_env->Reset();
     std::unique_lock setup_lock{synchro_env->test_cv_mutex};
-    const std::function observer_fn{[](cpr_pf_arg_t, cpr_pf_arg_t, cpr_pf_arg_t, cpr_pf_arg_t, intptr_t) -> bool {
+    const std::function<bool(cpr_pf_arg_t, cpr_pf_arg_t, cpr_pf_arg_t, cpr_pf_arg_t, intptr_t)> observer_fn{[](cpr_pf_arg_t, cpr_pf_arg_t, cpr_pf_arg_t, cpr_pf_arg_t, intptr_t) -> bool {
         const std::unique_lock l{synchro_env->test_cv_mutex};
         synchro_env->counter++;
         synchro_env->test_cv.notify_all();
@@ -415,7 +416,7 @@ TEST(MultiAsyncCancelTests, TestIntervalOfProgressCallsLowSpeed) {
     // This variable will be used to cancel the transaction at the point of the Nth call.
     const std::chrono::time_point start{std::chrono::steady_clock::now()};
 
-    const std::function observer_fn{[N](cpr_pf_arg_t, cpr_pf_arg_t, cpr_pf_arg_t, cpr_pf_arg_t, intptr_t) -> bool {
+    const std::function<bool(cpr_pf_arg_t, cpr_pf_arg_t, cpr_pf_arg_t, cpr_pf_arg_t, intptr_t)> observer_fn{[N](cpr_pf_arg_t, cpr_pf_arg_t, cpr_pf_arg_t, cpr_pf_arg_t, intptr_t) -> bool {
         const size_t current_iteration{++(synchro_env->counter)};
         return current_iteration <= N;
     }};
