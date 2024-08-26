@@ -650,7 +650,7 @@ void Session::SetAcceptEncoding(AcceptEncoding&& accept_encoding) {
 }
 
 cpr_off_t Session::GetDownloadFileLength() {
-    cpr_off_t downloadFileLenth = -1;
+    cpr_off_t downloadFileLength = -1;
     curl_easy_setopt(curl_->handle, CURLOPT_URL, url_.c_str());
 
     const std::string protocol = url_.str().substr(0, url_.str().find(':'));
@@ -669,10 +669,10 @@ cpr_off_t Session::GetDownloadFileLength() {
         long status_code{};
         curl_easy_getinfo(curl_->handle, CURLINFO_RESPONSE_CODE, &status_code);
         if (200 == status_code) {
-            curl_easy_getinfo(curl_->handle, CURLINFO_CONTENT_LENGTH_DOWNLOAD_T, &downloadFileLenth);
+            curl_easy_getinfo(curl_->handle, CURLINFO_CONTENT_LENGTH_DOWNLOAD_T, &downloadFileLength);
         }
     }
-    return downloadFileLenth;
+    return downloadFileLength;
 }
 
 void Session::ResponseStringReserve(size_t size) {
