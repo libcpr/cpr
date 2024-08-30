@@ -48,7 +48,6 @@ macro(cpr_option OPTION_NAME OPTION_TEXT OPTION_DEFAULT)
     message(STATUS "  ${OPTION_NAME}: ${${OPTION_NAME}}")
 endmacro()
 
-option(BUILD_SHARED_LIBS "Build libraries as shared libraries" ON)
 message(STATUS "C++ Requests CMake Options")
 message(STATUS "=======================================================")
 cpr_option(CPR_GENERATE_COVERAGE "Set to ON to generate coverage reports." OFF)
