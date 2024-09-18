@@ -5,6 +5,7 @@
 
 #include <atomic>
 #include <functional>
+#include <cstdint>
 #include <optional>
 #include <utility>
 
