@@ -114,8 +114,8 @@ class ThreadPool {
         std::shared_ptr<std::thread> thread;
         std::thread::id id;
         Status status;
-        time_t start_time;
-        time_t stop_time;
+        std::chrono::steady_clock::time_point start_time;
+        std::chrono::steady_clock::time_point stop_time;
     };
 
     std::atomic<Status> status{Status::STOP};
