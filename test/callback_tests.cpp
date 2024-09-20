@@ -738,7 +738,7 @@ TEST(CallbackPatchTests, CallbackPatchFunctionTextReferenceTest) {
 TEST(CallbackDataTests, CallbackReadFunctionCancelTest) {
     Url url{server->GetBaseUrl() + "/url_post.html"};
     Response response = cpr::Post(url, cpr::ReadCallback([](char* /*buffer*/, size_t& /*size*/, intptr_t /*userdata*/) -> size_t { return false; }));
-    EXPECT_EQ(response.error.code, ErrorCode::REQUEST_CANCELLED);
+    EXPECT_TRUE((response.error.code == ErrorCode::ABORTED_BY_CALLBACK) || (response.error.code == ErrorCode::WRITE_ERROR));
 }
 
 TEST(CallbackDataTests, CallbackReadFunctionTextTest) {
@@ -858,7 +858,7 @@ TEST(CallbackDataTests, CallbackReadFunctionChunkedTest) {
 TEST(CallbackDataTests, CallbackHeaderFunctionCancelTest) {
     Url url{server->GetBaseUrl() + "/url_post.html"};
     Response response = Post(url, HeaderCallback{[](const std::string_view& /*header*/, intptr_t /*userdata*/) -> bool { return false; }});
-    EXPECT_EQ(response.error.code, ErrorCode::REQUEST_CANCELLED);
+    EXPECT_TRUE((response.error.code == ErrorCode::ABORTED_BY_CALLBACK) || (response.error.code == ErrorCode::WRITE_ERROR));
 }
 
 TEST(CallbackDataTests, CallbackHeaderFunctionTextTest) {
@@ -878,7 +878,7 @@ TEST(CallbackDataTests, CallbackHeaderFunctionTextTest) {
 TEST(CallbackDataTests, CallbackWriteFunctionCancelTest) {
     Url url{server->GetBaseUrl() + "/url_post.html"};
     Response response = Post(url, WriteCallback{[](const std::string_view& /*header*/, intptr_t /*userdata*/) -> bool { return false; }});
-    EXPECT_EQ(response.error.code, ErrorCode::REQUEST_CANCELLED);
+    EXPECT_TRUE((response.error.code == ErrorCode::ABORTED_BY_CALLBACK) || (response.error.code == ErrorCode::WRITE_ERROR));
 }
 
 TEST(CallbackDataTests, CallbackWriteFunctionTextTest) {
@@ -898,7 +898,7 @@ TEST(CallbackDataTests, CallbackWriteFunctionTextTest) {
 TEST(CallbackDataTests, CallbackProgressFunctionCancelTest) {
     Url url{server->GetBaseUrl() + "/url_post.html"};
     Response response = Post(url, ProgressCallback{[](size_t /*downloadTotal*/, size_t /*downloadNow*/, size_t /*uploadTotal*/, size_t /*uploadNow*/, intptr_t /*userdata*/) -> bool { return false; }});
-    EXPECT_EQ(response.error.code, ErrorCode::REQUEST_CANCELLED);
+    EXPECT_TRUE((response.error.code == ErrorCode::ABORTED_BY_CALLBACK) || (response.error.code == ErrorCode::WRITE_ERROR));
 }
 
 TEST(CallbackDataTests, CallbackProgressFunctionTotalTest) {
