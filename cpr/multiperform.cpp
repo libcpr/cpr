@@ -9,8 +9,8 @@
 #include <cassert>
 #include <cstddef>
 #include <curl/curl.h>
-#include <curl/multi.h>
 #include <curl/curlver.h>
+#include <curl/multi.h>
 #include <functional>
 #include <iosfwd>
 #include <iostream>

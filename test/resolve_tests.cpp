@@ -28,7 +28,7 @@ TEST(ResolveTests, RedirectMultiple) {
     Resolve resolve2{"www.example1.com", "127.0.0.1", {server->GetPort()}};
 
     Response response = cpr::Get(url1, std::vector<Resolve>{resolve1, resolve2}, Header{{"RedirectLocation", url2.str()}});
-    
+
     std::string expected_text{"Hello world!"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(url2, response.url);
