@@ -7,7 +7,6 @@ on:
       version:
         description: 'The optional semantic version number. If not supplied the branch/tag will be used.'
         type: string
-  pull_request:
 
 jobs:
   package-ubuntu-latest-amd64:
