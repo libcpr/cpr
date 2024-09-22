@@ -47,8 +47,10 @@ _site/
 *.swp
 
 # VSCode
-.vscode/
+.vscode/*
+!.vscode/tasks.json
 .vs/
+!.vs/tasks.json
 
 # clangd
 .cache/
