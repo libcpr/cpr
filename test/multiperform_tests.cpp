@@ -92,10 +92,19 @@ TEST(MultiperformRemoveSessionTests, MultiperformRemoveMultipleSessionsTest) {
     }
 }
 
-TEST(MultiperformRemoveSessionTests, MultiperformRemoveNonExistingSessionTest) {
+TEST(MultiperformRemoveSessionTests, MultiperformRemoveNonExistingSessionEmptyTest) {
     std::shared_ptr<Session> session = std::make_shared<Session>();
     MultiPerform multiperform;
     EXPECT_THROW(multiperform.RemoveSession(session), std::invalid_argument);
+}
+
+TEST(MultiperformRemoveSessionTests, MultiperformRemoveNonExistingSessionTest) {
+    MultiPerform multiperform;
+    std::shared_ptr<Session> session = std::make_shared<Session>();
+    multiperform.AddSession(session);
+
+    std::shared_ptr<Session> session2 = std::make_shared<Session>();
+    EXPECT_THROW(multiperform.RemoveSession(session2), std::invalid_argument);
 }
 
 TEST(MultiperformGetTests, MultiperformSingleSessionGetTest) {
