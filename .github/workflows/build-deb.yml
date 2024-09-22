@@ -1,8 +1,12 @@
 name: Build Debian Package
 on:
   push:
-      tags:
-        - 1.**
+    tags: [ '[0-9]+.[0-9]+.[0-9]+' ]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'The optional semantic version number. If not supplied the branch/tag will be used.'
+        type: string
   pull_request:
 
 jobs:
@@ -23,10 +27,18 @@ jobs:
     - name: "Install building tools"
       run: sudo apt install -y cmake debmake devscripts debhelper
 
+    - name: Set version based on input
+      if: ${{ inputs.version }}
+      run: echo "RELEASE_VERSION=${{ inputs.version }}" >> "$GITHUB_ENV"
+    - name: Set version based on ref
+      if: ${{ !inputs.version }}
+      run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> "$GITHUB_ENV"
+    - name: Print Version
+      run: echo "deb version will be '${{ env.RELEASE_VERSION }}'"
       # Build package of runtime library
     - name: "Package build of runtime library"
       env: 
-        VERSION: ${{ github.ref_name }}
+        VERSION: ${{ env.RELEASE_VERSION }}
       run: bash cpr/package-build/build-package.sh cpr
 
     - name: "Upload deb-packages"
