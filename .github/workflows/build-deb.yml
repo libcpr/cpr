@@ -1,9 +1,12 @@
 name: Build Debian Package
 on:
   push:
-      tags:
-        - 1.**
-  pull_request:
+    tags: [ '[0-9]+.[0-9]+.[0-9]+' ]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'The optional semantic version number. If not supplied the branch/tag will be used.'
+        type: string
 
 jobs:
   package-ubuntu-latest-amd64:
@@ -22,11 +25,25 @@ jobs:
       run: sudo apt install -y libssl-dev libcurl4-openssl-dev
     - name: "Install building tools"
       run: sudo apt install -y cmake debmake devscripts debhelper
-
+      # Set version number
+    - name: Set version based on input
+      if: ${{ inputs.version }}
+      run: echo "RELEASE_VERSION=${{ inputs.version }}" >> "$GITHUB_ENV"
+    - name: Set version based on ref
+      if: ${{ !inputs.version }}
+      run: |
+        mkdir -p cpr/build
+        pushd cpr/build
+        cmake .. -DCPR_BUILD_VERSION_OUTPUT_ONLY=ON
+        echo "RELEASE_VERSION=$(cat version.txt)" >> $GITHUB_ENV
+        popd
+        rm -rf cpr/build
+    - name: Print Version
+      run: echo "deb version will be '${{ env.RELEASE_VERSION }}'"
       # Build package of runtime library
     - name: "Package build of runtime library"
       env: 
-        VERSION: ${{ github.ref_name }}
+        VERSION: ${{ env.RELEASE_VERSION }}
       run: bash cpr/package-build/build-package.sh cpr
 
     - name: "Upload deb-packages"

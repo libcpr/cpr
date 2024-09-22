@@ -66,6 +66,7 @@ cpr_option(CPR_ENABLE_CPPCHECK "Set to ON to enable Cppcheck static analysis. Re
 cpr_option(CPR_BUILD_TESTS "Set to ON to build cpr tests." OFF)
 cpr_option(CPR_BUILD_TESTS_SSL "Set to ON to build cpr ssl tests" ${CPR_BUILD_TESTS})
 cpr_option(CPR_BUILD_TESTS_PROXY "Set to ON to build proxy tests. They fail in case there is no valid proxy server available in proxy_tests.cpp" OFF)
+cpr_option(CPR_BUILD_VERSION_OUTPUT_ONLY "Set to ON to only export the version into 'build/version.txt' and exit" OFF)
 cpr_option(CPR_SKIP_CA_BUNDLE_SEARCH "Skip searching for Certificate Authority certs. Turn ON for systems like iOS where file access is restricted and prevents https from working." OFF)
 cpr_option(CPR_USE_BOOST_FILESYSTEM "Set to ON to use the Boost.Filesystem library. This is useful, on, e.g., Apple platforms, where std::filesystem may not always be available when targeting older OS versions." OFF)
 cpr_option(CPR_DEBUG_SANITIZER_FLAG_THREAD "Enables the ThreadSanitizer for debug builds." OFF)
@@ -74,6 +75,13 @@ cpr_option(CPR_DEBUG_SANITIZER_FLAG_LEAK "Enables the LeakSanitizer for debug bu
 cpr_option(CPR_DEBUG_SANITIZER_FLAG_UB "Enables the UndefinedBehaviorSanitizer for debug builds." OFF)
 cpr_option(CPR_DEBUG_SANITIZER_FLAG_ALL "Enables all sanitizers for debug builds except the ThreadSanitizer since it is incompatible with the other sanitizers." OFF)
 message(STATUS "=======================================================")
+
+# Save the project version as txt file for deb and NuGet builds
+if(CPR_BUILD_VERSION_OUTPUT_ONLY)
+    message(STATUS "Printing version and exiting...")
+    file(WRITE "${CMAKE_BINARY_DIR}/version.txt" "${PROJECT_VERSION}")
+    return()
+endif()
 
 if (CPR_FORCE_USE_SYSTEM_CURL)
     message(WARNING "The variable CPR_FORCE_USE_SYSTEM_CURL is deprecated, please use CPR_USE_SYSTEM_CURL instead")
