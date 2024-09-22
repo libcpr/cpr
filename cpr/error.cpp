@@ -10,59 +10,130 @@ ErrorCode Error::getErrorCodeForCurlError(std::int32_t curl_code) {
             return ErrorCode::OK;
         case CURLE_UNSUPPORTED_PROTOCOL:
             return ErrorCode::UNSUPPORTED_PROTOCOL;
+        case CURLE_FAILED_INIT:
+            return ErrorCode::FAILED_INIT;
         case CURLE_URL_MALFORMAT:
-            return ErrorCode::INVALID_URL_FORMAT;
+            return ErrorCode::URL_MALFORMAT;
+        case CURLE_NOT_BUILT_IN:
+            return ErrorCode::NOT_BUILT_IN;
         case CURLE_COULDNT_RESOLVE_PROXY:
-            return ErrorCode::PROXY_RESOLUTION_FAILURE;
+            return ErrorCode::COULDNT_RESOLVE_PROXY;
         case CURLE_COULDNT_RESOLVE_HOST:
-            return ErrorCode::HOST_RESOLUTION_FAILURE;
+            return ErrorCode::COULDNT_RESOLVE_HOST;
         case CURLE_COULDNT_CONNECT:
-            return ErrorCode::CONNECTION_FAILURE;
+            return ErrorCode::COULDNT_CONNECT;
+        case CURLE_WEIRD_SERVER_REPLY:
+            return ErrorCode::WEIRD_SERVER_REPLY;
+        case CURLE_REMOTE_ACCESS_DENIED:
+            return ErrorCode::REMOTE_ACCESS_DENIED;
+        case CURLE_HTTP2:
+            return ErrorCode::HTTP2;
+        case CURLE_QUOTE_ERROR:
+            return ErrorCode::QUOTE_ERROR;
+        case CURLE_HTTP_RETURNED_ERROR:
+            return ErrorCode::HTTP_RETURNED_ERROR;
+        case CURLE_WRITE_ERROR:
+            return ErrorCode::WRITE_ERROR;
+        case CURLE_UPLOAD_FAILED:
+            return ErrorCode::UPLOAD_FAILED;
+        case CURLE_READ_ERROR:
+            return ErrorCode::READ_ERROR;
+        case CURLE_OUT_OF_MEMORY:
+            return ErrorCode::OUT_OF_MEMORY;
         case CURLE_OPERATION_TIMEDOUT:
             return ErrorCode::OPERATION_TIMEDOUT;
+        case CURLE_RANGE_ERROR:
+            return ErrorCode::RANGE_ERROR;
+        case CURLE_HTTP_POST_ERROR:
+            return ErrorCode::HTTP_POST_ERROR;
         case CURLE_SSL_CONNECT_ERROR:
             return ErrorCode::SSL_CONNECT_ERROR;
-#if LIBCURL_VERSION_NUM < 0x073e00
-        case CURLE_PEER_FAILED_VERIFICATION:
-            return ErrorCode::SSL_REMOTE_CERTIFICATE_ERROR;
-#endif
+        case CURLE_BAD_DOWNLOAD_RESUME:
+            return ErrorCode::BAD_DOWNLOAD_RESUME;
+        case CURLE_FILE_COULDNT_READ_FILE:
+            return ErrorCode::FILE_COULDNT_READ_FILE;
+        case CURLE_FUNCTION_NOT_FOUND:
+            return ErrorCode::FUNCTION_NOT_FOUND;
         case CURLE_ABORTED_BY_CALLBACK:
-        case CURLE_WRITE_ERROR:
-            return ErrorCode::REQUEST_CANCELLED;
-        case CURLE_GOT_NOTHING:
-            return ErrorCode::EMPTY_RESPONSE;
-        case CURLE_SSL_ENGINE_NOTFOUND:
-        case CURLE_SSL_ENGINE_SETFAILED:
-            return ErrorCode::GENERIC_SSL_ERROR;
-        case CURLE_SEND_ERROR:
-            return ErrorCode::NETWORK_SEND_FAILURE;
-        case CURLE_RECV_ERROR:
-            return ErrorCode::NETWORK_RECEIVE_ERROR;
-        case CURLE_SSL_CERTPROBLEM:
-            return ErrorCode::SSL_LOCAL_CERTIFICATE_ERROR;
-        case CURLE_SSL_CIPHER:
-            return ErrorCode::GENERIC_SSL_ERROR;
-#if LIBCURL_VERSION_NUM >= 0x073e00
-        case CURLE_PEER_FAILED_VERIFICATION:
-            return ErrorCode::SSL_REMOTE_CERTIFICATE_ERROR;
-#else
-        case CURLE_SSL_CACERT:
-            return ErrorCode::SSL_CACERT_ERROR;
-#endif
-        case CURLE_USE_SSL_FAILED:
-        case CURLE_SSL_ENGINE_INITFAILED:
-            return ErrorCode::GENERIC_SSL_ERROR;
-        case CURLE_SSL_CACERT_BADFILE:
-            return ErrorCode::SSL_CACERT_ERROR;
-        case CURLE_SSL_SHUTDOWN_FAILED:
-            return ErrorCode::GENERIC_SSL_ERROR;
-        case CURLE_SSL_CRL_BADFILE:
-        case CURLE_SSL_ISSUER_ERROR:
-            return ErrorCode::SSL_CACERT_ERROR;
+            return ErrorCode::ABORTED_BY_CALLBACK;
+        case CURLE_BAD_FUNCTION_ARGUMENT:
+            return ErrorCode::BAD_FUNCTION_ARGUMENT;
+        case CURLE_INTERFACE_FAILED:
+            return ErrorCode::INTERFACE_FAILED;
+        case CURLE_OBSOLETE46:
+            return ErrorCode::OBSOLETE46;
         case CURLE_TOO_MANY_REDIRECTS:
             return ErrorCode::TOO_MANY_REDIRECTS;
+        case CURLE_UNKNOWN_OPTION:
+            return ErrorCode::UNKNOWN_OPTION;
+        case CURLE_SETOPT_OPTION_SYNTAX:
+            return ErrorCode::SETOPT_OPTION_SYNTAX;
+        case CURLE_GOT_NOTHING:
+            return ErrorCode::GOT_NOTHING;
+        case CURLE_SSL_ENGINE_NOTFOUND:
+            return ErrorCode::SSL_ENGINE_NOTFOUND;
+        case CURLE_SSL_ENGINE_SETFAILED:
+            return ErrorCode::SSL_ENGINE_SETFAILED;
+        case CURLE_SEND_ERROR:
+            return ErrorCode::SEND_ERROR;
+        case CURLE_RECV_ERROR:
+            return ErrorCode::RECV_ERROR;
+        case CURLE_SSL_CERTPROBLEM:
+            return ErrorCode::SSL_CERTPROBLEM;
+        case CURLE_SSL_CIPHER:
+            return ErrorCode::SSL_CIPHER;
+        case CURLE_PEER_FAILED_VERIFICATION:
+            return ErrorCode::PEER_FAILED_VERIFICATION;
+        case CURLE_BAD_CONTENT_ENCODING:
+            return ErrorCode::BAD_CONTENT_ENCODING;
+        case CURLE_FILESIZE_EXCEEDED:
+            return ErrorCode::FILESIZE_EXCEEDED;
+        case CURLE_USE_SSL_FAILED:
+            return ErrorCode::USE_SSL_FAILED;
+        case CURLE_SEND_FAIL_REWIND:
+            return ErrorCode::SEND_FAIL_REWIND;
+        case CURLE_SSL_ENGINE_INITFAILED:
+            return ErrorCode::SSL_ENGINE_INITFAILED;
+        case CURLE_LOGIN_DENIED:
+            return ErrorCode::LOGIN_DENIED;
+        case CURLE_SSL_CACERT_BADFILE:
+            return ErrorCode::SSL_CACERT_BADFILE;
+        case CURLE_SSL_SHUTDOWN_FAILED:
+            return ErrorCode::SSL_SHUTDOWN_FAILED;
+        case CURLE_AGAIN:
+            return ErrorCode::AGAIN;
+        case CURLE_SSL_CRL_BADFILE:
+            return ErrorCode::SSL_CRL_BADFILE;
+        case CURLE_SSL_ISSUER_ERROR:
+            return ErrorCode::SSL_ISSUER_ERROR;
+        case CURLE_CHUNK_FAILED:
+            return ErrorCode::CHUNK_FAILED;
+        case CURLE_NO_CONNECTION_AVAILABLE:
+            return ErrorCode::NO_CONNECTION_AVAILABLE;
+        case CURLE_SSL_PINNEDPUBKEYNOTMATCH:
+            return ErrorCode::SSL_PINNEDPUBKEYNOTMATCH;
+        case CURLE_SSL_INVALIDCERTSTATUS:
+            return ErrorCode::SSL_INVALIDCERTSTATUS;
+        case CURLE_HTTP2_STREAM:
+            return ErrorCode::HTTP2_STREAM;
+        case CURLE_RECURSIVE_API_CALL:
+            return ErrorCode::RECURSIVE_API_CALL;
+        case CURLE_AUTH_ERROR:
+            return ErrorCode::AUTH_ERROR;
+        case CURLE_HTTP3:
+            return ErrorCode::HTTP3;
+        case CURLE_QUIC_CONNECT_ERROR:
+            return ErrorCode::QUIC_CONNECT_ERROR;
+        case CURLE_PROXY:
+            return ErrorCode::PROXY;
+        case CURLE_SSL_CLIENTCERT:
+            return ErrorCode::SSL_CLIENTCERT;
+        case CURLE_UNRECOVERABLE_POLL:
+            return ErrorCode::UNRECOVERABLE_POLL;
+        case CURLE_TOO_LARGE:
+            return ErrorCode::TOO_LARGE;
         default:
-            return ErrorCode::INTERNAL_ERROR;
+            return ErrorCode::UNKNOWN_ERROR;
     }
 }
 

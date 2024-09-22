@@ -119,7 +119,7 @@ TEST(UrlEncodedPostTests, UrlPostBadHostTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{}, response.header["content-type"]);
     EXPECT_EQ(0, response.status_code);
-    EXPECT_EQ(ErrorCode::HOST_RESOLUTION_FAILURE, response.error.code);
+    EXPECT_EQ(ErrorCode::COULDNT_RESOLVE_HOST, response.error.code);
 }
 
 TEST(UrlEncodedPostTests, FormPostSingleTest) {

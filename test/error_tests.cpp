@@ -24,7 +24,7 @@ TEST(ErrorTests, InvalidURLFailure) {
     Url url{"???"};
     Response response = cpr::Get(url);
     EXPECT_EQ(0, response.status_code);
-    EXPECT_EQ(ErrorCode::INVALID_URL_FORMAT, response.error.code);
+    EXPECT_EQ(ErrorCode::URL_MALFORMAT, response.error.code);
 }
 
 TEST(ErrorTests, TimeoutFailure) {
@@ -45,16 +45,16 @@ TEST(ErrorTests, ConnectTimeoutFailure) {
     Url url{"http://localhost:67"};
     Response response = cpr::Get(url, cpr::ConnectTimeout{1});
     EXPECT_EQ(0, response.status_code);
-    // Sometimes a CONNECTION_FAILURE happens before the OPERATION_TIMEDOUT:
-    EXPECT_TRUE(response.error.code == ErrorCode::OPERATION_TIMEDOUT || response.error.code == ErrorCode::CONNECTION_FAILURE);
+    // Sometimes a COULDNT_CONNECT happens before the OPERATION_TIMEDOUT:
+    EXPECT_TRUE(response.error.code == ErrorCode::OPERATION_TIMEDOUT || response.error.code == ErrorCode::COULDNT_CONNECT);
 }
 
 TEST(ErrorTests, ChronoConnectTimeoutFailure) {
     Url url{"http://localhost:67"};
     Response response = cpr::Get(url, cpr::ConnectTimeout{std::chrono::milliseconds{1}});
     EXPECT_EQ(0, response.status_code);
-    // Sometimes a CONNECTION_FAILURE happens before the OPERATION_TIMEDOUT:
-    EXPECT_TRUE(response.error.code == ErrorCode::OPERATION_TIMEDOUT || response.error.code == ErrorCode::CONNECTION_FAILURE);
+    // Sometimes a COULDNT_CONNECT happens before the OPERATION_TIMEDOUT:
+    EXPECT_TRUE(response.error.code == ErrorCode::OPERATION_TIMEDOUT || response.error.code == ErrorCode::COULDNT_CONNECT);
 }
 
 TEST(ErrorTests, LowSpeedTimeFailure) {
@@ -76,7 +76,7 @@ TEST(ErrorTests, ProxyFailure) {
     Response response = cpr::Get(url, cpr::Proxies{{"http", "http://bad_host.libcpr.org"}});
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(0, response.status_code);
-    EXPECT_EQ(ErrorCode::PROXY_RESOLUTION_FAILURE, response.error.code);
+    EXPECT_EQ(ErrorCode::COULDNT_RESOLVE_PROXY, response.error.code);
 }
 
 TEST(ErrorTests, BoolFalseTest) {

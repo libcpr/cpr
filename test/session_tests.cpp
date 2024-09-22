@@ -1086,12 +1086,12 @@ TEST(LocalPortTests, SetLocalPortTest) {
         session.SetLocalPortRange(local_port_range);
         // expected response: body contains port number in specified range
         // NOTE: even when trying up to 7000 ports there is the chance that all of them are occupied.
-        // It would be possible to also check here for ErrorCode::INTERNAL_ERROR but that somehow seems
+        // It would be possible to also check here for ErrorCode::UNKNOWN_ERROR but that somehow seems
         // wrong as then this test would pass in case SetLocalPort does not work at all
         // or in other words: we have to assume that at least one port in the specified range is free.
         response = session.Get();
 
-        if (response.error.code != ErrorCode::INTERNAL_ERROR) {
+        if (response.error.code != ErrorCode::UNKNOWN_ERROR) {
             break;
         }
     }
@@ -1121,12 +1121,12 @@ TEST(LocalPortTests, SetOptionTest) {
         session.SetOption(LocalPortRange(local_port_range));
         // expected response: body contains port number in specified range
         // NOTE: even when trying up to 7000 ports there is the chance that all of them are occupied.
-        // It would be possible to also check here for ErrorCode::INTERNAL_ERROR but that somehow seems
+        // It would be possible to also check here for ErrorCode::UNKNOWN_ERROR but that somehow seems
         // wrong as then this test would pass in case SetLocalPort does not work at all
         // or in other words: we have to assume that at least one port in the specified range is free.
         response = session.Get();
 
-        if (response.error.code != ErrorCode::INTERNAL_ERROR) {
+        if (response.error.code != ErrorCode::UNKNOWN_ERROR) {
             break;
         }
     }
@@ -1153,7 +1153,7 @@ TEST(LocalPortTests, SetLocalPortTestOccupied) {
     session.SetLocalPort(server->GetPort());
     // expected response: request cannot be made as port is already occupied
     Response response = session.Get();
-    EXPECT_EQ(ErrorCode::INTERNAL_ERROR, response.error.code);
+    EXPECT_EQ(ErrorCode::INTERFACE_FAILED, response.error.code);
 }
 
 TEST(LocalPortTests, SetOptionTestOccupied) {
@@ -1163,7 +1163,7 @@ TEST(LocalPortTests, SetOptionTestOccupied) {
     session.SetOption(LocalPort(server->GetPort()));
     // expected response: request cannot be made as port is already occupied
     Response response = session.Get();
-    EXPECT_EQ(ErrorCode::INTERNAL_ERROR, response.error.code);
+    EXPECT_EQ(ErrorCode::INTERFACE_FAILED, response.error.code);
 }
 #endif // _WIN32
 
