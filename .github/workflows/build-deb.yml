@@ -26,13 +26,19 @@ jobs:
       run: sudo apt install -y libssl-dev libcurl4-openssl-dev
     - name: "Install building tools"
       run: sudo apt install -y cmake debmake devscripts debhelper
-
+      # Set version number
     - name: Set version based on input
       if: ${{ inputs.version }}
       run: echo "RELEASE_VERSION=${{ inputs.version }}" >> "$GITHUB_ENV"
     - name: Set version based on ref
       if: ${{ !inputs.version }}
-      run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> "$GITHUB_ENV"
+      run: |
+        mkdir -p cpr/build
+        pushd cpr/build
+        cmake .. -DCPR_BUILD_VERSION_OUTPUT_ONLY=ON
+        echo "RELEASE_VERSION=$(cat version.txt)" >> $GITHUB_ENV
+        popd
+        rm -rf cpr/build
     - name: Print Version
       run: echo "deb version will be '${{ env.RELEASE_VERSION }}'"
       # Build package of runtime library
