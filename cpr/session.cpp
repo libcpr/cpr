@@ -355,14 +355,14 @@ void Session::SetUserAgent(const UserAgent& ua) {
 void Session::SetPayload(const Payload& payload) {
     hasBodyOrPayload_ = true;
     const std::string content = payload.GetContent(*curl_);
-    curl_easy_setopt(curl_->handle, CURLOPT_POSTFIELDSIZE_LARGE, static_cast<curl_off_t>(content.length()));
+    curl_easy_setopt(curl_->handle, CURLOPT_POSTFIELDSIZE_LARGE, static_cast<cpr_pf_arg_t>(content.length()));
     curl_easy_setopt(curl_->handle, CURLOPT_COPYPOSTFIELDS, content.c_str());
 }
 
 void Session::SetPayload(Payload&& payload) {
     hasBodyOrPayload_ = true;
     const std::string content = payload.GetContent(*curl_);
-    curl_easy_setopt(curl_->handle, CURLOPT_POSTFIELDSIZE_LARGE, static_cast<curl_off_t>(content.length()));
+    curl_easy_setopt(curl_->handle, CURLOPT_POSTFIELDSIZE_LARGE, static_cast<cpr_pf_arg_t>(content.length()));
     curl_easy_setopt(curl_->handle, CURLOPT_COPYPOSTFIELDS, content.c_str());
 }
 
@@ -454,13 +454,13 @@ void Session::SetCookies(const Cookies& cookies) {
 
 void Session::SetBody(const Body& body) {
     hasBodyOrPayload_ = true;
-    curl_easy_setopt(curl_->handle, CURLOPT_POSTFIELDSIZE_LARGE, static_cast<curl_off_t>(body.str().length()));
+    curl_easy_setopt(curl_->handle, CURLOPT_POSTFIELDSIZE_LARGE, static_cast<cpr_pf_arg_t>(body.str().length()));
     curl_easy_setopt(curl_->handle, CURLOPT_POSTFIELDS, body.c_str());
 }
 
 void Session::SetBody(Body&& body) {
     hasBodyOrPayload_ = true;
-    curl_easy_setopt(curl_->handle, CURLOPT_POSTFIELDSIZE_LARGE, static_cast<curl_off_t>(body.str().length()));
+    curl_easy_setopt(curl_->handle, CURLOPT_POSTFIELDSIZE_LARGE, static_cast<cpr_pf_arg_t>(body.str().length()));
     curl_easy_setopt(curl_->handle, CURLOPT_COPYPOSTFIELDS, body.c_str());
 }
 
