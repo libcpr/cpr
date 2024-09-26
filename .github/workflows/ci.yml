@@ -4,7 +4,7 @@ on: [push, workflow_dispatch, pull_request] # Trigger for every push as well as 
 env:
   # Enable verbose output.
   # Repeat up to 5 times to deal with flaky tests.
-  CTEST_OPTIONS: "-V --repeat until-pass:5"
+  CTEST_OPTIONS: "--repeat until-pass:5 --output-on-failure"
   # The OpenSSL path for CI runs. Found via 'brew info openssl'.
   MACOS_OPENSSL_ROOT_DIR: "/opt/homebrew/Cellar/openssl@3/3.3.0"
 
