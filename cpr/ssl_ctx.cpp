@@ -1,13 +1,18 @@
-
 #include "cpr/ssl_ctx.h"
+#include "cpr/ssl_options.h"
+#include <cstdio>
+#include <curl/curl.h>
 
 #if SUPPORT_CURLOPT_SSL_CTX_FUNCTION
 
 #ifdef OPENSSL_BACKEND_USED
 
-#include <openssl/err.h>
-#include <openssl/safestack.h>
+#include <openssl/bio.h>
+#include <openssl/pem.h>
 #include <openssl/ssl.h>
+#include <openssl/types.h>
+#include <openssl/x509.h>
+#include <openssl/x509_vfy.h>
 
 namespace cpr {
 

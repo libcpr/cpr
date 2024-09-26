@@ -2,18 +2,14 @@
 #define CPR_RESPONSE_H
 
 #include <cassert>
-#include <cstdint>
 #include <memory>
 #include <string>
-#include <utility>
 #include <vector>
 
 #include "cpr/cert_info.h"
 #include "cpr/cookies.h"
 #include "cpr/cprtypes.h"
 #include "cpr/error.h"
-#include "cpr/ssl_options.h"
-#include "cpr/util.h"
 
 namespace cpr {
 

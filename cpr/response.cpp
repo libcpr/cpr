@@ -1,4 +1,19 @@
 #include "cpr/response.h"
+#include <cassert>
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
+
+#include "cpr/cert_info.h"
+#include "cpr/cookies.h"
+#include "cpr/cprtypes.h"
+#include "cpr/curlholder.h"
+#include "cpr/error.h"
+#include "cpr/util.h"
+
+#include <curl/curl.h>
+#include <curl/curlver.h>
 
 namespace cpr {
 

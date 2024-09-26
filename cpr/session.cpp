@@ -1,19 +1,47 @@
 #include "cpr/session.h"
 
-#include <algorithm>
+#include <cassert>
+#include <cstdint>
 #include <cstdlib>
 #include <cstring>
 #include <fstream>
-#include <functional>
+#include <memory>
 #include <stdexcept>
 #include <string>
+#include <utility>
 
 #include <curl/curl.h>
+#include <curl/curlver.h>
+#include <curl/easy.h>
 
 #include "cpr/async.h"
+#include "cpr/auth.h"
+#include "cpr/bearer.h"
+#include "cpr/body.h"
+#include "cpr/callback.h"
+#include "cpr/connect_timeout.h"
+#include "cpr/cookies.h"
 #include "cpr/cprtypes.h"
+#include "cpr/curlholder.h"
+#include "cpr/http_version.h"
 #include "cpr/interceptor.h"
+#include "cpr/interface.h"
+#include "cpr/limit_rate.h"
+#include "cpr/local_port.h"
+#include "cpr/local_port_range.h"
+#include "cpr/low_speed.h"
+#include "cpr/multipart.h"
+#include "cpr/payload.h"
+#include "cpr/range.h"
+#include "cpr/redirect.h"
+#include "cpr/reserve_size.h"
+#include "cpr/response.h"
+#include "cpr/ssl_options.h"
+#include "cpr/timeout.h"
+#include "cpr/unix_socket.h"
+#include "cpr/user_agent.h"
 #include "cpr/util.h"
+#include "cpr/verbose.h"
 
 #if SUPPORT_CURLOPT_SSL_CTX_FUNCTION
 #include "cpr/ssl_ctx.h"
@@ -137,9 +165,10 @@ Response Session::makeDownloadRequest() {
     curl_easy_getinfo(curl_->handle, CURLINFO_COOKIELIST, &raw_cookies);
     Cookies cookies = util::parseCookies(raw_cookies);
     curl_slist_free_all(raw_cookies);
+
     std::string errorMsg = curl_->error.data();
 
-    return Response(curl_, "", std::move(header_string), std::move(cookies), Error(curl_error, std::move(errorMsg)));
+    return Response(curl_, "", std::move(header_string_), std::move(cookies), Error(curl_error, std::move(errorMsg)));
 }
 
 void Session::prepareCommon() {

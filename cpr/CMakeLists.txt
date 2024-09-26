@@ -12,8 +12,6 @@ add_library(cpr
         curlholder.cpp
         error.cpp
         multipart.cpp
-        parameters.cpp
-        payload.cpp
         proxies.cpp
         proxyauth.cpp
         session.cpp

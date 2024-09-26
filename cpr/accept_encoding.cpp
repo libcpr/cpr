@@ -1,8 +1,11 @@
 #include "cpr/accept_encoding.h"
 
 #include <algorithm>
+#include <initializer_list>
 #include <iterator>
 #include <numeric>
+#include <string>
+#include <utility>
 
 namespace cpr {
 

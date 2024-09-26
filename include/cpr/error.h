@@ -33,8 +33,8 @@ enum class ErrorCode {
 
 class Error {
   public:
-    ErrorCode code = ErrorCode::OK;
-    std::string message{};
+    ErrorCode code{ErrorCode::OK};
+    std::string message;
 
     Error() = default;
 
