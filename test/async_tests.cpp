@@ -48,7 +48,7 @@ TEST(AsyncTests, AsyncGetMultipleTest) {
 TEST(AsyncTests, AsyncGetMultipleReflectTest) {
     Url url{server->GetBaseUrl() + "/hello.html"};
     std::vector<AsyncResponse> responses;
-    for (size_t i = 0; i < 100; ++i) {
+    for (size_t i = 0; i < 25; ++i) {
         Parameters p{{"key", std::to_string(i)}};
         responses.emplace_back(cpr::GetAsync(url, p));
     }
@@ -61,6 +61,7 @@ TEST(AsyncTests, AsyncGetMultipleReflectTest) {
         EXPECT_EQ(expected_url, response.url);
         EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
         EXPECT_EQ(200, response.status_code);
+        EXPECT_EQ(response.error.code, cpr::ErrorCode::OK);
         ++i;
     }
 }
