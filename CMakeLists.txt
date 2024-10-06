@@ -183,6 +183,7 @@ if(CPR_USE_SYSTEM_CURL)
         find_package(CURL COMPONENTS HTTP HTTPS)
         if(CURL_FOUND)
             message(STATUS "Curl ${CURL_VERSION_STRING} found on this system.")
+
             # To be able to load certificates under Windows when using OpenSSL:
             if(CMAKE_USE_OPENSSL AND WIN32 AND (NOT (CURL_VERSION_STRING VERSION_GREATER_EQUAL "7.71.0")))
                 message(FATAL_ERROR "Your system curl version (${CURL_VERSION_STRING}) is too old to support OpenSSL on Windows which requires curl >= 7.71.0. Update your curl version, use WinSSL, disable SSL or use the built-in version of curl.")
@@ -202,6 +203,11 @@ if(CPR_USE_SYSTEM_CURL)
         else()
             message(FATAL_ERROR "Curl not found on this system. To use the built-in version set CPR_USE_SYSTEM_CURL to OFF.")
         endif()
+    endif()
+
+    # Check for the minimum supported curl version 
+    if(NOT (CURL_VERSION_STRING VERSION_GREATER_EQUAL "7.64.0"))
+        message(FATAL_ERROR "Your system curl version (${CURL_VERSION_STRING}) is too old! curl >= 7.64.0 is required. Update your curl version, or use the build in curl version e.g. via `cmake .. -DCPR_USE_SYSTEM_CURL=OFF` during CMake configure.")
     endif()
 else()
     message(STATUS "Configuring built-in curl...")
@@ -285,6 +291,15 @@ else()
     FetchContent_MakeAvailable(curl)
 
     restore_variable(DESTINATION CMAKE_CXX_CLANG_TIDY BACKUP CMAKE_CXX_CLANG_TIDY_BKP)
+endif()
+
+# Depending on which version of libcurl we are using the CMake target is called differently
+if(TARGET libcurl)
+    # Old curl CMake target name
+    set(CURL_LIB libcurl)
+else()
+    # New curl CMake target name
+    set(CURL_LIB CURL::libcurl)
 endif()
 
 # GTest configuration
