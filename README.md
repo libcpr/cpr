@@ -117,6 +117,7 @@ The only explicit requirements are:
 
 * a `C++11` compatible compiler such as Clang or GCC. The minimum required version of GCC is unknown, so if anyone has trouble building this library with a specific version of GCC, do let me know
 * If you would like to perform https requests `OpenSSL` and its development libraries are required.
+* If you do not use the build in version of [curl](https://github.com/curl/curl) but instead use your systems version, make sure you use a version `>= 7.64.0`. Lower versions are not supported. This means you need Debian `>= 10` or Ubuntu `>= 20.04 LTS`.
 
 ## Building cpr - Using vcpkg
 
