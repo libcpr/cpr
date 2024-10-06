@@ -20,11 +20,7 @@ size_t headerUserFunction(char* ptr, size_t size, size_t nmemb, const HeaderCall
 size_t writeFunction(char* ptr, size_t size, size_t nmemb, std::string* data);
 size_t writeFileFunction(char* ptr, size_t size, size_t nmemb, std::ofstream* file);
 size_t writeUserFunction(char* ptr, size_t size, size_t nmemb, const WriteCallback* write);
-#if LIBCURL_VERSION_NUM < 0x072000
-int progressUserFunction(const ProgressCallback* progress, double dltotal, double dlnow, double ultotal, double ulnow);
-#else
-int progressUserFunction(const ProgressCallback* progress, curl_off_t dltotal, curl_off_t dlnow, curl_off_t ultotal, curl_off_t ulnow);
-#endif
+int progressUserFunction(const ProgressCallback* progress, cpr_pf_arg_t dltotal, cpr_pf_arg_t dlnow, cpr_pf_arg_t ultotal, cpr_pf_arg_t ulnow);
 int debugUserFunction(CURL* handle, curl_infotype type, char* data, size_t size, const DebugCallback* debug);
 std::vector<std::string> split(const std::string& to_split, char delimiter);
 std::string urlEncode(const std::string& s);

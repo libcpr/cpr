@@ -13,7 +13,7 @@
     <projectUrl>https://github.com/libcpr</projectUrl>
     <description>C++ Requests: Curl for People, a spiritual port of Python Requests.</description>
     <tags>Native, native</tags>
-	  <language>english</language>
-	  <repository type="git" url="https://github.com/libcpr/cpr" branch="master" commit="$COMMIT_HASH$" />
+    <language>english</language>
+    <repository type="git" url="https://github.com/libcpr/cpr" branch="master" commit="$COMMIT_HASH$" />
   </metadata>
 </package>

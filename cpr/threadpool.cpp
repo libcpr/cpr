@@ -1,4 +1,10 @@
 #include "cpr/threadpool.h"
+#include <chrono>
+#include <ctime>
+#include <memory>
+#include <mutex>
+#include <thread>
+#include <utility>
 
 namespace cpr {
 

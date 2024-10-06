@@ -1,6 +1,10 @@
 #include "cpr/interceptor.h"
+#include "cpr/callback.h"
+#include "cpr/response.h"
+#include "cpr/session.h"
 
-#include <exception>
+#include <fstream>
+
 
 namespace cpr {
 

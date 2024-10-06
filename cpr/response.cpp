@@ -1,4 +1,19 @@
 #include "cpr/response.h"
+#include <cassert>
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
+
+#include "cpr/cert_info.h"
+#include "cpr/cookies.h"
+#include "cpr/cprtypes.h"
+#include "cpr/curlholder.h"
+#include "cpr/error.h"
+#include "cpr/util.h"
+
+#include <curl/curl.h>
+#include <curl/curlver.h>
 
 namespace cpr {
 
@@ -11,7 +26,7 @@ Response::Response(std::shared_ptr<CurlHolder> curl, std::string&& p_text, std::
     char* url_string{nullptr};
     curl_easy_getinfo(curl_->handle, CURLINFO_EFFECTIVE_URL, &url_string);
     url = Url(url_string);
-#if LIBCURL_VERSION_NUM >= 0x073700 // 7.55.0 
+#if LIBCURL_VERSION_NUM >= 0x073700 // 7.55.0
     curl_easy_getinfo(curl_->handle, CURLINFO_SIZE_DOWNLOAD_T, &downloaded_bytes);
     curl_easy_getinfo(curl_->handle, CURLINFO_SIZE_UPLOAD_T, &uploaded_bytes);
 #else
