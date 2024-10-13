@@ -13,7 +13,8 @@
 | Release  | Min. C++ Standard | Status | Notes |
 |----------|-------------------|--------|-------|
 | master   | `cpp17` | ![alt text][preview] | |
-| 1.10.x   | `cpp17` | ![alt text][supported] | |
+| 1.11.x   | `cpp17` | ![alt text][supported] | |
+| 1.10.x   | `cpp17` | ![alt text][unsupported] | |
 | 1.9.x    | `cpp11` | ![alt text][supported] | Supported until 01.01.2025 |
 | <= 1.8.x | `cpp11` | ![alt text][unsupported] | |
 
