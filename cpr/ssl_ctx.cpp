@@ -1,13 +1,28 @@
-
 #include "cpr/ssl_ctx.h"
+#include "cpr/ssl_options.h"
+#include <cstdio>
+#include <curl/curl.h>
 
 #if SUPPORT_CURLOPT_SSL_CTX_FUNCTION
 
 #ifdef OPENSSL_BACKEND_USED
 
-#include <openssl/err.h>
-#include <openssl/safestack.h>
+#include <openssl/bio.h>
+#include <openssl/pem.h>
 #include <openssl/ssl.h>
+#include <openssl/x509.h>
+#include <openssl/x509_vfy.h>
+
+// openssl/types.h was added in later version of openssl and is therefore not always available.
+// This is for example the case on Ubuntu 20.04.
+// We try to include it if available to satisfy clang-tidy.
+// Ref: https://github.com/openssl/openssl/commit/50cd4768c6b89c757645f28519236bb989216f8d
+// cppcheck-suppress preprocessorErrorDirective
+#if __has_include(<openssl/types.h>)
+#include <openssl/types.h>
+#else
+#include <openssl/ossl_typ.h>
+#endif
 
 namespace cpr {
 

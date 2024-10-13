@@ -1,16 +1,22 @@
 #include "cpr/util.h"
+#include "cpr/callback.h"
+#include "cpr/cookies.h"
+#include "cpr/cprtypes.h"
+#include "cpr/curlholder.h"
 
 #include <algorithm>
 #include <cassert>
 #include <cctype>
 #include <chrono>
 #include <cstdint>
+#include <ctime>
 #include <fstream>
-#include <iomanip>
 #include <ios>
 #include <sstream>
 #include <string>
 #include <vector>
+
+#include <curl/curl.h>
 
 #if defined(_Win32)
 #include <Windows.h>
@@ -34,7 +40,7 @@
 namespace cpr {
 namespace util {
 
-enum class CurlHTTPCookieField : size_t {
+enum class CurlHTTPCookieField : uint8_t {
     Domain = 0,
     IncludeSubdomains,
     Path,
@@ -102,7 +108,7 @@ Header parseHeader(const std::string& headers, std::string* status_line, std::st
             header.clear();
         }
 
-        if (line.length() > 0) {
+        if (!line.empty()) {
             const size_t found = line.find(':');
             if (found != std::string::npos) {
                 std::string value = line.substr(found + 1);
@@ -155,11 +161,7 @@ size_t writeUserFunction(char* ptr, size_t size, size_t nmemb, const WriteCallba
     return (*write)({ptr, size}) ? size : 0;
 }
 
-#if LIBCURL_VERSION_NUM < 0x072000
-int progressUserFunction(const ProgressCallback* progress, double dltotal, double dlnow, double ultotal, double ulnow) {
-#else
-int progressUserFunction(const ProgressCallback* progress, curl_off_t dltotal, curl_off_t dlnow, curl_off_t ultotal, curl_off_t ulnow) {
-#endif
+int progressUserFunction(const ProgressCallback* progress, cpr_pf_arg_t dltotal, cpr_pf_arg_t dlnow, cpr_pf_arg_t ultotal, cpr_pf_arg_t ulnow) {
     return (*progress)(dltotal, dlnow, ultotal, ulnow) ? 0 : 1;
 }
 

@@ -4,9 +4,10 @@
 #include <curl/system.h>
 #include <initializer_list>
 #include <map>
-#include <memory>
 #include <numeric>
 #include <string>
+
+#include <curl/curlver.h>
 
 namespace cpr {
 
@@ -14,6 +15,15 @@ namespace cpr {
  * Wrapper around "curl_off_t" to prevent applications from having to link against libcurl.
  **/
 using cpr_off_t = curl_off_t;
+
+/**
+ * The argument type for progress functions, dependent on libcurl version
+ **/
+#if LIBCURL_VERSION_NUM < 0x072000
+using cpr_pf_arg_t = double;
+#else
+using cpr_pf_arg_t = cpr_off_t;
+#endif
 
 template <class T>
 class StringHolder {

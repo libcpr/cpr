@@ -34,7 +34,9 @@ Checks: '*,
 -modernize-return-braced-init-list,
 -cppcoreguidelines-avoid-magic-numbers,
 -readability-magic-numbers,
--cppcoreguidelines-avoid-do-while
+-cppcoreguidelines-avoid-do-while,
+-cppcoreguidelines-rvalue-reference-param-not-moved,
+-misc-header-include-cycle
 '
 WarningsAsErrors: '*'
 HeaderFilterRegex: 'src/*.hpp'

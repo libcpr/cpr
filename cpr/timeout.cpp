@@ -1,5 +1,6 @@
 #include "cpr/timeout.h"
 
+#include <chrono>
 #include <limits>
 #include <stdexcept>
 #include <string>

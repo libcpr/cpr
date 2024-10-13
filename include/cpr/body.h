@@ -2,10 +2,10 @@
 #define CPR_BODY_H
 
 #include <exception>
+#include <fstream>
 #include <initializer_list>
 #include <string>
 #include <vector>
-#include <fstream>
 
 #include "cpr/buffer.h"
 #include "cpr/cprtypes.h"
