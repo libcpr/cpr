@@ -86,6 +86,25 @@ TEST(ProxyTests, ReferenceProxySessionTest) {
     EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
+if 0
+TEST(ProxyTests, NoProxyTest) {
+    std::putenv("NO_PROXY", "www.httpbin.org");
+    Url url{"http://www.httpbin.org/get"};
+    Proxies proxies{{"http", HTTP_PROXY, "no_proxy", ""}};
+    Session session;
+    session.SetUrl(url);
+    session.SetProxies(proxies);
+    Response response = session.Get();
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+    // TODO: check that access was performed through the proxy
+    // json body = json.parse(response.text);
+    // EXPECT_EQ(body["origin"], HTTP_PROXY.domain());
+}
+#endif
+
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
