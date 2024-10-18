@@ -509,6 +509,7 @@ void Session::SetSslOptions(const SslOptions& options) {
                      // Ignore here since this has been defined by libcurl.
                      maxTlsVersion);
 
+    // NOLINTNEXTLINE (google-runtime-int)
     long curlSslOptions = 0;
 #if SUPPORT_SSL_NO_REVOKE
     if (options.ssl_no_revoke) {
