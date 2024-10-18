@@ -171,6 +171,10 @@ The package can be found here: [NuGet.org](https://www.nuget.org/packages/libcpr
 
 On macOS you may install cpr via [MacPorts.org](https://ports.macports.org/port/cpr) (arm64, x86_64, powerpc)
 
+### FreeBSD Port
+
+On FreeBSD, you can issue `pkg install cpr` or use the Ports tree to install it.
+
 ## Requirements
 
 The only explicit requirements are:
