@@ -23,6 +23,16 @@ namespace cpr {
 
 using AsyncResponse = AsyncWrapper<Response>;
 
+enum class HTTPMethod {
+    GET,
+    HEAD,
+    POST,
+    PUT,
+    DELETE,
+    OPTIONS,
+    PATCH,
+};
+
 namespace priv {
 
 template <bool processed_header, typename CurrentType>
@@ -384,6 +394,31 @@ std::vector<AsyncWrapper<Response, true>> MultiPutAsync(Ts&&... ts) {
     std::vector<AsyncWrapper<Response, true>> ret{};
     priv::setup_multiasync<&cpr::Session::Put>(ret, std::forward<Ts>(ts)...);
     return ret;
+}
+
+template <HTTPMethod method, typename... Ts>
+Response Request(Ts&&... ts) {
+    cpr::Session session;
+    cpr::priv::set_option(session, std::forward<Ts>(ts)...);
+
+    if constexpr (method == HTTPMethod::GET) {
+        return session.Get();
+    } else if constexpr (method == HTTPMethod::HEAD) {
+        return session.Head();
+    } else if constexpr (method == HTTPMethod::POST) {
+        return session.Post();
+    } else if constexpr (method == HTTPMethod::PUT) {
+        return session.Put();
+    } else if constexpr (method == HTTPMethod::DELETE) {
+        return session.Delete();
+    } else if constexpr (method == HTTPMethod::OPTIONS) {
+        return session.Options();
+    } else if constexpr (method == HTTPMethod::PATCH) {
+        return session.Patch();
+    } else {
+        // Must be template dependent until DR 2518 (C++23)
+        static_assert(method == HTTPMethod::GET, "Unknown method");
+    }
 }
 
 
