@@ -1,6 +1,8 @@
 #include <gtest/gtest.h>
 
+#include <stdlib.h>
 #include <string>
+#include <sstream>
 
 #include "cpr/cpr.h"
 
@@ -86,24 +88,42 @@ TEST(ProxyTests, ReferenceProxySessionTest) {
     EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
-if 0
 TEST(ProxyTests, NoProxyTest) {
-    std::putenv("NO_PROXY", "www.httpbin.org");
-    Url url{"http://www.httpbin.org/get"};
-    Proxies proxies{{"http", HTTP_PROXY, "no_proxy", ""}};
-    Session session;
-    session.SetUrl(url);
-    session.SetProxies(proxies);
-    Response response = session.Get();
-    EXPECT_EQ(url, response.url);
-    EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
-    EXPECT_EQ(200, response.status_code);
-    EXPECT_EQ(ErrorCode::OK, response.error.code);
-    // TODO: check that access was performed through the proxy
-    // json body = json.parse(response.text);
-    // EXPECT_EQ(body["origin"], HTTP_PROXY.domain());
+    setenv("NO_PROXY", "httpbin.org", 1);
+    try {
+        Url url{"http://www.httpbin.org/get"};
+        Proxies proxies{{"http", HTTP_PROXY}, {"no_proxy", ""}};
+        Session session;
+        session.SetUrl(url);
+        session.SetProxies(proxies);
+        Response response = session.Get();
+        EXPECT_EQ(url, response.url);
+        EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
+        EXPECT_EQ(200, response.status_code);
+        EXPECT_EQ(ErrorCode::OK, response.error.code);
+
+        // check that access was performed through the proxy
+        std::string proxy_ip = HTTP_PROXY;
+        proxy_ip = proxy_ip.substr(0, proxy_ip.find(':'));
+
+        // find "origin": "ip" in response:
+        bool found = false;
+        std::istringstream body(response.text);
+        std::string line;
+        while (std::getline(body, line)) {
+            // example: "origin": "123.456.789.123"
+            if (line.find("\"origin\":") != std::string::npos) {
+                found = line.find(proxy_ip) != std::string::npos;
+                break;
+            }
+        }
+        EXPECT_TRUE(found);
+    } catch (...) {
+        unsetenv("NO_PROXY");
+        throw;
+    }
+    unsetenv("NO_PROXY");
 }
-#endif
 
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
