@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 
+#include <chrono>
 #include <stdlib.h>
 #include <string>
 #include <sstream>
@@ -9,8 +10,13 @@
 // TODO: This uses public servers for proxies and endpoints. This should be replaced with a source
 // code implementation inside server.cpp
 
+// NOTES:
+// * For no-proxy testing need to run the tests with direct connection to the internet
+// * List of free proxies for testing can be found at https://proxy-list.org/english/index.php
+//   Example: #define HTTP_PROXY "http://162.223.90.130:80"
 #define HTTP_PROXY "51.159.4.98:80"
 #define HTTPS_PROXY "51.104.53.182:8000"
+
 
 using namespace cpr;
 
@@ -81,6 +87,7 @@ TEST(ProxyTests, ReferenceProxySessionTest) {
     Session session;
     session.SetUrl(url);
     session.SetProxies(proxies);
+    session.SetTimeout(std::chrono::seconds(10));
     Response response = session.Get();
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
@@ -96,6 +103,7 @@ TEST(ProxyTests, NoProxyTest) {
         Session session;
         session.SetUrl(url);
         session.SetProxies(proxies);
+        session.SetTimeout(std::chrono::seconds(10));
         Response response = session.Get();
         EXPECT_EQ(url, response.url);
         EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
@@ -104,6 +112,11 @@ TEST(ProxyTests, NoProxyTest) {
 
         // check that access was performed through the proxy
         std::string proxy_ip = HTTP_PROXY;
+        if (proxy_ip[0] == 'h') {
+            // drop protocol:
+            proxy_ip = proxy_ip.substr(proxy_ip.find(':') + 3);
+        }
+        // drop port:
         proxy_ip = proxy_ip.substr(0, proxy_ip.find(':'));
 
         // find "origin": "ip" in response:
