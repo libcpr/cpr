@@ -8,12 +8,14 @@ namespace cpr {
 
 class Timeout {
   public:
+    // Template constructor to accept any chrono duration type and convert it to milliseconds
     // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
-    Timeout(const std::chrono::milliseconds& duration) : ms{duration} {}
+    template <typename Rep, typename Period>
+    Timeout(const std::chrono::duration<Rep, Period>& duration)
+            : ms{std::chrono::duration_cast<std::chrono::milliseconds>(duration)} {}
+
     // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
     Timeout(const std::int32_t& milliseconds) : Timeout{std::chrono::milliseconds(milliseconds)} {}
-    // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
-    Timeout(const std::chrono::seconds& duration) : ms{std::chrono::milliseconds(duration).count()} {}
 
     // No way around since curl uses a long here.
     // NOLINTNEXTLINE(google-runtime-int)
