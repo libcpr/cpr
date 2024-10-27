@@ -7,7 +7,7 @@
 ## Announcements
 
 * This project is being maintained by [Fabian Sauter](https://github.com/com8) and [Kilian Traub](https://github.com/KingKili).
-* For quick help, and discussion libcpr also offer a [gitter](https://gitter.im/libcpr/community?utm_source=share-link&utm_medium=link&utm_campaign=share-link) chat.
+* For quick help, and discussion libcpr also offers a [gitter](https://gitter.im/libcpr/community?utm_source=share-link&utm_medium=link&utm_campaign=share-link) chat.
 
 ## Supported Releases
 | Release  | Min. C++ Standard | Status | Notes |
@@ -56,8 +56,8 @@ You can find the latest documentation [here](https://docs.libcpr.org/). It's a w
 C++ Requests currently supports:
 
 * Custom headers
-* Url encoded parameters
-* Url encoded POST values
+* URL-encoded parameters
+* URL-encoded POST values
 * Multipart form POST upload
 * File POST upload
 * Basic authentication
@@ -80,7 +80,7 @@ C++ Requests currently supports:
 
 ## Planned
 
-For a quick overview about the planed features, have a look at the next [Milestones](https://github.com/libcpr/cpr/milestones).
+For a quick overview about the planned features, have a look at the next [Milestones](https://github.com/libcpr/cpr/milestones).
 
 ## Usage
 
@@ -105,7 +105,7 @@ target_link_libraries(your_target_name PRIVATE cpr::cpr)
 ```
 
 That should do it!
-There's no need to handle `libcurl` yourself. All dependencies are taken care of for you.  
+There's no need to handle `libcurl` yourself. All dependencies are taken care of for you.
 All of this can be found in an example [**here**](https://github.com/libcpr/example-cmake-fetch-content).
 
 #### find_package():
@@ -182,7 +182,7 @@ The only explicit requirements are:
 * a `C++17` compatible compiler such as Clang or GCC. The minimum required version of GCC is unknown, so if anyone has trouble building this library with a specific version of GCC, do let us know
 * in case you only have a `C++11` compatible compiler available, all versions below cpr 1.9.x are for you. The 1.10.0 release of cpr switches to `C++17` as a requirement.
 * If you would like to perform https requests `OpenSSL` and its development libraries are required.
-* If you do not use the build in version of [curl](https://github.com/curl/curl) but instead use your systems version, make sure you use a version `>= 7.64.0`. Lower versions are not supported. This means you need Debian `>= 10` or Ubuntu `>= 20.04 LTS`.
+* If you do not use the built-in version of [curl](https://github.com/curl/curl) but instead use your systems version, make sure you use a version `>= 7.64.0`. Lower versions are not supported. This means you need Debian `>= 10` or Ubuntu `>= 20.04 LTS`.
 
 ## Building cpr - Using vcpkg
 
