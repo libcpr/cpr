@@ -194,12 +194,6 @@ void Session::prepareCommonShared() {
 #endif
 
 #if LIBCURL_VERSION_NUM >= 0x071900 // 7.25.0
-#if SUPPORT_SSL_NO_REVOKE
-    // NOLINTNEXTLINE (google-runtime-int)
-    long bitmask{0};
-    curl_easy_setopt(curl_->handle, CURLOPT_SSL_OPTIONS, &bitmask);
-    const bool noRevoke = bitmask & CURLSSLOPT_NO_REVOKE;
-#endif
 
 #if LIBCURL_VERSION_NUM >= 0x074700 // 7.71.0
     // Fix loading certs from Windows cert store when using OpenSSL:
@@ -208,7 +202,7 @@ void Session::prepareCommonShared() {
 
 // Ensure SSL no revoke is still set
 #if SUPPORT_SSL_NO_REVOKE
-    if (noRevoke) {
+    if (sslNoRevoke_) {
         curl_easy_setopt(curl_->handle, CURLOPT_SSL_OPTIONS, CURLSSLOPT_NO_REVOKE);
     }
 #endif
@@ -530,6 +524,7 @@ void Session::SetSslOptions(const SslOptions& options) {
                      // Ignore here since this has been defined by libcurl.
                      maxTlsVersion);
 #if SUPPORT_SSL_NO_REVOKE
+    sslNoRevoke_ = options.ssl_no_revoke;
     if (options.ssl_no_revoke) {
         curl_easy_setopt(curl_->handle, CURLOPT_SSL_OPTIONS, CURLSSLOPT_NO_REVOKE);
     }
