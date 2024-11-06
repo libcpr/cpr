@@ -271,6 +271,10 @@ class Session : public std::enable_shared_from_this<Session> {
     bool isUsedInMultiPerform{false};
     bool isCancellable{false};
 
+#if SUPPORT_SSL_NO_REVOKE
+    bool sslNoRevoke_{false};
+#endif
+
     Response makeDownloadRequest();
     Response makeRequest();
     Response proceed();
