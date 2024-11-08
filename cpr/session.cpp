@@ -512,6 +512,7 @@ void Session::SetSslOptions(const SslOptions& options) {
     // NOLINTNEXTLINE (google-runtime-int)
     long curlSslOptions = 0;
 #if SUPPORT_SSL_NO_REVOKE
+    sslNoRevoke_ = options.ssl_no_revoke;
     if (options.ssl_no_revoke) {
         curlSslOptions |= CURLSSLOPT_NO_REVOKE;
     }
