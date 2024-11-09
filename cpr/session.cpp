@@ -232,9 +232,6 @@ void Session::prepareCommonDownload() {
     // Everything else:
     prepareCommonShared();
 
-    // Set Header:
-    prepareHeader();
-
     header_string_.clear();
     if (cbs_->headercb_.callback) {
         curl_easy_setopt(curl_->handle, CURLOPT_HEADERFUNCTION, cpr::util::headerUserFunction);
