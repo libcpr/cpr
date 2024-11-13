@@ -114,6 +114,8 @@ namespace cpr {
             {CURLE_HTTP2_STREAM, ErrorCode::HTTP2_STREAM},
 #endif
 
+            {CURLE_PARTIAL_FILE, ErrorCode::PARTIAL_FILE},
+
             // Added in curl 7.59.0.
 #if LIBCURL_VERSION_NUM >= 0x073B00
             {CURLE_RECURSIVE_API_CALL, ErrorCode::RECURSIVE_API_CALL},
