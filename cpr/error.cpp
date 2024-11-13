@@ -1,6 +1,4 @@
 #include "cpr/error.h"
-#include <cstdint>
-#include <curl/curl.h>
 #include <curl/curlver.h>
 #include <unordered_map>
 
@@ -61,7 +59,6 @@ namespace cpr {
             {CURLE_USE_SSL_FAILED, ErrorCode::USE_SSL_FAILED},
             {CURLE_SEND_FAIL_REWIND, ErrorCode::SEND_FAIL_REWIND},
             {CURLE_SSL_ENGINE_INITFAILED, ErrorCode::SSL_ENGINE_INITFAILED},
-
 
             // Added in curl 7.13.1.
 #if LIBCURL_VERSION_NUM >= 0x070D01
