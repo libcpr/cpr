@@ -2,6 +2,7 @@
 #include <cstdint>
 #include <curl/curl.h>
 #include <curl/curlver.h>
+#include <unordered_map>
 
 namespace cpr {
 ErrorCode Error::getErrorCodeForCurlError(std::int32_t curl_code) {
@@ -196,5 +197,49 @@ ErrorCode Error::getErrorCodeForCurlError(std::int32_t curl_code) {
             return ErrorCode::UNKNOWN_ERROR;
     }
 }
+
+    static const std::unordered_map<std::int32_t, ErrorCode> curl_error_map = {
+            {CURLE_OK, ErrorCode::OK},
+            {CURLE_UNSUPPORTED_PROTOCOL, ErrorCode::UNSUPPORTED_PROTOCOL},
+            {CURLE_FAILED_INIT, ErrorCode::FAILED_INIT},
+            {CURLE_URL_MALFORMAT, ErrorCode::URL_MALFORMAT},
+            {CURLE_NOT_BUILT_IN, ErrorCode::NOT_BUILT_IN},
+            {CURLE_COULDNT_RESOLVE_PROXY, ErrorCode::COULDNT_RESOLVE_PROXY},
+            {CURLE_COULDNT_RESOLVE_HOST, ErrorCode::COULDNT_RESOLVE_HOST},
+            {CURLE_COULDNT_CONNECT, ErrorCode::COULDNT_CONNECT},
+            {CURLE_REMOTE_ACCESS_DENIED, ErrorCode::REMOTE_ACCESS_DENIED},
+            {CURLE_HTTP2, ErrorCode::HTTP2},
+            {CURLE_QUOTE_ERROR, ErrorCode::QUOTE_ERROR},
+            {CURLE_HTTP_RETURNED_ERROR, ErrorCode::HTTP_RETURNED_ERROR},
+            {CURLE_WRITE_ERROR, ErrorCode::WRITE_ERROR},
+            {CURLE_UPLOAD_FAILED, ErrorCode::UPLOAD_FAILED},
+            {CURLE_READ_ERROR, ErrorCode::READ_ERROR},
+            {CURLE_OUT_OF_MEMORY, ErrorCode::OUT_OF_MEMORY},
+            {CURLE_OPERATION_TIMEDOUT, ErrorCode::OPERATION_TIMEDOUT},
+            {CURLE_RANGE_ERROR, ErrorCode::RANGE_ERROR},
+            {CURLE_HTTP_POST_ERROR, ErrorCode::HTTP_POST_ERROR},
+            {CURLE_SSL_CONNECT_ERROR, ErrorCode::SSL_CONNECT_ERROR},
+            {CURLE_BAD_DOWNLOAD_RESUME, ErrorCode::BAD_DOWNLOAD_RESUME},
+            {CURLE_FILE_COULDNT_READ_FILE, ErrorCode::FILE_COULDNT_READ_FILE},
+            {CURLE_FUNCTION_NOT_FOUND, ErrorCode::FUNCTION_NOT_FOUND},
+            {CURLE_ABORTED_BY_CALLBACK, ErrorCode::ABORTED_BY_CALLBACK},
+            {CURLE_BAD_FUNCTION_ARGUMENT, ErrorCode::BAD_FUNCTION_ARGUMENT},
+            {CURLE_INTERFACE_FAILED, ErrorCode::INTERFACE_FAILED},
+            {CURLE_TOO_MANY_REDIRECTS, ErrorCode::TOO_MANY_REDIRECTS},
+            {CURLE_UNKNOWN_OPTION, ErrorCode::UNKNOWN_OPTION},
+            {CURLE_GOT_NOTHING, ErrorCode::GOT_NOTHING},
+            {CURLE_SSL_ENGINE_NOTFOUND, ErrorCode::SSL_ENGINE_NOTFOUND},
+            {CURLE_SSL_ENGINE_SETFAILED, ErrorCode::SSL_ENGINE_SETFAILED},
+            {CURLE_SEND_ERROR, ErrorCode::SEND_ERROR},
+            {CURLE_RECV_ERROR, ErrorCode::RECV_ERROR},
+            {CURLE_SSL_CERTPROBLEM, ErrorCode::SSL_CERTPROBLEM},
+            {CURLE_SSL_CIPHER, ErrorCode::SSL_CIPHER},
+            {CURLE_PEER_FAILED_VERIFICATION, ErrorCode::PEER_FAILED_VERIFICATION},
+            {CURLE_BAD_CONTENT_ENCODING, ErrorCode::BAD_CONTENT_ENCODING},
+            {CURLE_FILESIZE_EXCEEDED, ErrorCode::FILESIZE_EXCEEDED},
+            {CURLE_USE_SSL_FAILED, ErrorCode::USE_SSL_FAILED},
+            {CURLE_SEND_FAIL_REWIND, ErrorCode::SEND_FAIL_REWIND},
+            {CURLE_SSL_ENGINE_INITFAILED, ErrorCode::SSL_ENGINE_INITFAILED},
+    };
 
 } // namespace cpr
