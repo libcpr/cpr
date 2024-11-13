@@ -65,8 +65,6 @@ ErrorCode Error::getErrorCodeForCurlError(std::int32_t curl_code) {
             return ErrorCode::BAD_FUNCTION_ARGUMENT;
         case CURLE_INTERFACE_FAILED:
             return ErrorCode::INTERFACE_FAILED;
-        case CURLE_OBSOLETE46:
-            return ErrorCode::OBSOLETE46;
         case CURLE_TOO_MANY_REDIRECTS:
             return ErrorCode::TOO_MANY_REDIRECTS;
         case CURLE_UNKNOWN_OPTION:
