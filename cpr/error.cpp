@@ -207,6 +207,14 @@ ErrorCode Error::getErrorCodeForCurlError(std::int32_t curl_code) {
             {CURLE_COULDNT_RESOLVE_PROXY, ErrorCode::COULDNT_RESOLVE_PROXY},
             {CURLE_COULDNT_RESOLVE_HOST, ErrorCode::COULDNT_RESOLVE_HOST},
             {CURLE_COULDNT_CONNECT, ErrorCode::COULDNT_CONNECT},
+
+            // Name changed in curl >= 7.51.0.
+#if LIBCURL_VERSION_NUM >= 0x073300
+            {CURLE_WEIRD_SERVER_REPLY, ErrorCode::WEIRD_SERVER_REPLY},
+#else
+            {CURLE_FTP_WEIRD_SERVER_REPLY, ErrorCode::WEIRD_SERVER_REPLY},
+#endif
+
             {CURLE_REMOTE_ACCESS_DENIED, ErrorCode::REMOTE_ACCESS_DENIED},
             {CURLE_HTTP2, ErrorCode::HTTP2},
             {CURLE_QUOTE_ERROR, ErrorCode::QUOTE_ERROR},
@@ -227,6 +235,12 @@ ErrorCode Error::getErrorCodeForCurlError(std::int32_t curl_code) {
             {CURLE_INTERFACE_FAILED, ErrorCode::INTERFACE_FAILED},
             {CURLE_TOO_MANY_REDIRECTS, ErrorCode::TOO_MANY_REDIRECTS},
             {CURLE_UNKNOWN_OPTION, ErrorCode::UNKNOWN_OPTION},
+
+            // Added in curl 7.78.0.
+#if LIBCURL_VERSION_NUM >= 0x074E00
+            {CURLE_SETOPT_OPTION_SYNTAX, ErrorCode::SETOPT_OPTION_SYNTAX},
+#endif
+
             {CURLE_GOT_NOTHING, ErrorCode::GOT_NOTHING},
             {CURLE_SSL_ENGINE_NOTFOUND, ErrorCode::SSL_ENGINE_NOTFOUND},
             {CURLE_SSL_ENGINE_SETFAILED, ErrorCode::SSL_ENGINE_SETFAILED},
@@ -240,6 +254,98 @@ ErrorCode Error::getErrorCodeForCurlError(std::int32_t curl_code) {
             {CURLE_USE_SSL_FAILED, ErrorCode::USE_SSL_FAILED},
             {CURLE_SEND_FAIL_REWIND, ErrorCode::SEND_FAIL_REWIND},
             {CURLE_SSL_ENGINE_INITFAILED, ErrorCode::SSL_ENGINE_INITFAILED},
+
+
+            // Added in curl 7.13.1.
+#if LIBCURL_VERSION_NUM >= 0x070D01
+            {CURLE_LOGIN_DENIED, ErrorCode::LOGIN_DENIED},
+#endif
+
+            // Added in curl 7.16.0.
+#if LIBCURL_VERSION_NUM >= 0x071000
+            {CURLE_SSL_CACERT_BADFILE, ErrorCode::SSL_CACERT_BADFILE},
+#endif
+
+            // Added in curl 7.16.1.
+#if LIBCURL_VERSION_NUM >= 0x071001
+            {CURLE_SSL_SHUTDOWN_FAILED, ErrorCode::SSL_SHUTDOWN_FAILED},
+#endif
+
+            // Added in curl 7.18.2.
+#if LIBCURL_VERSION_NUM >= 0x071202
+            {CURLE_AGAIN, ErrorCode::AGAIN},
+#endif
+
+            // Added in curl 7.19.0.
+#if LIBCURL_VERSION_NUM >= 0x071300
+            {CURLE_SSL_CRL_BADFILE, ErrorCode::SSL_CRL_BADFILE},
+            {CURLE_SSL_ISSUER_ERROR, ErrorCode::SSL_ISSUER_ERROR},
+#endif
+
+            // Added in curl 7.21.0.
+#if LIBCURL_VERSION_NUM >= 0x071500
+            {CURLE_CHUNK_FAILED, ErrorCode::CHUNK_FAILED},
+#endif
+
+            // Added in curl 7.30.0.
+#if LIBCURL_VERSION_NUM >= 0x071E00
+            {CURLE_NO_CONNECTION_AVAILABLE, ErrorCode::NO_CONNECTION_AVAILABLE},
+#endif
+
+            // Added in curl 7.39.0.
+#if LIBCURL_VERSION_NUM >= 0x072700
+            {CURLE_SSL_PINNEDPUBKEYNOTMATCH, ErrorCode::SSL_PINNEDPUBKEYNOTMATCH},
+#endif
+
+            // Added in curl 7.41.0.
+#if LIBCURL_VERSION_NUM >= 0x072900
+            {CURLE_SSL_INVALIDCERTSTATUS, ErrorCode::SSL_INVALIDCERTSTATUS},
+#endif
+
+            // Added in curl 7.49.0.
+#if LIBCURL_VERSION_NUM >= 0x073100
+            {CURLE_HTTP2_STREAM, ErrorCode::HTTP2_STREAM},
+#endif
+
+            // Added in curl 7.59.0.
+#if LIBCURL_VERSION_NUM >= 0x073B00
+            {CURLE_RECURSIVE_API_CALL, ErrorCode::RECURSIVE_API_CALL},
+#endif
+
+            // Added in curl 7.66.0.
+#if LIBCURL_VERSION_NUM >= 0x074200
+            {CURLE_AUTH_ERROR, ErrorCode::AUTH_ERROR},
+#endif
+
+            // Added in curl 7.68.0.
+#if LIBCURL_VERSION_NUM >= 0x074400
+            {CURLE_HTTP3, ErrorCode::HTTP3},
+#endif
+
+            // Added in curl 7.69.0.
+#if LIBCURL_VERSION_NUM >= 0x074500
+            {CURLE_QUIC_CONNECT_ERROR, ErrorCode::QUIC_CONNECT_ERROR},
+#endif
+
+            // Added in curl 7.73.0.
+#if LIBCURL_VERSION_NUM >= 0x074900
+            {CURLE_PROXY, ErrorCode::PROXY},
+#endif
+
+            // Added in curl 7.77.0.
+#if LIBCURL_VERSION_NUM >= 0x074D00
+            {CURLE_SSL_CLIENTCERT, ErrorCode::SSL_CLIENTCERT},
+#endif
+
+            // Added in curl 7.84.0.
+#if LIBCURL_VERSION_NUM >= 0x075400
+            {CURLE_UNRECOVERABLE_POLL, ErrorCode::UNRECOVERABLE_POLL},
+#endif
+
+            // Added in curl 7.6.0.
+#if LIBCURL_VERSION_NUM >= 0x080600
+            {CURLE_TOO_LARGE, ErrorCode::TOO_LARGE},
+#endif
     };
 
 } // namespace cpr
