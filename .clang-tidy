@@ -36,7 +36,8 @@ Checks: '*,
 -readability-magic-numbers,
 -cppcoreguidelines-avoid-do-while,
 -llvmlibc-inline-function-decl,
--altera-struct-pack-align
+-altera-struct-pack-align,
+-boost-use-ranges
 '
 WarningsAsErrors: '*'
 HeaderFilterRegex: 'src/*.hpp'
