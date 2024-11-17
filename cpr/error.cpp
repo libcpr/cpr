@@ -1,6 +1,8 @@
 #include "cpr/error.h"
 #include <curl/curlver.h>
 #include <unordered_map>
+#include <cstdint>
+#include <curl/curl.h>
 
 namespace cpr {
 static const std::unordered_map<std::int32_t, ErrorCode> curl_error_map = { // NOLINT - (needed because of static init)
