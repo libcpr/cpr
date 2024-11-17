@@ -162,7 +162,7 @@ std::vector<Response> MultiPerform::ReadMultiInfo(const std::function<Response(S
     for (const std::pair<std::shared_ptr<Session>, HttpMethod>& pair : sessions_) {
         Session& current_session = *(pair.first);
         auto it = std::find_if(responses.begin(), responses.end(), [&current_session](const Response& response) { return current_session.curl_->handle == response.curl_->handle; });
-        const Response current_response = *it;
+        const Response current_response = *it; // NOLINT (performance-unnecessary-copy-initialization) False possible
         // Erase response from original vector to increase future search speed
         responses.erase(it);
         sorted_responses.push_back(current_response);
