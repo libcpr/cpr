@@ -1,4 +1,5 @@
 #include "cpr/threadpool.h"
+#include <algorithm>
 #include <chrono>
 #include <cstddef>
 #include <ctime>
@@ -20,12 +21,7 @@ int ThreadPool::Start(size_t start_threads) {
         return -1;
     }
     status = RUNNING;
-    if (start_threads < min_thread_num) {
-        start_threads = min_thread_num;
-    }
-    if (start_threads > max_thread_num) {
-        start_threads = max_thread_num;
-    }
+    start_threads = std::clamp(start_threads, min_thread_num, max_thread_num);
     for (size_t i = 0; i < start_threads; ++i) {
         CreateThread();
     }

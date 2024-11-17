@@ -34,7 +34,7 @@ const std::string Cookie::GetExpiresString() const {
 #ifdef _WIN32
     gmtime_s(&tm, &tt);
 #else
-    // NOLINTNEXTLINE(misc-include-cleaner) False positive since <ctime> is included
+    // NOLINTNEXTLINE(misc-include-cleaner,cert-err33-c) False positive since <ctime> is included. Also ignore the ret value here.
     gmtime_r(&tt, &tm);
 #endif
     ss << std::put_time(&tm, "%a, %d %b %Y %H:%M:%S GMT");

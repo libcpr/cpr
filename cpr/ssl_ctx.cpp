@@ -54,6 +54,7 @@ using custom_unique_ptr = std::unique_ptr<T, deleter_from_fn<fn>>;
 using x509_ptr = custom_unique_ptr<X509, X509_free>;
 using bio_ptr = custom_unique_ptr<BIO, BIO_free>;
 
+namespace {
 inline std::string get_openssl_print_errors() {
     std::ostringstream oss;
     ERR_print_errors_cb(
@@ -65,6 +66,8 @@ inline std::string get_openssl_print_errors() {
             &oss);
     return oss.str();
 }
+
+} // namespace
 
 CURLcode sslctx_function_load_ca_cert_from_buffer(CURL* /*curl*/, void* sslctx, void* raw_cert_buf) {
     // Check arguments
