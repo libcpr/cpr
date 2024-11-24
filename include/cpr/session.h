@@ -226,6 +226,8 @@ class Session : public std::enable_shared_from_this<Session> {
 
     void AddInterceptor(const std::shared_ptr<Interceptor>& pinterceptor);
 
+    std::shared_ptr<Session> GetSharedPtrFromThis();
+
   private:
     // Interceptors should be able to call the private proceed() function
     friend Interceptor;
@@ -292,7 +294,6 @@ class Session : public std::enable_shared_from_this<Session> {
      **/
     void prepareCommonDownload();
     void prepareHeader();
-    std::shared_ptr<Session> GetSharedPtrFromThis();
     CURLcode DoEasyPerform();
     void prepareBodyPayloadOrMultipart() const;
     /**
