@@ -1,5 +1,6 @@
 #include "cpr/session.h"
 
+#include <array>
 #include <atomic>
 #include <cassert>
 #include <cstdint>
@@ -178,6 +179,15 @@ void Session::prepareCommonShared() {
         if (proxyAuth_.has(protocol)) {
             curl_easy_setopt(curl_->handle, CURLOPT_PROXYUSERNAME, proxyAuth_.GetUsername(protocol));
             curl_easy_setopt(curl_->handle, CURLOPT_PROXYPASSWORD, proxyAuth_.GetPassword(protocol));
+        }
+    }
+    // handle NO_PROXY override passed through Proxies object
+    // Example: Proxies{"no_proxy": ""} will override environment variable definition with an empty list
+    const std::array<std::string, 2> no_proxy{"no_proxy", "NO_PROXY"};
+    for (const auto& item : no_proxy) {
+        if (proxies_.has(item)) {
+            curl_easy_setopt(curl_->handle, CURLOPT_NOPROXY, proxies_[item].c_str());
+            break;
         }
     }
 
