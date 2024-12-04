@@ -473,6 +473,7 @@ void Session::SetSslOptions(const SslOptions& options) {
         // NOLINTNEXTLINE (readability-container-data-pointer)
         blob.data = &key_blob[0];
         blob.len = key_blob.length();
+        blob.flags = CURL_BLOB_COPY;
         curl_easy_setopt(curl_->handle, CURLOPT_SSLKEY_BLOB, &blob);
         if (!options.key_type.empty()) {
             curl_easy_setopt(curl_->handle, CURLOPT_SSLKEYTYPE, options.key_type.c_str());
