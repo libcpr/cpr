@@ -21,10 +21,10 @@ static std::string serverPubKeyPath;
 static std::string clientKeyPath;
 static std::string clientCertPath;
 
-std::string loadCertificateFromFile(const std::string certPath) {
-    std::ifstream certFile(certPath);
+std::string loadFileContent(const std::string filePath) {
+    std::ifstream file(filePath);
     std::stringstream buffer;
-    buffer << certFile.rdbuf();
+    buffer << file.rdbuf();
     return buffer.str();
 }
 
@@ -147,8 +147,29 @@ TEST(SslTests, LoadCertFromBufferTestSimpel) {
     std::string baseDirPath{server->getBaseDirPath()};
     std::string crtPath{baseDirPath + "certificates/"};
     std::string keyPath{baseDirPath + "keys/"};
-    std::string certBuffer = loadCertificateFromFile(crtPath + "ca-bundle.crt");
+    std::string certBuffer = loadFileContent(crtPath + "ca-bundle.crt");
     SslOptions sslOpts = Ssl(ssl::CaBuffer{std::move(certBuffer)}, ssl::CertFile{crtPath + "client.crt"}, ssl::KeyFile{keyPath + "client.key"}, ssl::VerifyPeer{true}, ssl::VerifyHost{true}, ssl::VerifyStatus{false});
+    Response response = cpr::Get(url, sslOpts, Timeout{5000}, Verbose{});
+    std::string expected_text = "Hello world!";
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code) << response.error.message;
+}
+#endif
+
+#if SUPPORT_CURLOPT_SSLKEY_BLOB
+TEST(SslTests, LoadKeyFromBlobTestSimpel) {
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+
+    Url url{server->GetBaseUrl() + "/hello.html"};
+
+    std::string baseDirPath{server->getBaseDirPath()};
+    std::string crtPath{baseDirPath + "certificates/"};
+    std::string keyPath{baseDirPath + "keys/"};
+    std::string keyBuffer = loadFileContent(keyPath + "client.key");
+    SslOptions sslOpts = Ssl(ssl::CaInfo{crtPath + "ca-bundle.crt"}, ssl::CertFile{crtPath + "client.crt"}, ssl::KeyBlob{std::move(keyBuffer)}, ssl::VerifyPeer{true}, ssl::VerifyHost{true}, ssl::VerifyStatus{false});
     Response response = cpr::Get(url, sslOpts, Timeout{5000}, Verbose{});
     std::string expected_text = "Hello world!";
     EXPECT_EQ(expected_text, response.text);
