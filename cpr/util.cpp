@@ -156,9 +156,11 @@ int debugUserFunction(CURL* /*handle*/, curl_infotype type, char* data, size_t s
     return 0;
 }
 
+#if SUPPORT_CURLOPT_SSL_CTX_FUNCTION
 CURLcode sslCtxUserFunction(CURL* curl, void* sslctx, const ssl::SslCtxCallback* ctx) {
     return (*ctx)(curl, sslctx);
 }
+#endif // SUPPORT_CURLOPT_SSL_CTX_FUNCTION
 
 /**
  * Creates a temporary CurlHolder object and uses it to escape the given string.

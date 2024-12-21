@@ -251,7 +251,9 @@ class Session : public std::enable_shared_from_this<Session> {
          * Ensures that the "Transfer-Encoding" is set to "chunked", if not overriden in header_.
          **/
         ReadCallback readcb_;
+#if SUPPORT_CURLOPT_SSL_CTX_FUNCTION
         ssl::SslCtxCallback sslctxcb_;
+#endif // SUPPORT_CURLOPT_SSL_CTX_FUNCTION
         HeaderCallback headercb_;
         WriteCallback writecb_;
         ProgressCallback progresscb_;
