@@ -57,7 +57,7 @@ using custom_unique_ptr = std::unique_ptr<T, deleter_from_fn<fn>>;
 using x509_ptr = custom_unique_ptr<X509, X509_free>;
 using bio_ptr = custom_unique_ptr<BIO, BIO_free>;
 
-inline std::string get_openssl_print_errors() {
+static inline std::string get_openssl_print_errors() {
     std::ostringstream oss;
     ERR_print_errors_cb(
             [](char const* str, size_t len, void* data) -> int {
