@@ -168,7 +168,7 @@ TEST(SslTests, LoadCertFromBufferAndCallbackThrowTest) {
 
     std::string baseDirPath{server->getBaseDirPath()};
     std::string crtPath{baseDirPath + "certificates/"};
-    std::string certBuffer = loadCertificateFromFile(crtPath + "root-ca.crt");
+    std::string certBuffer = loadFileContent(crtPath + "root-ca.crt");
 
     cpr::ssl::SslCtxCallback sslCtxCb{[](const std::shared_ptr<CurlHolder>& /*curl_holder*/, void* /*ssl_ctx*/, intptr_t /*userdata*/) { return CURLE_OK; }};
 
