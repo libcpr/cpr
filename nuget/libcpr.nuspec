@@ -4,7 +4,7 @@
     <id>libcpr</id>
     <version>$VERSION$</version>
     <title>C++ Requests: Curl for People</title>
-    <authors>Simon Berger</authors>
+    <authors>Fabian Sauter</authors>
     <owners>Fabian Sauter, Kilian Traub, many other libcpr contributors</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <license type="expression">MIT</license>
