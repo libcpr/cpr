@@ -38,6 +38,7 @@ target_sources(cpr PRIVATE
     cpr/ssl_ctx.h
     cpr/ssl_options.h
     cpr/threadpool.h
+    cpr/threadpool2.h
     cpr/timeout.h
     cpr/unix_socket.h
     cpr/util.h

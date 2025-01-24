@@ -67,6 +67,7 @@ add_cpr_test(multiasync)
 add_cpr_test(file_upload)
 add_cpr_test(singleton)
 add_cpr_test(threadpool)
+add_cpr_test(threadpool2)
 
 if (ENABLE_SSL_TESTS)
     add_cpr_test(ssl)
