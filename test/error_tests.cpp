@@ -76,7 +76,8 @@ TEST(ErrorTests, ProxyFailure) {
     Response response = cpr::Get(url, cpr::Proxies{{"http", "http://bad_host.libcpr.org"}});
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(0, response.status_code);
-    EXPECT_EQ(ErrorCode::COULDNT_RESOLVE_PROXY, response.error.code);
+    // Sometimes the DNS server returns a fake address instead of an NXDOMAIN response, leading to COULDNT_CONNECT.
+    EXPECT_TRUE(response.error.code == ErrorCode::COULDNT_RESOLVE_PROXY || response.error.code == ErrorCode::COULDNT_CONNECT);
 }
 
 TEST(ErrorTests, BoolFalseTest) {

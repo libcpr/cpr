@@ -1,4 +1,5 @@
 #include <chrono>
+#include <cpr/error.h>
 #include <gtest/gtest.h>
 
 #include <memory>
@@ -112,7 +113,8 @@ TEST(BasicTests, BadHostTest) {
     EXPECT_EQ(std::string{}, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(0, response.status_code);
-    EXPECT_EQ(ErrorCode::COULDNT_RESOLVE_HOST, response.error.code);
+    // Sometimes the DNS server returns a fake address instead of an NXDOMAIN response, leading to COULDNT_CONNECT.
+    EXPECT_TRUE(response.error.code == ErrorCode::COULDNT_RESOLVE_HOST || response.error.code == ErrorCode::COULDNT_CONNECT);
 }
 
 TEST(CookiesTests, BasicCookiesTest) {
