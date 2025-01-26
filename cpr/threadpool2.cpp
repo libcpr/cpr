@@ -1,12 +1,13 @@
 #include "cpr/threadpool2.h"
 #include <cassert>
-#include <cstddef>
-#include <condition_variable>
-#include <memory>
-#include <functional>
-#include <mutex>
 #include <chrono>
+#include <condition_variable>
+#include <cstddef>
+#include <functional>
+#include <memory>
+#include <mutex>
 #include <thread>
+#include <utility>
 
 namespace cpr {
 size_t ThreadPool2::DEFAULT_MAX_THREAD_COUNT = std::thread::hardware_concurrency();
@@ -49,15 +50,12 @@ void ThreadPool2::SetMaxThreadCount(size_t maxThreadCount) {
 void ThreadPool2::Start() {
     const std::unique_lock lock(controlMutex);
     setState(State::RUNNING);
-
-    for (size_t i = 0; i < minThreadCount; i++) {
-        addThread();
-    }
 }
 
 void ThreadPool2::Stop() {
     const std::unique_lock controlLock(controlMutex);
     setState(State::STOP);
+    taskQueueCondVar.notify_all();
 
     // Join all workers
     const std::unique_lock workersLock{workerMutex};
@@ -70,11 +68,21 @@ void ThreadPool2::Stop() {
     }
 }
 
+void ThreadPool2::Wait() {
+    while (true) {
+        if ((state != State::RUNNING && curThreadCount <= 0) || (tasks.empty() && curThreadCount <= idleThreadCount)) {
+            break;
+        }
+        std::this_thread::yield();
+    }
+}
+
 void ThreadPool2::setState(State state) {
     const std::unique_lock lock(controlMutex);
     if (this->state == state) {
         return;
     }
+    this->state = state;
 }
 
 void ThreadPool2::addThread() {
@@ -84,6 +92,7 @@ void ThreadPool2::addThread() {
     workers.emplace_back();
     workers.back().thread = std::make_unique<std::thread>(&ThreadPool2::threadFunc, this, std::ref(workers.back()));
     curThreadCount++;
+    idleThreadCount++;
 }
 
 void ThreadPool2::threadFunc(WorkerThread& workerThread) {
@@ -91,7 +100,9 @@ void ThreadPool2::threadFunc(WorkerThread& workerThread) {
         std::cv_status result{std::cv_status::timeout};
         {
             std::unique_lock lock(taskQueueMutex);
-            result = taskQueueCondVar.wait_for(lock, std::chrono::milliseconds(250));
+            if (tasks.empty()) {
+                result = taskQueueCondVar.wait_for(lock, std::chrono::milliseconds(250));
+            }
         }
 
         if (state == State::STOP) {
@@ -109,6 +120,16 @@ void ThreadPool2::threadFunc(WorkerThread& workerThread) {
         }
 
         // Check for tasks and execute one
+        const std::unique_lock lock(taskQueueMutex);
+        if (!tasks.empty()) {
+            idleThreadCount--;
+            const std::function<void()> task = std::move(tasks.front());
+            tasks.pop();
+
+            // Execute the task
+            task();
+        }
+        idleThreadCount++;
     }
 
     workerThread.state = State::STOP;
