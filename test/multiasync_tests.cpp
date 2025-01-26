@@ -319,10 +319,10 @@ TEST(MultiAsyncCancelTests, CancellationOnQueue) {
         return true;
     }};
 
-    GlobalThreadPool::GetInstance()->Pause();
+    GlobalThreadPool::GetInstance()->Stop();
     std::vector<AsyncResponseC> resps{MultiGetAsync(std::tuple{hello_url, ProgressCallback{observer_fn}})};
     EXPECT_EQ(CancellationResult::success, resps.at(0).Cancel());
-    GlobalThreadPool::GetInstance()->Resume();
+    GlobalThreadPool::GetInstance()->Start();
     const bool was_called{synchro_env->fn_called};
     EXPECT_EQ(false, was_called);
 }
