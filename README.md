@@ -15,8 +15,7 @@
 | master   | `cpp17` | ![alt text][preview] | |
 | 1.11.x   | `cpp17` | ![alt text][supported] | |
 | 1.10.x   | `cpp17` | ![alt text][unsupported] | |
-| 1.9.x    | `cpp11` | ![alt text][supported] | Supported until 01.01.2025 |
-| <= 1.8.x | `cpp11` | ![alt text][unsupported] | |
+| <= 1.9.x | `cpp11` | ![alt text][unsupported] | |
 
 [unsupported]: https://img.shields.io/badge/-unsupported-red "unsupported"
 [supported]: https://img.shields.io/badge/-supported-green "supported"
@@ -26,7 +25,7 @@
 
 C++ Requests is a simple wrapper around [libcurl](http://curl.haxx.se/libcurl) inspired by the excellent [Python Requests](https://github.com/kennethreitz/requests) project.
 
-Despite its name, libcurl's easy interface is anything but, and making mistakes, misusing it is a common source of error and frustration. Using the more expressive language facilities of `C++17` (or `C++11` in case you use cpr < 1.10.0), this library captures the essence of making network calls into a few concise idioms.
+Despite its name, libcurl's easy interface is far from simple, and errors and frustration often arise from mistakes or misuse. By leveraging the more expressive features of `C++17` (or `C++11` if using cpr <`= 1.9.x), this library distills the process of making network calls into a few clear and concise idioms.
 
 Here's a quick GET request:
 
