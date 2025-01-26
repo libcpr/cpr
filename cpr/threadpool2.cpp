@@ -97,7 +97,7 @@ void ThreadPool2::addThread() {
 
 void ThreadPool2::threadFunc(WorkerThread& workerThread) {
     while (true) {
-        std::cv_status result{std::cv_status::timeout};
+        std::cv_status result{std::cv_status::no_timeout};
         {
             std::unique_lock lock(taskQueueMutex);
             if (tasks.empty()) {
@@ -120,13 +120,18 @@ void ThreadPool2::threadFunc(WorkerThread& workerThread) {
         }
 
         // Check for tasks and execute one
-        const std::unique_lock lock(taskQueueMutex);
-        if (!tasks.empty()) {
-            idleThreadCount--;
-            const std::function<void()> task = std::move(tasks.front());
-            tasks.pop();
+        std::function<void()> task;
+        {
+            const std::unique_lock lock(taskQueueMutex);
+            if (!tasks.empty()) {
+                idleThreadCount--;
+                task = std::move(tasks.front());
+                tasks.pop();
+            }
+        }
 
-            // Execute the task
+        // Execute the task
+        if (task) {
             task();
         }
         idleThreadCount++;
