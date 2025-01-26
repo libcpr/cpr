@@ -1,9 +1,9 @@
-#ifndef CPR_THREAD_POOL_H
-#define CPR_THREAD_POOL_H
+#pragma once
 
 #include <atomic>
-#include <chrono>
 #include <condition_variable>
+#include <cstddef>
+#include <cstdint>
 #include <functional>
 #include <future>
 #include <list>
@@ -11,61 +11,57 @@
 #include <mutex>
 #include <queue>
 #include <thread>
-#include <utility>
-
-#define CPR_DEFAULT_THREAD_POOL_MAX_THREAD_NUM std::thread::hardware_concurrency()
-
-constexpr size_t CPR_DEFAULT_THREAD_POOL_MIN_THREAD_NUM = 1;
-constexpr std::chrono::milliseconds CPR_DEFAULT_THREAD_POOL_MAX_IDLE_TIME{250};
 
 namespace cpr {
-
 class ThreadPool {
   public:
-    using Task = std::function<void()>;
+    static constexpr size_t DEFAULT_MIN_THREAD_COUNT = 0;
+    static size_t DEFAULT_MAX_THREAD_COUNT;
 
-    explicit ThreadPool(size_t min_threads = CPR_DEFAULT_THREAD_POOL_MIN_THREAD_NUM, size_t max_threads = CPR_DEFAULT_THREAD_POOL_MAX_THREAD_NUM, std::chrono::milliseconds max_idle_ms = CPR_DEFAULT_THREAD_POOL_MAX_IDLE_TIME);
+  private:
+    enum class State : uint8_t { STOP, RUNNING };
+    struct WorkerThread {
+        std::unique_ptr<std::thread> thread{nullptr};
+        State state{State::RUNNING};
+    };
+
+    std::mutex workerMutex;
+    std::list<WorkerThread> workers;
+    std::atomic_size_t workerJoinReadyCount{0};
+
+    std::mutex taskQueueMutex;
+    std::condition_variable taskQueueCondVar;
+    std::queue<std::function<void()>> tasks;
+
+    std::atomic<State> state = State::STOP;
+    std::atomic_size_t minThreadCount;
+    std::atomic_size_t curThreadCount{0};
+    std::atomic_size_t maxThreadCount;
+    std::atomic_size_t idleThreadCount{0};
+
+    std::recursive_mutex controlMutex;
+
+  public:
+    explicit ThreadPool(size_t minThreadCount = DEFAULT_MIN_THREAD_COUNT, size_t maxThreadCount = DEFAULT_MAX_THREAD_COUNT);
     ThreadPool(const ThreadPool& other) = delete;
     ThreadPool(ThreadPool&& old) = delete;
-
     virtual ~ThreadPool();
 
     ThreadPool& operator=(const ThreadPool& other) = delete;
     ThreadPool& operator=(ThreadPool&& old) = delete;
 
-    void SetMinThreadNum(size_t min_threads) {
-        min_thread_num = min_threads;
-    }
+    [[nodiscard]] State GetState() const;
+    [[nodiscard]] size_t GetMaxThreadCount() const;
+    [[nodiscard]] size_t GetCurThreadCount() const;
+    [[nodiscard]] size_t GetIdleThreadCount() const;
+    [[nodiscard]] size_t GetMinThreadCount() const;
 
-    void SetMaxThreadNum(size_t max_threads) {
-        max_thread_num = max_threads;
-    }
+    void SetMinThreadCount(size_t minThreadCount);
+    void SetMaxThreadCount(size_t maxThreadCount);
 
-    void SetMaxIdleTime(std::chrono::milliseconds ms) {
-        max_idle_time = ms;
-    }
-
-    size_t GetCurrentThreadNum() {
-        return cur_thread_num;
-    }
-
-    size_t GetIdleThreadNum() {
-        return idle_thread_num;
-    }
-
-    bool IsStarted() {
-        return status != STOP;
-    }
-
-    bool IsStopped() {
-        return status == STOP;
-    }
-
-    int Start(size_t start_threads = 0);
-    int Stop();
-    int Pause();
-    int Resume();
-    int Wait();
+    void Start();
+    void Stop();
+    void Wait();
 
     /**
      * Return a future, calling future.get() will wait task done and return RetType.
@@ -75,64 +71,35 @@ class ThreadPool {
      **/
     template <class Fn, class... Args>
     auto Submit(Fn&& fn, Args&&... args) {
-        if (status == STOP) {
-            Start();
+        // Add a new worker thread in case the tasks queue is not empty and we still can add a thread
+        {
+            std::unique_lock lock(taskQueueMutex);
+            if (idleThreadCount <= tasks.size() && curThreadCount < maxThreadCount) {
+                const std::unique_lock lock(controlMutex);
+                if (state == State::RUNNING) {
+                    addThread();
+                }
+            }
         }
-        if (idle_thread_num <= 0 && cur_thread_num < max_thread_num) {
-            CreateThread();
-        }
+
+        // Add task to queue
         using RetType = decltype(fn(args...));
-        auto task = std::make_shared<std::packaged_task<RetType()>>([fn = std::forward<Fn>(fn), args...]() mutable { return std::invoke(fn, args...); });
+        const std::shared_ptr<std::packaged_task<RetType()>> task = std::make_shared<std::packaged_task<RetType()>>([fn = std::forward<Fn>(fn), args...]() mutable { return std::invoke(fn, args...); });
         std::future<RetType> future = task->get_future();
         {
-            std::lock_guard<std::mutex> locker(task_mutex);
+            std::unique_lock lock(taskQueueMutex);
             tasks.emplace([task] { (*task)(); });
         }
 
-        task_cond.notify_one();
+        taskQueueCondVar.notify_one();
         return future;
     }
 
   private:
-    bool CreateThread();
-    void AddThread(std::thread* thread);
-    void DelThread(std::thread::id id);
+    bool setState(State newState);
+    void addThread();
+    void joinStoppedThreads();
 
-  public:
-    size_t min_thread_num;
-    size_t max_thread_num;
-    std::chrono::milliseconds max_idle_time;
-
-  private:
-    enum Status {
-        STOP,
-        RUNNING,
-        PAUSE,
-    };
-
-    struct ThreadData {
-        std::shared_ptr<std::thread> thread;
-        std::thread::id id;
-        Status status;
-        std::chrono::steady_clock::time_point start_time;
-        std::chrono::steady_clock::time_point stop_time;
-    };
-
-    std::atomic<Status> status{Status::STOP};
-    std::condition_variable status_wait_cond{};
-    std::mutex status_wait_mutex{};
-
-    std::atomic<size_t> cur_thread_num{0};
-    std::atomic<size_t> idle_thread_num{0};
-
-    std::list<ThreadData> threads{};
-    std::mutex thread_mutex{};
-
-    std::queue<Task> tasks{};
-    std::mutex task_mutex{};
-    std::condition_variable task_cond{};
+    void threadFunc(WorkerThread& workerThread);
 };
-
 } // namespace cpr
-
-#endif
