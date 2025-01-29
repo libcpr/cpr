@@ -1,14 +1,15 @@
 #ifndef CPR_SESSION_H
 #define CPR_SESSION_H
 
-#include <cstdint>
 #include <fstream>
 #include <functional>
 #include <future>
 #include <list>
 #include <memory>
 #include <optional>
+#include <queue>
 #include <variant>
+#include <vector>
 
 #include "cpr/accept_encoding.h"
 #include "cpr/async_wrapper.h"
@@ -40,7 +41,6 @@
 #include "cpr/timeout.h"
 #include "cpr/unix_socket.h"
 #include "cpr/user_agent.h"
-#include "cpr/util.h"
 #include "cpr/verbose.h"
 
 namespace cpr {
@@ -251,6 +251,9 @@ class Session : public std::enable_shared_from_this<Session> {
          * Ensures that the "Transfer-Encoding" is set to "chunked", if not overriden in header_.
          **/
         ReadCallback readcb_;
+#if SUPPORT_CURLOPT_SSL_CTX_FUNCTION
+        ssl::SslCtxCallback sslctxcb_;
+#endif // SUPPORT_CURLOPT_SSL_CTX_FUNCTION
         HeaderCallback headercb_;
         WriteCallback writecb_;
         ProgressCallback progresscb_;
