@@ -147,6 +147,11 @@ void ThreadPool::threadFunc(WorkerThread& workerThread) {
         }
     }
 
+    // Make sure we clean up other stopped threads
+    if (state != State::STOP) {
+        joinStoppedThreads();
+    }
+
     workerThread.state = State::STOP;
 
     // Mark worker thread to be removed
