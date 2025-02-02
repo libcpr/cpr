@@ -19,8 +19,6 @@ namespace cpr {
  * Example:
  * // Create a new thread pool object
  * cpr::ThreadPool tp;
- * // Start the thread pool and spawn initial set of worker threads.
- * tp.Start()
  * // Add work
  * tp.Submit(..)
  * ...
@@ -115,6 +113,7 @@ class ThreadPool {
   public:
     /**
      * Creates a new thread pool object with a minimum and maximum thread count.
+     * Starts the thread pool via spawning 'minThreadCount' threads.
      * minThreadCount: Number of threads that should always be in standby or working.
      * maxThreadCount: The maximum number of threads allowed to be used by this thread pool.
      **/
@@ -128,7 +127,7 @@ class ThreadPool {
 
     /**
      * Returns the current thread pool state.
-     * The thread pool is in STOP state when initially created and will move over to RUNNING once Start() is invoked for the first time.
+     * The thread pool is in RUNNING state when initially created and will move over to STOP once Stop() is invoked.
      **/
     [[nodiscard]] State GetState() const;
     /**
@@ -153,7 +152,7 @@ class ThreadPool {
      **/
     void SetMinThreadCount(size_t minThreadCount);
     /**
-     * Sets the current number of threads available to the thread pool (working or idle).
+     * Sets the maximum number of threads allowed to be used by this thread pool.
      **/
     void SetMaxThreadCount(size_t maxThreadCount);
 
