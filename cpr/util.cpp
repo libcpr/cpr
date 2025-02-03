@@ -166,7 +166,7 @@ int debugUserFunction(CURL* /*handle*/, curl_infotype type, char* data, size_t s
  * std::string input = "Hello World!";
  * std::string result = holder.urlEncode(input);
  **/
-std::string urlEncode(const std::string& s) {
+util::SecureString urlEncode(std::string_view s) {
     const CurlHolder holder; // Create a temporary new holder for URL encoding
     return holder.urlEncode(s);
 }
@@ -181,50 +181,10 @@ std::string urlEncode(const std::string& s) {
  * std::string input = "Hello%20World%21";
  * std::string result = holder.urlDecode(input);
  **/
-std::string urlDecode(const std::string& s) {
+util::SecureString urlDecode(std::string_view s) {
     const CurlHolder holder; // Create a temporary new holder for URL decoding
     return holder.urlDecode(s);
 }
-
-#if defined(__STDC_LIB_EXT1__)
-void secureStringClear(std::string& s) {
-    if (s.empty()) {
-        return;
-    }
-    memset_s(&s.front(), s.length(), 0, s.length());
-    s.clear();
-}
-#elif defined(_WIN32)
-void secureStringClear(std::string& s) {
-    if (s.empty()) {
-        return;
-    }
-    SecureZeroMemory(&s.front(), s.length());
-    s.clear();
-}
-#else
-#if defined(__clang__)
-#pragma clang optimize off // clang
-#elif defined(__GNUC__) || defined(__MINGW32__) || defined(__MINGW32__) || defined(__MINGW64__)
-#pragma GCC push_options   // g++
-#pragma GCC optimize("O0") // g++
-#endif
-void secureStringClear(std::string& s) {
-    if (s.empty()) {
-        return;
-    }
-    // NOLINTNEXTLINE (readability-container-data-pointer)
-    char* ptr = &(s[0]);
-    memset(ptr, '\0', s.length());
-    s.clear();
-}
-
-#if defined(__clang__)
-#pragma clang optimize on // clang
-#elif defined(__GNUC__) || defined(__MINGW32__) || defined(__MINGW32__) || defined(__MINGW64__)
-#pragma GCC pop_options // g++
-#endif
-#endif
 
 bool isTrue(const std::string& s) {
     std::string temp_string{s};

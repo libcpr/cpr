@@ -3,16 +3,12 @@
 #include <string>
 
 namespace cpr {
-EncodedAuthentication::~EncodedAuthentication() noexcept {
-    util::secureStringClear(username);
-    util::secureStringClear(password);
-}
 
-const std::string& EncodedAuthentication::GetUsername() const {
+std::string_view EncodedAuthentication::GetUsername() const {
     return username;
 }
 
-const std::string& EncodedAuthentication::GetPassword() const {
+std::string_view EncodedAuthentication::GetPassword() const {
     return password;
 }
 
@@ -20,12 +16,12 @@ bool ProxyAuthentication::has(const std::string& protocol) const {
     return proxyAuth_.count(protocol) > 0;
 }
 
-const char* ProxyAuthentication::GetUsername(const std::string& protocol) {
-    return proxyAuth_[protocol].username.c_str();
+std::string_view ProxyAuthentication::GetUsername(const std::string& protocol) {
+    return proxyAuth_[protocol].GetUsername();
 }
 
-const char* ProxyAuthentication::GetPassword(const std::string& protocol) {
-    return proxyAuth_[protocol].password.c_str();
+std::string_view ProxyAuthentication::GetPassword(const std::string& protocol) {
+    return proxyAuth_[protocol].GetPassword();
 }
 
 } // namespace cpr

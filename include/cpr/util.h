@@ -2,13 +2,14 @@
 #define CPR_UTIL_H
 
 #include <fstream>
+#include <memory>
 #include <string>
 #include <vector>
 
 #include "cpr/callback.h"
 #include "cpr/cookies.h"
 #include "cpr/cprtypes.h"
-#include "cpr/curlholder.h"
+#include "cpr/secure_string.h"
 
 namespace cpr::util {
 
@@ -30,16 +31,9 @@ int progressUserFunction(const T* progress, cpr_pf_arg_t dltotal, cpr_pf_arg_t d
 }
 int debugUserFunction(CURL* handle, curl_infotype type, char* data, size_t size, const DebugCallback* debug);
 std::vector<std::string> split(const std::string& to_split, char delimiter);
-std::string urlEncode(const std::string& s);
-std::string urlDecode(const std::string& s);
+util::SecureString urlEncode(std::string_view s);
+util::SecureString urlDecode(std::string_view s);
 
-/**
- * Override the content of the provided string to hide sensitive data. The
- * string content after invocation is undefined. The string size is reset to zero.
- * impl. based on:
- * https://github.com/ojeda/secure_clear/blob/master/example-implementation/secure_clear.h
- **/
-void secureStringClear(std::string& s);
 bool isTrue(const std::string& s);
 
 /**

@@ -157,42 +157,30 @@ TEST(UtilParseHeaderTests, NoReasonTest) {
 
 TEST(UtilUrlEncodeTests, UnicodeEncoderTest) {
     std::string input = "一二三";
-    std::string result = util::urlEncode(input);
+    std::string result{util::urlEncode(input)};
     std::string expected = "%E4%B8%80%E4%BA%8C%E4%B8%89";
     EXPECT_EQ(result, expected);
 }
 
 TEST(UtilUrlEncodeTests, AsciiEncoderTest) {
     std::string input = "Hello World!";
-    std::string result = util::urlEncode(input);
+    std::string result{util::urlEncode(input)};
     std::string expected = "Hello%20World%21";
     EXPECT_EQ(result, expected);
 }
 
 TEST(UtilUrlDecodeTests, UnicodeDecoderTest) {
     std::string input = "%E4%B8%80%E4%BA%8C%E4%B8%89";
-    std::string result = util::urlDecode(input);
+    std::string result{util::urlDecode(input)};
     std::string expected = "一二三";
     EXPECT_EQ(result, expected);
 }
 
 TEST(UtilUrlDecodeTests, AsciiDecoderTest) {
     std::string input = "Hello%20World%21";
-    std::string result = util::urlDecode(input);
+    std::string result{util::urlDecode(input)};
     std::string expected = "Hello World!";
     EXPECT_EQ(result, expected);
-}
-
-TEST(UtilSecureStringClearTests, EmptyStringTest) {
-    std::string input;
-    util::secureStringClear(input);
-    EXPECT_TRUE(input.empty());
-}
-
-TEST(UtilSecureStringClearTests, NotEmptyStringTest) {
-    std::string input = "Hello World!";
-    util::secureStringClear(input);
-    EXPECT_TRUE(input.empty());
 }
 
 TEST(UtilIsTrueTests, TrueTest) {

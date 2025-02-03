@@ -4,7 +4,6 @@ add_library(cpr
         accept_encoding.cpp
         async.cpp
         auth.cpp
-        bearer.cpp
         callback.cpp
         cert_info.cpp
         cookies.cpp

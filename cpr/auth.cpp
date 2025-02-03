@@ -12,10 +12,6 @@ Authentication::Authentication(std::string_view username, std::string_view passw
     auth_string_ += password;
 }
 
-Authentication::~Authentication() noexcept {
-    util::secureStringClear(auth_string_);
-}
-
 const char* Authentication::GetAuthString() const noexcept {
     return auth_string_.c_str();
 }

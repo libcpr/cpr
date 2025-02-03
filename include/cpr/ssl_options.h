@@ -9,6 +9,7 @@
 #include <curl/curl.h>
 
 #include "cpr/util.h"
+#include "util.h"
 #include <utility>
 
 #ifndef SUPPORT_ALPN
@@ -122,12 +123,10 @@ class KeyFile {
     template <typename FileType, typename PassType>
     KeyFile(FileType&& p_filename, PassType p_password) : filename(std::forward<FileType>(p_filename)), password(std::move(p_password)) {}
 
-    virtual ~KeyFile() {
-        util::secureStringClear(password);
-    }
+    virtual ~KeyFile() = default;
 
     fs::path filename;
-    std::string password;
+    util::SecureString password;
 
     virtual const char* GetKeyType() const {
         return "PEM";
@@ -143,12 +142,10 @@ class KeyBlob {
     template <typename BlobType, typename PassType>
     KeyBlob(BlobType&& p_blob, PassType p_password) : blob(std::forward<BlobType>(p_blob)), password(std::move(p_password)) {}
 
-    virtual ~KeyBlob() {
-        util::secureStringClear(password);
-    }
+    virtual ~KeyBlob() = default;
 
     std::string blob;
-    std::string password;
+    util::SecureString password;
 
     virtual const char* GetKeyType() const {
         return "PEM";
@@ -416,10 +413,10 @@ struct SslOptions {
     // We don't use fs::path here, as this leads to problems using windows
     std::string key_file;
 #if SUPPORT_CURLOPT_SSLKEY_BLOB
-    std::string key_blob;
+    util::SecureString key_blob;
 #endif
     std::string key_type;
-    std::string key_pass;
+    util::SecureString key_pass;
     std::string pinned_public_key;
 #if SUPPORT_ALPN
     bool enable_alpn = true;
@@ -453,13 +450,6 @@ struct SslOptions {
 #if SUPPORT_SESSIONID_CACHE
     bool session_id_cache = true;
 #endif
-
-    ~SslOptions() noexcept {
-#if SUPPORT_CURLOPT_SSLKEY_BLOB
-        util::secureStringClear(key_blob);
-#endif
-        util::secureStringClear(key_pass);
-    }
 
     void SetOption(const ssl::CertFile& opt) {
         cert_file = opt.filename.string();
