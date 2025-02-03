@@ -1,5 +1,4 @@
 #include "cpr/auth.h"
-#include "cpr/util.h"
 
 #include <string_view>
 
