@@ -262,7 +262,7 @@ TEST(MultipleGetTests, HeaderChangeMultipleGetTest) {
         EXPECT_EQ(200, response.status_code);
         EXPECT_EQ(ErrorCode::OK, response.error.code);
     }
-    session.SetHeader(Header{{"key", "value"}});
+    session.SetHeader(Header{{"key", "value"}, {"lorem", "ipsum"}});
     {
         Response response = session.Get();
         std::string expected_text{"Header reflect GET"};
@@ -270,6 +270,19 @@ TEST(MultipleGetTests, HeaderChangeMultipleGetTest) {
         EXPECT_EQ(url, response.url);
         EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
         EXPECT_EQ(std::string{"value"}, response.header["key"]);
+        EXPECT_EQ(std::string{"ipsum"}, response.header["lorem"]);
+        EXPECT_EQ(200, response.status_code);
+        EXPECT_EQ(ErrorCode::OK, response.error.code);
+    }
+    Header& headerMap = session.GetHeader();
+    headerMap.erase("key");
+    {
+        Response response = session.Get();
+        std::string expected_text{"Header reflect GET"};
+        EXPECT_EQ(expected_text, response.text);
+        EXPECT_EQ(url, response.url);
+        EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+        EXPECT_EQ(std::string{"ipsum"}, response.header["lorem"]);
         EXPECT_EQ(200, response.status_code);
         EXPECT_EQ(ErrorCode::OK, response.error.code);
     }
