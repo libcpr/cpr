@@ -21,7 +21,7 @@ Note that `brew` might install a later version of `clang-format`, but it should 
 To run `clang-format` on every source file, run this in the root directory:
 
 ```
-./format-check.sh
+./scripts/run_clang_format.sh cpr include/cpr
 ```
 
 This should indicate which files need formatting and also show a diff of the requested changes. More specific usage instructions can be found on the official [LLVM website](http://releases.llvm.org/3.8.0/tools/clang/docs/ClangFormat.html).
