@@ -66,6 +66,7 @@ class Session : public std::enable_shared_from_this<Session> {
     void SetParameters(Parameters&& parameters);
     void SetHeader(const Header& header);
     void UpdateHeader(const Header& header);
+    Header& GetHeader();
     void SetTimeout(const Timeout& timeout);
     void SetConnectTimeout(const ConnectTimeout& timeout);
     void SetAuth(const Authentication& auth);
