@@ -903,7 +903,7 @@ const std::optional<Response> Session::intercept() {
     if (current_interceptor_ == interceptors_.end()) {
         current_interceptor_ = first_interceptor_;
     } else {
-        current_interceptor_++;
+        ++current_interceptor_;
     }
 
     if (current_interceptor_ != interceptors_.end()) {

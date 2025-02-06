@@ -2,7 +2,8 @@
 #include <cassert>
 #include <curl/curl.h>
 #include <curl/easy.h>
-#include <string>
+#include <string_view>
+#include "cpr/secure_string.h"
 
 namespace cpr {
 CurlHolder::CurlHolder() {

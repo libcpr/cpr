@@ -1,11 +1,11 @@
 #include "cpr/cookies.h"
 #include "cpr/curlholder.h"
-#include "cpr/util.h"
 #include <chrono>
 #include <ctime>
 #include <iomanip>
 #include <sstream>
 #include <string>
+#include <string_view>
 
 namespace cpr {
 const std::string Cookie::GetDomain() const {
