@@ -17,6 +17,8 @@ jobs:
     - name: "[Release g++] Build"
       env:
         CPR_ENABLE_CPPCHECK: ON
+        # Avoid parallel runs so only the resulting error file is not being written by multiple processes at the same time.
+        CMAKE_BUILD_PARALLEL_LEVEL: 1
       uses: ashutoshvarma/action-cmake-build@master
       with:
         build-dir: ${{github.workspace}}/build

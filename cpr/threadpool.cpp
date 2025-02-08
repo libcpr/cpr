@@ -111,9 +111,7 @@ bool ThreadPool::CreateThread() {
             if (task) {
                 task();
                 ++idle_thread_num;
-                if (initialRun) {
-                    initialRun = false;
-                }
+                initialRun = false;
             }
         }
     });
