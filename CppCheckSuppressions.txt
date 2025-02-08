@@ -1,3 +1,0 @@
-noExplicitConstructor
-ConfigurationNotChecked
-passedByValue
