@@ -1,5 +1,4 @@
 #include "cpr/auth.h"
-#include "cpr/util.h"
 
 #include <string_view>
 
@@ -10,10 +9,6 @@ Authentication::Authentication(std::string_view username, std::string_view passw
     auth_string_ += username;
     auth_string_ += ':';
     auth_string_ += password;
-}
-
-Authentication::~Authentication() noexcept {
-    util::secureStringClear(auth_string_);
 }
 
 const char* Authentication::GetAuthString() const noexcept {

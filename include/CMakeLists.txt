@@ -32,6 +32,7 @@ target_sources(cpr PRIVATE
     cpr/proxies.h
     cpr/proxyauth.h
     cpr/response.h
+    cpr/secure_string.h
     cpr/session.h
     cpr/singleton.h
     cpr/ssl_ctx.h

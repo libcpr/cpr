@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "cpr/util.h"
+
 namespace cpr {
 
 // Only supported with libcurl >= 7.61.0.
@@ -14,18 +16,20 @@ namespace cpr {
 class Bearer {
   public:
     // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
-    Bearer(std::string token) : token_string_{std::move(token)} {}
+    Bearer(std::string_view token) : token_string_{token} {}
     Bearer(const Bearer& other) = default;
     Bearer(Bearer&& old) noexcept = default;
-    virtual ~Bearer() noexcept;
+    virtual ~Bearer() noexcept = default;
 
     Bearer& operator=(Bearer&& old) noexcept = default;
     Bearer& operator=(const Bearer& other) = default;
 
-    virtual const char* GetToken() const noexcept;
+    virtual const char* GetToken() const noexcept {
+        return token_string_.c_str();
+    }
 
   protected:
-    std::string token_string_;
+    util::SecureString token_string_;
 };
 #endif
 

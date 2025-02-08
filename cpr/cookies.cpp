@@ -5,6 +5,7 @@
 #include <iomanip>
 #include <sstream>
 #include <string>
+#include <string_view>
 
 namespace cpr {
 const std::string Cookie::GetDomain() const {
@@ -53,7 +54,7 @@ const std::string Cookies::GetEncoded(const CurlHolder& holder) const {
     std::stringstream stream;
     for (const cpr::Cookie& item : cookies_) {
         // Depending on if encoding is set to "true", we will URL-encode cookies
-        stream << (encode ? holder.urlEncode(item.GetName()) : item.GetName()) << "=";
+        stream << (encode ? std::string_view{holder.urlEncode(item.GetName())} : std::string_view{item.GetName()}) << "=";
 
         // special case version 1 cookies, which can be distinguished by
         // beginning and trailing quotes
@@ -61,7 +62,7 @@ const std::string Cookies::GetEncoded(const CurlHolder& holder) const {
             stream << item.GetValue();
         } else {
             // Depending on if encoding is set to "true", we will URL-encode cookies
-            stream << (encode ? holder.urlEncode(item.GetValue()) : item.GetValue());
+            stream << (encode ? std::string_view{holder.urlEncode(item.GetValue())} : std::string_view{item.GetValue()});
         }
         stream << "; ";
     }
