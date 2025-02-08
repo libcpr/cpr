@@ -3,6 +3,7 @@
 #include "cpr/cookies.h"
 #include "cpr/cprtypes.h"
 #include "cpr/curlholder.h"
+#include "cpr/secure_string.h"
 #include <algorithm>
 #include <cctype>
 #include <chrono>
@@ -11,7 +12,6 @@
 #include <curl/curl.h>
 #include <fstream>
 #include <ios>
-#include <iterator>
 #include <sstream>
 #include <string>
 #include <type_traits>
@@ -189,8 +189,7 @@ util::SecureString urlDecode(std::string_view s) {
 
 bool isTrue(const std::string& s) {
     constexpr std::string_view tmp = "true";
-    auto [s_it, tmp_it] = std::mismatch(s.begin(), s.end(), tmp.begin(), tmp.end(),
-        [](auto s_c, auto t_c) { return std::tolower(s_c) == t_c; });
+    auto [s_it, tmp_it] = std::mismatch(s.begin(), s.end(), tmp.begin(), tmp.end(), [](auto s_c, auto t_c) { return std::tolower(s_c) == t_c; });
     return s_it == s.end() && tmp_it == tmp.end();
 }
 
