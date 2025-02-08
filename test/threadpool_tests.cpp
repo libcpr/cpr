@@ -117,7 +117,8 @@ TEST(ThreadPoolTests, StartStopBasicWorkMultipleThreads) {
 
 // Ensure only the current task gets finished when stopping worker
 TEST(ThreadPoolTests, CanceledBeforeDoneSingleThread) {
-    std::atomic_uint32_t invCount{0};
+    std::atomic_uint32_t threadsDone{0};
+    std::atomic_uint32_t threadsWaiting{0};
     std::mutex lock;
     lock.lock();
 
@@ -125,10 +126,16 @@ TEST(ThreadPoolTests, CanceledBeforeDoneSingleThread) {
         cpr::ThreadPool tp(1, 1);
 
         for (size_t i = 0; i < 100; ++i) {
-            tp.Submit([&invCount, &lock]() -> void {
+            tp.Submit([&threadsDone, &lock, &threadsWaiting]() -> void {
+                threadsWaiting++;
                 const std::unique_lock guard(lock);
-                invCount++;
+                threadsDone++;
             });
+        }
+
+        // Wait until all threads started. Can be replaced by std::barrier in C++20.
+        while (threadsWaiting < 1) {
+            std::this_thread::yield();
         }
 
         EXPECT_EQ(tp.GetCurThreadCount(), 1);
@@ -139,12 +146,13 @@ TEST(ThreadPoolTests, CanceledBeforeDoneSingleThread) {
         lock.unlock();
     }
 
-    EXPECT_EQ(invCount, 1);
+    EXPECT_EQ(threadsDone, 1);
 }
 
 // Ensure only the current task gets finished when stopping worker
 TEST(ThreadPoolTests, CanceledBeforeDoneMultipleThreads) {
-    std::atomic_uint32_t invCount{0};
+    std::atomic_uint32_t threadsDone{0};
+    std::atomic_uint32_t threadsWaiting{0};
     std::mutex lock;
     lock.lock();
 
@@ -152,11 +160,19 @@ TEST(ThreadPoolTests, CanceledBeforeDoneMultipleThreads) {
         cpr::ThreadPool tp(1, 10);
 
         for (size_t i = 0; i < 100; ++i) {
-            tp.Submit([&invCount, &lock]() -> void {
+            tp.Submit([&threadsDone, &lock, &threadsWaiting]() -> void {
+                threadsWaiting++;
                 const std::unique_lock guard(lock);
-                invCount++;
+                threadsDone++;
             });
         }
+
+        // Wait until all threads started. Can be replaced by std::barrier in C++20.
+        while (threadsWaiting < 10) {
+            std::this_thread::yield();
+        }
+
+        EXPECT_EQ(threadsDone, 0);
 
         EXPECT_EQ(tp.GetCurThreadCount(), 10);
         EXPECT_EQ(tp.GetIdleThreadCount(), 0);
@@ -166,7 +182,7 @@ TEST(ThreadPoolTests, CanceledBeforeDoneMultipleThreads) {
         lock.unlock();
     }
 
-    EXPECT_EQ(invCount, 10);
+    EXPECT_EQ(threadsDone, 10);
 }
 
 int main(int argc, char** argv) {
