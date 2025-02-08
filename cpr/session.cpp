@@ -1,6 +1,5 @@
 #include "cpr/session.h"
 
-#include <algorithm>
 #include <array>
 #include <atomic>
 #include <cassert>
