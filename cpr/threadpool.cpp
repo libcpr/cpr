@@ -169,6 +169,8 @@ void ThreadPool::joinStoppedThreads() {
             }
             iter = workers.erase(iter);
             workerJoinReadyCount--;
+        } else {
+            iter++;
         }
     }
 }
