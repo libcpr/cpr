@@ -15,13 +15,6 @@ using namespace cpr;
 
 static HttpServer* server = new HttpServer();
 
-TEST(BasicTests, XXXTest) {
-    Url url{"https://getsolara.dev/api/endpoint.json"};
-    Response response = cpr::Get(url);
-    EXPECT_EQ(200, response.status_code);
-    EXPECT_EQ(ErrorCode::OK, response.error.code);
-}
-
 TEST(BasicTests, HelloWorldTest) {
     Url url{server->GetBaseUrl() + "/hello.html"};
     Response response = cpr::Get(url);
