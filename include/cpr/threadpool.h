@@ -87,7 +87,7 @@ class ThreadPool {
     /**
      * The current state for the thread pool.
      **/
-    std::atomic<State> state = State::RUNNING;
+    std::atomic<State> state = State::STOP;
     /**
      * The number of threads that should always be in standby or working.
      **/
