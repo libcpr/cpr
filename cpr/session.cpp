@@ -184,8 +184,8 @@ void Session::prepareCommonShared() {
     // handle NO_PROXY override passed through Proxies object
     // Example: Proxies{"no_proxy": ""} will override environment variable definition with an empty list
     const std::array<std::string, 2> no_proxy{"no_proxy", "NO_PROXY"};
-    for (const auto& item : no_proxy) {
-        if (proxies_.has(item)) {
+    for (const auto& item : no_proxy) { // cppcheck-suppress useStlAlgorithm
+        if (proxies_.has(item)) {       // cppcheck-suppress useStlAlgorithm
             curl_easy_setopt(curl_->handle, CURLOPT_NOPROXY, proxies_[item].c_str());
             break;
         }
@@ -449,7 +449,7 @@ void Session::SetBody(Body&& body) {
 
 void Session::SetLowSpeed(const LowSpeed& low_speed) {
     curl_easy_setopt(curl_->handle, CURLOPT_LOW_SPEED_LIMIT, low_speed.limit);
-    curl_easy_setopt(curl_->handle, CURLOPT_LOW_SPEED_TIME, low_speed.time);
+    curl_easy_setopt(curl_->handle, CURLOPT_LOW_SPEED_TIME, low_speed.time); // cppcheck-suppress y2038-unsafe-call
 }
 
 void Session::SetVerifySsl(const VerifySsl& verify) {

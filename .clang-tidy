@@ -40,5 +40,5 @@ Checks: '*,
 -boost-use-ranges
 '
 WarningsAsErrors: '*'
-HeaderFilterRegex: 'src/*.hpp'
+HeaderFilterRegex: 'src\/*.hpp'
 FormatStyle: file

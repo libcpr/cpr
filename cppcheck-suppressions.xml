@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<suppressions>
+    <!-- Exclude Paths -->
+    <suppress>
+        <id>*</id>
+        <fileName>*/build/*</fileName>
+    </suppress>
+    <suppress>
+        <id>CheckLevelMaxBranches</id>
+    </suppress>
+    <suppress>
+        <id>noExplicitConstructor</id>
+    </suppress>
+    <suppress>
+        <id>knownConditionTrueFalse</id>
+        <fileName>*/include/cpr/async_wrapper.h</fileName>
+    </suppress>
+    <suppress>
+        <id>y2038-unsafe-call</id>
+        <fileName>*/cpr/cookies.cpp</fileName>
+    </suppress>
+    <!-- Known Limitation/Bug: https://github.com/libcpr/cpr/issues/1174 -->
+    <suppress>
+        <id>y2038-unsafe-call</id>
+        <fileName>*/include/cpr/low_speed.h</fileName>
+    </suppress>
+    <suppress>
+        <id>normalCheckLevelMaxBranches</id>
+    </suppress>
+    <suppress>
+        <id>constParameterPointer</id>
+        <fileName>*/cpr/util.cpp</fileName>
+    </suppress>
+    <suppress>
+        <id>postfixOperator</id>
+    </suppress>
+</suppressions>
