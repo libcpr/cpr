@@ -439,7 +439,7 @@ void Session::SetBody(Body&& body) {
 
 void Session::SetLowSpeed(const LowSpeed& low_speed) {
     curl_easy_setopt(curl_->handle, CURLOPT_LOW_SPEED_LIMIT, low_speed.limit);
-    curl_easy_setopt(curl_->handle, CURLOPT_LOW_SPEED_TIME, low_speed.time);
+    curl_easy_setopt(curl_->handle, CURLOPT_LOW_SPEED_TIME, low_speed.time); // cppcheck-suppress y2038-unsafe-call
 }
 
 void Session::SetVerifySsl(const VerifySsl& verify) {

@@ -3,6 +3,7 @@
 #include "cpr/cookies.h"
 #include "cpr/cprtypes.h"
 #include "cpr/curlholder.h"
+#include "cpr/secure_string.h"
 #include <algorithm>
 #include <cctype>
 #include <chrono>

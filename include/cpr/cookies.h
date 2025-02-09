@@ -4,7 +4,6 @@
 #include "cpr/curlholder.h"
 #include <chrono>
 #include <initializer_list>
-#include <sstream>
 #include <string>
 #include <vector>
 
@@ -24,14 +23,14 @@ class Cookie {
      * So we fall back to std::chrono::system_clock::from_time_t(0) for the minimum value here.
      **/
     Cookie(const std::string& name, const std::string& value, const std::string& domain = "", bool p_isIncludingSubdomains = false, const std::string& path = "/", bool p_isHttpsOnly = false, std::chrono::system_clock::time_point expires = std::chrono::system_clock::from_time_t(0)) : name_{name}, value_{value}, domain_{domain}, includeSubdomains_{p_isIncludingSubdomains}, path_{path}, httpsOnly_{p_isHttpsOnly}, expires_{expires} {}
-    const std::string GetDomain() const;
-    bool IsIncludingSubdomains() const;
-    const std::string GetPath() const;
-    bool IsHttpsOnly() const;
-    const std::chrono::system_clock::time_point GetExpires() const;
-    const std::string GetExpiresString() const;
-    const std::string GetName() const;
-    const std::string GetValue() const;
+    [[nodiscard]] const std::string& GetDomain() const;
+    [[nodiscard]] bool IsIncludingSubdomains() const;
+    [[nodiscard]] const std::string& GetPath() const;
+    [[nodiscard]] bool IsHttpsOnly() const;
+    [[nodiscard]] std::chrono::system_clock::time_point GetExpires() const;
+    [[nodiscard]] std::string GetExpiresString() const;
+    [[nodiscard]] const std::string& GetName() const;
+    [[nodiscard]] const std::string& GetValue() const;
 
   private:
     std::string name_;
@@ -68,17 +67,17 @@ class Cookies {
     Cookies(const cpr::Cookie& cookie, bool p_encode = true) : encode{p_encode}, cookies_{cookie} {}
 
     cpr::Cookie& operator[](size_t pos);
-    const std::string GetEncoded(const CurlHolder& holder) const;
+    [[nodiscard]] std::string GetEncoded(const CurlHolder& holder) const;
 
     using iterator = std::vector<cpr::Cookie>::iterator;
     using const_iterator = std::vector<cpr::Cookie>::const_iterator;
 
     iterator begin();
     iterator end();
-    const_iterator begin() const;
-    const_iterator end() const;
-    const_iterator cbegin() const;
-    const_iterator cend() const;
+    [[nodiscard]] const_iterator begin() const;
+    [[nodiscard]] const_iterator end() const;
+    [[nodiscard]] const_iterator cbegin() const;
+    [[nodiscard]] const_iterator cend() const;
     void emplace_back(const Cookie& str);
     [[nodiscard]] bool empty() const;
     void push_back(const Cookie& str);
