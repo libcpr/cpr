@@ -912,6 +912,9 @@ const std::optional<Response> Session::intercept() {
     }
 
     if (current_interceptor_ != interceptors_.end()) {
+        if (*current_interceptor_ == nullptr) {
+            return std::nullopt;
+        }
         auto icpt = current_interceptor_;
         // Nested makeRequest() start at first_interceptor_, thus excluding previous interceptors.
         first_interceptor_ = current_interceptor_;
