@@ -1,11 +1,12 @@
 #include "cpr/error.h"
-#include <curl/curlver.h>
-#include <unordered_map>
 #include <cstdint>
 #include <curl/curl.h>
+#include <curl/curlver.h>
+#include <unordered_map>
 
 namespace cpr {
-static const std::unordered_map<std::int32_t, ErrorCode> curl_error_map = { // NOLINT - (needed because of static init)
+// NOLINTNEXTLINE - (needed because of static init)
+static const std::unordered_map<std::int32_t, ErrorCode> curl_error_map = {
         {CURLE_OK, ErrorCode::OK},
         {CURLE_UNSUPPORTED_PROTOCOL, ErrorCode::UNSUPPORTED_PROTOCOL},
         {CURLE_FAILED_INIT, ErrorCode::FAILED_INIT},

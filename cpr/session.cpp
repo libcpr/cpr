@@ -339,6 +339,14 @@ void Session::UpdateHeader(const Header& header) {
     }
 }
 
+Header& Session::GetHeader() {
+    return header_;
+}
+
+const Header& Session::GetHeader() const {
+    return header_;
+}
+
 void Session::SetTimeout(const Timeout& timeout) {
     curl_easy_setopt(curl_->handle, CURLOPT_TIMEOUT_MS, timeout.Milliseconds());
 }
