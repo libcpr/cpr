@@ -46,6 +46,7 @@
 namespace cpr {
 
 using AsyncResponse = AsyncWrapper<Response>;
+using Content = std::variant<std::monostate, cpr::Payload, cpr::Body, cpr::Multipart>;
 
 class Interceptor;
 class MultiPerform;
@@ -111,6 +112,8 @@ class Session : public std::enable_shared_from_this<Session> {
     void SetAcceptEncoding(const AcceptEncoding& accept_encoding);
     void SetAcceptEncoding(AcceptEncoding&& accept_encoding);
     void SetLimitRate(const LimitRate& limit_rate);
+    [[nodiscard]] const Content& GetContent() const;
+    void RemoveContent();
 
     // For cancellable requests
     void SetCancellationParam(std::shared_ptr<std::atomic_bool> param);
@@ -237,7 +240,7 @@ class Session : public std::enable_shared_from_this<Session> {
 
 
     bool chunkedTransferEncoding_{false};
-    std::variant<std::monostate, cpr::Payload, cpr::Body, cpr::Multipart> content_{std::monostate{}};
+    Content content_{std::monostate{}};
     std::shared_ptr<CurlHolder> curl_;
     Url url_;
     Parameters parameters_;

@@ -268,6 +268,27 @@ void Session::SetLimitRate(const LimitRate& limit_rate) {
     curl_easy_setopt(curl_->handle, CURLOPT_MAX_SEND_SPEED_LARGE, limit_rate.uprate);
 }
 
+const Content& Session::GetContent() const {
+    return content_;
+}
+
+void Session::RemoveContent() {
+    if (std::holds_alternative<cpr::Payload>(content_)) {
+        curl_easy_setopt(curl_->handle, CURLOPT_POSTFIELDSIZE_LARGE, -1);
+        curl_easy_setopt(curl_->handle, CURLOPT_COPYPOSTFIELDS, NULL);
+    } else if (std::holds_alternative<cpr::Body>(content_)) {
+        curl_easy_setopt(curl_->handle, CURLOPT_POSTFIELDSIZE_LARGE, -1);
+        curl_easy_setopt(curl_->handle, CURLOPT_COPYPOSTFIELDS, NULL);
+    } else if (std::holds_alternative<cpr::Multipart>(content_)) {
+        // Make sure, we have a empty multipart to start with:
+        if (curl_->multipart) {
+            curl_mime_free(curl_->multipart);
+            curl_->multipart = nullptr;
+        }
+    }
+    content_ = std::monostate{};
+}
+
 void Session::SetReadCallback(const ReadCallback& read) {
     cbs_->readcb_ = read;
     curl_easy_setopt(curl_->handle, CURLOPT_INFILESIZE_LARGE, read.size);
