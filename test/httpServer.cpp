@@ -852,6 +852,19 @@ void HttpServer::OnRequestGetDownloadFileLength(mg_connection* conn, mg_http_mes
 
 void HttpServer::OnRequest(mg_connection* conn, mg_http_message* msg) {
     std::string uri = std::string(msg->uri.ptr, msg->uri.len);
+
+    if (std::string_view{msg->method.ptr, msg->method.len} == "GET") {
+        if (msg->body.len > 0) {
+            std::string errorMessage{"Bad Request: GET shouldn't contain a body."};
+            SendError(conn, 400, errorMessage);
+            return;
+        } else if (msg->chunk.len > 0) {
+            std::string errorMessage{"Bad Request: GET shouldn't contain a body."};
+            SendError(conn, 400, errorMessage);
+            return;
+        }
+    }
+
     if (uri == "/") {
         OnRequestRoot(conn, msg);
     } else if (uri == "/hello.html") {

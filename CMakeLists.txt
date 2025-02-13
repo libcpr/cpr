@@ -10,6 +10,7 @@ if(${CMAKE_PROJECT_NAME} STREQUAL ${PROJECT_NAME})
     set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "CMake")
     set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
     set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib)
+    set(CMAKE_EXPORT_COMPILE_COMMANDS ON) # generate compile_commands.json to be used by other tools (e.g. vs code)
 else()
     # Check required c++ standard of parent project
     if(CMAKE_CXX_STANDARD)

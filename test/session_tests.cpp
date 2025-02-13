@@ -1,9 +1,10 @@
 #include <algorithm>
+#include <chrono>
 #include <cstdint>
 #include <cstdlib>
 #include <gtest/gtest.h>
+#include <span>
 
-#include <chrono>
 #include <stdexcept>
 #include <string>
 
@@ -1001,32 +1002,29 @@ TEST(DifferentMethodTests, MultipleGetPostTest) {
     }
 }
 
+void PrintContentType(const std::variant<std::monostate, cpr::Payload, cpr::Body, cpr::Multipart>& content) {
+    if (std::holds_alternative<std::monostate>(content)) {
+        std::cout << "std::monostate" << std::endl;
+    } else if (std::holds_alternative<cpr::Payload>(content)) {
+        std::cout << "cpr::Payload" << std::endl;
+    } else if (std::holds_alternative<cpr::Body>(content)) {
+        std::cout << "cpr::Body" << std::endl;
+    } else if (std::holds_alternative<cpr::Multipart>(content)) {
+        std::cout << "cpr::Multipart" << std::endl;
+    } else {
+        std::cout << "unknown content type" << std::endl;
+    }
+}
+
 TEST(DifferentMethodTests, MultipleDeleteHeadPutGetPostTest) {
     Url url{server->GetBaseUrl() + "/header_reflect.html"};
     Url urlPost{server->GetBaseUrl() + "/post_reflect.html"};
     Url urlPut{server->GetBaseUrl() + "/put.html"};
+    Url urlMultipartPost{server->GetBaseUrl() + "/post_file_upload.html"};
     Session session;
     for (size_t i = 0; i < 10; ++i) {
         {
-            session.SetUrl(url);
-            Response response = session.Delete();
-            std::string expected_text{"Header reflect DELETE"};
-            EXPECT_EQ(expected_text, response.text);
-            EXPECT_EQ(url, response.url);
-            EXPECT_EQ(200, response.status_code);
-            EXPECT_EQ(ErrorCode::OK, response.error.code);
-        }
-        {
-            session.SetUrl(urlPost);
-            std::string expectedBody = "a1b2c3Post";
-            session.SetBody(expectedBody);
-            Response response = session.Post();
-            EXPECT_EQ(expectedBody, response.text);
-            EXPECT_EQ(urlPost, response.url);
-            EXPECT_EQ(200, response.status_code);
-            EXPECT_EQ(ErrorCode::OK, response.error.code);
-        }
-        {
+            session.RemoveContent();
             session.SetUrl(url);
             Response response = session.Get();
             std::string expected_text{"Header reflect GET"};
@@ -1036,6 +1034,42 @@ TEST(DifferentMethodTests, MultipleDeleteHeadPutGetPostTest) {
             EXPECT_EQ(ErrorCode::OK, response.error.code);
         }
         {
+            session.RemoveContent();
+            session.SetUrl(urlMultipartPost);
+            std::string fileContentsBinary{"kn3d0c9j213riknmfd039dj10idn2309cmxkle2rsdj0239mdf"};
+            std::string fileExtension = ".myfile";
+            session.SetMultipart(cpr::Multipart{{"files", cpr::Buffer{fileContentsBinary.begin(), fileContentsBinary.end(), "myfile.jpg"}}, {"file_types", "[\"" + fileExtension + "\"]"}});
+            Response response = session.Post();
+            std::string expected_text{"{\n  \"files\": \"myfile.jpg=kn3d0c9j213riknmfd039dj10idn2309cmxkle2rsdj0239mdf\",\n  \"file_types\": \"[\".myfile\"]\"\n}"};
+            EXPECT_EQ(expected_text, response.text);
+            EXPECT_EQ(urlMultipartPost, response.url);
+            EXPECT_EQ(201, response.status_code);
+            EXPECT_EQ(ErrorCode::OK, response.error.code);
+        }
+        {
+            session.RemoveContent();
+            session.SetUrl(url);
+            Response response = session.Delete();
+            std::string expected_text{"Header reflect DELETE"};
+            EXPECT_EQ(expected_text, response.text);
+            EXPECT_EQ(url, response.url);
+            EXPECT_EQ(200, response.status_code);
+            EXPECT_EQ(ErrorCode::OK, response.error.code);
+        }
+        {
+            PrintContentType(session.GetContent());
+            session.SetUrl(urlPost);
+            std::string expectedBody = "a1b2c3Post";
+            session.SetBody(expectedBody);
+            Response response = session.Post();
+            EXPECT_EQ(expectedBody, response.text);
+            EXPECT_EQ(urlPost, response.url);
+            EXPECT_EQ(200, response.status_code);
+            EXPECT_EQ(ErrorCode::OK, response.error.code);
+        }
+
+        {
+            PrintContentType(session.GetContent());
             session.SetUrl(urlPut);
             session.SetPayload({{"x", "5"}});
             Response response = session.Put();
@@ -1050,6 +1084,8 @@ TEST(DifferentMethodTests, MultipleDeleteHeadPutGetPostTest) {
             EXPECT_EQ(ErrorCode::OK, response.error.code);
         }
         {
+            session.RemoveContent();
+            PrintContentType(session.GetContent());
             session.SetUrl(url);
             Response response = session.Head();
             std::string expected_text{"Header reflect HEAD"};
