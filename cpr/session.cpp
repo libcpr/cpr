@@ -273,10 +273,7 @@ const Content& Session::GetContent() const {
 }
 
 void Session::RemoveContent() {
-    if (std::holds_alternative<cpr::Payload>(content_)) {
-        curl_easy_setopt(curl_->handle, CURLOPT_POSTFIELDSIZE_LARGE, -1);
-        curl_easy_setopt(curl_->handle, CURLOPT_COPYPOSTFIELDS, NULL);
-    } else if (std::holds_alternative<cpr::Body>(content_)) {
+    if (std::holds_alternative<cpr::Payload>(content_) || std::holds_alternative<cpr::Body>(content_)) {
         curl_easy_setopt(curl_->handle, CURLOPT_POSTFIELDSIZE_LARGE, -1);
         curl_easy_setopt(curl_->handle, CURLOPT_COPYPOSTFIELDS, NULL);
     } else if (std::holds_alternative<cpr::Multipart>(content_)) {
