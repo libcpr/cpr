@@ -17,6 +17,16 @@ using namespace cpr;
 
 static HttpServer* server = new HttpServer();
 
+TEST(ProxyAuthTests, SetProxyCredentials) {
+    Url url{server->GetBaseUrl() + "/hello.html"};
+    Session session;
+    session.SetUrl(url);
+    session.SetProxies(Proxies{{"http", HTTP_PROXY}, {"https", HTTPS_PROXY}});
+    session.SetProxyAuth({{"http", EncodedAuthentication{PROXY_USER, PROXY_PASS}}, {"https", EncodedAuthentication{PROXY_USER, PROXY_PASS}}});
+    session.PrepareGet();
+    EXPECT_TRUE(true);
+}
+
 // TODO: These should be fixed after a source code implementation of a proxy
 #if defined(false)
 TEST(ProxyAuthTests, SingleProxyTest) {
