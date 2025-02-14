@@ -68,6 +68,7 @@ TEST(PrepareTests, MultipleDeleteHeadPutGetPostTest) {
     Session session;
     for (size_t i = 0; i < 3; ++i) {
         {
+            session.RemoveContent();
             session.SetUrl(url);
             session.PrepareDelete();
             CURLcode curl_result = curl_easy_perform(session.GetCurlHolder()->handle);
@@ -91,6 +92,7 @@ TEST(PrepareTests, MultipleDeleteHeadPutGetPostTest) {
             EXPECT_EQ(ErrorCode::OK, response.error.code);
         }
         {
+            session.RemoveContent();
             session.SetUrl(url);
             session.PrepareGet();
             CURLcode curl_result = curl_easy_perform(session.GetCurlHolder()->handle);
@@ -118,6 +120,7 @@ TEST(PrepareTests, MultipleDeleteHeadPutGetPostTest) {
             EXPECT_EQ(ErrorCode::OK, response.error.code);
         }
         {
+            session.RemoveContent();
             session.SetUrl(url);
             session.PrepareHead();
             CURLcode curl_result = curl_easy_perform(session.GetCurlHolder()->handle);
