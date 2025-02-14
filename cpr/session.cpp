@@ -275,7 +275,7 @@ const Content& Session::GetContent() const {
 void Session::RemoveContent() {
     if (std::holds_alternative<cpr::Payload>(content_) || std::holds_alternative<cpr::Body>(content_)) {
         curl_easy_setopt(curl_->handle, CURLOPT_POSTFIELDSIZE_LARGE, -1);
-        curl_easy_setopt(curl_->handle, CURLOPT_COPYPOSTFIELDS, NULL);
+        curl_easy_setopt(curl_->handle, CURLOPT_COPYPOSTFIELDS, nullptr);
     } else if (std::holds_alternative<cpr::Multipart>(content_)) {
         // Make sure, we have a empty multipart to start with:
         if (curl_->multipart) {
