@@ -11,7 +11,8 @@
 #include <utility>
 
 namespace cpr {
-size_t ThreadPool::DEFAULT_MAX_THREAD_COUNT = std::thread::hardware_concurrency();
+// NOLINTNEXTLINE(cert-err58-cpp) Not relevant since trivial function.
+size_t ThreadPool::DEFAULT_MAX_THREAD_COUNT = std::max<size_t>(std::thread::hardware_concurrency(), static_cast<size_t>(1));
 
 ThreadPool::ThreadPool(size_t minThreadCount, size_t maxThreadCount) : minThreadCount(minThreadCount), maxThreadCount(maxThreadCount) {
     assert(minThreadCount <= maxThreadCount);
