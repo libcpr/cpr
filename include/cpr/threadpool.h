@@ -186,7 +186,7 @@ class ThreadPool {
         {
             std::unique_lock lock(taskQueueMutex);
             if (idleThreadCount <= tasks.size() && curThreadCount < maxThreadCount) {
-                const std::unique_lock lock(controlMutex);
+                const std::unique_lock lockControl(controlMutex);
                 if (state == State::RUNNING) {
                     addThread();
                 }
