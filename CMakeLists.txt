@@ -76,6 +76,16 @@ cpr_option(CPR_DEBUG_SANITIZER_FLAG_UB "Enables the UndefinedBehaviorSanitizer f
 cpr_option(CPR_DEBUG_SANITIZER_FLAG_ALL "Enables all sanitizers for debug builds except the ThreadSanitizer since it is incompatible with the other sanitizers." OFF)
 message(STATUS "=======================================================")
 
+if (MSVC)
+    add_definitions (-DUNICODE -D_UNICODE -D_CRT_SECURE_NO_WARNINGS)
+    if (BUILD_SHARED_LIBS)
+        message(STATUS "Build windows dynamic libs.")
+    else()
+        set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+        message(STATUS "Build windows static libs.")
+    endif()
+endif()
+
 # Save the project version as txt file for deb and NuGet builds
 if(CPR_BUILD_VERSION_OUTPUT_ONLY)
     message(STATUS "Printing version and exiting...")
