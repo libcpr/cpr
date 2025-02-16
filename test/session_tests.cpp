@@ -1001,20 +1001,6 @@ TEST(DifferentMethodTests, MultipleGetPostTest) {
     }
 }
 
-void PrintContentType(const std::variant<std::monostate, cpr::Payload, cpr::Body, cpr::Multipart>& content) {
-    if (std::holds_alternative<std::monostate>(content)) {
-        std::cout << "std::monostate" << std::endl;
-    } else if (std::holds_alternative<cpr::Payload>(content)) {
-        std::cout << "cpr::Payload" << std::endl;
-    } else if (std::holds_alternative<cpr::Body>(content)) {
-        std::cout << "cpr::Body" << std::endl;
-    } else if (std::holds_alternative<cpr::Multipart>(content)) {
-        std::cout << "cpr::Multipart" << std::endl;
-    } else {
-        std::cout << "unknown content type" << std::endl;
-    }
-}
-
 TEST(DifferentMethodTests, MultipleDeleteHeadPutGetPostTest) {
     Url url{server->GetBaseUrl() + "/header_reflect.html"};
     Url urlPost{server->GetBaseUrl() + "/post_reflect.html"};
@@ -1056,7 +1042,6 @@ TEST(DifferentMethodTests, MultipleDeleteHeadPutGetPostTest) {
             EXPECT_EQ(ErrorCode::OK, response.error.code);
         }
         {
-            PrintContentType(session.GetContent());
             session.SetUrl(urlPost);
             std::string expectedBody = "a1b2c3Post";
             session.SetBody(expectedBody);
@@ -1068,7 +1053,6 @@ TEST(DifferentMethodTests, MultipleDeleteHeadPutGetPostTest) {
         }
 
         {
-            PrintContentType(session.GetContent());
             session.SetUrl(urlPut);
             session.SetPayload({{"x", "5"}});
             Response response = session.Put();
@@ -1084,7 +1068,6 @@ TEST(DifferentMethodTests, MultipleDeleteHeadPutGetPostTest) {
         }
         {
             session.RemoveContent();
-            PrintContentType(session.GetContent());
             session.SetUrl(url);
             Response response = session.Head();
             std::string expected_text{"Header reflect HEAD"};

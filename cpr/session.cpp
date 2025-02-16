@@ -273,16 +273,20 @@ const Content& Session::GetContent() const {
 }
 
 void Session::RemoveContent() {
+    // inverse function to prepareBodyPayloadOrMultipart()
     if (std::holds_alternative<cpr::Payload>(content_) || std::holds_alternative<cpr::Body>(content_)) {
+        // set default values, so curl does not send a body in subsequent requests
         curl_easy_setopt(curl_->handle, CURLOPT_POSTFIELDSIZE_LARGE, -1);
         curl_easy_setopt(curl_->handle, CURLOPT_COPYPOSTFIELDS, nullptr);
     } else if (std::holds_alternative<cpr::Multipart>(content_)) {
         // Make sure, we have a empty multipart to start with:
         if (curl_->multipart) {
+            // remove multipart data
             curl_mime_free(curl_->multipart);
             curl_->multipart = nullptr;
         }
     }
+    // no content
     content_ = std::monostate{};
 }
 
@@ -948,7 +952,7 @@ const std::optional<Response> Session::intercept() {
 }
 
 void Session::prepareBodyPayloadOrMultipart() const {
-    // Either a body, multipart or a payload is allowed.
+    // Either a body, multipart or a payload is allowed. Inverse function to RemoveContent()
 
     if (std::holds_alternative<cpr::Payload>(content_)) {
         const std::string payload = std::get<cpr::Payload>(content_).GetContent(*curl_);
