@@ -27,6 +27,8 @@ class EncodedAuthentication {
 
     [[nodiscard]] std::string_view GetUsername() const;
     [[nodiscard]] std::string_view GetPassword() const;
+    [[nodiscard]] const util::SecureString& GetUsernameUnderlying() const;
+    [[nodiscard]] const util::SecureString& GetPasswordUnderlying() const;
 
   private:
     util::SecureString username;
@@ -42,6 +44,8 @@ class ProxyAuthentication {
     [[nodiscard]] bool has(const std::string& protocol) const;
     [[nodiscard]] std::string_view GetUsername(const std::string& protocol);
     [[nodiscard]] std::string_view GetPassword(const std::string& protocol);
+    [[nodiscard]] const util::SecureString& GetUsernameUnderlying(const std::string& protocol) const;
+    [[nodiscard]] const util::SecureString& GetPasswordUnderlying(const std::string& protocol) const;
 
   private:
     std::map<std::string, EncodedAuthentication> proxyAuth_;

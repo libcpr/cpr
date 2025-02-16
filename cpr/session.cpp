@@ -177,8 +177,8 @@ void Session::prepareCommonShared() {
     if (proxies_.has(protocol)) {
         curl_easy_setopt(curl_->handle, CURLOPT_PROXY, proxies_[protocol].c_str());
         if (proxyAuth_.has(protocol)) {
-            curl_easy_setopt(curl_->handle, CURLOPT_PROXYUSERNAME, proxyAuth_.GetUsername(protocol).data());
-            curl_easy_setopt(curl_->handle, CURLOPT_PROXYPASSWORD, proxyAuth_.GetPassword(protocol).data());
+            curl_easy_setopt(curl_->handle, CURLOPT_PROXYUSERNAME, proxyAuth_.GetUsernameUnderlying(protocol).c_str());
+            curl_easy_setopt(curl_->handle, CURLOPT_PROXYPASSWORD, proxyAuth_.GetPasswordUnderlying(protocol).c_str());
         }
     }
     // handle NO_PROXY override passed through Proxies object
