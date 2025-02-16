@@ -77,7 +77,6 @@ cpr_option(CPR_DEBUG_SANITIZER_FLAG_ALL "Enables all sanitizers for debug builds
 message(STATUS "=======================================================")
 
 if (MSVC)
-    add_definitions (-DUNICODE -D_UNICODE -D_CRT_SECURE_NO_WARNINGS)
     if (BUILD_SHARED_LIBS)
         message(STATUS "Build windows dynamic libs.")
     else()
