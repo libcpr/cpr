@@ -177,17 +177,8 @@ void Session::prepareCommonShared() {
     if (proxies_.has(protocol)) {
         curl_easy_setopt(curl_->handle, CURLOPT_PROXY, proxies_[protocol].c_str());
         if (proxyAuth_.has(protocol)) {
-            // this worked:
-            // std::string password = "password";
-            // curl_easy_setopt(curl_->handle, CURLOPT_PROXYPASSWORD, password.c_str());
-            // std::string_view usernameView = proxyAuth_.GetUsername(protocol);
-            //             std::string username = "user";
-            // std::string username(usernameView);
-            // curl_easy_setopt(curl_->handle, CURLOPT_PROXYUSERNAME, username.data());
-            // curl_easy_setopt(curl_->handle, CURLOPT_PROXYUSERNAME, usernameView.data());
-            //  this does trigger the segfault (original code):
-            curl_easy_setopt(curl_->handle, CURLOPT_PROXYUSERNAME, proxyAuth_.GetUsername(protocol));
-            curl_easy_setopt(curl_->handle, CURLOPT_PROXYPASSWORD, proxyAuth_.GetPassword(protocol));
+            curl_easy_setopt(curl_->handle, CURLOPT_PROXYUSERNAME, proxyAuth_.GetUsername(protocol).data());
+            curl_easy_setopt(curl_->handle, CURLOPT_PROXYPASSWORD, proxyAuth_.GetPassword(protocol).data());
         }
     }
     // handle NO_PROXY override passed through Proxies object
