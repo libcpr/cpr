@@ -1,6 +1,6 @@
 #include "cpr/proxyauth.h"
+#include "cpr/util.h"
 #include <string>
-#include <string_view>
 
 namespace cpr {
 EncodedAuthentication::~EncodedAuthentication() noexcept {

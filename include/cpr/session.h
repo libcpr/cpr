@@ -296,6 +296,7 @@ class Session : public std::enable_shared_from_this<Session> {
      **/
     void prepareCommonDownload();
     void prepareHeader();
+    void prepareProxy();
     CURLcode DoEasyPerform();
     void prepareBodyPayloadOrMultipart() const;
     /**
