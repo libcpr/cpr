@@ -112,7 +112,16 @@ class Session : public std::enable_shared_from_this<Session> {
     void SetAcceptEncoding(const AcceptEncoding& accept_encoding);
     void SetAcceptEncoding(AcceptEncoding&& accept_encoding);
     void SetLimitRate(const LimitRate& limit_rate);
+
+    /**
+     * Returns a reference to the content sent in previous request
+     */
     [[nodiscard]] const Content& GetContent() const;
+
+    /**
+     * Removes the content sent in previous request, so it will not be sent with the next request
+     * Call this before doing a request that is specified not to send a body, e.g. GET
+     */
     void RemoveContent();
 
     // For cancellable requests
