@@ -1,6 +1,7 @@
 #include "cpr/proxyauth.h"
 #include <string>
 #include <string_view>
+#include "cpr/secure_string.h"
 
 namespace cpr {
 
@@ -9,6 +10,14 @@ std::string_view EncodedAuthentication::GetUsername() const {
 }
 
 std::string_view EncodedAuthentication::GetPassword() const {
+    return password;
+}
+
+const util::SecureString& EncodedAuthentication::GetUsernameUnderlying() const {
+    return username;
+}
+
+const util::SecureString& EncodedAuthentication::GetPasswordUnderlying() const {
     return password;
 }
 
@@ -22,6 +31,14 @@ std::string_view ProxyAuthentication::GetUsername(const std::string& protocol) {
 
 std::string_view ProxyAuthentication::GetPassword(const std::string& protocol) {
     return proxyAuth_[protocol].GetPassword();
+}
+
+const util::SecureString& ProxyAuthentication::GetUsernameUnderlying(const std::string& protocol) const {
+    return proxyAuth_.at(protocol).GetUsernameUnderlying();
+}
+
+const util::SecureString& ProxyAuthentication::GetPasswordUnderlying(const std::string& protocol) const {
+    return proxyAuth_.at(protocol).GetPasswordUnderlying();
 }
 
 } // namespace cpr
