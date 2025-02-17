@@ -119,7 +119,7 @@ class Session : public std::enable_shared_from_this<Session> {
     [[nodiscard]] const Content& GetContent() const;
 
     /**
-     * Removes the content sent in previous request, so it will not be sent with the next request
+     * Removes the content sent in previous request from internal state, so it will not be sent with the next request
      * Call this before doing a request that is specified not to send a body, e.g. GET
      */
     void RemoveContent();
