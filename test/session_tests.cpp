@@ -1051,7 +1051,16 @@ TEST(DifferentMethodTests, MultipleDeleteHeadPutGetPostTest) {
             EXPECT_EQ(200, response.status_code);
             EXPECT_EQ(ErrorCode::OK, response.error.code);
         }
-
+        {
+            session.RemoveContent();
+            session.SetUrl(url);
+            Response response = session.Get();
+            std::string expected_text{"Header reflect GET"};
+            EXPECT_EQ(expected_text, response.text);
+            EXPECT_EQ(url, response.url);
+            EXPECT_EQ(200, response.status_code);
+            EXPECT_EQ(ErrorCode::OK, response.error.code);
+        }
         {
             session.SetUrl(urlPut);
             session.SetPayload({{"x", "5"}});
