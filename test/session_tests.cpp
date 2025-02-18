@@ -1021,11 +1021,11 @@ TEST(DifferentMethodTests, MultipleDeleteHeadPutGetPostTest) {
         {
             session.RemoveContent();
             session.SetUrl(urlMultipartPost);
-            std::string fileContentsBinary{"kn3d0c9j213riknmfd039dj10idn2309cmxkle2rsdj0239mdf"};
+            std::string fileContentsBinary{"this is a binary payload"};
             std::string fileExtension = ".myfile";
             session.SetMultipart(cpr::Multipart{{"files", cpr::Buffer{fileContentsBinary.begin(), fileContentsBinary.end(), "myfile.jpg"}}, {"file_types", "[\"" + fileExtension + "\"]"}});
             Response response = session.Post();
-            std::string expected_text{"{\n  \"files\": \"myfile.jpg=kn3d0c9j213riknmfd039dj10idn2309cmxkle2rsdj0239mdf\",\n  \"file_types\": \"[\".myfile\"]\"\n}"};
+            std::string expected_text{"{\n  \"files\": \"myfile.jpg=this is a binary payload\",\n  \"file_types\": \"[\".myfile\"]\"\n}"};
             EXPECT_EQ(expected_text, response.text);
             EXPECT_EQ(urlMultipartPost, response.url);
             EXPECT_EQ(201, response.status_code);
