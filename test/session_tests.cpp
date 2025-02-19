@@ -1,9 +1,9 @@
 #include <algorithm>
+#include <chrono>
 #include <cstdint>
 #include <cstdlib>
 #include <gtest/gtest.h>
 
-#include <chrono>
 #include <stdexcept>
 #include <string>
 
@@ -1005,9 +1005,34 @@ TEST(DifferentMethodTests, MultipleDeleteHeadPutGetPostTest) {
     Url url{server->GetBaseUrl() + "/header_reflect.html"};
     Url urlPost{server->GetBaseUrl() + "/post_reflect.html"};
     Url urlPut{server->GetBaseUrl() + "/put.html"};
+    Url urlMultipartPost{server->GetBaseUrl() + "/post_file_upload.html"};
     Session session;
     for (size_t i = 0; i < 10; ++i) {
         {
+            session.RemoveContent();
+            session.SetUrl(url);
+            Response response = session.Get();
+            std::string expected_text{"Header reflect GET"};
+            EXPECT_EQ(expected_text, response.text);
+            EXPECT_EQ(url, response.url);
+            EXPECT_EQ(200, response.status_code);
+            EXPECT_EQ(ErrorCode::OK, response.error.code);
+        }
+        {
+            session.RemoveContent();
+            session.SetUrl(urlMultipartPost);
+            std::string fileContentsBinary{"this is a binary payload"};
+            std::string fileExtension = ".myfile";
+            session.SetMultipart(cpr::Multipart{{"files", cpr::Buffer{fileContentsBinary.begin(), fileContentsBinary.end(), "myfile.jpg"}}, {"file_types", "[\"" + fileExtension + "\"]"}});
+            Response response = session.Post();
+            std::string expected_text{"{\n  \"files\": \"myfile.jpg=this is a binary payload\",\n  \"file_types\": \"[\".myfile\"]\"\n}"};
+            EXPECT_EQ(expected_text, response.text);
+            EXPECT_EQ(urlMultipartPost, response.url);
+            EXPECT_EQ(201, response.status_code);
+            EXPECT_EQ(ErrorCode::OK, response.error.code);
+        }
+        {
+            session.RemoveContent();
             session.SetUrl(url);
             Response response = session.Delete();
             std::string expected_text{"Header reflect DELETE"};
@@ -1027,6 +1052,7 @@ TEST(DifferentMethodTests, MultipleDeleteHeadPutGetPostTest) {
             EXPECT_EQ(ErrorCode::OK, response.error.code);
         }
         {
+            session.RemoveContent();
             session.SetUrl(url);
             Response response = session.Get();
             std::string expected_text{"Header reflect GET"};
@@ -1050,6 +1076,7 @@ TEST(DifferentMethodTests, MultipleDeleteHeadPutGetPostTest) {
             EXPECT_EQ(ErrorCode::OK, response.error.code);
         }
         {
+            session.RemoveContent();
             session.SetUrl(url);
             Response response = session.Head();
             std::string expected_text{"Header reflect HEAD"};

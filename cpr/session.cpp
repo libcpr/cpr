@@ -262,6 +262,26 @@ void Session::SetLimitRate(const LimitRate& limit_rate) {
     curl_easy_setopt(curl_->handle, CURLOPT_MAX_SEND_SPEED_LARGE, limit_rate.uprate);
 }
 
+const Content& Session::GetContent() const {
+    return content_;
+}
+
+void Session::RemoveContent() {
+    // inverse function to prepareBodyPayloadOrMultipart()
+    if (std::holds_alternative<cpr::Payload>(content_) || std::holds_alternative<cpr::Body>(content_)) {
+        // set default values, so curl does not send a body in subsequent requests
+        curl_easy_setopt(curl_->handle, CURLOPT_POSTFIELDSIZE_LARGE, -1);
+        curl_easy_setopt(curl_->handle, CURLOPT_COPYPOSTFIELDS, nullptr);
+    } else if (std::holds_alternative<cpr::Multipart>(content_)) {
+        if (curl_->multipart) {
+            // remove multipart data
+            curl_mime_free(curl_->multipart);
+            curl_->multipart = nullptr;
+        }
+    }
+    content_ = std::monostate{};
+}
+
 void Session::SetReadCallback(const ReadCallback& read) {
     cbs_->readcb_ = read;
     curl_easy_setopt(curl_->handle, CURLOPT_INFILESIZE_LARGE, read.size);
@@ -917,7 +937,7 @@ const std::optional<Response> Session::intercept() {
 }
 
 void Session::prepareBodyPayloadOrMultipart() const {
-    // Either a body, multipart or a payload is allowed.
+    // Either a body, multipart or a payload is allowed. Inverse function to RemoveContent()
 
     if (std::holds_alternative<cpr::Payload>(content_)) {
         const std::string payload = std::get<cpr::Payload>(content_).GetContent(*curl_);
