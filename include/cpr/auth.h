@@ -8,7 +8,7 @@
 
 namespace cpr {
 
-enum class AuthMode { BASIC, DIGEST, NTLM, NEGOTIATE };
+enum class AuthMode { BASIC, DIGEST, NTLM, NEGOTIATE, ANY, ANYSAFE };
 
 class Authentication {
   public:

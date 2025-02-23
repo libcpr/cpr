@@ -409,6 +409,14 @@ void Session::SetAuth(const Authentication& auth) {
             curl_easy_setopt(curl_->handle, CURLOPT_HTTPAUTH, CURLAUTH_NEGOTIATE);
             curl_easy_setopt(curl_->handle, CURLOPT_USERPWD, auth.GetAuthString());
             break;
+        case AuthMode::ANY:
+            curl_easy_setopt(curl_->handle, CURLOPT_HTTPAUTH, CURLAUTH_ANY);
+            curl_easy_setopt(curl_->handle, CURLOPT_USERPWD, auth.GetAuthString());
+            break;
+        case AuthMode::ANYSAFE:
+            curl_easy_setopt(curl_->handle, CURLOPT_HTTPAUTH, CURLAUTH_ANYSAFE);
+            curl_easy_setopt(curl_->handle, CURLOPT_USERPWD, auth.GetAuthString());
+            break;
     }
 }
 
