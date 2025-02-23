@@ -1,11 +1,9 @@
 #ifndef CPR_TEST_HTTP_SERVER_H
 #define CPR_TEST_HTTP_SERVER_H
 
-#include <memory>
 #include <string>
 
 #include "abstractServer.hpp"
-#include "cpr/cpr.h"
 #include "mongoose.h"
 
 namespace cpr {
@@ -17,6 +15,17 @@ class HttpServer : public AbstractServer {
     uint16_t GetPort() override;
 
     void OnRequest(mg_connection* conn, mg_http_message* msg) override;
+
+    /**
+     * Returns the current date and time + 100 hours from when this function was invoked for the first time.
+     **/
+    static std::chrono::system_clock::time_point GetCookieExpiresIn100HoursTimePoint();
+
+    /**
+     * Returns the current date and time + 100 hours from when this function (or better GetCookieExpiresIn100HoursTimePoint()) was invoked for the first time as cookies expires string.
+     * For example: Wed, 30 Sep 2093 03:18:00 GMT
+     **/
+    static std::string GetCookieExpiresIn100HoursString();
 
   private:
     static void OnRequestHello(mg_connection* conn, mg_http_message* msg);

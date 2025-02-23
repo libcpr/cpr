@@ -55,8 +55,8 @@ TEST(HeadTests, CookieHeadTest) {
     Url url{server->GetBaseUrl() + "/basic_cookies.html"};
     Response response = cpr::Head(url);
     cpr::Cookies expectedCookies{
-            {"SID", "31d4d96e407aad42", "127.0.0.1", false, "/", true, std::chrono::system_clock::time_point{} + std::chrono::seconds(3905119080)},
-            {"lang", "en-US", "127.0.0.1", false, "/", true, std::chrono::system_clock::time_point{} + std::chrono::seconds(3905119080)},
+            {"SID", "31d4d96e407aad42", "127.0.0.1", false, "/", true, HttpServer::GetCookieExpiresIn100HoursTimePoint()},
+            {"lang", "en-US", "127.0.0.1", false, "/", true, HttpServer::GetCookieExpiresIn100HoursTimePoint()},
     };
     cpr::Cookies res_cookies{response.cookies};
     EXPECT_EQ(std::string{}, response.text);
