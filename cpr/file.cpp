@@ -5,11 +5,7 @@
 
 namespace cpr {
 
-Files::Files(const std::initializer_list<std::string>& p_filepaths) {
-    for (const std::string& filepath : p_filepaths) {
-        files.emplace_back(filepath);
-    }
-}
+Files::Files(const std::initializer_list<std::string>& p_filepaths) : files(p_filepaths.begin(), p_filepaths.end()) {}
 
 Files::iterator Files::begin() {
     return files.begin();
