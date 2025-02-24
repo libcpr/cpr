@@ -738,6 +738,49 @@ TEST(DigestTests, SetDigestTest) {
     EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
+TEST(AnyAuthTests, SetAnyTest) {
+    Url url{server->GetBaseUrl() + "/digest_auth.html"};
+    Session session;
+    session.SetUrl(url);
+    session.SetAuth({"user", "password", AuthMode::ANY});
+    Response response = session.Get();
+    std::string expected_text{"Header reflect GET"};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
+TEST(AnyAuthTests, SetAnySafeTest) {
+    Authentication auth = {"user", "password", AuthMode::ANYSAFE};
+    {
+        Url url{server->GetBaseUrl() + "/digest_auth.html"};
+        Session session;
+        session.SetUrl(url);
+        session.SetAuth(auth);
+        Response response = session.Get();
+        std::string expected_text{"Header reflect GET"};
+        EXPECT_EQ(expected_text, response.text);
+        EXPECT_EQ(url, response.url);
+        EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+        EXPECT_EQ(200, response.status_code);
+        EXPECT_EQ(ErrorCode::OK, response.error.code);
+    }
+    {
+        Url url{server->GetBaseUrl() + "/basic_auth.html"};
+        Session session;
+        session.SetUrl(url);
+        session.SetAuth(auth);
+        Response response = session.Get();
+        EXPECT_EQ(std::string{"Unauthorized"}, response.text);
+        EXPECT_EQ(url, response.url);
+        EXPECT_EQ(std::string{"text/plain"}, response.header["content-type"]);
+        EXPECT_EQ(401, response.status_code);
+        EXPECT_EQ(ErrorCode::OK, response.error.code);
+    }
+}
+
 TEST(UserAgentTests, SetUserAgentTest) {
     Url url{server->GetBaseUrl() + "/header_reflect.html"};
     UserAgent userAgent{"Test User Agent"};
