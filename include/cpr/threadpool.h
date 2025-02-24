@@ -53,11 +53,11 @@ class ThreadPool {
         return idle_thread_num;
     }
 
-    bool IsStarted() {
+    bool IsStarted() const {
         return status != STOP;
     }
 
-    bool IsStopped() {
+    bool IsStopped() const {
         return status == STOP;
     }
 
@@ -65,7 +65,7 @@ class ThreadPool {
     int Stop();
     int Pause();
     int Resume();
-    int Wait();
+    int Wait() const;
 
     /**
      * Return a future, calling future.get() will wait task done and return RetType.
@@ -95,7 +95,7 @@ class ThreadPool {
 
   private:
     bool CreateThread();
-    void AddThread(std::thread* thread);
+    void AddThread(const std::shared_ptr<std::thread>& thread);
     void DelThread(std::thread::id id);
 
   public:

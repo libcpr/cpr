@@ -2,7 +2,6 @@
 #include <algorithm>
 #include <chrono>
 #include <cstddef>
-#include <ctime>
 #include <memory>
 #include <mutex>
 #include <thread>
@@ -66,7 +65,7 @@ int ThreadPool::Resume() {
     return 0;
 }
 
-int ThreadPool::Wait() {
+int ThreadPool::Wait() const {
     while (true) {
         if (status == STOP || (tasks.empty() && idle_thread_num == cur_thread_num)) {
             break;
@@ -80,7 +79,7 @@ bool ThreadPool::CreateThread() {
     if (cur_thread_num >= max_thread_num) {
         return false;
     }
-    std::thread* thread = new std::thread([this] {
+    auto thread = std::make_shared<std::thread>([this] {
         bool initialRun = true;
         while (status != STOP) {
             {
@@ -119,11 +118,11 @@ bool ThreadPool::CreateThread() {
     return true;
 }
 
-void ThreadPool::AddThread(std::thread* thread) {
+void ThreadPool::AddThread(const std::shared_ptr<std::thread>& thread) {
     thread_mutex.lock();
     ++cur_thread_num;
     ThreadData data;
-    data.thread = std::shared_ptr<std::thread>(thread);
+    data.thread = thread;
     data.id = thread->get_id();
     data.status = RUNNING;
     data.start_time = std::chrono::steady_clock::now();
