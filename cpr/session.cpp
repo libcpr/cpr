@@ -659,6 +659,11 @@ void Session::SetHttpVersion(const HttpVersion& version) {
             curl_easy_setopt(curl_->handle, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_3);
             break;
 #endif
+#if LIBCURL_VERSION_NUM >= 0x075701 // 7.87.1, but corresponds to 7.88.0 tag
+        case HttpVersionCode::VERSION_3_0_ONLY:
+            curl_easy_setopt(curl_->handle, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_3ONLY);
+            break;
+#endif
 
         default: // Should not happen
             throw std::invalid_argument("Invalid/Unknown HTTP version type.");
