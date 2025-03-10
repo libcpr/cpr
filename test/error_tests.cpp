@@ -91,6 +91,13 @@ TEST(ErrorTests, BoolTrueTest) {
     EXPECT_TRUE(error);
 }
 
+TEST(ErrorTests, StringReprTest) {
+    Error error;
+    error.code = ErrorCode::UNSUPPORTED_PROTOCOL;
+    EXPECT_EQ(std::to_string(error.code), "UNSUPPORTED_PROTOCOL");
+}
+
+
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
     ::testing::AddGlobalTestEnvironment(server);
