@@ -97,6 +97,12 @@ TEST(ErrorTests, StringReprTest) {
     EXPECT_EQ(std::to_string(error.code), "UNSUPPORTED_PROTOCOL");
 }
 
+TEST(ErrorTests, StringReprUnknownTest) {
+    Error error;
+    error.code = ErrorCode::UNKNOWN_ERROR;
+    EXPECT_EQ(std::to_string(error.code), "UNKNOWN_ERROR");
+}
+
 
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
