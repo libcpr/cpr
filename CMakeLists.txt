@@ -82,7 +82,6 @@ if (MSVC)
         message(STATUS "Build windows dynamic libs.")
     else()
         # Add this to build windows pure static library.
-        set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
         message(STATUS "Build windows static libs.")
     endif()
 endif()
