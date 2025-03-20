@@ -146,8 +146,48 @@ ctest -VV # -VV is optional since it enables verbose output
 ```
 
 ### Bazel
+Please refer to [hedronvision/bazel-make-cc-https-easy](https://github.com/hedronvision/bazel-make-cc-https-easy) or 
 
-Please refer to [hedronvision/bazel-make-cc-https-easy](https://github.com/hedronvision/bazel-make-cc-https-easy).
+`cpr` can be added as an extension by adding the following lines to your bazel MODULE file (tested with Bazel 8). Edit the versions as needed.
+```starlark
+bazel_dep(name = "curl", version = "8.8.0.bcr.3")
+bazel_dep(name = "platforms", version = "0.0.11")
+bazel_dep(name = "zlib", version = "1.3.1.bcr.5")
+bazel_dep(name = "boringssl", version = "0.20250212.0")
+bazel_dep(name = "rules_foreign_cc", version = "0.14.0")
+
+http_archive = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+http_archive(
+    name = "cpr",
+    url = "https://github.com/libcpr/cpr/archive/refs/tags/1.11.2.tar.gz",
+    strip_prefix = "cpr-1.11.2",
+    sha256 = "3795a3581109a9ba5e48fbb50f9efe3399a3ede22f2ab606b71059a615cd6084",
+    build_file_content = """
+load("@rules_foreign_cc//foreign_cc:defs.bzl", "cmake")
+
+filegroup(
+    name = "srcs",
+    srcs = glob(["**"], ["bazel-*/**"]),
+    visibility = ["//visibility:public"],
+)
+
+cmake(
+    name = "cpr",
+    cache_entries = {
+    },
+    tags = ["requires-network"],
+    includes = ["include/cpr"],
+    lib_source = ":srcs",
+    out_shared_libs = select({
+        "@platforms//os:macos": ["libcpr.dylib"],
+        "@platforms//os:windows": ["libcpr.dll"],
+        "//conditions:default": ["libcpr.so.1"],
+    }),
+    visibility = ["//visibility:public"],
+)
+"""
+)
+```
 
 ### Packages for Linux Distributions
 
