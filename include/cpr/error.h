@@ -1,7 +1,7 @@
 #ifndef CPR_ERROR_H
 #define CPR_ERROR_H
 
-#include <array>
+#include <unordered_map>
 #include <cstdint>
 #include <string>
 
