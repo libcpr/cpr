@@ -90,7 +90,7 @@ enum class ErrorCode {
     UNKNOWN_ERROR = 1000,
 };
 
-inline std::unordered_map<ErrorCode, std::string> error_code_to_string_mapping = {{ErrorCode::OK, "OK"},
+inline const std::unordered_map<ErrorCode, std::string> error_code_to_string_mapping = {{ErrorCode::OK, "OK"},
                                                                                   {ErrorCode::UNSUPPORTED_PROTOCOL, "UNSUPPORTED_PROTOCOL"},
                                                                                   {ErrorCode::FAILED_INIT, "FAILED_INIT"},
                                                                                   {ErrorCode::URL_MALFORMAT, "URL_MALFORMAT"},
@@ -176,7 +176,7 @@ class Error {
 
 namespace std {
 inline std::string to_string(const cpr::ErrorCode& code) {
-    return cpr::error_code_to_string_mapping[code];
+    return cpr::error_code_to_string_mapping.at(code);
 }
 } // namespace std
 
