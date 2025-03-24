@@ -1,7 +1,7 @@
 #include "cpr/proxyauth.h"
+#include "cpr/secure_string.h"
 #include <string>
 #include <string_view>
-#include "cpr/secure_string.h"
 
 namespace cpr {
 
