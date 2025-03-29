@@ -24,8 +24,13 @@ class GlobalThreadPool : public ThreadPool {
  **/
 template <bool isCancellable = false, class Fn, class... Args>
 auto async(Fn&& fn, Args&&... args) {
-  std::future ret = GlobalThreadPool::GetInstance()->Submit(std::forward<Fn>(fn), std::forward<Args>(args)...);
-  return AsyncWrapper<decltype(ret.get()), isCancellable>{std::move(ret)};
+  std::future future = GlobalThreadPool::GetInstance()->Submit(std::forward<Fn>(fn), std::forward<Args>(args)...);
+  using async_wrapper_t = AsyncWrapper<decltype(future.get()), isCancellable>;
+  if constexpr (isCancellable) {
+    return async_wrapper_t{std::move(future), std::make_shared<std::atomic_bool>(false)};
+  } else {
+    return async_wrapper_t{std::move(future)};
+  }
 }
 
 class async {
