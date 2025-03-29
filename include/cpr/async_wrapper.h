@@ -43,7 +43,7 @@ class AsyncWrapper {
             }
         }
     }
-    // These methods replicate the behaviour of std::future<T>
+    // These methods replicate the behavior of std::future<T>
     [[nodiscard]] T get() {
         if constexpr (isCancellable) {
             if (IsCancelled()) {
