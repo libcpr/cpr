@@ -48,7 +48,7 @@ TEST(AsyncWrapperNonCancellableTests, TestExceptionsNoSharedState) {
     ASSERT_FALSE(test_wrapper.IsCancelled());
 
     // Trying to get or wait for a future that doesn't have a shared state should result to an exception
-    // It should be noted that there is a divergence from std::future behavior here: calling wait* on the original std::future is undefined behaviour, according to cppreference.com . We find it preferrable to throw an exception.
+    // It should be noted that there is a divergence from std::future behavior here: calling wait* on the original std::future is undefined behavior, according to cppreference.com . We find it preferrable to throw an exception.
     EXPECT_THROW(std::ignore = test_wrapper.get(), std::exception);
     EXPECT_THROW(test_wrapper.wait(), std::exception);
     EXPECT_THROW(test_wrapper.wait_for(five_secs), std::exception);
@@ -404,7 +404,7 @@ TEST(MultiAsyncCancelTests, TestCancellationOnResponseWrapperDestruction) {
  * the user can realistically expect to have their request cancelled within
  * ~1s on a bad case (low network speed).
  * INFO this test is not, strictly speaking, deterministic. It depends at the
- * least on scheduler behaviour. We have tried, however, to set a boundary that
+ * least on scheduler behavior. We have tried, however, to set a boundary that
  * is permissive enough to ensure consistency.
  */
 
