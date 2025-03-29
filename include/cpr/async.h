@@ -22,9 +22,10 @@ class GlobalThreadPool : public ThreadPool {
  * async(std::bind(&Class::mem_fn, &obj))
  * async(std::mem_fn(&Class::mem_fn, &obj))
  **/
-template <class Fn, class... Args>
+template <bool isCancellable = false, class Fn, class... Args>
 auto async(Fn&& fn, Args&&... args) {
-    return AsyncWrapper{GlobalThreadPool::GetInstance()->Submit(std::forward<Fn>(fn), std::forward<Args>(args)...)};
+  std::future ret = GlobalThreadPool::GetInstance()->Submit(std::forward<Fn>(fn), std::forward<Args>(args)...);
+  return AsyncWrapper<decltype(ret.get()), isCancellable>{std::move(ret)};
 }
 
 class async {
