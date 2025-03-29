@@ -131,7 +131,7 @@ AsyncResponse GetAsync(Ts... ts) {
 template <typename Then, typename... Ts>
 // NOLINTNEXTLINE(fuchsia-trailing-return)
 auto GetCallback(Then then, Ts... ts) {
-    return cpr::async([](Then then_inner, Ts... ts_inner) { return then_inner(Get(std::move(ts_inner)...)); }, std::move(then), std::move(ts)...);
+    return cpr::async<true>([](Then then_inner, Ts... ts_inner) { return then_inner(Get(std::move(ts_inner)...)); }, std::move(then), std::move(ts)...);
 }
 
 // Post methods
@@ -152,7 +152,7 @@ AsyncResponse PostAsync(Ts... ts) {
 template <typename Then, typename... Ts>
 // NOLINTNEXTLINE(fuchsia-trailing-return)
 auto PostCallback(Then then, Ts... ts) {
-    return cpr::async([](Then then_inner, Ts... ts_inner) { return then_inner(Post(std::move(ts_inner)...)); }, std::move(then), std::move(ts)...);
+    return cpr::async<true>([](Then then_inner, Ts... ts_inner) { return then_inner(Post(std::move(ts_inner)...)); }, std::move(then), std::move(ts)...);
 }
 
 // Put methods
@@ -173,7 +173,7 @@ AsyncResponse PutAsync(Ts... ts) {
 template <typename Then, typename... Ts>
 // NOLINTNEXTLINE(fuchsia-trailing-return)
 auto PutCallback(Then then, Ts... ts) {
-    return cpr::async([](Then then_inner, Ts... ts_inner) { return then_inner(Put(std::move(ts_inner)...)); }, std::move(then), std::move(ts)...);
+    return cpr::async<true>([](Then then_inner, Ts... ts_inner) { return then_inner(Put(std::move(ts_inner)...)); }, std::move(then), std::move(ts)...);
 }
 
 // Head methods
@@ -194,7 +194,7 @@ AsyncResponse HeadAsync(Ts... ts) {
 template <typename Then, typename... Ts>
 // NOLINTNEXTLINE(fuchsia-trailing-return)
 auto HeadCallback(Then then, Ts... ts) {
-    return cpr::async([](Then then_inner, Ts... ts_inner) { return then_inner(Head(std::move(ts_inner)...)); }, std::move(then), std::move(ts)...);
+    return cpr::async<true>([](Then then_inner, Ts... ts_inner) { return then_inner(Head(std::move(ts_inner)...)); }, std::move(then), std::move(ts)...);
 }
 
 // Delete methods
@@ -215,7 +215,7 @@ AsyncResponse DeleteAsync(Ts... ts) {
 template <typename Then, typename... Ts>
 // NOLINTNEXTLINE(fuchsia-trailing-return)
 auto DeleteCallback(Then then, Ts... ts) {
-    return cpr::async([](Then then_inner, Ts... ts_inner) { return then_inner(Delete(std::move(ts_inner)...)); }, std::move(then), std::move(ts)...);
+    return cpr::async<true>([](Then then_inner, Ts... ts_inner) { return then_inner(Delete(std::move(ts_inner)...)); }, std::move(then), std::move(ts)...);
 }
 
 // Options methods
@@ -236,7 +236,7 @@ AsyncResponse OptionsAsync(Ts... ts) {
 template <typename Then, typename... Ts>
 // NOLINTNEXTLINE(fuchsia-trailing-return)
 auto OptionsCallback(Then then, Ts... ts) {
-    return cpr::async([](Then then_inner, Ts... ts_inner) { return then_inner(Options(std::move(ts_inner)...)); }, std::move(then), std::move(ts)...);
+    return cpr::async<true>([](Then then_inner, Ts... ts_inner) { return then_inner(Options(std::move(ts_inner)...)); }, std::move(then), std::move(ts)...);
 }
 
 // Patch methods
@@ -257,7 +257,7 @@ AsyncResponse PatchAsync(Ts... ts) {
 template <typename Then, typename... Ts>
 // NOLINTNEXTLINE(fuchsia-trailing-return)
 auto PatchCallback(Then then, Ts... ts) {
-    return cpr::async([](Then then_inner, Ts... ts_inner) { return then_inner(Patch(std::move(ts_inner)...)); }, std::move(then), std::move(ts)...);
+    return cpr::async<true>([](Then then_inner, Ts... ts_inner) { return then_inner(Patch(std::move(ts_inner)...)); }, std::move(then), std::move(ts)...);
 }
 
 // Download methods
