@@ -91,7 +91,6 @@ class AsyncWrapper<T, true> : public AsyncWrapper<T, false> {
 
   public:
     // Constructors
-    AsyncWrapper() = default;
     AsyncWrapper(std::future<T>&& f, std::shared_ptr<std::atomic_bool>&& cancelledState) : base{std::move(f)}, is_cancelled{std::move(cancelledState)} {}
 
     // Copy Semantics
