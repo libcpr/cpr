@@ -22,9 +22,15 @@ class GlobalThreadPool : public ThreadPool {
  * async(std::bind(&Class::mem_fn, &obj))
  * async(std::mem_fn(&Class::mem_fn, &obj))
  **/
-template <class Fn, class... Args>
+template <bool isCancellable = false, class Fn, class... Args>
 auto async(Fn&& fn, Args&&... args) {
-    return AsyncWrapper{GlobalThreadPool::GetInstance()->Submit(std::forward<Fn>(fn), std::forward<Args>(args)...)};
+  std::future future = GlobalThreadPool::GetInstance()->Submit(std::forward<Fn>(fn), std::forward<Args>(args)...);
+  using async_wrapper_t = AsyncWrapper<decltype(future.get()), isCancellable>;
+  if constexpr (isCancellable) {
+    return async_wrapper_t{std::move(future), std::make_shared<std::atomic_bool>(false)};
+  } else {
+    return async_wrapper_t{std::move(future)};
+  }
 }
 
 class async {
