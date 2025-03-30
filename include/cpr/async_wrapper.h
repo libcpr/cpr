@@ -23,6 +23,12 @@ class AsyncWrapper<T, false> {
     friend class AsyncWrapper<T, true>;
     std::future<T> future;
 
+    void throw_if_invalid(const char* error) const {
+        if (!future.valid()) {
+            throw std::logic_error{error};
+        }
+    }
+
   public:
     // Constructors
     AsyncWrapper() = default;
@@ -41,9 +47,7 @@ class AsyncWrapper<T, false> {
 
     // These methods replicate the behaviour of std::future<T>
     [[nodiscard]] T get() {
-        if (!future.valid()) {
-            throw std::logic_error{"Calling AsyncWrapper::get when the associated future instance is invalid!"};
-        }
+        throw_if_invalid("Calling AsyncWrapper::get when the associated future instance is invalid!");
         return future.get();
     }
 
@@ -52,25 +56,19 @@ class AsyncWrapper<T, false> {
     }
 
     void wait() const {
-        if (!future.valid()) {
-            throw std::logic_error{"Calling AsyncWrapper::wait_until when the associated future is invalid!"};
-        }
+        throw_if_invalid("Calling AsyncWrapper::wait when the associated future is invalid!");
         future.wait();
     }
 
     template <class Rep, class Period>
     std::future_status wait_for(const std::chrono::duration<Rep, Period>& timeout_duration) const {
-        if (!future.valid()) {
-            throw std::logic_error{"Calling AsyncWrapper::wait_until when the associated future is invalid!"};
-        }
+        throw_if_invalid("Calling AsyncWrapper::wait_for when the associated future is invalid!");
         return future.wait_for(timeout_duration);
     }
 
     template <class Clock, class Duration>
     std::future_status wait_until(const std::chrono::time_point<Clock, Duration>& timeout_time) const {
-        if (!future.valid()) {
-            throw std::logic_error{"Calling AsyncWrapper::wait_until when the associated future is invalid!"};
-        }
+        throw_if_invalid("Calling AsyncWrapper::wait_until when the associated future is invalid!");
         return future.wait_until(timeout_time);
     }
 
