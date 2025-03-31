@@ -192,6 +192,68 @@ TEST(MultiperformGetTests, MultiperformRemoveSessionGetTest) {
     EXPECT_EQ(ErrorCode::OK, responses.at(0).error.code);
 }
 
+TEST(MultiperformGetTests, MultiperformSingleSessionMultiGetTest) {
+    Url url{server->GetBaseUrl() + "/hello.html"};
+    std::shared_ptr<Session> session = std::make_shared<Session>();
+    session->SetUrl(url);
+    MultiPerform multiperform;
+    multiperform.AddSession(session);
+    std::vector<Response> responses = multiperform.Get();
+
+    EXPECT_EQ(responses.size(), 1);
+    std::string expected_text{"Hello world!"};
+    EXPECT_EQ(expected_text, responses.at(0).text);
+    EXPECT_EQ(url, responses.at(0).url);
+    EXPECT_EQ(std::string{"text/html"}, responses.at(0).header["content-type"]);
+    EXPECT_EQ(200, responses.at(0).status_code);
+    EXPECT_EQ(ErrorCode::OK, responses.at(0).error.code);
+
+    // Invoke for the second time
+    responses = multiperform.Get(); // Fails here
+    EXPECT_EQ(responses.size(), 1);
+    EXPECT_EQ(expected_text, responses.at(0).text);
+    EXPECT_EQ(url, responses.at(0).url);
+    EXPECT_EQ(std::string{"text/html"}, responses.at(0).header["content-type"]);
+    EXPECT_EQ(200, responses.at(0).status_code);
+    EXPECT_EQ(ErrorCode::OK, responses.at(0).error.code);
+}
+
+TEST(MultiperformGetTests, MultiperformAssignAfterUseTest) {
+    MultiPerform multiperform;
+    {
+        Url url{server->GetBaseUrl() + "/hello.html"};
+        std::shared_ptr<Session> session = std::make_shared<Session>();
+        session->SetUrl(url);
+        multiperform.AddSession(session);
+        std::vector<Response> responses = multiperform.Get();
+
+        EXPECT_EQ(responses.size(), 1);
+        std::string expected_text{"Hello world!"};
+        EXPECT_EQ(expected_text, responses.at(0).text);
+        EXPECT_EQ(url, responses.at(0).url);
+        EXPECT_EQ(std::string{"text/html"}, responses.at(0).header["content-type"]);
+        EXPECT_EQ(200, responses.at(0).status_code);
+        EXPECT_EQ(ErrorCode::OK, responses.at(0).error.code);
+    }
+
+    {
+        Url url{server->GetBaseUrl() + "/hello.html"};
+        std::shared_ptr<Session> session = std::make_shared<Session>();
+        session->SetUrl(url);
+        multiperform = MultiPerform(); // This line does not work if the Muliperform object was used before
+        multiperform.AddSession(session);
+        std::vector<Response> responses = multiperform.Get();
+
+        EXPECT_EQ(responses.size(), 1);
+        std::string expected_text{"Hello world!"};
+        EXPECT_EQ(expected_text, responses.at(0).text);
+        EXPECT_EQ(url, responses.at(0).url);
+        EXPECT_EQ(std::string{"text/html"}, responses.at(0).header["content-type"]);
+        EXPECT_EQ(200, responses.at(0).status_code);
+        EXPECT_EQ(ErrorCode::OK, responses.at(0).error.code);
+    }
+}
+
 #ifndef __APPLE__
 /**
  * This test case is currently disabled for macOS/Apple systems since it fails in an nondeterministic manner.
