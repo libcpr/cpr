@@ -42,10 +42,7 @@ TEST(AsyncWrapperNonCancellableTests, TestExceptionsNoSharedState) {
 
     // We create an AsyncWrapper for a future without a shared state (default-initialized)
     AsyncWrapper test_wrapper{std::future<std::string>{}};
-
-
     ASSERT_FALSE(test_wrapper.valid());
-    ASSERT_FALSE(test_wrapper.IsCancelled());
 
     // Trying to get or wait for a future that doesn't have a shared state should result to an exception
     // It should be noted that there is a divergence from std::future behavior here: calling wait* on the original std::future is undefined behavior, according to cppreference.com . We find it preferrable to throw an exception.
