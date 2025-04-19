@@ -594,7 +594,7 @@ void Session::SetSslOptions(const SslOptions& options) {
     }
 #if SUPPORT_TLSv13_CIPHERS
     if (!options.tls13_ciphers.empty()) {
-        curl_easy_setopt(curl_->handle, CURLOPT_TLS13_CIPHERS, options.ciphers.c_str());
+        curl_easy_setopt(curl_->handle, CURLOPT_TLS13_CIPHERS, options.tls13_ciphers.c_str());
     }
 #endif
 #if SUPPORT_SESSIONID_CACHE
