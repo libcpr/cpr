@@ -15,6 +15,7 @@
 #include "cpr/auth.h"
 #include "cpr/bearer.h"
 #include "cpr/body.h"
+#include "cpr/body_view.h"
 #include "cpr/callback.h"
 #include "cpr/connect_timeout.h"
 #include "cpr/cookies.h"
@@ -46,7 +47,7 @@
 namespace cpr {
 
 using AsyncResponse = AsyncWrapper<Response>;
-using Content = std::variant<std::monostate, cpr::Payload, cpr::Body, cpr::Multipart>;
+using Content = std::variant<std::monostate, cpr::Payload, cpr::Body, cpr::BodyView, cpr::Multipart>;
 
 class Interceptor;
 class MultiPerform;
@@ -90,6 +91,7 @@ class Session : public std::enable_shared_from_this<Session> {
     void SetCookies(const Cookies& cookies);
     void SetBody(Body&& body);
     void SetBody(const Body& body);
+    void SetBodyView(BodyView body);
     void SetLowSpeed(const LowSpeed& low_speed);
     void SetVerifySsl(const VerifySsl& verify);
     void SetUnixSocket(const UnixSocket& unix_socket);
@@ -154,6 +156,7 @@ class Session : public std::enable_shared_from_this<Session> {
     void SetOption(const Cookies& cookies);
     void SetOption(Body&& body);
     void SetOption(const Body& body);
+    void SetOption(BodyView body);
     void SetOption(const ReadCallback& read);
     void SetOption(const HeaderCallback& header);
     void SetOption(const WriteCallback& write);

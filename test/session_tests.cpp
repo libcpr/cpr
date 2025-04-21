@@ -724,6 +724,23 @@ TEST(BodyTests, SetBodyValueTest) {
     EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
+TEST(BodyTests, SetBodyViewTest) {
+    const Url url{server->GetBaseUrl() + "/url_post.html"};
+    Session session;
+    session.SetUrl(url);
+    session.SetBodyView(BodyView{"x=5"});
+    Response response = session.Post();
+    const std::string expected_text{
+            "{\n"
+            "  \"x\": 5\n"
+            "}"};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
+    EXPECT_EQ(201, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
 TEST(DigestTests, SetDigestTest) {
     Url url{server->GetBaseUrl() + "/digest_auth.html"};
     Session session;
