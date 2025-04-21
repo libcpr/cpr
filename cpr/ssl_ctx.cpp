@@ -15,19 +15,23 @@
 #include <openssl/bio.h>
 #include <openssl/err.h>
 #include <openssl/pem.h>
-#include <openssl/pemerr.h>
 #include <openssl/ssl.h>
 #include <openssl/x509.h>
 #include <openssl/x509_vfy.h>
 
-// openssl/types.h was added in later version of openssl and is therefore not always available.
-// This is for example the case on Ubuntu 20.04.
+// openssl/types.h was added in later version of openssl (starting from 3.0.0) and is therefore not always available.
+// This is for example the case on Ubuntu 20.04 or Centos 7.
 // We try to include it if available to satisfy clang-tidy.
 // Ref: https://github.com/openssl/openssl/commit/50cd4768c6b89c757645f28519236bb989216f8d
-#if __has_include(<openssl/types.h>)
+#if OPENSSL_VERSION_NUMBER >= 0x30000000L
 #include <openssl/types.h>
 #else
 #include <openssl/ossl_typ.h>
+#endif
+
+// openssl/pemerr.h was added in 1.1.1a
+#if OPENSSL_VERSION_NUMBER >= 0x1010101fL
+#include <openssl/pemerr.h>
 #endif
 
 namespace cpr {
