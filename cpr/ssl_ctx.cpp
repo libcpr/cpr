@@ -14,6 +14,7 @@
 
 #include <openssl/bio.h>
 #include <openssl/err.h>
+#include <openssl/opensslv.h>
 #include <openssl/pem.h>
 #include <openssl/ssl.h>
 #include <openssl/x509.h>
