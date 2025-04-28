@@ -61,3 +61,6 @@ compile_commands.json
 
 # macOS
 .DS_Store
+
+# CLion
+.idea/
