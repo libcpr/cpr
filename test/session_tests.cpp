@@ -591,7 +591,7 @@ TEST(LowSpeedTests, SetLowSpeedTest) {
     Url url{server->GetBaseUrl() + "/hello.html"};
     Session session;
     session.SetUrl(url);
-    session.SetLowSpeed({1, 1});
+    session.SetLowSpeed({1, std::chrono::seconds(1)});
     Response response = session.Get();
     std::string expected_text{"Hello world!"};
     EXPECT_EQ(expected_text, response.text);
