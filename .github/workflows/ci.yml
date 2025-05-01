@@ -213,6 +213,7 @@ jobs:
         CMAKE_GENERATOR: "Visual Studio 17 2022"
         CPR_BUILD_TESTS: ON
         CPR_BUILD_TESTS_SSL: OFF
+        CURL_USE_LIBPSL: OFF
       uses: ashutoshvarma/action-cmake-build@master
       with:
         build-dir: ${{ github.workspace }}/build
@@ -234,6 +235,7 @@ jobs:
         CPR_BUILD_TESTS: ON
         CPR_BUILD_TESTS_SSL: ON
         CPR_FORCE_OPENSSL_BACKEND: ON
+        CURL_USE_LIBPSL: OFF
       uses: ashutoshvarma/action-cmake-build@master
       with:
         build-dir: ${{ github.workspace }}/build
@@ -248,6 +250,8 @@ jobs:
         buildType: [Debug, Release]
     runs-on: macos-latest
     steps:
+    - name: Install libpsl
+      run: brew install libpsl
     - name: Checkout
       uses: actions/checkout@v3
     - name: "Build & Test"
@@ -267,6 +271,8 @@ jobs:
   macos-clang-darwinssl:
     runs-on: macos-latest
     steps:
+    - name: Install libpsl
+      run: brew install libpsl
     - name: Checkout
       uses: actions/checkout@v3
     - name: "Build & Test"
@@ -289,6 +295,8 @@ jobs:
     steps:
     - name: Install OpenSSL
       run: brew install openssl
+    - name: Install libpsl
+      run: brew install libpsl
     - name: Checkout
       uses: actions/checkout@v3
     - name: "Build & Test"
@@ -318,6 +326,8 @@ jobs:
       run: brew install boost
     - name: Install OpenSSL
       run: brew install openssl
+    - name: Install libpsl
+      run: brew install libpsl
     - name: Checkout
       uses: actions/checkout@v3
     - name: "Build & Test"
