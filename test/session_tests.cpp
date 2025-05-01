@@ -13,6 +13,7 @@
 
 #include "cpr/accept_encoding.h"
 #include "httpServer.hpp"
+#include "testUtils.hpp"
 
 using namespace cpr;
 using namespace std::chrono_literals;
@@ -1173,28 +1174,19 @@ TEST(CurlHolderManipulateTests, CustomOptionTest) {
 TEST(LocalPortTests, SetLocalPortTest) {
     Url url{server->GetBaseUrl() + "/local_port.html"};
     Session session;
-    uint16_t local_port{0};
-    uint16_t local_port_range{0};
     Response response;
-
-    // Try up to 10 times to get a free local port
-    for (size_t i = 0; i < 10; i++) {
-        session.SetUrl(url);
-        local_port = 40252 + (i * 100); // beware of HttpServer::GetPort when changing
-        local_port_range = 7000;
-        session.SetLocalPort(local_port);
-        session.SetLocalPortRange(local_port_range);
-        // expected response: body contains port number in specified range
-        // NOTE: even when trying up to 7000 ports there is the chance that all of them are occupied.
-        // It would be possible to also check here for ErrorCode::UNKNOWN_ERROR but that somehow seems
-        // wrong as then this test would pass in case SetLocalPort does not work at all
-        // or in other words: we have to assume that at least one port in the specified range is free.
-        response = session.Get();
-
-        if (response.error.code != ErrorCode::UNKNOWN_ERROR) {
-            break;
-        }
-    }
+    session.SetUrl(url);
+    uint16_t local_port{0};
+    ASSERT_NO_THROW(local_port = cpr::test::get_free_port());
+    uint16_t local_port_range{7000};
+    session.SetLocalPort(local_port);
+    session.SetLocalPortRange(local_port_range);
+    // expected response: body contains port number in specified range
+    // NOTE: even when trying up to 7000 ports there is the chance that all of them are occupied.
+    // It would be possible to also check here for ErrorCode::UNKNOWN_ERROR but that somehow seems
+    // wrong as then this test would pass in case SetLocalPort does not work at all
+    // or in other words: we have to assume that at least one port in the specified range is free.
+    response = session.Get();
 
     EXPECT_EQ(200, response.status_code);
     EXPECT_EQ(ErrorCode::OK, response.error.code);
@@ -1209,28 +1201,19 @@ TEST(LocalPortTests, SetLocalPortTest) {
 TEST(LocalPortTests, SetOptionTest) {
     Url url{server->GetBaseUrl() + "/local_port.html"};
     Session session;
-    uint16_t local_port{0};
-    uint16_t local_port_range{0};
     Response response;
-
-    // Try up to 10 times to get a free local port
-    for (size_t i = 0; i < 10; i++) {
-        session.SetUrl(url);
-        local_port = 30252 + (i * 100); // beware of HttpServer::GetPort when changing
-        local_port_range = 7000;
-        session.SetOption(LocalPort(local_port));
-        session.SetOption(LocalPortRange(local_port_range));
-        // expected response: body contains port number in specified range
-        // NOTE: even when trying up to 7000 ports there is the chance that all of them are occupied.
-        // It would be possible to also check here for ErrorCode::UNKNOWN_ERROR but that somehow seems
-        // wrong as then this test would pass in case SetLocalPort does not work at all
-        // or in other words: we have to assume that at least one port in the specified range is free.
-        response = session.Get();
-
-        if (response.error.code != ErrorCode::UNKNOWN_ERROR) {
-            break;
-        }
-    }
+    session.SetUrl(url);
+    uint16_t local_port{0};
+    uint16_t local_port_range{7000};
+    ASSERT_NO_THROW(local_port = cpr::test::get_free_port());
+    session.SetOption(LocalPort(local_port));
+    session.SetOption(LocalPortRange(local_port_range));
+    // expected response: body contains port number in specified range
+    // NOTE: even when trying up to 7000 ports there is the chance that all of them are occupied.
+    // It would be possible to also check here for ErrorCode::UNKNOWN_ERROR but that somehow seems
+    // wrong as then this test would pass in case SetLocalPort does not work at all
+    // or in other words: we have to assume that at least one port in the specified range is free.
+    response = session.Get();
 
     EXPECT_EQ(200, response.status_code);
     EXPECT_EQ(ErrorCode::OK, response.error.code);
