@@ -21,7 +21,7 @@ jobs:
     - name: Update package list
       run: apt update
     - name: Install Dependencies
-      run: apt install -y git libssl-dev cmake build-essential clang libcurl4-openssl-dev
+      run: apt install -y git libssl-dev cmake build-essential clang libcurl4-openssl-dev libpsl-dev
       env:
         DEBIAN_FRONTEND: noninteractive
     - name: Setup cmake
@@ -58,7 +58,7 @@ jobs:
     - name: Update package list
       run: apt update
     - name: Install Dependencies
-      run: apt install -y git libssl-dev cmake build-essential libcurl4-openssl-dev
+      run: apt install -y git libssl-dev cmake build-essential libcurl4-openssl-dev libpsl-dev
       env:
         DEBIAN_FRONTEND: noninteractive
     - name: Setup cmake
@@ -89,7 +89,7 @@ jobs:
     - name: Update package list
       run: sudo apt update
     - name: Install Dependencies
-      run: sudo apt install -y git libssl-dev libmbedtls-dev cmake build-essential
+      run: sudo apt install -y git libssl-dev libmbedtls-dev cmake build-essential libpsl-dev
       env:
         DEBIAN_FRONTEND: noninteractive
     - name: Setup cmake
@@ -123,7 +123,7 @@ jobs:
     - name: Update package list
       run: dnf update -y
     - name: Install Dependencies
-      run: dnf install -y gcc clang git gcc gdb make openssl-devel libcurl-devel cmake
+      run: dnf install -y gcc clang git gcc gdb make openssl-devel libcurl-devel cmake libpsl-devel
     - name: Checkout
       uses: actions/checkout@v3
     - name: "Build & Test"
@@ -154,7 +154,7 @@ jobs:
     - name: Update package list
       run: dnf update -y
     - name: Install Dependencies
-      run: dnf install -y gcc clang git gcc gdb make openssl-devel libcurl-devel cmake
+      run: dnf install -y gcc clang git gcc gdb make openssl-devel libcurl-devel cmake libpsl-devel
     - name: Checkout
       uses: actions/checkout@v3
     - name: "Build & Test"
@@ -183,7 +183,7 @@ jobs:
     - name: Update package list
       run: dnf update -y
     - name: Install Dependencies
-      run: dnf install -y gcc clang git gcc gdb make openssl-devel libasan libubsan liblsan libtsan cmake
+      run: dnf install -y gcc clang git gcc gdb make openssl-devel libasan libubsan liblsan libtsan cmake libpsl-devel
     - name: Checkout
       uses: actions/checkout@v3
     - name: "Build & Test"
