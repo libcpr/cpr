@@ -1198,6 +1198,7 @@ TEST(LocalPortTests, SetLocalPortTest) {
 
     EXPECT_EQ(200, response.status_code);
     EXPECT_EQ(ErrorCode::OK, response.error.code);
+    errno = 0;
     // NOLINTNEXTLINE(google-runtime-int)
     unsigned long port_from_response = std::strtoul(response.text.c_str(), nullptr, 10);
     EXPECT_EQ(errno, 0);
@@ -1233,6 +1234,7 @@ TEST(LocalPortTests, SetOptionTest) {
 
     EXPECT_EQ(200, response.status_code);
     EXPECT_EQ(ErrorCode::OK, response.error.code);
+    errno = 0;
     // NOLINTNEXTLINE(google-runtime-int)
     unsigned long port_from_response = std::strtoul(response.text.c_str(), nullptr, 10);
     EXPECT_EQ(errno, 0);
