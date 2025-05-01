@@ -11,7 +11,8 @@ if (ENABLE_SSL_TESTS)
 else ()
     add_library(test_server STATIC
                 abstractServer.cpp
-                httpServer.cpp)
+                httpServer.cpp
+                testUtils.cpp)
 endif()
 if(WIN32)
     target_link_libraries(test_server PRIVATE Threads::Threads cpr::cpr GTest::GTest
