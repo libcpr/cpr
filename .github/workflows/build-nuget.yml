@@ -26,8 +26,6 @@ jobs:
       run: echo "NuGet version will be '${{ env.RELEASE_VERSION }}'"
     - name: Checkout
       uses: actions/checkout@v3
-      with:
-        submodules: true
     - name: Setup NuGet.exe
       uses: nuget/setup-nuget@v2
     - name: "[Release_x86] Build & Install"

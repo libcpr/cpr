@@ -115,10 +115,8 @@ jobs:
 
   fedora-clang-openssl:
     strategy:
-      matrix:
-        container: ["fedora:latest"]
     runs-on: ubuntu-latest
-    container: ${{ matrix.container }}
+    container: "fedora:latest"
     steps:
     - name: Update package list
       run: dnf update -y
@@ -145,11 +143,10 @@ jobs:
   fedora-gcc-openssl:
     strategy:
       matrix:
-        container: ["fedora:latest"]
         systemCurl: [ON, OFF]
         buildType: [Debug, Release]
     runs-on: ubuntu-latest
-    container: ${{ matrix.container }}
+    container: "fedora:latest"
     steps:
     - name: Update package list
       run: dnf update -y
