@@ -5,15 +5,14 @@ on: [push, workflow_dispatch, pull_request] # Trigger for every push as well as 
 jobs:
   cppcheck:
     runs-on: ubuntu-latest
+    container: "fedora:latest" # Use fedora for an up to date version of cppcheck
     steps:
     - name: Checkout
       uses: actions/checkout@v3
-      with:
-        submodules: true
     - name: Update package list
-      run: sudo apt update
-    - name: Install cppcheck
-      run: sudo apt install cppcheck
+      run: dnf update -y
+    - name: Install Dependencies
+      run: dnf install -y gcc clang git gcc gdb make openssl-devel cmake libpsl-devel cppcheck
     - name: "[Release g++] Build"
       env:
         CPR_ENABLE_CPPCHECK: ON
