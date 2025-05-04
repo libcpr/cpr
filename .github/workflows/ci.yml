@@ -114,7 +114,6 @@ jobs:
         ctest-options: ${{ env.CTEST_OPTIONS }}
 
   fedora-clang-openssl:
-    strategy:
     runs-on: ubuntu-latest
     container: "fedora:latest"
     steps:
