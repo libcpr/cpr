@@ -12,7 +12,7 @@ jobs:
   ubuntu-clang-openssl:
     strategy:
       matrix:
-        container: ["ubuntu:20.04", "ubuntu:24.04", "ubuntu:latest"]
+        container: ["ubuntu:latest", "ubuntu:rolling"]
         systemCurl: [ON, OFF]
         buildType: [Debug, Release]
     runs-on: ubuntu-latest
@@ -49,7 +49,7 @@ jobs:
   ubuntu-gcc-openssl:
     strategy:
       matrix:
-        container: ["ubuntu:20.04", "ubuntu:24.04", "ubuntu:latest"]
+        container: ["ubuntu:latest", "ubuntu:rolling"]
         systemCurl: [ON, OFF]
         buildType: [Debug, Release]
     runs-on: ubuntu-latest
