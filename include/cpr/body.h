@@ -5,7 +5,6 @@
 #include <fstream>
 #include <initializer_list>
 #include <string>
-#include <vector>
 
 #include "cpr/buffer.h"
 #include "cpr/cprtypes.h"

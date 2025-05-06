@@ -128,6 +128,20 @@ TEST(BodyPostTests, StringMoveBodyTest) {
     EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
+TEST(BodyPostTests, BodyViewTest) {
+    const Url url{server->GetBaseUrl() + "/url_post.html"};
+    Response response = cpr::Post(url, BodyView{"x=5"});
+    const std::string expected_text{
+            "{\n"
+            "  \"x\": 5\n"
+            "}"};
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"application/json"}, response.header["content-type"]);
+    EXPECT_EQ(201, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
     ::testing::AddGlobalTestEnvironment(server);
