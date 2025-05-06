@@ -12,6 +12,8 @@
 #include <optional>
 #include <stdexcept>
 #include <string>
+#include <string_view>
+#include <type_traits>
 #include <utility>
 #include <variant>
 #include <vector>
@@ -26,6 +28,7 @@
 #include "cpr/auth.h"
 #include "cpr/bearer.h"
 #include "cpr/body.h"
+#include "cpr/body_view.h"
 #include "cpr/callback.h"
 #include "cpr/connect_timeout.h"
 #include "cpr/cookies.h"
@@ -492,6 +495,7 @@ void Session::SetBody(Body&& body) {
     content_ = std::move(body);
 }
 
+// cppcheck-suppress passedByValue
 void Session::SetBodyView(BodyView body) {
     static_assert(std::is_trivially_copyable_v<BodyView>, "BodyView expected to be trivially copyable otherwise will need some std::move across codebase");
     content_ = body;
@@ -983,6 +987,7 @@ void Session::prepareBodyPayloadOrMultipart() const {
     } else if (std::holds_alternative<cpr::BodyView>(content_)) {
         const std::string_view body = std::get<cpr::BodyView>(content_).str();
         curl_easy_setopt(curl_->handle, CURLOPT_POSTFIELDSIZE_LARGE, static_cast<curl_off_t>(body.length()));
+        // NOLINTNEXTLINE (bugprone-suspicious-stringview-data-usage)
         curl_easy_setopt(curl_->handle, CURLOPT_POSTFIELDS, body.data());
     } else if (std::holds_alternative<cpr::Multipart>(content_)) {
         // Make sure, we have a empty multipart to start with:
@@ -1070,6 +1075,7 @@ void Session::SetOption(const Redirect& redirect) { SetRedirect(redirect); }
 void Session::SetOption(const Cookies& cookies) { SetCookies(cookies); }
 void Session::SetOption(const Body& body) { SetBody(body); }
 void Session::SetOption(Body&& body) { SetBody(std::move(body)); }
+// cppcheck-suppress passedByValue
 void Session::SetOption(BodyView body) { SetBodyView(body); }
 void Session::SetOption(const LowSpeed& low_speed) { SetLowSpeed(low_speed); }
 void Session::SetOption(const VerifySsl& verify) { SetVerifySsl(verify); }
