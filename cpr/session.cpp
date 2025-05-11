@@ -28,6 +28,7 @@
 #include "cpr/body.h"
 #include "cpr/callback.h"
 #include "cpr/connect_timeout.h"
+#include "cpr/connection_pool.h"
 #include "cpr/cookies.h"
 #include "cpr/cprtypes.h"
 #include "cpr/curlholder.h"
@@ -391,7 +392,7 @@ void Session::SetConnectTimeout(const ConnectTimeout& timeout) {
 }
 
 void Session::SetConnectionPool(const ConnectionPool& pool) {
-    auto curl = curl_->handle;
+    auto * curl = curl_->handle;
     if (curl) {
         pool.SetupHandler(curl);
     }

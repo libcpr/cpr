@@ -1,9 +1,11 @@
 #include "cpr/connection_pool.h"
-#include <iostream>
+#include <curl/curl.h>
+#include <memory>
+#include <mutex>
 
 namespace cpr {
 ConnectionPool::ConnectionPool() {
-    auto curl_share = curl_share_init();
+    auto* curl_share = curl_share_init();
     this->connection_mutex_ = std::make_shared<std::mutex>();
     
     auto lock_f = +[](__attribute__((unused)) CURL* handle, __attribute__((unused)) curl_lock_data data, __attribute__((unused)) curl_lock_access access, void* userptr) {
