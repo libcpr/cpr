@@ -9,7 +9,6 @@ namespace cpr {
 class ConnectionPool {
   public:
     ConnectionPool();
-    ~ConnectionPool();
     ConnectionPool(const ConnectionPool&) = default;
     ConnectionPool& operator=(const ConnectionPool&) = delete;
     void SetupHandler(CURL* easy_handler) const;

@@ -30,10 +30,6 @@ ConnectionPool::ConnectionPool() {
         });
 }
 
-ConnectionPool::~ConnectionPool() {
-    // The shared_ptr will call the custom deleter we defined above
-}
-
 void ConnectionPool::SetupHandler(CURL* easy_handler) const {
     curl_easy_setopt(easy_handler, CURLOPT_SHARE, this->curl_sh_.get());
 }
