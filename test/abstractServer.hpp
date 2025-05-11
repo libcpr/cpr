@@ -7,6 +7,7 @@
 #include <memory>
 #include <mutex>
 #include <string>
+#include <set>
 
 #include "cpr/cpr.h"
 #include "mongoose.h"
@@ -38,11 +39,18 @@ class AbstractServer : public testing::Environment {
     void Start();
     void Stop();
 
+    size_t GetConnectionCount();
+    void ResetConnectionCount();
+    void AddConnection(int remote_port);
+
     virtual std::string GetBaseUrl() = 0;
     virtual uint16_t GetPort() = 0;
 
     virtual void acceptConnection(mg_connection* conn) = 0;
     virtual void OnRequest(mg_connection* conn, mg_http_message* msg) = 0;
+
+    static uint16_t GetRemotePort(const mg_connection* conn);
+    static uint16_t GetLocalPort(const mg_connection* conn);
 
   private:
     std::shared_ptr<std::thread> serverThread{nullptr};
@@ -50,6 +58,7 @@ class AbstractServer : public testing::Environment {
     std::condition_variable server_start_cv;
     std::condition_variable server_stop_cv;
     std::atomic<bool> should_run{false};
+    std::set<int> unique_connections;
 
     void Run();
 
@@ -61,9 +70,6 @@ class AbstractServer : public testing::Environment {
     static std::string Base64Decode(const std::string& in);
     static void SendError(mg_connection* conn, int code, std::string& reason);
     static bool IsConnectionActive(mg_mgr* mgr, mg_connection* conn);
-
-    static uint16_t GetRemotePort(const mg_connection* conn);
-    static uint16_t GetLocalPort(const mg_connection* conn);
 };
 } // namespace cpr
 

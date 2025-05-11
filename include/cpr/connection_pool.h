@@ -1,0 +1,22 @@
+#ifndef CPR_CONNECTION_POOL_H
+#define CPR_CONNECTION_POOL_H
+
+#include <curl/curl.h>
+#include <memory>
+#include <mutex>
+
+namespace cpr {
+class ConnectionPool {
+  public:
+    ConnectionPool();
+    ~ConnectionPool();
+    ConnectionPool(const ConnectionPool&) = default;
+    ConnectionPool& operator=(const ConnectionPool&) = delete;
+    void SetupHandler(CURL* easy_handler) const;
+
+  private:
+    std::shared_ptr<std::mutex> connection_mutex_;
+    std::shared_ptr<CURLSH> curl_sh_;
+};
+} // namespace cpr
+#endif 

@@ -390,6 +390,13 @@ void Session::SetConnectTimeout(const ConnectTimeout& timeout) {
     curl_easy_setopt(curl_->handle, CURLOPT_CONNECTTIMEOUT_MS, timeout.Milliseconds());
 }
 
+void Session::SetConnectionPool(const ConnectionPool& pool) {
+    auto curl = curl_->handle;
+    if (curl) {
+        pool.SetupHandler(curl);
+    }
+}
+
 void Session::SetAuth(const Authentication& auth) {
     // Ignore here since this has been defined by libcurl.
     switch (auth.GetAuthMode()) {
@@ -1071,6 +1078,7 @@ void Session::SetOption(const MultiRange& multi_range) { SetMultiRange(multi_ran
 void Session::SetOption(const ReserveSize& reserve_size) { SetReserveSize(reserve_size.size); }
 void Session::SetOption(const AcceptEncoding& accept_encoding) { SetAcceptEncoding(accept_encoding); }
 void Session::SetOption(AcceptEncoding&& accept_encoding) { SetAcceptEncoding(std::move(accept_encoding)); }
+void Session::SetOption(const ConnectionPool& pool) { SetConnectionPool(pool); }
 // clang-format on
 
 void Session::SetCancellationParam(std::shared_ptr<std::atomic_bool> param) {

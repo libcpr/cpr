@@ -17,6 +17,7 @@
 #include "cpr/body.h"
 #include "cpr/callback.h"
 #include "cpr/connect_timeout.h"
+#include "cpr/connection_pool.h"
 #include "cpr/cookies.h"
 #include "cpr/cprtypes.h"
 #include "cpr/curlholder.h"
@@ -71,6 +72,7 @@ class Session : public std::enable_shared_from_this<Session> {
     [[nodiscard]] const Header& GetHeader() const;
     void SetTimeout(const Timeout& timeout);
     void SetConnectTimeout(const ConnectTimeout& timeout);
+    void SetConnectionPool(const ConnectionPool& pool);
     void SetAuth(const Authentication& auth);
 // Only supported with libcurl >= 7.61.0.
 // As an alternative use SetHeader and add the token manually.
@@ -135,6 +137,7 @@ class Session : public std::enable_shared_from_this<Session> {
     void SetOption(const Timeout& timeout);
     void SetOption(const ConnectTimeout& timeout);
     void SetOption(const Authentication& auth);
+    void SetOption(const ConnectionPool& pool);
 // Only supported with libcurl >= 7.61.0.
 // As an alternative use SetHeader and add the token manually.
 #if LIBCURL_VERSION_NUM >= 0x073D00
