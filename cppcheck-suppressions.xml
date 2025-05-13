@@ -24,6 +24,11 @@
         <id>y2038-unsafe-call</id>
         <fileName>*/include/cpr/low_speed.h</fileName>
     </suppress>
+    <!-- No reason to check third party includes -->
+    <suppress>
+        <id>y2038-unsafe-call</id>
+        <fileName>*/curl/curl.h</fileName>
+    </suppress>
     <suppress>
         <id>normalCheckLevelMaxBranches</id>
     </suppress>
