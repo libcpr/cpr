@@ -49,6 +49,9 @@ static void EventHandler(mg_connection* conn, int event, void* event_data, void*
 
         case MG_EV_HTTP_MSG: {
             AbstractServer* server = static_cast<AbstractServer*>(context);
+            // Use the connection address as unique identifier instead
+            int port = AbstractServer::GetRemotePort(conn);
+            server->AddConnection(port);
             server->OnRequest(conn, static_cast<mg_http_message*>(event_data));
         } break;
 
@@ -77,6 +80,18 @@ void AbstractServer::Run() {
 
     // Notify the main thread that we have shut down everything:
     server_stop_cv.notify_all();
+}
+
+void AbstractServer::AddConnection(int remote_port) {
+    unique_connections.insert(remote_port);
+}
+
+size_t AbstractServer::GetConnectionCount() {
+    return unique_connections.size();
+}
+
+void AbstractServer::ResetConnectionCount() {
+    unique_connections.clear();
 }
 
 static const std::string base64_chars =
