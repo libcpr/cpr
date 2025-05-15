@@ -18,6 +18,7 @@ set(LIBPSL_INSTALL_DIR "${CMAKE_BINARY_DIR}/libpsl_src-install")
 file(MAKE_DIRECTORY "${LIBPSL_BUILD_DIR}")
 
 # Meson configure
+# We only care about static libraries of psl. In case you need a dynamic version, feel free to add support for it.
 message(STATUS "Configuring libpsl...")
 execute_process(COMMAND "${MESON_PATH}" setup
                         "${LIBPSL_BUILD_DIR}"
@@ -27,20 +28,18 @@ execute_process(COMMAND "${MESON_PATH}" setup
                         --buildtype=release
                         --prefix "${LIBPSL_INSTALL_DIR}"
                         --default-library=static
-                RESULT_VARIABLE MESON_SETUP_RC
-)
+                RESULT_VARIABLE MESON_SETUP_RC)
 if(MESON_SETUP_RC)
-  message(FATAL_ERROR "Meson setup for libpsl failed")
+    message(FATAL_ERROR "Meson setup for libpsl failed!")
 endif()
 
 # Meson build
 message(STATUS "Building libpsl...")
-execute_process(
-  COMMAND "${MESON_PATH}" compile -C "${LIBPSL_BUILD_DIR}"
-  RESULT_VARIABLE MESON_COMPILE_RC
+execute_process(COMMAND "${MESON_PATH}" compile -C "${LIBPSL_BUILD_DIR}"
+                RESULT_VARIABLE MESON_COMPILE_RC
 )
 if(MESON_COMPILE_RC)
-    message(FATAL_ERROR "Meson compile for libpsl failed")
+    message(FATAL_ERROR "Meson compile for libpsl failed!")
 endif()
 
 # Meson install
@@ -48,16 +47,9 @@ message(STATUS "Installing libpsl...")
 execute_process(COMMAND "${MESON_PATH}" install -C "${LIBPSL_BUILD_DIR}"
                 RESULT_VARIABLE MESON_INSTALL_RC)
 if(MESON_INSTALL_RC)
-    message(FATAL_ERROR "Meson install for libpsl failed")
+    message(FATAL_ERROR "Meson install for libpsl failed!")
 endif()
 
-add_library(libpsl SHARED IMPORTED)
-add_dependencies(libpsl libpsl_build)
-
-# We only care about static libraries of psl. In case you need a dynamic version, feel free to add support for it.
-set(LIBPSL_LIBRARY "${LIBPSL_INSTALL_DIR}/lib/psl.${CMAKE_STATIC_LIBRARY_SUFFIX_CXX}")
-set_target_properties(libpsl PROPERTIES IMPORTED_LOCATION ${LIBPSL_LIBRARY})
-
-set(LIBPSL_INCLUDE_DIR "${LIBPSL_INSTALL_DIR}/include")
-target_include_directories(libpsl INTERFACE "${LIBPSL_INCLUDE_DIR}")
-include_directories(${LIBPSL_INCLUDE_DIR})
+list(APPEND CMAKE_LIBRARY_PATH "${LIBPSL_INSTALL_DIR}/lib64")
+list(APPEND CMAKE_LIBRARY_PATH "${LIBPSL_INSTALL_DIR}/lib")
+list(APPEND CMAKE_INCLUDE_PATH "${LIBPSL_INSTALL_DIR}/include")
