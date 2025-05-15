@@ -21,7 +21,7 @@ jobs:
     - name: Update package list
       run: apt update
     - name: Install Dependencies
-      run: apt install -y git libssl-dev cmake build-essential clang libcurl4-openssl-dev libpsl-dev meson
+      run: apt install -y git libssl-dev cmake build-essential clang libcurl4-openssl-dev libpsl-dev meson libunistring-dev
       env:
         DEBIAN_FRONTEND: noninteractive
     - name: Setup cmake
@@ -58,7 +58,7 @@ jobs:
     - name: Update package list
       run: apt update
     - name: Install Dependencies
-      run: apt install -y git libssl-dev cmake build-essential libcurl4-openssl-dev libpsl-dev meson
+      run: apt install -y git libssl-dev cmake build-essential libcurl4-openssl-dev libpsl-dev meson libunistring-dev
       env:
         DEBIAN_FRONTEND: noninteractive
     - name: Setup cmake
@@ -89,7 +89,7 @@ jobs:
     - name: Update package list
       run: sudo apt update
     - name: Install Dependencies
-      run: sudo apt install -y git libssl-dev libmbedtls-dev cmake build-essential libpsl-dev meson
+      run: sudo apt install -y git libssl-dev libmbedtls-dev cmake build-essential libpsl-dev meson libunistring-dev
       env:
         DEBIAN_FRONTEND: noninteractive
     - name: Setup cmake
