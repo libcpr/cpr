@@ -56,6 +56,7 @@ cpr_option(CPR_CURL_NOSIGNAL "Set to ON to disable use of signals in libcurl." O
 cpr_option(CURL_VERBOSE_LOGGING "Curl verbose logging during building curl" OFF)
 cpr_option(CPR_USE_SYSTEM_GTEST "If ON, this project will look in the system paths for an installed gtest library. If none is found it will use the built-in one." OFF)
 cpr_option(CPR_USE_SYSTEM_CURL "If enabled we will use the curl lib already installed on this system." OFF)
+cpr_option(CPR_USE_SYSTEM_LIB_PSL "Since curl 8.13 it depends on libpsl. If enabled we will use the psl lib already installed on this system. Else meson is required as build dependency." ${CPR_USE_SYSTEM_CURL})
 cpr_option(CPR_ENABLE_CURL_HTTP_ONLY "If enabled we will only use the HTTP/HTTPS protocols from CURL. If disabled, all the CURL protocols are enabled. This is useful if your project uses libcurl and you need support for other CURL features e.g. sending emails." ON)
 cpr_option(CPR_ENABLE_SSL "Enables or disables the SSL backend. Required to perform HTTPS requests." ON)
 cpr_option(CPR_FORCE_OPENSSL_BACKEND "Force to use the OpenSSL backend. If CPR_FORCE_OPENSSL_BACKEND, CPR_FORCE_DARWINSSL_BACKEND, CPR_FORCE_MBEDTLS_BACKEND, and CPR_FORCE_WINSSL_BACKEND are set to to OFF, cpr will try to automatically detect the best available SSL backend (WinSSL - Windows, OpenSSL - Linux, DarwinSSL - Mac ...)." OFF)
@@ -294,10 +295,14 @@ else()
     if (CMAKE_VERSION VERSION_GREATER_EQUAL "3.24.0")
         cmake_policy(SET CMP0135 NEW)
     endif()
-    FetchContent_Declare(curl
-                         URL                    https://github.com/curl/curl/releases/download/curl-8_13_0/curl-8.13.0.tar.xz
-                         URL_HASH               SHA256=4a093979a3c2d02de2fbc00549a32771007f2e78032c6faa5ecd2f7a9e152025 # the file hash for curl-8.13.0.tar.xz
-                         USES_TERMINAL_DOWNLOAD TRUE)   # <---- This is needed only for Ninja to show download progress
+
+    # Since curl 8.13, curl depends on lib psl
+    if(NOT ${CPR_USE_SYSTEM_LIB_PSL})
+        include(libpsl)
+    endif()
+
+    FetchContent_Declare(curl URL https://github.com/curl/curl/releases/download/curl-8_13_0/curl-8.13.0.tar.xz
+                              URL_HASH SHA256=4a093979a3c2d02de2fbc00549a32771007f2e78032c6faa5ecd2f7a9e152025) # the file hash for curl-8.13.0.tar.xz
     FetchContent_MakeAvailable(curl)
 
     restore_variable(DESTINATION CMAKE_CXX_CLANG_TIDY BACKUP CMAKE_CXX_CLANG_TIDY_BKP)
