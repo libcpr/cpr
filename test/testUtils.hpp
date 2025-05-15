@@ -1,6 +1,7 @@
 #ifndef CPR_TEST_UTILS_H
 #define CPR_TEST_UTILS_H
 #include <cstdint>
+#include <stdexcept>
 
 #ifdef _WIN32
 #define NOMINMAX
