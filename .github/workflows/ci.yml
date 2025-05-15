@@ -21,7 +21,7 @@ jobs:
     - name: Update package list
       run: apt update
     - name: Install Dependencies
-      run: apt install -y git libssl-dev cmake build-essential clang libcurl4-openssl-dev libpsl-dev
+      run: apt install -y git libssl-dev cmake build-essential clang libcurl4-openssl-dev libpsl-dev meson
       env:
         DEBIAN_FRONTEND: noninteractive
     - name: Setup cmake
@@ -58,7 +58,7 @@ jobs:
     - name: Update package list
       run: apt update
     - name: Install Dependencies
-      run: apt install -y git libssl-dev cmake build-essential libcurl4-openssl-dev libpsl-dev
+      run: apt install -y git libssl-dev cmake build-essential libcurl4-openssl-dev libpsl-dev meson
       env:
         DEBIAN_FRONTEND: noninteractive
     - name: Setup cmake
@@ -89,7 +89,7 @@ jobs:
     - name: Update package list
       run: sudo apt update
     - name: Install Dependencies
-      run: sudo apt install -y git libssl-dev libmbedtls-dev cmake build-essential libpsl-dev
+      run: sudo apt install -y git libssl-dev libmbedtls-dev cmake build-essential libpsl-dev meson
       env:
         DEBIAN_FRONTEND: noninteractive
     - name: Setup cmake
@@ -120,7 +120,7 @@ jobs:
     - name: Update package list
       run: dnf update -y
     - name: Install Dependencies
-      run: dnf install -y gcc clang git gcc gdb make openssl-devel libcurl-devel cmake libpsl-devel
+      run: dnf install -y gcc clang git gcc gdb make openssl-devel libcurl-devel cmake libpsl-devel libunistring-devel meson
     - name: Checkout
       uses: actions/checkout@v3
     - name: "Build & Test"
@@ -150,7 +150,7 @@ jobs:
     - name: Update package list
       run: dnf update -y
     - name: Install Dependencies
-      run: dnf install -y gcc clang git gcc gdb make openssl-devel libcurl-devel cmake libpsl-devel
+      run: dnf install -y gcc clang git gcc gdb make openssl-devel libcurl-devel cmake libpsl-devel libunistring-devel meson
     - name: Checkout
       uses: actions/checkout@v3
     - name: "Build & Test"
@@ -179,7 +179,7 @@ jobs:
     - name: Update package list
       run: dnf update -y
     - name: Install Dependencies
-      run: dnf install -y gcc clang git gcc gdb make openssl-devel libasan libubsan liblsan libtsan cmake libpsl-devel
+      run: dnf install -y gcc clang git gcc gdb make openssl-devel libasan libubsan liblsan libtsan cmake libpsl-devel libunistring-devel meson
     - name: Checkout
       uses: actions/checkout@v3
     - name: "Build & Test"
@@ -248,6 +248,8 @@ jobs:
     steps:
     - name: Install libpsl
       run: brew install libpsl
+    - name: Install meson
+      run: brew install meson
     - name: Checkout
       uses: actions/checkout@v3
     - name: "Build & Test"
@@ -269,6 +271,8 @@ jobs:
     steps:
     - name: Install libpsl
       run: brew install libpsl
+    - name: Install meson
+      run: brew install meson
     - name: Checkout
       uses: actions/checkout@v3
     - name: "Build & Test"
@@ -293,6 +297,8 @@ jobs:
       run: brew install openssl
     - name: Install libpsl
       run: brew install libpsl
+    - name: Install meson
+      run: brew install meson
     - name: Checkout
       uses: actions/checkout@v3
     - name: "Build & Test"
@@ -324,6 +330,8 @@ jobs:
       run: brew install openssl
     - name: Install libpsl
       run: brew install libpsl
+    - name: Install meson
+      run: brew install meson
     - name: Checkout
       uses: actions/checkout@v3
     - name: "Build & Test"

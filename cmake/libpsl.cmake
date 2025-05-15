@@ -27,7 +27,7 @@ execute_process(COMMAND "${MESON_PATH}" setup
                         --buildtype=release
                         --prefix "${LIBPSL_INSTALL_DIR}"
                         --default-library=static
-  RESULT_VARIABLE MESON_SETUP_RC
+                RESULT_VARIABLE MESON_SETUP_RC
 )
 if(MESON_SETUP_RC)
   message(FATAL_ERROR "Meson setup for libpsl failed")
