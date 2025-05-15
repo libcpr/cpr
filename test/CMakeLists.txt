@@ -6,11 +6,13 @@ if (ENABLE_SSL_TESTS)
     add_library(test_server STATIC
                 abstractServer.cpp
                 httpServer.cpp
-                httpsServer.cpp)
+                httpsServer.cpp
+                testUtils.cpp)
 else ()
     add_library(test_server STATIC
                 abstractServer.cpp
-                httpServer.cpp)
+                httpServer.cpp
+                testUtils.cpp)
 endif()
 if(WIN32)
     target_link_libraries(test_server PRIVATE Threads::Threads cpr::cpr GTest::GTest
@@ -67,6 +69,7 @@ add_cpr_test(multiasync)
 add_cpr_test(file_upload)
 add_cpr_test(singleton)
 add_cpr_test(threadpool)
+add_cpr_test(testUtils)
 
 if (ENABLE_SSL_TESTS)
     add_cpr_test(ssl)
