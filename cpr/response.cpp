@@ -35,6 +35,18 @@ Response::Response(std::shared_ptr<CurlHolder> curl, std::string&& p_text, std::
     uploaded_bytes = uploaded_bytes_double;
 #endif
     curl_easy_getinfo(curl_->handle, CURLINFO_REDIRECT_COUNT, &redirect_count);
+#if LIBCURL_VERSION_NUM >= 0x071300 // 7.19.0
+    char* ip_ptr{nullptr};
+    if (curl_easy_getinfo(curl_->handle, CURLINFO_PRIMARY_IP, &ip_ptr) == CURLE_OK && ip_ptr) {
+        primary_ip = ip_ptr;
+    }
+#endif
+#if LIBCURL_VERSION_NUM >= 0x071500 // 7.21.0
+    long port = 0;
+    if (curl_easy_getinfo(curl_->handle, CURLINFO_PRIMARY_PORT, &port) == CURLE_OK) {
+        primary_port = static_cast<uint16_t>(port);
+    }
+#endif
 }
 
 std::vector<CertInfo> Response::GetCertInfos() const {
