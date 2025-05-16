@@ -42,6 +42,8 @@ class Response {
     // Ignored here since libcurl uses a long for this.
     // NOLINTNEXTLINE(google-runtime-int)
     long redirect_count{};
+    std::string primary_ip{};
+    std::uint16_t primary_port{};
 
     Response() = default;
     Response(std::shared_ptr<CurlHolder> curl, std::string&& p_text, std::string&& p_header_string, Cookies&& p_cookies, Error&& p_error);
