@@ -42,6 +42,8 @@ Response::Response(std::shared_ptr<CurlHolder> curl, std::string&& p_text, std::
     }
 #endif
 #if LIBCURL_VERSION_NUM >= 0x071500 // 7.21.0
+    // Ignored here since libcurl uses a long for this.
+    // NOLINTNEXTLINE(google-runtime-int)
     long port = 0;
     if (curl_easy_getinfo(curl_->handle, CURLINFO_PRIMARY_PORT, &port) == CURLE_OK) {
         primary_port = port;
