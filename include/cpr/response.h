@@ -43,7 +43,7 @@ class Response {
     // NOLINTNEXTLINE(google-runtime-int)
     long redirect_count{};
     std::string primary_ip{};
-    uint16_t primary_port{};
+    std::uint16_t primary_port{};
 
     Response() = default;
     Response(std::shared_ptr<CurlHolder> curl, std::string&& p_text, std::string&& p_header_string, Cookies&& p_cookies, Error&& p_error);

@@ -44,7 +44,7 @@ Response::Response(std::shared_ptr<CurlHolder> curl, std::string&& p_text, std::
 #if LIBCURL_VERSION_NUM >= 0x071500 // 7.21.0
     long port = 0;
     if (curl_easy_getinfo(curl_->handle, CURLINFO_PRIMARY_PORT, &port) == CURLE_OK) {
-        primary_port = static_cast<uint16_t>(port);
+        primary_port = port;
     }
 #endif
 }
