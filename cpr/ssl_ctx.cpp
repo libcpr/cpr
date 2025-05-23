@@ -81,33 +81,72 @@ CURLcode sslctx_function_load_ca_cert_from_buffer(CURL* /*curl*/, void* sslctx, 
         return CURLE_ABORTED_BY_CALLBACK;
     }
 
+    // Create a memory BIO using the data of cert_buf
+    // Note: It is assumed, that cert_buf is nul terminated and its length is determined by strlen
+    auto cert_buf = static_cast<char*>(raw_cert_buf);
+    auto bio = BIO_new_mem_buf(cert_buf, -1);
+
     // Get a pointer to the current certificate verification storage
-    auto* store = SSL_CTX_get_cert_store(static_cast<SSL_CTX*>(sslctx));
-
-    // Create a memory BIO using the data of cert_buf.
-    // Note: It is assumed, that cert_buf is nul terminated and its length is determined by strlen.
-    const bio_ptr bio{BIO_new_mem_buf(static_cast<char*>(raw_cert_buf), -1)};
-
-    bool at_least_got_one = false;
-    for (;;) {
-        // Load the PEM formatted certicifate into an X509 structure which OpenSSL can use.
-        const x509_ptr x{PEM_read_bio_X509_AUX(bio.get(), nullptr, nullptr, nullptr)};
-        if (x == nullptr) {
-            if ((ERR_GET_REASON(ERR_peek_last_error()) == PEM_R_NO_START_LINE) && at_least_got_one) {
-                ERR_clear_error();
-                break;
-            }
-            std::cerr << "PEM_read_bio_X509_AUX failed: \n" << get_openssl_print_errors() << '\n';
-            return CURLE_ABORTED_BY_CALLBACK;
-        }
-
-        // Add the loaded certificate to the verification storage
-        if (X509_STORE_add_cert(store, x.get()) == 0) {
-            std::cerr << "X509_STORE_add_cert failed: \n" << get_openssl_print_errors() << '\n';
-            return CURLE_ABORTED_BY_CALLBACK;
-        }
-        at_least_got_one = true;
+    X509_STORE* store = SSL_CTX_get_cert_store(static_cast<SSL_CTX*>(sslctx));
+    if (store == nullptr) {
+        std::cerr << "SSL_CTX_get_cert_store failed!\n";
+        ERR_print_errors_fp(stderr);
+        BIO_free(bio);
+        return CURLE_ABORTED_BY_CALLBACK;
     }
+
+    // Load the PEM formatted certicifate into an X509 structure which OpenSSL can use
+    // PEM_read_bio_X509 can read multiple certificates from the same buffer in a loop.
+    // The buffer should be in PEM format, which is a base64 encoded format
+    // with header and footer lines like
+    //
+    //    CA 1
+    //    ============
+    //    -----BEGIN CERTIFICATE-----
+    //    ... base64 data ...
+    //    -----END CERTIFICATE-----
+    //
+    //    CA 2
+    //    ============
+    //    -----BEGIN CERTIFICATE-----
+    //    ... base64 data ...
+    //    -----END CERTIFICATE-----
+    //
+    auto certs_loaded = 0;
+    X509* cert = nullptr;
+    while ((cert = PEM_read_bio_X509(bio, nullptr, nullptr, nullptr)) != nullptr) {
+        const int status = X509_STORE_add_cert(store, cert);
+        // Fail if any loaded cert is invalid
+        if (status == 0) {
+            std::cerr << "[CPR] while adding certificate to store\n";
+            ERR_print_errors_fp(stderr);
+            BIO_free(bio);
+            return CURLE_ABORTED_BY_CALLBACK;
+        } else {
+            certs_loaded++;
+        }
+        // Free cert so we can load another one
+        X509_free(cert);
+        cert = nullptr;
+    }
+
+    auto err = ERR_peek_last_error();
+    if (certs_loaded == 0 && err != 0) {
+        // Check if the error is just EOF or an actual parsing error
+        if (ERR_GET_LIB(err) == ERR_LIB_PEM && ERR_GET_REASON(err) == PEM_R_NO_START_LINE) {
+            // This is expected if the buffer was empty or contains no valid
+            // PEM certs
+            std::cerr << "No PEM certificates found or end of stream\n";
+        } else {
+            std::cerr << "PEM_read_bio_X509 failed after loading " << certs_loaded << " certificates\n";
+            ERR_print_errors_fp(stderr);
+            BIO_free(bio);
+            return CURLE_ABORTED_BY_CALLBACK;
+        }
+    }
+
+    // Free the entire bio chain
+    BIO_free(bio);
 
     // The CA certificate was loaded successfully into the verification storage
     return CURLE_OK;
