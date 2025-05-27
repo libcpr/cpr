@@ -69,8 +69,8 @@ CURLcode sslctx_function_load_ca_cert_from_buffer(CURL* /*curl*/, void* sslctx, 
 
     // Create a memory BIO using the data of cert_buf
     // Note: It is assumed, that cert_buf is nul terminated and its length is determined by strlen
-    auto cert_buf = static_cast<char*>(raw_cert_buf);
-    auto bio = BIO_new_mem_buf(cert_buf, -1);
+    char* cert_buf = static_cast<char*>(raw_cert_buf);
+    bio_ptr bio = BIO_new_mem_buf(cert_buf, -1);
 
     // Get a pointer to the current certificate verification storage
     X509_STORE* store = SSL_CTX_get_cert_store(static_cast<SSL_CTX*>(sslctx));
@@ -98,7 +98,7 @@ CURLcode sslctx_function_load_ca_cert_from_buffer(CURL* /*curl*/, void* sslctx, 
     //    ... base64 data ...
     //    -----END CERTIFICATE-----
     //
-    auto certs_loaded = 0;
+    size_t certs_loaded = 0;
     X509* cert = nullptr;
     while ((cert = PEM_read_bio_X509(bio, nullptr, nullptr, nullptr)) != nullptr) {
         const int status = X509_STORE_add_cert(store, cert);
@@ -116,7 +116,7 @@ CURLcode sslctx_function_load_ca_cert_from_buffer(CURL* /*curl*/, void* sslctx, 
         cert = nullptr;
     }
 
-    auto err = ERR_peek_last_error();
+    const unsigned long err = ERR_peek_last_error();
     if (certs_loaded == 0 && err != 0) {
         // Check if the error is just EOF or an actual parsing error
         if (ERR_GET_LIB(err) == ERR_LIB_PEM && ERR_GET_REASON(err) == PEM_R_NO_START_LINE) {
