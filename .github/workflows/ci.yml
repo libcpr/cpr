@@ -254,14 +254,13 @@ jobs:
     steps:
     - name: Install libpsl
       run: brew install libpsl
-    - name: Install meson
-      run: brew install meson
     - name: Checkout
       uses: actions/checkout@v3
     - name: "Build & Test"
       env:
         CPR_BUILD_TESTS: ON
         CPR_BUILD_TESTS_SSL: OFF
+        CPR_USE_SYSTEM_LIB_PSL: ON
       uses: ashutoshvarma/action-cmake-build@master
       with:
         build-dir: ${{ github.workspace }}/build
@@ -277,8 +276,6 @@ jobs:
     steps:
     - name: Install libpsl
       run: brew install libpsl
-    - name: Install meson
-      run: brew install meson
     - name: Checkout
       uses: actions/checkout@v3
     - name: "Build & Test"
@@ -286,6 +283,7 @@ jobs:
         CPR_BUILD_TESTS: ON
         CPR_BUILD_TESTS_SSL: OFF
         CPR_FORCE_DARWINSSL_BACKEND: ON
+        CPR_USE_SYSTEM_LIB_PSL: ON
       uses: ashutoshvarma/action-cmake-build@master
       with:
         build-dir: ${{ github.workspace }}/build
@@ -303,8 +301,6 @@ jobs:
       run: brew install openssl
     - name: Install libpsl
       run: brew install libpsl
-    - name: Install meson
-      run: brew install meson
     - name: Checkout
       uses: actions/checkout@v3
     - name: "Build & Test"
@@ -312,6 +308,7 @@ jobs:
         CPR_BUILD_TESTS: ON
         CPR_BUILD_TESTS_SSL: ON
         CPR_FORCE_OPENSSL_BACKEND: ON
+        CPR_USE_SYSTEM_LIB_PSL: ON
         OPENSSL_ROOT_DIR: "${{ env.MACOS_OPENSSL_ROOT_DIR }}"
         OPENSSL_LIBRARIES: "${{ env.MACOS_OPENSSL_ROOT_DIR }}/lib"
         LDFLAGS: "-L${{ env.MACOS_OPENSSL_ROOT_DIR }}/lib"
@@ -336,8 +333,6 @@ jobs:
       run: brew install openssl
     - name: Install libpsl
       run: brew install libpsl
-    - name: Install meson
-      run: brew install meson
     - name: Checkout
       uses: actions/checkout@v3
     - name: "Build & Test"
@@ -346,6 +341,7 @@ jobs:
         CPR_BUILD_TESTS_SSL: ON
         CPR_FORCE_OPENSSL_BACKEND: ON
         CPR_USE_BOOST_FILESYSTEM: ON
+        CPR_USE_SYSTEM_LIB_PSL: ON
         OPENSSL_ROOT_DIR: "${{ env.MACOS_OPENSSL_ROOT_DIR }}"
         OPENSSL_LIBRARIES: "${{ env.MACOS_OPENSSL_ROOT_DIR }}/lib"
         LDFLAGS: "-L${{ env.MACOS_OPENSSL_ROOT_DIR }}/lib"
