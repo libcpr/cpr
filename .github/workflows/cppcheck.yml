@@ -12,7 +12,7 @@ jobs:
     - name: Update package list
       run: dnf update -y
     - name: Install Dependencies
-      run: dnf install -y gcc clang git gcc gdb make openssl-devel cmake libpsl-devel cppcheck
+      run: dnf install -y gcc clang git gcc gdb make openssl-devel cmake libpsl-devel cppcheck meson
     - name: "[Release g++] Build"
       env:
         CPR_ENABLE_CPPCHECK: ON
