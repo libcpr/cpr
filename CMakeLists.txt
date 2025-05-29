@@ -382,7 +382,7 @@ if(CPR_BUILD_TESTS)
                          USES_TERMINAL_DOWNLOAD TRUE)   # <---- This is needed only for Ninja to show download progress
     # We can not use FetchContent_MakeAvailable, since we need to patch mongoose to use CMake
     if (NOT mongoose_POPULATED)
-        FetchContent_POPULATE(mongoose)
+        FetchContent_MakeAvailable(mongoose)
 
         file(INSTALL cmake/mongoose.CMakeLists.txt DESTINATION ${mongoose_SOURCE_DIR})
         file(RENAME ${mongoose_SOURCE_DIR}/mongoose.CMakeLists.txt ${mongoose_SOURCE_DIR}/CMakeLists.txt)

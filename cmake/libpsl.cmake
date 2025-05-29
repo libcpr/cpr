@@ -10,7 +10,7 @@ endif()
 
 FetchContent_Declare(libpsl_src GIT_REPOSITORY https://github.com/rockdaboot/libpsl.git
                                 GIT_TAG 0.21.5)
-FetchContent_Populate(libpsl_src) # sets libpsl_src_SOURCE_DIR / _BINARY_DIR
+FetchContent_MakeAvailable(libpsl_src) # sets libpsl_src_SOURCE_DIR / _BINARY_DIR
 
 set(LIBPSL_SOURCE_DIR "${libpsl_src_SOURCE_DIR}")
 set(LIBPSL_BUILD_DIR "${libpsl_src_BINARY_DIR}")
