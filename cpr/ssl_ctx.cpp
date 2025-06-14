@@ -5,8 +5,6 @@
 #include <curl/curl.h>
 #include <iostream>
 #include <memory>
-#include <sstream>
-#include <string>
 
 #if SUPPORT_CURLOPT_SSL_CTX_FUNCTION
 
@@ -108,14 +106,14 @@ CURLcode sslctx_function_load_ca_cert_from_buffer(CURL* /*curl*/, void* sslctx, 
             ERR_print_errors_fp(stderr);
             BIO_free(bio);
             return CURLE_ABORTED_BY_CALLBACK;
-        } else {
-            certs_loaded++;
         }
+        certs_loaded++;
         // Free cert so we can load another one
         X509_free(cert);
         cert = nullptr;
     }
 
+    // NOLINTNEXTLINE(google-runtime-int) Ignored here since it is an API return value
     const unsigned long err = ERR_peek_last_error();
     if (certs_loaded == 0 && err != 0) {
         // Check if the error is just EOF or an actual parsing error
