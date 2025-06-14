@@ -53,3 +53,7 @@ endif()
 list(APPEND CMAKE_LIBRARY_PATH "${LIBPSL_INSTALL_DIR}/lib64")
 list(APPEND CMAKE_LIBRARY_PATH "${LIBPSL_INSTALL_DIR}/lib")
 list(APPEND CMAKE_INCLUDE_PATH "${LIBPSL_INSTALL_DIR}/include")
+
+# Workaround for Windows compilation.
+# Ref: https://github.com/microsoft/vcpkg/pull/38847/files#diff-922fe829582a7e5acf5b0c35181daa63064fc12a2c889c5d89a19e5e02113f1bL44
+add_compile_definitions(PSL_STATIC=1)
