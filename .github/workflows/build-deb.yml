@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'The optional semantic version number. If not supplied the branch/tag will be used.'
+        description: 'The optional semantic version number. If not supplied the version from the main cpr CMake project will be used.'
         type: string
 
 jobs:
