@@ -28,12 +28,12 @@ jobs:
     - name: Set version based on ref
       if: ${{ !inputs.version }}
       run: |
-        mkdir -p cpr/build
-        pushd cpr/build
+        mkdir -p build
+        pushd build
         cmake .. -DCPR_BUILD_VERSION_OUTPUT_ONLY=ON -DCPR_USE_SYSTEM_LIB_PSL=ON -DCPR_USE_SYSTEM_CURL=ON
         echo "RELEASE_VERSION=$(cat version.txt)" >> $GITHUB_ENV
         popd
-        rm -rf cpr/build
+        rm -rf build
     - name: Print Version
       run: echo "deb version will be '${{ env.RELEASE_VERSION }}'"
       # Build package of runtime library
