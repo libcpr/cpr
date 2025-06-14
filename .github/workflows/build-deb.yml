@@ -40,7 +40,7 @@ jobs:
     - name: "Package build of runtime library"
       env: 
         VERSION: ${{ env.RELEASE_VERSION }}
-      run: bash cpr/package-build/build-package.sh cpr
+      run: bash package-build/build-package.sh $(pwd)
 
     - name: "Upload deb-packages"
       uses: actions/upload-artifact@v4
