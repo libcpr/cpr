@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'The optional semantic version number. If not supplied the branch/tag will be used.'
+        description: 'The optional semantic version number. If not supplied the version from the main cpr CMake project will be used.'
         type: string
 
 jobs:
@@ -28,19 +28,19 @@ jobs:
     - name: Set version based on ref
       if: ${{ !inputs.version }}
       run: |
-        mkdir -p cpr/build
-        pushd cpr/build
+        mkdir -p build
+        pushd build
         cmake .. -DCPR_BUILD_VERSION_OUTPUT_ONLY=ON -DCPR_USE_SYSTEM_LIB_PSL=ON -DCPR_USE_SYSTEM_CURL=ON
         echo "RELEASE_VERSION=$(cat version.txt)" >> $GITHUB_ENV
         popd
-        rm -rf cpr/build
+        rm -rf build
     - name: Print Version
       run: echo "deb version will be '${{ env.RELEASE_VERSION }}'"
       # Build package of runtime library
     - name: "Package build of runtime library"
       env: 
         VERSION: ${{ env.RELEASE_VERSION }}
-      run: bash cpr/package-build/build-package.sh cpr
+      run: bash package-build/build-package.sh $(pwd)
 
     - name: "Upload deb-packages"
       uses: actions/upload-artifact@v4

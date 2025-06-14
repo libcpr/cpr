@@ -17,6 +17,35 @@ set(LIBPSL_BUILD_DIR "${libpsl_src_BINARY_DIR}")
 set(LIBPSL_INSTALL_DIR "${CMAKE_BINARY_DIR}/libpsl_src-install")
 file(MAKE_DIRECTORY "${LIBPSL_BUILD_DIR}")
 
+string(TOLOWER "${CMAKE_SYSTEM_NAME}" HOST_SYSTEM_NAME)
+if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(x86_64|amd64)$")
+    set(HOST_CPU_FAMILY "x86_64")
+elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "^(i.86|x86)$")
+    set(HOST_CPU_FAMILY "x86")
+elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "^(armv7|armv6|arm)$")
+    set(HOST_CPU_FAMILY "arm")
+elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "^(aarch64|arm64)$")
+    set(HOST_CPU_FAMILY "aarch64")
+else()
+    set(HOST_CPU_FAMILY "${CMAKE_SYSTEM_PROCESSOR}")
+endif()
+
+# Write a meson cross compilation file to allow cross compiling
+# for example for building NuGet packages although usually it is not required.
+file(WRITE "${CMAKE_BINARY_DIR}/libpsl-meson-cross.txt" "
+[binaries]
+c = '${CMAKE_C_COMPILER}'
+cpp = '${CMAKE_CXX_COMPILER}'
+ar = '${CMAKE_AR}'
+strip = '${CMAKE_STRIP}'
+
+[host_machine]
+system = '${HOST_SYSTEM_NAME}'
+cpu_family = '${HOST_CPU_FAMILY}'
+cpu = '${CMAKE_SYSTEM_PROCESSOR}'
+endian = 'little'
+")
+
 # Meson configure
 # We only care about static libraries of psl. In case you need a dynamic version, feel free to add support for it.
 message(STATUS "Configuring libpsl...")
@@ -25,6 +54,7 @@ execute_process(COMMAND "${MESON_PATH}" setup
                         "${LIBPSL_SOURCE_DIR}"
                         -Dtests=false
                         -Ddocs=false
+                        --cross-file "${CMAKE_BINARY_DIR}/libpsl-meson-cross.txt"
                         --buildtype=release
                         --prefix "${LIBPSL_INSTALL_DIR}"
                         --default-library=static
