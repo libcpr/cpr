@@ -399,7 +399,7 @@ void Session::SetConnectTimeout(const ConnectTimeout& timeout) {
 }
 
 void Session::SetConnectionPool(const ConnectionPool& pool) {
-    CURLSH* curl = curl_->handle;
+    CURL* curl = curl_->handle;
     pool.SetupHandler(curl);
 }
 
