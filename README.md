@@ -10,12 +10,12 @@
 * For quick help, and discussion libcpr also offers a [gitter](https://gitter.im/libcpr/community?utm_source=share-link&utm_medium=link&utm_campaign=share-link) chat.
 
 ## Supported Releases
-| Release  | Min. C++ Standard | Status | Notes |
-|----------|-------------------|--------|-------|
-| master   | `cpp17` | ![alt text][preview] | |
-| 1.11.x   | `cpp17` | ![alt text][supported] | |
-| 1.10.x   | `cpp17` | ![alt text][unsupported] | |
-| <= 1.9.x | `cpp11` | ![alt text][unsupported] | |
+| Release                   | Min. C++ Standard | Status                   | Notes |
+|---------------------------|-------------------|--------------------------|-------|
+| master                    | `cpp17`           | ![alt text][preview]     |       |
+| 1.12.x                    | `cpp17`           | ![alt text][supported]   |       |
+| 1.10.x - 1.11.x           | `cpp17`           | ![alt text][unsupported] |       |
+| <= 1.9.x                  | `cpp11`           | ![alt text][unsupported] |       |
 
 [unsupported]: https://img.shields.io/badge/-unsupported-red "unsupported"
 [supported]: https://img.shields.io/badge/-supported-green "supported"
@@ -93,7 +93,7 @@ Add the following to your `CMakeLists.txt`.
 ```cmake
 include(FetchContent)
 FetchContent_Declare(cpr GIT_REPOSITORY https://github.com/libcpr/cpr.git
-                         GIT_TAG dd967cb48ea6bcbad9f1da5ada0db8ac0d532c06) # Replace with your desired git commit from: https://github.com/libcpr/cpr/releases
+                         GIT_TAG da40186618909b1a7363d4e4495aa899c6e0eb75.12.0) # Replace with your desired git commit from: https://github.com/libcpr/cpr/releases
 FetchContent_MakeAvailable(cpr)
 ```
 

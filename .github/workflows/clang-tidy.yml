@@ -10,7 +10,7 @@ jobs:
     - name: Update package list
       run: sudo dnf update -y
     - name: Install dependencies
-      run: sudo dnf install -y openssl-devel cmake git gcc clang ninja-build
+      run: sudo dnf install -y openssl-devel cmake git gcc clang ninja-build libpsl-devel meson
     - name: Install clang-tidy
       run: sudo dnf install -y clang-tools-extra
     - name: Checkout

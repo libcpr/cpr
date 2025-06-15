@@ -21,7 +21,7 @@ jobs:
     - name: "Replace GIT_TAG"
       run: sed -i -re 's/(GIT_TAG) [0-9a-f]+/\1 ${{github.sha}}/' README.md
     - name: "Commit changes"
-      uses: stefanzweifel/git-auto-commit-action@v5
+      uses: stefanzweifel/git-auto-commit-action@v6
       with:
         commit_message: ${{env.COMMIT_MESSAGE}}
         branch: ${{env.OUTPUT_BRANCH}}

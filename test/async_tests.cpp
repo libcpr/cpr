@@ -27,6 +27,8 @@ TEST(AsyncTests, AsyncGetTest) {
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(response.primary_ip, "127.0.0.1");
+    EXPECT_EQ(response.primary_port, server->GetPort());
 }
 
 TEST(AsyncTests, AsyncGetMultipleTest) {

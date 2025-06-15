@@ -14,15 +14,11 @@ jobs:
     steps:
     - name: "Checkout"
       uses: actions/checkout@v3
-      with:
-        submodules: true
-        path: cpr
-
       # Install packages necessary for building libcpr and package
     - name: "Update package list"
       run: sudo apt update
     - name: "Install cpr dependencies"
-      run: sudo apt install -y libssl-dev libcurl4-openssl-dev
+      run: sudo apt install -y libssl-dev libcurl4-openssl-dev libpsl-dev
     - name: "Install building tools"
       run: sudo apt install -y cmake debmake devscripts debhelper
       # Set version number
@@ -34,7 +30,7 @@ jobs:
       run: |
         mkdir -p cpr/build
         pushd cpr/build
-        cmake .. -DCPR_BUILD_VERSION_OUTPUT_ONLY=ON
+        cmake .. -DCPR_BUILD_VERSION_OUTPUT_ONLY=ON -DCPR_USE_SYSTEM_LIB_PSL=ON -DCPR_USE_SYSTEM_CURL=ON
         echo "RELEASE_VERSION=$(cat version.txt)" >> $GITHUB_ENV
         popd
         rm -rf cpr/build
