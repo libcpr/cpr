@@ -392,10 +392,8 @@ void Session::SetConnectTimeout(const ConnectTimeout& timeout) {
 }
 
 void Session::SetConnectionPool(const ConnectionPool& pool) {
-    auto * curl = curl_->handle;
-    if (curl) {
-        pool.SetupHandler(curl);
-    }
+    CURLSH* curl = curl_->handle;
+    pool.SetupHandler(curl);
 }
 
 void Session::SetAuth(const Authentication& auth) {

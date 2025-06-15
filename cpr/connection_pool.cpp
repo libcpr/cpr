@@ -5,15 +5,15 @@
 
 namespace cpr {
 ConnectionPool::ConnectionPool() {
-    auto* curl_share = curl_share_init();
+    CURLSH* curl_share = curl_share_init();
     this->connection_mutex_ = std::make_shared<std::mutex>();
     
-    auto lock_f = +[](__attribute__((unused)) CURL* handle, __attribute__((unused)) curl_lock_data data, __attribute__((unused)) curl_lock_access access, void* userptr) {
+    auto lock_f = +[](CURL* /*handle*/, curl_lock_data /*data*/, curl_lock_access /*access*/, void* userptr) {
         std::mutex* lock = static_cast<std::mutex*>(userptr);
         lock->lock();
     };
     
-    auto unlock_f = +[](__attribute__((unused)) CURL* handle, __attribute__((unused)) curl_lock_data data, void* userptr) {
+    auto unlock_f = +[](CURL* /*handle*/, curl_lock_data /*data*/, void* userptr) {
         std::mutex* lock = static_cast<std::mutex*>(userptr);
         lock->unlock();
     };
