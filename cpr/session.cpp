@@ -31,6 +31,7 @@
 #include "cpr/body_view.h"
 #include "cpr/callback.h"
 #include "cpr/connect_timeout.h"
+#include "cpr/connection_pool.h"
 #include "cpr/cookies.h"
 #include "cpr/cprtypes.h"
 #include "cpr/curlholder.h"
@@ -395,6 +396,11 @@ void Session::SetTimeout(const Timeout& timeout) {
 
 void Session::SetConnectTimeout(const ConnectTimeout& timeout) {
     curl_easy_setopt(curl_->handle, CURLOPT_CONNECTTIMEOUT_MS, timeout.Milliseconds());
+}
+
+void Session::SetConnectionPool(const ConnectionPool& pool) {
+    CURL* curl = curl_->handle;
+    pool.SetupHandler(curl);
 }
 
 void Session::SetAuth(const Authentication& auth) {
@@ -1091,6 +1097,7 @@ void Session::SetOption(const MultiRange& multi_range) { SetMultiRange(multi_ran
 void Session::SetOption(const ReserveSize& reserve_size) { SetReserveSize(reserve_size.size); }
 void Session::SetOption(const AcceptEncoding& accept_encoding) { SetAcceptEncoding(accept_encoding); }
 void Session::SetOption(AcceptEncoding&& accept_encoding) { SetAcceptEncoding(std::move(accept_encoding)); }
+void Session::SetOption(const ConnectionPool& pool) { SetConnectionPool(pool); }
 // clang-format on
 
 void Session::SetCancellationParam(std::shared_ptr<std::atomic_bool> param) {
