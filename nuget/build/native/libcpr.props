@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003"
-        ToolsVersion="15.0">
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="15.0">
   <PropertyGroup>
     <LibraryType Condition="'$(Configuration)'=='Debug'">mdd</LibraryType>
     <LibraryType Condition="'$(Configuration)'=='Release'">md</LibraryType>
   </PropertyGroup>
   <ItemGroup>
-	  <CprLibs Include="$(MSBuildThisFileDirectory)\$(Platform)\$(Configuration)\lib\*.lib" />
+    <CprLibs Include="$(MSBuildThisFileDirectory)\$(Platform)\$(Configuration)\lib\*.lib" />
   </ItemGroup>
   <ItemGroup>
     <CprDlls Include="$(MSBuildThisFileDirectory)\$(Platform)\$(Configuration)\bin\*.dll" />
