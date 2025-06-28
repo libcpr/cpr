@@ -17,17 +17,31 @@ set(LIBPSL_BUILD_DIR "${libpsl_src_BINARY_DIR}")
 set(LIBPSL_INSTALL_DIR "${CMAKE_BINARY_DIR}/libpsl_src-install")
 file(MAKE_DIRECTORY "${LIBPSL_BUILD_DIR}")
 
-string(TOLOWER "${CMAKE_SYSTEM_NAME}" HOST_SYSTEM_NAME)
-if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(x86_64|amd64)$")
-    set(HOST_CPU_FAMILY "x86_64")
-elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "^(i.86|x86)$")
-    set(HOST_CPU_FAMILY "x86")
-elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "^(armv7|armv6|arm)$")
-    set(HOST_CPU_FAMILY "arm")
-elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "^(aarch64|arm64)$")
-    set(HOST_CPU_FAMILY "aarch64")
+string(TOLOWER "${CMAKE_SYSTEM_NAME}" MESON_TARGET_HOST_SYSTEM_NAME)
+string(TOLOWER "${CMAKE_SYSTEM_PROCESSOR}" MESON_TARGET_SYSTEM_PROCESSOR_LOWER)
+if(MESON_TARGET_SYSTEM_PROCESSOR_LOWER MATCHES "^(x86_64|amd64)$")
+    set(MESON_TARGET_HOST_CPU_FAMILY "x86_64")
+elseif(MESON_TARGET_SYSTEM_PROCESSOR_LOWER MATCHES "^(i.86|x86)$")
+    set(MESON_TARGET_HOST_CPU_FAMILY "x86")
+elseif(MESON_TARGET_SYSTEM_PROCESSOR_LOWER MATCHES "^(armv7|armv6|arm)$")
+    set(MESON_TARGET_HOST_CPU_FAMILY "arm")
+elseif(MESON_TARGET_SYSTEM_PROCESSOR_LOWER MATCHES "^(aarch64|arm64)$")
+    set(MESON_TARGET_HOST_CPU_FAMILY "aarch64")
 else()
-    set(HOST_CPU_FAMILY "${CMAKE_SYSTEM_PROCESSOR}")
+    set(MESON_TARGET_HOST_CPU_FAMILY "${MESON_TARGET_SYSTEM_PROCESSOR_LOWER}")
+endif()
+
+include (TestBigEndian)
+TEST_BIG_ENDIAN(IS_BIG_ENDIAN)
+if(IS_BIG_ENDIAN)
+    set(MESON_ENDIAN "big")
+else()
+    set(MESON_ENDIAN "little")
+endif()
+
+# libpsl is plain C. Make sure CMake initializes a C tool-chain.
+if(NOT CMAKE_C_COMPILER)
+    enable_language(C) # initializes CMAKE_C_COMPILER, CMAKE_AR, …
 endif()
 
 # Write a meson cross compilation file to allow cross compiling
@@ -40,10 +54,10 @@ ar = '${CMAKE_AR}'
 strip = '${CMAKE_STRIP}'
 
 [host_machine]
-system = '${HOST_SYSTEM_NAME}'
-cpu_family = '${HOST_CPU_FAMILY}'
+system = '${MESON_TARGET_HOST_SYSTEM_NAME}'
+cpu_family = '${MESON_TARGET_HOST_CPU_FAMILY}'
 cpu = '${CMAKE_SYSTEM_PROCESSOR}'
-endian = 'little'
+endian = '${MESON_ENDIAN}'
 ")
 
 # Meson configure
