@@ -10,7 +10,7 @@ ConnectionPool::ConnectionPool() {
     
     auto lock_f = +[](CURL* /*handle*/, curl_lock_data /*data*/, curl_lock_access /*access*/, void* userptr) {
         std::mutex* lock = static_cast<std::mutex*>(userptr);
-        lock->lock();
+        lock->lock(); // cppcheck-suppress localMutex  // False positive: mutex is used as callback for libcurl, not local scope
     };
     
     auto unlock_f = +[](CURL* /*handle*/, curl_lock_data /*data*/, void* userptr) {
