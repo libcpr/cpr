@@ -4,7 +4,6 @@
 #include <array>
 #include <curl/curl.h>
 #include <mutex>
-#include <string>
 
 #include "cpr/secure_string.h"
 
