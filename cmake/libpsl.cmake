@@ -44,19 +44,35 @@ if(NOT CMAKE_C_COMPILER)
     enable_language(C) # initializes CMAKE_C_COMPILER, CMAKE_AR, …
 endif()
 
+# Prefer CMake’s own variable when available (CMake >= 3.29)
+if(CMAKE_CPP_COMPILER_LINKER AND CMAKE_C_COMPILER_LINKER)
+    set(MESON_C_LD "${CMAKE_C_COMPILER_LINKER}")
+    set(MESON_CPP_LD "${CMAKE_CPP_COMPILER_LINKER}")
+else()
+    if(MSVC)
+        get_filename_component(_COMP_DIR "${CMAKE_C_COMPILER}" DIRECTORY)
+        set(MESON_C_LD   "${_COMP_DIR}/link.exe")
+        set(MESON_CPP_LD "${_COMP_DIR}/link.exe")
+    else()
+        set(MESON_C_LD   "${CMAKE_C_COMPILER}")
+        set(MESON_CPP_LD "${CMAKE_CXX_COMPILER}")
+    endif()
+endif()
+
 # Write a meson cross compilation file to allow cross compiling
 # for example for building NuGet packages although usually it is not required.
-file(WRITE "${CMAKE_BINARY_DIR}/libpsl-meson-cross.txt" "
-[binaries]
+file(WRITE "${CMAKE_BINARY_DIR}/libpsl-meson-cross.txt" "[binaries]
 c = '${CMAKE_C_COMPILER}'
+c_ld = '${MESON_C_LD}'
 cpp = '${CMAKE_CXX_COMPILER}'
+cpp_ld = '${MESON_CPP_LD}'
 ar = '${CMAKE_AR}'
 strip = '${CMAKE_STRIP}'
 
 [host_machine]
 system = '${MESON_TARGET_HOST_SYSTEM_NAME}'
 cpu_family = '${MESON_TARGET_HOST_CPU_FAMILY}'
-cpu = '${CMAKE_SYSTEM_PROCESSOR}'
+cpu = '${MESON_TARGET_HOST_CPU_FAMILY}'
 endian = '${MESON_ENDIAN}'
 ")
 
@@ -94,9 +110,17 @@ if(MESON_INSTALL_RC)
     message(FATAL_ERROR "Meson install for libpsl failed!")
 endif()
 
-list(APPEND CMAKE_LIBRARY_PATH "${LIBPSL_INSTALL_DIR}/lib64")
-list(APPEND CMAKE_LIBRARY_PATH "${LIBPSL_INSTALL_DIR}/lib")
 list(APPEND CMAKE_INCLUDE_PATH "${LIBPSL_INSTALL_DIR}/include")
+
+if(EXISTS "${LIBPSL_INSTALL_DIR}/lib64")
+    set(LIBPSL_LIBRARY "${LIBPSL_INSTALL_DIR}/lib/libpsl.a")
+    list(APPEND CMAKE_LIBRARY_PATH "${LIBPSL_INSTALL_DIR}/lib64")
+else()
+    set(LIBPSL_LIBRARY "${LIBPSL_INSTALL_DIR}/lib/libpsl.a")
+    list(APPEND CMAKE_LIBRARY_PATH "${LIBPSL_INSTALL_DIR}/lib")
+endif()
+
+set(LIBPSL_INCLUDE_DIR  "${LIBPSL_INSTALL_DIR}/include")
 
 # Workaround for Windows compilation.
 # Ref: https://github.com/microsoft/vcpkg/pull/38847/files#diff-922fe829582a7e5acf5b0c35181daa63064fc12a2c889c5d89a19e5e02113f1bL44
