@@ -11,7 +11,8 @@
 #include "cpr/cprtypes.h"
 #include "cpr/secure_string.h"
 
-namespace cpr::util {
+namespace cpr{
+namespace util {
 
 Header parseHeader(const std::string& headers, std::string* status_line = nullptr, std::string* reason = nullptr);
 Cookies parseCookies(curl_slist* raw_cookies);
@@ -42,6 +43,7 @@ bool isTrue(const std::string& s);
  **/
 time_t sTimestampToT(const std::string&);
 
-} // namespace cpr::util
+} //namespace util
+} // namespace cpr
 
 #endif
