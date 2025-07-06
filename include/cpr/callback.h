@@ -98,7 +98,7 @@ class DebugCallback {
     void operator()(InfoType type, std::string data) const {
         if(!callback)
         {
-            return true;
+            return;
         }
         callback(type, std::move(data), userdata);
     }
