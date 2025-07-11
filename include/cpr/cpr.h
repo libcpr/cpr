@@ -7,6 +7,7 @@
 #include "cpr/callback.h"
 #include "cpr/cert_info.h"
 #include "cpr/connect_timeout.h"
+#include "cpr/connection_pool.h"
 #include "cpr/cookies.h"
 #include "cpr/cprtypes.h"
 #include "cpr/cprver.h"
