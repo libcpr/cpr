@@ -78,7 +78,7 @@ endif()
 
 # Meson build
 message(STATUS "Building libpsl...")
-execute_process(COMMAND "${MESON_PATH}" compile --verbose -C "${LIBPSL_BUILD_DIR}"
+execute_process(COMMAND "${MESON_PATH}" compile -C "${LIBPSL_BUILD_DIR}"
                 RESULT_VARIABLE MESON_COMPILE_RC
 )
 if(MESON_COMPILE_RC)
