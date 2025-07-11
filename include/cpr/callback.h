@@ -18,6 +18,10 @@ class ReadCallback {
     ReadCallback(std::function<bool(char* buffer, size_t& size, intptr_t userdata)> p_callback, intptr_t p_userdata = 0) : userdata(p_userdata), size{-1}, callback{std::move(p_callback)} {}
     ReadCallback(cpr_off_t p_size, std::function<bool(char* buffer, size_t& size, intptr_t userdata)> p_callback, intptr_t p_userdata = 0) : userdata(p_userdata), size{p_size}, callback{std::move(p_callback)} {}
     bool operator()(char* buffer, size_t& buffer_size) const {
+        if(!callback)
+        {
+            return true;
+        }
         return callback(buffer, buffer_size, userdata);
     }
 
@@ -32,6 +36,10 @@ class HeaderCallback {
     // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
     HeaderCallback(std::function<bool(const std::string_view& header, intptr_t userdata)> p_callback, intptr_t p_userdata = 0) : userdata(p_userdata), callback(std::move(p_callback)) {}
     bool operator()(const std::string_view& header) const {
+        if(!callback)
+        {
+            return true;
+        }
         return callback(header, userdata);
     }
 
@@ -45,6 +53,10 @@ class WriteCallback {
     // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
     WriteCallback(std::function<bool(const std::string_view& data, intptr_t userdata)> p_callback, intptr_t p_userdata = 0) : userdata(p_userdata), callback(std::move(p_callback)) {}
     bool operator()(const std::string_view& data) const {
+        if(!callback)
+        {
+            return true;
+        }
         return callback(data, userdata);
     }
 
@@ -58,6 +70,10 @@ class ProgressCallback {
     // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
     ProgressCallback(std::function<bool(cpr_pf_arg_t downloadTotal, cpr_pf_arg_t downloadNow, cpr_pf_arg_t uploadTotal, cpr_pf_arg_t uploadNow, intptr_t userdata)> p_callback, intptr_t p_userdata = 0) : userdata(p_userdata), callback(std::move(p_callback)) {}
     bool operator()(cpr_pf_arg_t downloadTotal, cpr_pf_arg_t downloadNow, cpr_pf_arg_t uploadTotal, cpr_pf_arg_t uploadNow) const {
+        if(!callback)
+        {
+            return true;
+        }
         return callback(downloadTotal, downloadNow, uploadTotal, uploadNow, userdata);
     }
 
@@ -80,6 +96,10 @@ class DebugCallback {
     // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
     DebugCallback(std::function<void(InfoType type, std::string data, intptr_t userdata)> p_callback, intptr_t p_userdata = 0) : userdata(p_userdata), callback(std::move(p_callback)) {}
     void operator()(InfoType type, std::string data) const {
+        if(!callback)
+        {
+            return;
+        }
         callback(type, std::move(data), userdata);
     }
 
