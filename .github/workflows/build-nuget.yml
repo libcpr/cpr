@@ -1,8 +1,3 @@
-# Let me start of with "I (COM8) hate Windows!"...
-# How can it be easier to cross compile on Linux via mingw for Windows X86 and X86_64 than natively on Windows.
-# I spend hours and hours trying to get the cross compilation and linker flags correct on Windows while battling the awfully slow Windows file system.
-# At one point I gave up and I had mingw build up and running in less than an hour - that irony :)
-
 name: Build NuGet Package
 on:
   push:
@@ -19,85 +14,97 @@ on:
 
 jobs:
   package-nuget:
-    runs-on: ubuntu-latest
-    container: fedora:latest
+    runs-on: windows-latest
+
+    # Use PowerShell everywhere unless a step overrides it.
+    defaults:
+      run:
+        shell: pwsh
+
     steps:
-    - name: Set version based on input
-      if: ${{ inputs.version }}
-      run: echo "RELEASE_VERSION=${{ inputs.version }}" >> "$GITHUB_ENV"
-    - name: Set version based on ref
-      if: ${{ !inputs.version }}
-      run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> "$GITHUB_ENV"
-    - name: Print Version
-      run: echo "NuGet version will be '${{env.RELEASE_VERSION}}'"
-    - name: Checkout
-      uses: actions/checkout@v3
-    - name: Prepare NuGet Output Directory
+    # ────────────────────────────── Version handling ─────────────────────────────
+    - name: Set version from manual input
+      if: ${{ github.event_name == 'workflow_dispatch' && inputs.version != '' }}
       run: |
-        mkdir -p ${{github.workspace}}
-        # Note: {{github.workspace}} expands to outside the container while GITHUB_WORKSPACE is inside the container
-        cp -r $GITHUB_WORKSPACE/nuget ${{github.workspace}}
-        cp $GITHUB_WORKSPACE/README.md ${{github.workspace}}/nuget
-        mkdir -p ${{github.workspace}}/nuget/build/native/{x86,x64}/{Debug,Release}
-    - name: Install Dependencies
-      run: | 
-        dnf install -y mingw32-gcc mingw64-gcc mingw32-gcc-c++ mingw64-gcc-c++ mingw32-binutils mingw64-binutils mingw32-winpthreads mingw64-winpthreads wine meson cmake git nuget mono-complete
-        nuget update -self
-    - name: "[Release_x86] Build & Install"
-      uses: ashutoshvarma/action-cmake-build@master
-      with:
-        build-dir: ${{github.workspace}}/build-release-x86
-        source-dir: ${{github.workspace}}
-        build-type: Release
-        run-test: false
-        configure-options: -DBUILD_SHARED_LIBS=ON -DCURL_ZLIB=OFF -DCMAKE_C_COMPILER=i686-w64-mingw32-gcc -DCMAKE_CXX_COMPILER=i686-w64-mingw32-g++ -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_SYSTEM_PROCESSOR=i686
-        install-build: true
-        install-options: --prefix ${{github.workspace}}/nuget/build/native/x86/Release --config Release
-    - name: "[Debug_x86] Build & Install"
-      uses: ashutoshvarma/action-cmake-build@master
-      with:
-        build-dir: ${{github.workspace}}/build-debug-x86
-        source-dir: ${{github.workspace}}
-        build-type: Debug
-        run-test: false
-        configure-options: -DBUILD_SHARED_LIBS=ON -DCURL_ZLIB=OFF -DCMAKE_C_COMPILER=i686-w64-mingw32-gcc -DCMAKE_CXX_COMPILER=i686-w64-mingw32-g++ -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_SYSTEM_PROCESSOR=i686
-        install-build: true
-        install-options: --prefix ${{github.workspace}}/nuget/build/native/x86/Debug --config Debug
-    - name: "[Release_x64] Build & Install"
-      uses: ashutoshvarma/action-cmake-build@master
-      with:
-        build-dir: ${{github.workspace}}/build-release-x64
-        source-dir: ${{github.workspace}}
-        build-type: Release
-        run-test: false
-        configure-options: -DBUILD_SHARED_LIBS=ON -DCURL_ZLIB=OFF -DCMAKE_C_COMPILER=x86_64-w64-mingw32-gcc -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-g++ -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_SYSTEM_PROCESSOR=x86_64
-        install-build: true
-        install-options: --prefix ${{github.workspace}}/nuget/build/native/x64/Release --config Release
-    - name: "[Debug_x64] Build & Install"
-      uses: ashutoshvarma/action-cmake-build@master
-      with:
-        build-dir: ${{github.workspace}}/build-debug-x64
-        source-dir: ${{github.workspace}}
-        build-type: Debug
-        run-test: false
-        configure-options: -DBUILD_SHARED_LIBS=ON -DCURL_ZLIB=OFF -DCMAKE_C_COMPILER=x86_64-w64-mingw32-gcc -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-g++ -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_SYSTEM_PROCESSOR=x86_64
-        install-build: true
-        install-options: --prefix ${{github.workspace}}/nuget/build/native/x64/Debug --config Debug
-    - name: "Create NuGet package"
-      env: 
-        VERSION: ${{env.RELEASE_VERSION}}
-        COMMIT_HASH: ${{github.sha}}
+        "RELEASE_VERSION=${{ inputs.version }}" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+    - name: Set version from Git ref
+      if: ${{ env.RELEASE_VERSION == '' }}
       run: |
-        nuget pack ${{github.workspace}}/nuget/libcpr.nuspec -OutputDirectory ${{github.workspace}} -Properties "VERSION=${VERSION};COMMIT_HASH=${COMMIT_HASH}"
-        # Copy result to outside the container
-        cp ${{github.workspace}}/*.nupkg $GITHUB_WORKSPACE
-    - name: "Publish package to NuGet.org"
+        $ref = "${{ github.ref }}".Split('/')[-1]
+        "RELEASE_VERSION=$ref" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+    - name: Print version
+      run: Write-Host "NuGet package version will be '$env:RELEASE_VERSION'."
+
+    # ───────────────────────────── Repository & tools ────────────────────────────
+    - uses: actions/checkout@v4
+
+    # Add MSBuild (and the full VS developer environment) to PATH
+    - uses: microsoft/setup-msbuild@v2
+
+    - uses: actions/setup-python@v5
+  
+    - name: Install meson
+      run: pip install meson
+
+    # Prepare output folder paths
+    - name: Prepare NuGet output layout
+      shell: bash
+      run: |
+        set -eux
+        mkdir -p "$GITHUB_WORKSPACE/nuget/build/native/{x86,x64}/{Debug,Release}"
+        cp README.md "$GITHUB_WORKSPACE/nuget"
+
+    # ─────────────────────────────── Build x86 ─────────────────────────────────
+    - name: Enable MSVC x86 toolchain
+      uses: ilammy/msvc-dev-cmd@v1
+      with:
+        arch: x86
+
+    - name: Configure & build Release_x86
+      run: |
+        cmake -S . -B build-release-x86  -G "Visual Studio 17 2022" -A Win32 -DCMAKE_INSTALL_PREFIX="$env:GITHUB_WORKSPACE/nuget/build/native/x86/Release" -DBUILD_SHARED_LIBS=ON -DCURL_ZLIB=OFF
+        cmake --build build-release-x86 --config Release --target install
+
+    - name: Configure & build Debug_x86
+      run: |
+        cmake -S . -B build-debug-x86 -G "Visual Studio 17 2022" -A Win32 ` -DCMAKE_INSTALL_PREFIX="$env:GITHUB_WORKSPACE/nuget/build/native/x86/Debug" -DBUILD_SHARED_LIBS=ON -DCURL_ZLIB=OFF
+        cmake --build build-debug-x86 --config Debug --target install
+
+    # ─────────────────────────────── Build x64 ─────────────────────────────────
+    - name: Enable MSVC x64 toolchain
+      uses: ilammy/msvc-dev-cmd@v1
+      with:
+        arch: x64
+
+    - name: Configure & build Release_x64
+      run: |
+        cmake -S . -B build-release-x64 -G "Visual Studio 17 2022" -A x64 -DCMAKE_INSTALL_PREFIX="$env:GITHUB_WORKSPACE/nuget/build/native/x64/Release" -DBUILD_SHARED_LIBS=ON -DCURL_ZLIB=OFF
+        cmake --build build-release-x64 --config Release --target install
+
+    - name: Configure & build Debug_x64
+      run: |
+        cmake -S . -B build-debug-x64 -G "Visual Studio 17 2022" -A x64 -DCMAKE_INSTALL_PREFIX="$env:GITHUB_WORKSPACE/nuget/build/native/x64/Debug" -DBUILD_SHARED_LIBS=ON -DCURL_ZLIB=OFF
+        cmake --build build-debug-x64 --config Debug --target install
+
+    # ────────────────────────── Pack, push, artefact ─────────────────────────────
+    - name: Create NuGet package
+      env:
+        VERSION: ${{ env.RELEASE_VERSION }}
+        COMMIT_HASH: ${{ github.sha }}
+      run: |
+        nuget pack "$env:GITHUB_WORKSPACE/nuget/libcpr.nuspec" -OutputDirectory "$env:GITHUB_WORKSPACE" -Properties "VERSION=$env:VERSION;COMMIT_HASH=$env:COMMIT_HASH"
+
+    - name: Publish package to NuGet.org
       if: ${{ !inputs.no_publish }}
       env:
-        NUGET_API_KEY: ${{secrets.NUGET_API_KEY}}
-      run: nuget push ${{github.workspace}}/*.nupkg ${NUGET_API_KEY} -Source https://api.nuget.org/v3/index.json
-    - name: "Upload artifact"
+        NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+      run: |
+        nuget push "$env:GITHUB_WORKSPACE\*.nupkg" $env:NUGET_API_KEY -Source https://api.nuget.org/v3/index.json
+
+    - name: Upload built .nupkg as workflow artefact
       uses: actions/upload-artifact@v4
       with:
         name: artifact-nuget
-        path: ${{github.workspace}}/*.nupkg
+        path: '*.nupkg'
