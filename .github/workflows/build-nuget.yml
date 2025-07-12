@@ -40,9 +40,6 @@ jobs:
     # ───────────────────────────── Repository & tools ────────────────────────────
     - uses: actions/checkout@v4
 
-    # Add MSBuild (and the full VS developer environment) to PATH
-    - uses: microsoft/setup-msbuild@v2
-
     - uses: actions/setup-python@v5
   
     - name: Install meson
@@ -92,15 +89,13 @@ jobs:
     - name: Create NuGet package
       env:
         COMMIT_HASH: ${{ github.sha }}
-      run: |
-        nuget pack "$env:GITHUB_WORKSPACE/nuget/libcpr.nuspec" -OutputDirectory "$env:GITHUB_WORKSPACE" -Properties "VERSION=$env:RELEASE_VERSION;COMMIT_HASH=$env:COMMIT_HASH"
+      run: nuget pack "$env:GITHUB_WORKSPACE/nuget/libcpr.nuspec" -OutputDirectory "$env:GITHUB_WORKSPACE" -Properties "VERSION=$env:RELEASE_VERSION;COMMIT_HASH=$env:COMMIT_HASH"
 
     - name: Publish package to NuGet.org
       if: ${{ !inputs.no_publish }}
       env:
         NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
-      run: |
-        nuget push "$env:GITHUB_WORKSPACE\*.nupkg" $env:NUGET_API_KEY -Source https://api.nuget.org/v3/index.json
+      run: nuget push "$env:GITHUB_WORKSPACE\*.nupkg" $env:NUGET_API_KEY -Source https://api.nuget.org/v3/index.json
 
     - name: Upload built .nupkg as workflow artefact
       uses: actions/upload-artifact@v4
