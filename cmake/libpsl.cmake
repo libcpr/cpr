@@ -31,6 +31,14 @@ else()
     set(MESON_TARGET_HOST_CPU_FAMILY "${MESON_TARGET_SYSTEM_PROCESSOR_LOWER}")
 endif()
 
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    set(MESON_BUILD_TYPE debug)
+elseif(CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
+    set(MESON_BUILD_TYPE debugoptimized)
+else()
+     set(MESON_BUILD_TYPE release)
+endif()
+
 include (TestBigEndian)
 TEST_BIG_ENDIAN(IS_BIG_ENDIAN)
 if(IS_BIG_ENDIAN)
@@ -68,7 +76,7 @@ execute_process(COMMAND "${MESON_PATH}" setup
                         -Dtests=false
                         -Ddocs=false
                         --cross-file "${CMAKE_BINARY_DIR}/libpsl-meson-cross.txt"
-                        --buildtype=release
+                        --buildtype=${MESON_BUILD_TYPE}
                         --prefix "${LIBPSL_INSTALL_DIR}"
                         --default-library=static
                 RESULT_VARIABLE MESON_SETUP_RC)
