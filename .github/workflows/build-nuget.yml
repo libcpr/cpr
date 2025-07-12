@@ -91,10 +91,9 @@ jobs:
     # ────────────────────────── Pack, push, artefact ─────────────────────────────
     - name: Create NuGet package
       env:
-        VERSION: ${{ env.RELEASE_VERSION }}
         COMMIT_HASH: ${{ github.sha }}
       run: |
-        nuget pack "$env:GITHUB_WORKSPACE/nuget/libcpr.nuspec" -OutputDirectory "$env:GITHUB_WORKSPACE" -Properties "VERSION=$env:VERSION;COMMIT_HASH=$env:COMMIT_HASH"
+        nuget pack "$env:GITHUB_WORKSPACE/nuget/libcpr.nuspec" -OutputDirectory "$env:GITHUB_WORKSPACE" -Properties "VERSION=$env:RELEASE_VERSION;COMMIT_HASH=$env:COMMIT_HASH"
 
     - name: Publish package to NuGet.org
       if: ${{ !inputs.no_publish }}
