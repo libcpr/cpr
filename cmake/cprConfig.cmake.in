@@ -2,7 +2,9 @@ include(CMakeFindDependencyMacro)
 @PACKAGE_INIT@
 
 find_dependency(CURL REQUIRED)
-find_dependency(OpenSSL REQUIRED)
+if(${SSL_BACKEND_USED} STREQUAL "OpenSSL")
+    find_dependency(OpenSSL REQUIRED)
+endif()
 
 include(${CMAKE_CURRENT_LIST_DIR}/cprTargets.cmake)
 
