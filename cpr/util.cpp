@@ -135,9 +135,9 @@ size_t headerUserFunction(char* ptr, size_t size, size_t nmemb, const HeaderCall
     return (*header)({ptr, size}) ? size : 0;
 }
 
-size_t writeFunction(char* ptr, size_t size, size_t nmemb, std::string* data) {
+size_t writeFunction(char* ptr, size_t size, size_t nmemb, void* data) {
     size *= nmemb;
-    data->append(ptr, size);
+    static_cast<std::string*>(data)->append(ptr, size);
     return size;
 }
 

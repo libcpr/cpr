@@ -17,7 +17,7 @@ Header parseHeader(const std::string& headers, std::string* status_line = nullpt
 Cookies parseCookies(curl_slist* raw_cookies);
 size_t readUserFunction(char* ptr, size_t size, size_t nitems, const ReadCallback* read);
 size_t headerUserFunction(char* ptr, size_t size, size_t nmemb, const HeaderCallback* header);
-size_t writeFunction(char* ptr, size_t size, size_t nmemb, std::string* data);
+size_t writeFunction(char* ptr, size_t size, size_t nmemb, void* data);
 size_t writeFileFunction(char* ptr, size_t size, size_t nmemb, std::ofstream* file);
 size_t writeUserFunction(char* ptr, size_t size, size_t nmemb, const WriteCallback* write);
 
