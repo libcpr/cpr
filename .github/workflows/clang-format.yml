@@ -12,6 +12,6 @@ jobs:
     - name: Install clang-format
       run: sudo dnf install -y clang-tools-extra
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v5
     - name: Check format
       run: bash scripts/check_clang_format.sh
