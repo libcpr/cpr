@@ -42,6 +42,12 @@ class CurlContainer {
 
     const std::string GetContent(const CurlHolder&) const;
 
+    /**
+     * Returns the URL while ignoring `encode`. This allows calling without
+     * active `CurlHolder`.
+     **/
+    const std::string GetContent() const;
+
   protected:
     std::vector<T> containerList_;
 };

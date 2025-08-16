@@ -41,6 +41,25 @@ const std::string CurlContainer<Parameter>::GetContent(const CurlHolder& holder)
 }
 
 template <>
+const std::string CurlContainer<Parameter>::GetContent() const {
+    std::string content{};
+    for (const Parameter& parameter : containerList_) {
+        if (!content.empty()) {
+            content += "&";
+        }
+
+        if (parameter.value.empty()) {
+            content += parameter.key;
+        } else {
+            content += parameter.key + "=";
+            content += parameter.value;
+        }
+    }
+
+    return content;
+}
+
+template <>
 const std::string CurlContainer<Pair>::GetContent(const CurlHolder& holder) const {
     std::string content{};
     for (const cpr::Pair& element : containerList_) {
@@ -49,6 +68,19 @@ const std::string CurlContainer<Pair>::GetContent(const CurlHolder& holder) cons
         }
         const std::string escaped = encode ? std::string{holder.urlEncode(element.value)} : element.value;
         content += element.key + "=" + escaped;
+    }
+
+    return content;
+}
+
+template <>
+const std::string CurlContainer<Pair>::GetContent() const {
+    std::string content{};
+    for (const cpr::Pair& element : containerList_) {
+        if (!content.empty()) {
+            content += "&";
+        }
+        content += element.key + "=" + element.value;
     }
 
     return content;
