@@ -40,7 +40,7 @@ template <bool processed_header, typename CurrentType, typename... Ts>
 void set_option_internal(Session& session, CurrentType&& current_option, Ts&&... ts) {
     set_option_internal<processed_header, CurrentType>(session, std::forward<CurrentType>(current_option));
 
-    if (std::is_same_v<CurrentType, Header>) {
+    if constexpr (std::is_same_v<CurrentType, Header>) {
         set_option_internal<true, Ts...>(session, std::forward<Ts>(ts)...);
     } else {
         set_option_internal<processed_header, Ts...>(session, std::forward<Ts>(ts)...);
