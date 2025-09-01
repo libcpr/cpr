@@ -208,8 +208,7 @@ TEST(MultiperformGetTests, MultiperformSingleSessionMultiGetTest) {
     EXPECT_EQ(200, responses.at(0).status_code);
     EXPECT_EQ(ErrorCode::OK, responses.at(0).error.code);
 
-    // Invoke for the second time
-    responses = multiperform.Get(); // Fails here
+    responses = multiperform.Get();
     EXPECT_EQ(responses.size(), 1);
     EXPECT_EQ(expected_text, responses.at(0).text);
     EXPECT_EQ(url, responses.at(0).url);
@@ -240,7 +239,7 @@ TEST(MultiperformGetTests, MultiperformAssignAfterUseTest) {
         Url url{server->GetBaseUrl() + "/hello.html"};
         std::shared_ptr<Session> session = std::make_shared<Session>();
         session->SetUrl(url);
-        multiperform = MultiPerform(); // This line does not work if the Muliperform object was used before
+        multiperform = MultiPerform();
         multiperform.AddSession(session);
         std::vector<Response> responses = multiperform.Get();
 
