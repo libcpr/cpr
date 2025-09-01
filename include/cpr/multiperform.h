@@ -30,11 +30,11 @@ class MultiPerform {
 
     MultiPerform();
     MultiPerform(const MultiPerform& other) = delete;
-    MultiPerform(MultiPerform&& old) = default;
+    MultiPerform(MultiPerform&& old) noexcept;
     ~MultiPerform();
 
     MultiPerform& operator=(const MultiPerform& other) = delete;
-    MultiPerform& operator=(MultiPerform&& old) noexcept = default;
+    MultiPerform& operator=(MultiPerform&& old) noexcept;
 
     std::vector<Response> Get();
     std::vector<Response> Delete();

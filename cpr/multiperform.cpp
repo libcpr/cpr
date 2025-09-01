@@ -27,6 +27,19 @@ MultiPerform::MultiPerform() : multicurl_(new CurlMultiHolder()) {
     first_interceptor_ = interceptors_.end();
 }
 
+MultiPerform::MultiPerform(MultiPerform&& old) noexcept {
+    *this = std::move(old);
+}
+
+MultiPerform& MultiPerform::operator=(MultiPerform&& old) noexcept {
+    sessions_ = std::move(old.sessions_);
+    multicurl_ = std::move(old.multicurl_);
+    interceptors_ = std::move(old.interceptors_);
+    current_interceptor_ = interceptors_.end();
+    first_interceptor_ = interceptors_.end();
+    return *this;
+}
+
 MultiPerform::~MultiPerform() {
     // Unlock all sessions
     for (const std::pair<std::shared_ptr<Session>, HttpMethod>& pair : sessions_) {
