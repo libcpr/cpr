@@ -79,13 +79,6 @@ void MultiPerform::RemoveSession(const std::shared_ptr<Session>& session) {
         throw std::invalid_argument("Failed to find session!");
     }
 
-    // Remove easy handle from multihandle
-    const CURLMcode error_code = curl_multi_remove_handle(multicurl_->handle, session->curl_->handle);
-    if (error_code != CURLM_OK) {
-        std::cerr << "curl_multi_remove_handle() failed, code " << static_cast<int>(error_code) << '\n';
-        return;
-    }
-
     // Unlock session
     session->isUsedInMultiPerform = false;
 
