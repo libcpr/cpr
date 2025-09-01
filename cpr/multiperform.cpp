@@ -49,7 +49,6 @@ MultiPerform::~MultiPerform() {
         const CURLMcode error_code = curl_multi_remove_handle(multicurl_->handle, session->curl_->handle);
         if (error_code) {
             std::cerr << "curl_multi_remove_handle() failed, code " << static_cast<int>(error_code) << '\n';
-            return;
         }
     }
 }
@@ -74,7 +73,6 @@ void MultiPerform::AddSession(std::shared_ptr<Session>& session, HttpMethod meth
 }
 
 void MultiPerform::RemoveSession(const std::shared_ptr<Session>& session) {
-    // Has to be handled before calling curl_multi_remove_handle to avoid it returning something != CURLM_OK.
     if (sessions_.empty()) {
         throw std::invalid_argument("Failed to find session!");
     }
