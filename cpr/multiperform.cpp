@@ -53,13 +53,6 @@ void MultiPerform::AddSession(std::shared_ptr<Session>& session, HttpMethod meth
         is_download_multi_perform = true;
     }
 
-    // Add easy handle to multi handle
-    const CURLMcode error_code = curl_multi_add_handle(multicurl_->handle, session->curl_->handle);
-    if (error_code) {
-        std::cerr << "curl_multi_add_handle() failed, code " << static_cast<int>(error_code) << '\n';
-        return;
-    }
-
     // Lock session to the multihandle
     session->isUsedInMultiPerform = true;
 
@@ -107,6 +100,12 @@ const std::vector<std::pair<std::shared_ptr<Session>, MultiPerform::HttpMethod>>
 void MultiPerform::DoMultiPerform() {
     // Do multi perform until every handle has finished
     int still_running{0};
+    for (const auto& [session, _] : sessions_) {
+        const CURLMcode error_code = curl_multi_add_handle(multicurl_->handle, session->curl_->handle);
+        if (error_code && error_code != CURLM_ADDED_ALREADY) {
+            std::cerr << "curl_multi_add_handle() failed, code " << static_cast<int>(error_code) << '\n';
+        }
+    }
     do {
         CURLMcode error_code = curl_multi_perform(multicurl_->handle, &still_running);
         if (error_code) {
@@ -168,6 +167,12 @@ std::vector<Response> MultiPerform::ReadMultiInfo(const std::function<Response(S
         sorted_responses.push_back(current_response);
     }
 
+    for (const auto& [session, _] : sessions_) {
+        const CURLMcode error_code = curl_multi_remove_handle(multicurl_->handle, session->curl_->handle);
+        if (error_code) {
+            std::cerr << "curl_multi_remove_handle() failed, code " << static_cast<int>(error_code) << '\n';
+        }
+    }
     return sorted_responses;
 }
 
