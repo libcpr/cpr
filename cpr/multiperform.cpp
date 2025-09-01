@@ -162,6 +162,13 @@ std::vector<Response> MultiPerform::ReadMultiInfo(const std::function<Response(S
         }
     } while (info);
 
+    for (const auto& [session, _] : sessions_) {
+        const CURLMcode error_code = curl_multi_remove_handle(multicurl_->handle, session->curl_->handle);
+        if (error_code) {
+            std::cerr << "curl_multi_remove_handle() failed, code " << static_cast<int>(error_code) << '\n';
+        }
+    }
+
     // Sort response objects to match order of added sessions
     std::vector<Response> sorted_responses;
     for (const auto& [session, _] : sessions_) {
@@ -171,13 +178,6 @@ std::vector<Response> MultiPerform::ReadMultiInfo(const std::function<Response(S
         // Erase response from original vector to increase future search speed
         responses.erase(it);
         sorted_responses.push_back(current_response);
-    }
-
-    for (const auto& [session, _] : sessions_) {
-        const CURLMcode error_code = curl_multi_remove_handle(multicurl_->handle, session->curl_->handle);
-        if (error_code) {
-            std::cerr << "curl_multi_remove_handle() failed, code " << static_cast<int>(error_code) << '\n';
-        }
     }
     return sorted_responses;
 }
