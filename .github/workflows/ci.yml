@@ -202,7 +202,7 @@ jobs:
         buildType: [Debug, Release]
     runs-on: windows-latest
     steps:
-    - uses: actions/setup-python@v5
+    - uses: actions/setup-python@v6
     - name: Install meson
       run: pip install meson
     - name: Checkout
@@ -224,7 +224,7 @@ jobs:
   windows-msvc-openssl:
     runs-on: windows-latest
     steps:
-    - uses: actions/setup-python@v5
+    - uses: actions/setup-python@v6
     - name: Install meson
       run: pip install meson
     - name: Install OpenSSL
