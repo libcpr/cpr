@@ -73,7 +73,7 @@ TEST(ErrorTests, LowSpeedBytesFailure) {
 
 TEST(ErrorTests, ProxyFailure) {
     Url url{server->GetBaseUrl() + "/hello.html"};
-    Response response = cpr::Get(url, cpr::Proxies{{"http", "http://bad_host.libcpr.org"}});
+    Response response = cpr::Get(url, cpr::Proxies{{"http", "http://bad_host.libcpr.orgoooo"}});
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(0, response.status_code);
     // Sometimes the DNS server returns a fake address instead of an NXDOMAIN response, leading to COULDNT_CONNECT.

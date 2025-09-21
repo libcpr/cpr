@@ -56,7 +56,8 @@ cpr_option(CPR_CURL_NOSIGNAL "Set to ON to disable use of signals in libcurl." O
 cpr_option(CURL_VERBOSE_LOGGING "Curl verbose logging during building curl" OFF)
 cpr_option(CPR_USE_SYSTEM_GTEST "If ON, this project will look in the system paths for an installed gtest library. If none is found it will use the built-in one." OFF)
 cpr_option(CPR_USE_SYSTEM_CURL "If enabled we will use the curl lib already installed on this system." OFF)
-cpr_option(CPR_USE_SYSTEM_LIB_PSL "Since curl 8.13 it depends on libpsl. If enabled we will use the psl lib already installed on this system. Else meson is required as build dependency." ${CPR_USE_SYSTEM_CURL})
+cpr_option(CPR_CURL_USE_LIBPSL "Since curl 8.13 curl depends on libpsl (https://everything.curl.dev/build/deps.html#libpsl). By default cpr keeps this as a secure default enabled wich in turn requires meson as build dependency. If set to OFF, psl support inside curl will be disabled." ON)
+cpr_option(CPR_USE_SYSTEM_LIB_PSL "If enabled we will use the psl lib already installed on this system. Else meson is required as build dependency. Only relevant in case 'CPR_CURL_USE_LIBPSL' is set to ON." ${CPR_USE_SYSTEM_CURL})
 cpr_option(CPR_ENABLE_CURL_HTTP_ONLY "If enabled we will only use the HTTP/HTTPS protocols from CURL. If disabled, all the CURL protocols are enabled. This is useful if your project uses libcurl and you need support for other CURL features e.g. sending emails." ON)
 cpr_option(CPR_ENABLE_SSL "Enables or disables the SSL backend. Required to perform HTTPS requests." ON)
 cpr_option(CPR_FORCE_OPENSSL_BACKEND "Force to use the OpenSSL backend. If CPR_FORCE_OPENSSL_BACKEND, CPR_FORCE_DARWINSSL_BACKEND, CPR_FORCE_MBEDTLS_BACKEND, and CPR_FORCE_WINSSL_BACKEND are set to to OFF, cpr will try to automatically detect the best available SSL backend (WinSSL - Windows, OpenSSL - Linux, DarwinSSL - Mac ...)." OFF)
@@ -297,7 +298,8 @@ else()
     endif()
 
     # Since curl 8.13, curl depends on lib psl
-    if(NOT ${CPR_USE_SYSTEM_LIB_PSL})
+    set(CURL_USE_LIBPSL ${CPR_CURL_USE_LIBPSL} CACHE INTERNAL "" FORCE)
+    if(CPR_CURL_USE_LIBPSL AND NOT CPR_USE_SYSTEM_LIB_PSL)
         include(libpsl)
     endif()
 
