@@ -120,7 +120,7 @@ jobs:
     - name: Update package list
       run: dnf update -y
     - name: Install Dependencies
-      run: dnf install -y gcc clang git make openssl-devel libcurl-devel cmake libpsl-devel libunistring-devel meson
+      run: dnf install -y gcc g++ clang git make openssl-devel libcurl-devel cmake libpsl-devel libunistring-devel meson
     - name: Checkout
       uses: actions/checkout@v5
     - name: "Build & Test"
@@ -150,7 +150,7 @@ jobs:
     - name: Update package list
       run: dnf update -y
     - name: Install Dependencies
-      run: dnf install -y gcc clang git make openssl-devel libcurl-devel cmake libpsl-devel libunistring-devel meson
+      run: dnf install -y gcc g++ clang git make openssl-devel libcurl-devel cmake libpsl-devel libunistring-devel meson
     - name: Checkout
       uses: actions/checkout@v5
     - name: "Build & Test"
@@ -206,7 +206,7 @@ jobs:
     - name: Update package list
       run: dnf update -y
     - name: Install Dependencies
-      run: dnf install -y gcc clang git make openssl-devel libasan libubsan liblsan libtsan cmake libpsl-devel libunistring-devel meson
+      run: dnf install -y gcc g++ clang git make openssl-devel libasan libubsan liblsan libtsan cmake libpsl-devel libunistring-devel meson
     - name: Checkout
       uses: actions/checkout@v5
     - name: "Build & Test"
