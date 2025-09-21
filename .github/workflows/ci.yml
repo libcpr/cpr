@@ -176,7 +176,7 @@ jobs:
     - name: Update package list
       run: dnf update -y
     - name: Install Dependencies
-      run: dnf install -y git gcc make openssl-devel cmake libunistring-devel
+      run: dnf install -y git gcc g++ make openssl-devel cmake libunistring-devel
     - name: Checkout
       uses: actions/checkout@v5
     - name: "Build & Test"
