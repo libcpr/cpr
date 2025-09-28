@@ -123,7 +123,7 @@ jobs:
     - name: Update package list
       run: dnf update -y
     - name: Install Dependencies
-      run: dnf install -y gcc clang git gcc gdb make openssl-devel libcurl-devel cmake
+      run: dnf install -y gcc g++ clang git make openssl-devel libcurl-devel cmake libpsl-devel libunistring-devel meson
     - name: Checkout
       uses: actions/checkout@v3.1.0
     - name: "Build & Test"
@@ -154,7 +154,7 @@ jobs:
     - name: Update package list
       run: dnf update -y
     - name: Install Dependencies
-      run: dnf install -y gcc clang git gcc gdb make openssl-devel libcurl-devel cmake
+      run: dnf install -y gcc g++ clang git make openssl-devel libcurl-devel cmake libpsl-devel libunistring-devel meson
     - name: Checkout
       uses: actions/checkout@v3.1.0
     - name: "Build & Test"
@@ -173,6 +173,33 @@ jobs:
         run-test: true
         ctest-options: ${{ env.CTEST_OPTIONS }}
 
+  fedora-gcc-openssl-no-psl:
+    runs-on: ubuntu-latest
+    container: "fedora:latest"
+    steps:
+    - name: Update package list
+      run: dnf update -y
+    - name: Install Dependencies
+      run: dnf install -y git gcc g++ make openssl-devel cmake libunistring-devel
+    - name: Checkout
+      uses: actions/checkout@v5
+    - name: "Build & Test"
+      env:
+        CPR_BUILD_TESTS: ON
+        CPR_BUILD_TESTS_SSL: ON
+        CPR_FORCE_OPENSSL_BACKEND: ON
+        CPR_USE_SYSTEM_CURL: OFF
+        CPR_CURL_USE_LIBPSL: OFF
+      uses: ashutoshvarma/action-cmake-build@master
+      with:
+        build-dir: ${{ github.workspace }}/build
+        source-dir: ${{ github.workspace }}
+        cc: gcc
+        cxx: g++
+        build-type: release
+        run-test: true
+        ctest-options: ${{ env.CTEST_OPTIONS }}
+
   fedora-gcc-ssl-sanitizer:
     strategy:
       matrix:
@@ -183,7 +210,7 @@ jobs:
     - name: Update package list
       run: dnf update -y
     - name: Install Dependencies
-      run: dnf install -y gcc clang git gcc gdb make openssl-devel libasan libubsan liblsan libtsan cmake
+      run: dnf install -y gcc g++ clang git make openssl-devel libasan libubsan liblsan libtsan cmake libpsl-devel libunistring-devel meson
     - name: Checkout
       uses: actions/checkout@v3.1.0
     - name: "Build & Test"
