@@ -218,10 +218,11 @@ On FreeBSD, you can issue `pkg install cpr` or use the Ports tree to install it.
 
 The only explicit requirements are:
 
-* a `C++17` compatible compiler such as Clang or GCC. The minimum required version of GCC is unknown, so if anyone has trouble building this library with a specific version of GCC, do let us know
-* in case you only have a `C++11` compatible compiler available, all versions below cpr 1.9.x are for you. The 1.10.0 release of cpr switches to `C++17` as a requirement.
+* A `C++17` compatible compiler such as Clang or GCC. The minimum required version of GCC is unknown, so if anyone has trouble building this library with a specific version of GCC, do let us know.
+* In case you only have a `C++11` compatible compiler available, all versions below cpr 1.9.x are for you. The 1.10.0 release of cpr switches to `C++17` as a requirement.
 * If you would like to perform https requests `OpenSSL` and its development libraries are required.
-* If you do not use the built-in version of [curl](https://github.com/curl/curl) but instead use your systems version, make sure you use a version `>= 7.64.0`. Lower versions are not supported. This means you need Debian `>= 10` or Ubuntu `>= 20.04 LTS`.
+* If you do not use the built-in version of [curl](https://github.com/curl/curl) but instead use your systems version, make sure you use a version `>= 7.71.0`. Lower versions are not supported. This means you need Debian `>= 11` or Ubuntu `>= 22.04 LTS`.
+* [`The Meson Build System`](https://mesonbuild.com/) is required build PSL from source ([PSL support for curl](https://everything.curl.dev/build/deps.html#libpsl)). For more information take a look at the `CPR_CURL_USE_LIBPSL` and `CPR_USE_SYSTEM_LIB_PSL` CMake options.
 
 ## Building cpr - Using vcpkg
 
