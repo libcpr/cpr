@@ -50,6 +50,16 @@ TEST(ParametersTests, DisableEncodingTest) {
     EXPECT_EQ(parameters.GetContent(CurlHolder()), expected);
 }
 
+TEST(ParametersTests, NoCurlHolderTest) {
+    std::string key1 = "key1";
+    std::string key2 = "key2§$%&/";
+    std::string value1 = "hello.,.,";
+    std::string value2 = "hello";
+    Parameters parameters{{key1, value1}, {key2, value2}};
+    const std::string expected = key1 + '=' + value1 + '&' + key2 + '=' + value2;
+    EXPECT_EQ(parameters.GetContent(), expected);
+}
+
 TEST(UrlToAndFromString, UrlTests) {
     std::string s{"https://github.com/whoshuu/cpr"};
     cpr::Url url = s;
