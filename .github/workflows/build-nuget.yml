@@ -61,12 +61,12 @@ jobs:
 
     - name: Configure & build Release x86
       run: |
-        cmake -S . -B build-release-x86  -G "Visual Studio 17 2022" -A Win32 -DCMAKE_INSTALL_PREFIX="$env:GITHUB_WORKSPACE/nuget/build/native/x86/Release" -DBUILD_SHARED_LIBS=ON -DCURL_ZLIB=OFF -DCPR_CURL_USE_LIBPSL=OFF -DCMAKE_BUILD_TYPE=Release
+        cmake -S . -B build-release-x86  -G "Visual Studio 17 2022" -A Win32 -DCMAKE_INSTALL_PREFIX="$env:GITHUB_WORKSPACE/nuget/build/native/x86/Release" -DBUILD_SHARED_LIBS=ON -DCURL_ZLIB=OFF -DCMAKE_BUILD_TYPE=Release
         cmake --build build-release-x86 --target install
 
     - name: Configure & build Debug x86
       run: |
-        cmake -S . -B build-debug-x86 -G "Visual Studio 17 2022" -A Win32 -DCMAKE_INSTALL_PREFIX="$env:GITHUB_WORKSPACE/nuget/build/native/x86/Debug" -DBUILD_SHARED_LIBS=ON -DCURL_ZLIB=OFF -DCPR_CURL_USE_LIBPSL=OFF -DCMAKE_BUILD_TYPE=Debug
+        cmake -S . -B build-debug-x86 -G "Visual Studio 17 2022" -A Win32 -DCMAKE_INSTALL_PREFIX="$env:GITHUB_WORKSPACE/nuget/build/native/x86/Debug" -DBUILD_SHARED_LIBS=ON -DCURL_ZLIB=OFF -DCMAKE_BUILD_TYPE=Debug
         cmake --build build-debug-x86 --target install
 
     # ─────────────────────────────── Build x64 ─────────────────────────────────
@@ -77,12 +77,12 @@ jobs:
 
     - name: Configure & build Release x64
       run: |
-        cmake -S . -B build-release-x64 -G "Visual Studio 17 2022" -A x64 -DCMAKE_INSTALL_PREFIX="$env:GITHUB_WORKSPACE/nuget/build/native/x64/Release" -DBUILD_SHARED_LIBS=ON -DCURL_ZLIB=OFF -DCPR_CURL_USE_LIBPSL=OFF -DCMAKE_BUILD_TYPE=Release
+        cmake -S . -B build-release-x64 -G "Visual Studio 17 2022" -A x64 -DCMAKE_INSTALL_PREFIX="$env:GITHUB_WORKSPACE/nuget/build/native/x64/Release" -DBUILD_SHARED_LIBS=ON -DCURL_ZLIB=OFF -DCMAKE_BUILD_TYPE=Release
         cmake --build build-release-x64 --target install
 
     - name: Configure & build Debug x64
       run: |
-        cmake -S . -B build-debug-x64 -G "Visual Studio 17 2022" -A x64 -DCMAKE_INSTALL_PREFIX="$env:GITHUB_WORKSPACE/nuget/build/native/x64/Debug" -DBUILD_SHARED_LIBS=ON -DCURL_ZLIB=OFF -DCPR_CURL_USE_LIBPSL=OFF -DCMAKE_BUILD_TYPE=Debug
+        cmake -S . -B build-debug-x64 -G "Visual Studio 17 2022" -A x64 -DCMAKE_INSTALL_PREFIX="$env:GITHUB_WORKSPACE/nuget/build/native/x64/Debug" -DBUILD_SHARED_LIBS=ON -DCURL_ZLIB=OFF -DCMAKE_BUILD_TYPE=Debug
         cmake --build build-debug-x64 --target install
 
     # ────────────────────────── Pack, push, artefact ─────────────────────────────
