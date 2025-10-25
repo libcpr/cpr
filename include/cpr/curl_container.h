@@ -40,7 +40,17 @@ class CurlContainer {
     void Add(const std::initializer_list<T>&);
     void Add(const T&);
 
+    /**
+     * Returns the URL using curl_easy_escape(...) for escaping the given parameters.
+     * Requires `CurlHolder`.
+     **/
     const std::string GetContent(const CurlHolder&) const;
+
+    /**
+     * Returns the URL while ignoring `encode`. This allows calling without
+     * active `CurlHolder`.
+     **/
+    const std::string GetContent() const;
 
   protected:
     std::vector<T> containerList_;
