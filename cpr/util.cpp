@@ -113,13 +113,27 @@ Header parseHeader(const std::string& headers, std::string* status_line, std::st
     return header;
 }
 
-std::vector<std::string> split(const std::string& to_split, char delimiter) {
+std::vector<std::string> split(const std::string& to_split, char delimiter){
     std::vector<std::string> tokens;
 
-    std::stringstream stream(to_split);
-    std::string item;
-    while (std::getline(stream, item, delimiter)) {
-        tokens.push_back(item);
+    if (to_split.empty()){  
+        return tokens;
+    }
+
+    const size_t num_delims = static_cast<size_t>(std::count(to_split.begin(), to_split.end(), delimiter));
+    const bool ends_with_delim = (to_split.back() == delimiter);
+    const size_t reserve_size = num_delims + (ends_with_delim ? 0 : 1);
+    tokens.reserve(reserve_size);
+
+    size_t start = 0;
+    size_t pos;
+    while ((pos = to_split.find(delimiter, start)) != std::string::npos){  
+        tokens.emplace_back(to_split, start, pos - start); 
+        start = pos + 1;
+    }
+
+    if (start < to_split.size()){
+        tokens.emplace_back(to_split, start, to_split.size() - start);
     }
 
     return tokens;
