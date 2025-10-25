@@ -34,8 +34,8 @@ class HeaderCallback {
   public:
     HeaderCallback() = default;
     // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
-    HeaderCallback(std::function<bool(const std::string_view& header, intptr_t userdata)> p_callback, intptr_t p_userdata = 0) : userdata(p_userdata), callback(std::move(p_callback)) {}
-    bool operator()(const std::string_view& header) const {
+    HeaderCallback(std::function<bool(std::string_view header, intptr_t userdata)> p_callback, intptr_t p_userdata = 0) : userdata(p_userdata), callback(std::move(p_callback)) {}
+    bool operator()(std::string_view header) const {
         if(!callback)
         {
             return true;
@@ -44,15 +44,15 @@ class HeaderCallback {
     }
 
     intptr_t userdata{};
-    std::function<bool(const std::string_view& header, intptr_t userdata)> callback;
+    std::function<bool(std::string_view header, intptr_t userdata)> callback;
 };
 
 class WriteCallback {
   public:
     WriteCallback() = default;
     // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
-    WriteCallback(std::function<bool(const std::string_view& data, intptr_t userdata)> p_callback, intptr_t p_userdata = 0) : userdata(p_userdata), callback(std::move(p_callback)) {}
-    bool operator()(const std::string_view& data) const {
+    WriteCallback(std::function<bool(std::string_view data, intptr_t userdata)> p_callback, intptr_t p_userdata = 0) : userdata(p_userdata), callback(std::move(p_callback)) {}
+    bool operator()(std::string_view data) const {
         if(!callback)
         {
             return true;
@@ -61,7 +61,7 @@ class WriteCallback {
     }
 
     intptr_t userdata{};
-    std::function<bool(const std::string_view& data, intptr_t userdata)> callback;
+    std::function<bool(std::string_view data, intptr_t userdata)> callback;
 };
 
 class ProgressCallback {
@@ -94,17 +94,17 @@ class DebugCallback {
     };
     DebugCallback() = default;
     // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
-    DebugCallback(std::function<void(InfoType type, std::string data, intptr_t userdata)> p_callback, intptr_t p_userdata = 0) : userdata(p_userdata), callback(std::move(p_callback)) {}
-    void operator()(InfoType type, std::string data) const {
+    DebugCallback(std::function<void(InfoType type, std::string_view data, intptr_t userdata)> p_callback, intptr_t p_userdata = 0) : userdata(p_userdata), callback(std::move(p_callback)) {}
+    void operator()(InfoType type, std::string_view data) const {
         if(!callback)
         {
             return;
         }
-        callback(type, std::move(data), userdata);
+        callback(type, data, userdata);
     }
 
     intptr_t userdata{};
-    std::function<void(InfoType type, std::string data, intptr_t userdata)> callback;
+    std::function<void(InfoType type, std::string_view data, intptr_t userdata)> callback;
 };
 
 /**

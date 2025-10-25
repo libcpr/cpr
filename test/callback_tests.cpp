@@ -857,7 +857,7 @@ TEST(CallbackDataTests, CallbackReadFunctionChunkedTest) {
 
 TEST(CallbackDataTests, CallbackHeaderFunctionCancelTest) {
     Url url{server->GetBaseUrl() + "/url_post.html"};
-    Response response = Post(url, HeaderCallback{[](const std::string_view& /*header*/, intptr_t /*userdata*/) -> bool { return false; }});
+    Response response = Post(url, HeaderCallback{[](const std::string_view /*header*/, intptr_t /*userdata*/) -> bool { return false; }});
     EXPECT_TRUE((response.error.code == ErrorCode::ABORTED_BY_CALLBACK) || (response.error.code == ErrorCode::WRITE_ERROR));
 }
 
@@ -865,11 +865,11 @@ TEST(CallbackDataTests, CallbackHeaderFunctionTextTest) {
     Url url{server->GetBaseUrl() + "/url_post.html"};
     std::vector<std::string> expected_headers{"HTTP/1.1 201 Created\r\n", "Content-Type: application/json\r\n", "\r\n"};
     std::set<std::string> response_headers;
-    Post(url, HeaderCallback{[&response_headers](const std::string_view& header, intptr_t /*userdata*/) -> bool {
+    Post(url, HeaderCallback{[&response_headers](const std::string_view header, intptr_t /*userdata*/) -> bool {
              response_headers.insert(std::string{header});
              return true;
          }});
-    for (std::string& header : expected_headers) {
+    for (const std::string& header : expected_headers) {
         std::cout << header << '\n';
         EXPECT_TRUE(response_headers.count(header));
     }
@@ -877,7 +877,7 @@ TEST(CallbackDataTests, CallbackHeaderFunctionTextTest) {
 
 TEST(CallbackDataTests, CallbackWriteFunctionCancelTest) {
     Url url{server->GetBaseUrl() + "/url_post.html"};
-    Response response = Post(url, WriteCallback{[](const std::string_view& /*header*/, intptr_t /*userdata*/) -> bool { return false; }});
+    Response response = Post(url, WriteCallback{[](const std::string_view /*header*/, intptr_t /*userdata*/) -> bool { return false; }});
     EXPECT_TRUE((response.error.code == ErrorCode::ABORTED_BY_CALLBACK) || (response.error.code == ErrorCode::WRITE_ERROR));
 }
 
@@ -888,7 +888,7 @@ TEST(CallbackDataTests, CallbackWriteFunctionTextTest) {
             "  \"x\": 5\n"
             "}"};
     std::string response_text;
-    Post(url, Payload{{"x", "5"}}, WriteCallback{[&response_text](const std::string_view& header, intptr_t /*userdata*/) -> bool {
+    Post(url, Payload{{"x", "5"}}, WriteCallback{[&response_text](const std::string_view header, intptr_t /*userdata*/) -> bool {
              response_text.append(header);
              return true;
          }});
@@ -919,7 +919,7 @@ TEST(CallbackDataTests, CallbackDebugFunctionTextTest) {
     Url url{server->GetBaseUrl() + "/url_post.html"};
     Body body{"x=5"};
     std::string debug_body;
-    Response response = Post(url, body, DebugCallback{[&](DebugCallback::InfoType type, const std::string& data, intptr_t /*userdata*/) {
+    Response response = Post(url, body, DebugCallback{[&](DebugCallback::InfoType type, std::string_view data, intptr_t /*userdata*/) {
                                  if (type == DebugCallback::InfoType::DATA_OUT) {
                                      debug_body = data;
                                  }
