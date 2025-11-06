@@ -180,6 +180,26 @@ TEST(SslTests, LoadKeyFromBlobTestSimpel) {
 }
 #endif
 
+#if SUPPORT_CURLOPT_CAINFO_BLOB
+TEST(SslTests, CaInfoBlobTestSimpel) {
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+
+    Url url{server->GetBaseUrl() + "/hello.html"};
+    std::string baseDirPath{server->getBaseDirPath()};
+    std::string crtPath{baseDirPath + "certificates/"};
+    std::string keyPath{baseDirPath + "keys/"};
+
+    SslOptions sslOpts = Ssl(ssl::CaInfoBlob{loadFileContent(crtPath + "ca-bundle.crt")}, ssl::CertFile{crtPath + "client.crt"}, ssl::KeyFile{keyPath + "client.key"}, ssl::VerifyPeer{true}, ssl::PinnedPublicKey{keyPath + "server.pub"}, ssl::VerifyHost{true}, ssl::VerifyStatus{false});
+    Response response = cpr::Get(url, sslOpts, Timeout{5000}, Verbose{});
+    std::string expected_text = "Hello world!";
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code) << response.error.message;
+}
+#endif
+
 fs::path GetBasePath(const std::string& execPath) {
     return fs::path(fs::path{execPath}.parent_path().string() + "/").make_preferred();
 }
