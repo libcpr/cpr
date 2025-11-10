@@ -528,6 +528,20 @@ void Session::SetSslOptions(const SslOptions& options) {
             curl_easy_setopt(curl_->handle, CURLOPT_SSLCERTTYPE, options.cert_type.c_str());
         }
     }
+#if SUPPORT_CURLOPT_SSLCERT_BLOB
+    else if(!options.cert_blob.empty()) {
+        std::string cert_blob(options.cert_blob);
+        curl_blob blob{};
+        // NOLINTNEXTLINE (readability-container-data-pointer)
+        blob.data = &cert_blob[0];
+        blob.len = cert_blob.length();
+        blob.flags = CURL_BLOB_COPY;
+        curl_easy_setopt(curl_->handle, CURLOPT_SSLCERT_BLOB, &blob);
+        if (!options.cert_type.empty()) {
+            curl_easy_setopt(curl_->handle, CURLOPT_SSLCERTTYPE, options.cert_type.c_str());
+        }
+    }
+#endif
     if (!options.key_file.empty()) {
         curl_easy_setopt(curl_->handle, CURLOPT_SSLKEY, options.key_file.c_str());
         if (!options.key_type.empty()) {
