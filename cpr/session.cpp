@@ -594,6 +594,16 @@ void Session::SetSslOptions(const SslOptions& options) {
     if (!options.ca_info.empty()) {
         curl_easy_setopt(curl_->handle, CURLOPT_CAINFO, options.ca_info.c_str());
     }
+#if SUPPORT_CURLOPT_CAINFO_BLOB
+    if (!options.ca_info_blob.empty()) {
+        std::string cainfo_blob(options.ca_info_blob);
+        curl_blob blob{};
+        blob.data = cainfo_blob.data();
+        blob.len = cainfo_blob.length();
+        blob.flags = CURL_BLOB_COPY;
+        curl_easy_setopt(curl_->handle, CURLOPT_CAINFO_BLOB, &blob);
+    }
+#endif
     if (!options.ca_path.empty()) {
         curl_easy_setopt(curl_->handle, CURLOPT_CAPATH, options.ca_path.c_str());
     }

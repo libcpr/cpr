@@ -67,6 +67,9 @@
 #ifndef SUPPORT_CURLOPT_SSL_CTX_FUNCTION
 #define SUPPORT_CURLOPT_SSL_CTX_FUNCTION LIBCURL_VERSION_NUM >= 0x070B00 // 7.11.0
 #endif
+#ifndef SUPPORT_CURLOPT_CAINFO_BLOB
+#define SUPPORT_CURLOPT_CAINFO_BLOB LIBCURL_VERSION_NUM >= 0x074D00 // 7.77.0
+#endif
 
 namespace cpr {
 
@@ -312,6 +315,17 @@ class CaInfo {
     fs::path filename;
 };
 
+#if SUPPORT_CURLOPT_CAINFO_BLOB
+// Certificate Authority (CA) bundle as blob
+class CaInfoBlob {
+public:
+    // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
+    CaInfoBlob(std::string&& p_blob) : blob(std::move(p_blob)) {}
+
+    std::string blob;
+};
+#endif
+
 // specify directory holding CA certificates
 class CaPath {
   public:
@@ -436,6 +450,9 @@ struct SslOptions {
 #endif
     // We don't use fs::path here, as this leads to problems using windows
     std::string ca_info;
+#if SUPPORT_CURLOPT_CAINFO_BLOB
+    std::string ca_info_blob;
+#endif
     // We don't use fs::path here, as this leads to problems using windows
     std::string ca_path;
 #if SUPPORT_CURLOPT_SSL_CTX_FUNCTION
@@ -556,6 +573,11 @@ struct SslOptions {
     void SetOption(const ssl::CaInfo& opt) {
         ca_info = opt.filename.string();
     }
+#if SUPPORT_CURLOPT_CAINFO_BLOB
+    void SetOption(const ssl::CaInfoBlob& opt) {
+        ca_info_blob = opt.blob;
+    }
+#endif
     void SetOption(const ssl::CaPath& opt) {
         ca_path = opt.filename.string();
     }
