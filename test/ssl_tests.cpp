@@ -159,6 +159,27 @@ TEST(SslTests, LoadCertFromBufferTestSimpel) {
 }
 #endif
 
+#if SUPPORT_CURLOPT_SSLCERT_BLOB
+TEST(SslTests, LoadCertFromBlobTestSimpel) {
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+
+    Url url{server->GetBaseUrl() + "/hello.html"};
+
+    std::string baseDirPath{server->getBaseDirPath()};
+    std::string crtPath{baseDirPath + "certificates/"};
+    std::string keyPath{baseDirPath + "keys/"};
+    std::string crtBuffer = loadFileContent(crtPath + "client.crt");
+    SslOptions sslOpts = Ssl(ssl::CaInfo{crtPath + "ca-bundle.crt"}, ssl::CertBlob{std::move(crtBuffer)}, ssl::KeyFile{keyPath + "client.key"}, ssl::VerifyPeer{true}, ssl::VerifyHost{true}, ssl::VerifyStatus{false});
+    Response response = cpr::Get(url, sslOpts, Timeout{5000}, Verbose{});
+    std::string expected_text = "Hello world!";
+    EXPECT_EQ(expected_text, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code) << response.error.message;
+}
+#endif
+
 #if SUPPORT_CURLOPT_SSLKEY_BLOB
 TEST(SslTests, LoadKeyFromBlobTestSimpel) {
     std::this_thread::sleep_for(std::chrono::seconds(1));
