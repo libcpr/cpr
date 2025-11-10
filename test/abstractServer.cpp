@@ -94,34 +94,48 @@ void AbstractServer::ResetConnectionCount() {
     unique_connections.clear();
 }
 
-static const std::string base64_chars =
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-        "abcdefghijklmnopqrstuvwxyz"
-        "0123456789+/";
-/**
- * Decodes the given BASE64 string to a normal string.
- * Source: https://gist.github.com/williamdes/308b95ac9ef1ee89ae0143529c361d37
- **/
+
 std::string AbstractServer::Base64Decode(const std::string& in) {
-    std::string out;
+    static const unsigned char T[256] = []{
+        unsigned char t[256];
+        std::fill(std::begin(t), std::end(t), 0xFF);
+        static const char base64_chars[] =
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            "abcdefghijklmnopqrstuvwxyz"
+            "0123456789+/";
+        for (int i = 0; i < 64; i++)
+            t[static_cast<unsigned char>(base64_chars[i])] = i;
+        return t;
+    }();
 
-    std::vector<int> T(256, -1);
-    for (size_t i = 0; i < 64; i++)
-        T[base64_chars[i]] = static_cast<int>(i);
+    size_t in_len = in.size();
+    if (in_len % 4 != 0) return {}; // invalid
 
-    int val = 0;
-    int valb = -8;
-    for (unsigned char c : in) {
-        if (T[c] == -1) {
-            break;
-        }
-        val = (val << 6) + T[c];
-        valb += 6;
-        if (valb >= 0) {
-            out.push_back(char((val >> valb) & 0xFF));
-            valb -= 8;
-        }
+    size_t out_len = in_len / 4 * 3;
+    if (in_len && in[in_len - 1] == '=') out_len--;
+    if (in_len > 1 && in[in_len - 2] == '=') out_len--;
+
+    std::string out(out_len, '\0');
+    size_t o = 0;
+
+    for (size_t i = 0; i < in_len; i += 4) {
+        uint32_t n = (T[(unsigned char)in[i]] << 18) |
+                     (T[(unsigned char)in[i+1]] << 12) |
+                     (T[(unsigned char)in[i+2]] << 6) |
+                     (T[(unsigned char)in[i+3]]);
+
+        // we always write 3 bytes
+        out[o++] = (n >> 16) & 0xFF;
+        out[o++] = (n >> 8) & 0xFF;
+        out[o++] = n & 0xFF;
     }
+
+    // fix for padding '='
+    if (in_len >= 2) {
+        if (in[in_len - 1] == '=') out.pop_back();
+        if (in[in_len - 2] == '=') out.pop_back();
+    }
+
     return out;
 }
 
