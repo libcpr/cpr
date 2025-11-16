@@ -28,7 +28,14 @@ add_library(cpr
         interceptor.cpp
         ssl_ctx.cpp
         curlmultiholder.cpp
-        multiperform.cpp)
+        multiperform.cpp
+        distributed_task_scheduler.cpp
+    distributed_node_manager.cpp
+        distributed_result_aggregator.cpp
+        ml_request_optimizer.cpp
+        sync_file_sync.cpp
+        blockchain_request_audit.cpp
+        gateway_proxy_gateway.cpp)
 
 add_library(cpr::cpr ALIAS cpr)
 
