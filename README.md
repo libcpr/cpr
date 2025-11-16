@@ -1,6 +1,6 @@
 # C++ Requests: Curl for People <img align="right" height="40" src="http://i.imgur.com/d9Xtyts.png">
 
-[![Documentation](https://img.shields.io/badge/docs-online-informational?style=flat&link=https://docs.libcpr.org/)](https://docs.libcpr.org/)
+[![Documentation](https://img.shields.io/badge/docs-online-informational?style=flat&link=https://docs.libcpr.dev/)](https://docs.libcpr.dev/)
 ![CI](https://github.com/libcpr/cpr/workflows/CI/badge.svg)
 [![Gitter](https://badges.gitter.im/libcpr/community.svg)](https://gitter.im/libcpr/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
@@ -47,8 +47,8 @@ And here's [less functional, more complicated code, without cpr](https://gist.gi
 
 ## Documentation
 
-[![Documentation](https://img.shields.io/badge/docs-online-informational?style=for-the-badge&link=https://docs.libcpr.org/)](https://docs.libcpr.org/)  
-You can find the latest documentation [here](https://docs.libcpr.org/). It's a work in progress, but it should give you a better idea of how to use the library than the [tests](https://github.com/libcpr/cpr/tree/master/test) currently do.
+[![Documentation](https://img.shields.io/badge/docs-online-informational?style=for-the-badge&link=https://docs.libcpr.dev/)](https://docs.libcpr.dev/)  
+You can find the latest documentation [here](https://docs.libcpr.dev/). It's a work in progress, but it should give you a better idea of how to use the library than the [tests](https://github.com/libcpr/cpr/tree/master/test) currently do.
 
 ## Features
 
