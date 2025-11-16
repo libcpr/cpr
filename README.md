@@ -93,7 +93,7 @@ Add the following to your `CMakeLists.txt`.
 ```cmake
 include(FetchContent)
 FetchContent_Declare(cpr GIT_REPOSITORY https://github.com/libcpr/cpr.git
-                         GIT_TAG da40186618909b1a7363d4e4495aa899c6e0eb75.12.0) # Replace with your desired git commit from: https://github.com/libcpr/cpr/releases
+                         GIT_TAG 516cb3e5f4e38bede088f69fcf122c6089e38f00.12.0) # Replace with your desired git commit from: https://github.com/libcpr/cpr/releases
 FetchContent_MakeAvailable(cpr)
 ```
 
