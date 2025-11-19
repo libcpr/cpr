@@ -152,6 +152,11 @@ size_t writeUserFunction(char* ptr, size_t size, size_t nmemb, const WriteCallba
     return (*write)({ptr, size}) ? size : 0;
 }
 
+size_t writeSSEFunction(char* ptr, size_t size, size_t nmemb, ServerSentEventCallback* sse) {
+    size *= nmemb;
+    return sse->handleData({ptr, size}) ? size : 0;
+}
+
 int debugUserFunction(CURL* /*handle*/, curl_infotype type, char* data, size_t size, const DebugCallback* debug) {
     (*debug)(static_cast<DebugCallback::InfoType>(type), std::string(data, size));
     return 0;

@@ -38,6 +38,7 @@
 #include "cpr/reserve_size.h"
 #include "cpr/resolve.h"
 #include "cpr/response.h"
+#include "cpr/sse.h"
 #include "cpr/ssl_options.h"
 #include "cpr/timeout.h"
 #include "cpr/unix_socket.h"
@@ -103,6 +104,7 @@ class Session : public std::enable_shared_from_this<Session> {
     void SetWriteCallback(const WriteCallback& write);
     void SetProgressCallback(const ProgressCallback& progress);
     void SetDebugCallback(const DebugCallback& debug);
+    void SetServerSentEventCallback(const ServerSentEventCallback& sse);
     void SetVerbose(const Verbose& verbose);
     void SetInterface(const Interface& iface);
     void SetLocalPort(const LocalPort& local_port);
@@ -165,6 +167,7 @@ class Session : public std::enable_shared_from_this<Session> {
     void SetOption(const WriteCallback& write);
     void SetOption(const ProgressCallback& progress);
     void SetOption(const DebugCallback& debug);
+    void SetOption(const ServerSentEventCallback& sse);
     void SetOption(const LowSpeed& low_speed);
     void SetOption(const VerifySsl& verify);
     void SetOption(const Verbose& verbose);
@@ -276,6 +279,7 @@ class Session : public std::enable_shared_from_this<Session> {
         ProgressCallback progresscb_;
         DebugCallback debugcb_;
         CancellationCallback cancellationcb_;
+        ServerSentEventCallback ssecb_;
     };
 
     std::unique_ptr<Callbacks> cbs_{std::make_unique<Callbacks>()};
