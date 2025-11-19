@@ -233,7 +233,7 @@ void Session::prepareCommon() {
     // Set Content:
     prepareBodyPayloadOrMultipart();
 
-    if (!cbs_->writecb_.callback) {
+    if (!cbs_->writecb_.callback && !cbs_->ssecb_.callback) {
         curl_easy_setopt(curl_->handle, CURLOPT_WRITEFUNCTION, cpr::util::writeFunction);
         curl_easy_setopt(curl_->handle, CURLOPT_WRITEDATA, &response_string_);
     }
@@ -320,6 +320,12 @@ void Session::SetWriteCallback(const WriteCallback& write) {
     curl_easy_setopt(curl_->handle, CURLOPT_WRITEFUNCTION, cpr::util::writeUserFunction);
     cbs_->writecb_ = write;
     curl_easy_setopt(curl_->handle, CURLOPT_WRITEDATA, &cbs_->writecb_);
+}
+
+void Session::SetServerSentEventCallback(const ServerSentEventCallback& sse) {
+    curl_easy_setopt(curl_->handle, CURLOPT_WRITEFUNCTION, cpr::util::writeSSEFunction);
+    cbs_->ssecb_ = sse;
+    curl_easy_setopt(curl_->handle, CURLOPT_WRITEDATA, &cbs_->ssecb_);
 }
 
 void Session::SetProgressCallback(const ProgressCallback& progress) {
@@ -529,7 +535,7 @@ void Session::SetSslOptions(const SslOptions& options) {
         }
     }
 #if SUPPORT_CURLOPT_SSLCERT_BLOB
-    else if(!options.cert_blob.empty()) {
+    else if (!options.cert_blob.empty()) {
         std::string cert_blob(options.cert_blob);
         curl_blob blob{};
         // NOLINTNEXTLINE (readability-container-data-pointer)
@@ -1079,6 +1085,7 @@ void Session::SetOption(const HeaderCallback& header) { SetHeaderCallback(header
 void Session::SetOption(const WriteCallback& write) { SetWriteCallback(write); }
 void Session::SetOption(const ProgressCallback& progress) { SetProgressCallback(progress); }
 void Session::SetOption(const DebugCallback& debug) { SetDebugCallback(debug); }
+void Session::SetOption(const ServerSentEventCallback& sse) { SetServerSentEventCallback(sse); }
 void Session::SetOption(const Url& url) { SetUrl(url); }
 void Session::SetOption(const Parameters& parameters) { SetParameters(parameters); }
 void Session::SetOption(Parameters&& parameters) { SetParameters(std::move(parameters)); }

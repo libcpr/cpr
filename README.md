@@ -47,7 +47,7 @@ And here's [less functional, more complicated code, without cpr](https://gist.gi
 
 ## Documentation
 
-[![Documentation](https://img.shields.io/badge/docs-online-informational?style=for-the-badge&link=https://docs.libcpr.dev/)](https://docs.libcpr.dev/)  
+[![Documentation](https://img.shields.io/badge/docs-online-informational?style=for-the-badge&link=https://docs.libcpr.dev/)](https://docs.libcpr.dev/)
 You can find the latest documentation [here](https://docs.libcpr.dev/). It's a work in progress, but it should give you a better idea of how to use the library than the [tests](https://github.com/libcpr/cpr/tree/master/test) currently do.
 
 ## Features
@@ -76,6 +76,7 @@ C++ Requests currently supports:
 * PATCH methods
 * Thread Safe access to [libCurl](https://curl.haxx.se/libcurl/c/threadsafe.html)
 * OpenSSL and WinSSL support for HTTPS requests
+* Server Sent Events (SSE) handling
 
 ## Planned
 
@@ -146,7 +147,7 @@ ctest -VV # -VV is optional since it enables verbose output
 ```
 
 ### Bazel
-Please refer to [hedronvision/bazel-make-cc-https-easy](https://github.com/hedronvision/bazel-make-cc-https-easy) or 
+Please refer to [hedronvision/bazel-make-cc-https-easy](https://github.com/hedronvision/bazel-make-cc-https-easy) or
 
 `cpr` can be added as an extension by adding the following lines to your bazel MODULE file (tested with Bazel 8). Edit the versions as needed.
 ```starlark
