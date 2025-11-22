@@ -1,8 +1,12 @@
 #include "cpr/sse.h"
 
-#include <algorithm>
-#include <cctype>
 #include <charconv>
+#include <utility>
+#include <cstddef>
+#include <functional>
+#include <string>
+#include <string_view>
+#include <system_error>
 
 namespace cpr {
 
@@ -46,7 +50,7 @@ bool ServerSentEventParser::processLine(const std::string& line, const std::func
     }
 
     // Find the colon separator
-    size_t colon_pos = line.find(':');
+    const size_t colon_pos = line.find(':');
 
     std::string field;
     std::string value;
@@ -82,7 +86,8 @@ bool ServerSentEventParser::processLine(const std::string& line, const std::func
     } else if (field == "retry") {
         // Parse retry value as integer
         size_t retry_value = 0;
-        auto [ptr, ec] = std::from_chars(value.data(), value.data() + value.size(), retry_value);
+        const std::string_view sv(value);
+        auto [ptr, ec] = std::from_chars(sv.begin(), sv.end(), retry_value);
         if (ec == std::errc()) {
             current_event_.retry = retry_value;
         }
@@ -100,7 +105,7 @@ bool ServerSentEventParser::dispatchEvent(const std::function<bool(ServerSentEve
     }
 
     // Invoke callback with the current event
-    bool continue_parsing = callback(std::move(current_event_));
+    const bool continue_parsing = callback(std::move(current_event_));
 
     // Reset for next event (but keep event type as "message")
     current_event_ = ServerSentEvent();

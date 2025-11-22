@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <functional>
+#include <utility>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -22,7 +23,7 @@ struct ServerSentEvent {
     /**
      * The event type. If not specified, defaults to "message".
      */
-    std::string event;
+    std::string event{"message"};
 
     /**
      * The event data. Multiple data fields are concatenated with newlines.
@@ -34,7 +35,7 @@ struct ServerSentEvent {
      */
     std::optional<size_t> retry;
 
-    ServerSentEvent() : event("message") {}
+    ServerSentEvent() = default;
 };
 
 /**
