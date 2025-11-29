@@ -4,6 +4,7 @@
 #include "cpr/cprtypes.h"
 #include "cpr/curlholder.h"
 #include "cpr/secure_string.h"
+#include "cpr/sse.h"
 #include <algorithm>
 #include <cctype>
 #include <chrono>
@@ -150,6 +151,11 @@ size_t writeFileFunction(char* ptr, size_t size, size_t nmemb, std::ofstream* fi
 size_t writeUserFunction(char* ptr, size_t size, size_t nmemb, const WriteCallback* write) {
     size *= nmemb;
     return (*write)({ptr, size}) ? size : 0;
+}
+
+size_t writeSSEFunction(char* ptr, size_t size, size_t nmemb, ServerSentEventCallback* sse) {
+    size *= nmemb;
+    return sse->handleData({ptr, size}) ? size : 0;
 }
 
 int debugUserFunction(CURL* /*handle*/, curl_infotype type, char* data, size_t size, const DebugCallback* debug) {
