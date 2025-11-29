@@ -62,12 +62,12 @@ jobs:
     - name: Configure & build Release x86
       run: |
         cmake -S . -B build-release-x86  -G "Visual Studio 17 2022" -A Win32 -DCMAKE_INSTALL_PREFIX="$env:GITHUB_WORKSPACE/nuget/build/native/x86/Release" -DBUILD_SHARED_LIBS=ON -DCURL_ZLIB=OFF -DCMAKE_BUILD_TYPE=Release
-        cmake --build build-release-x86 --target install
+        cmake --build build-release-x86 --config Release --target install
 
     - name: Configure & build Debug x86
       run: |
         cmake -S . -B build-debug-x86 -G "Visual Studio 17 2022" -A Win32 -DCMAKE_INSTALL_PREFIX="$env:GITHUB_WORKSPACE/nuget/build/native/x86/Debug" -DBUILD_SHARED_LIBS=ON -DCURL_ZLIB=OFF -DCMAKE_BUILD_TYPE=Debug
-        cmake --build build-debug-x86 --target install
+        cmake --build build-debug-x86 --config Debug --target install
 
     # ─────────────────────────────── Build x64 ─────────────────────────────────
     - name: Enable MSVC x64 toolchain
@@ -78,12 +78,12 @@ jobs:
     - name: Configure & build Release x64
       run: |
         cmake -S . -B build-release-x64 -G "Visual Studio 17 2022" -A x64 -DCMAKE_INSTALL_PREFIX="$env:GITHUB_WORKSPACE/nuget/build/native/x64/Release" -DBUILD_SHARED_LIBS=ON -DCURL_ZLIB=OFF -DCMAKE_BUILD_TYPE=Release
-        cmake --build build-release-x64 --target install
+        cmake --build build-release-x64 --config Release --target install
 
     - name: Configure & build Debug x64
       run: |
         cmake -S . -B build-debug-x64 -G "Visual Studio 17 2022" -A x64 -DCMAKE_INSTALL_PREFIX="$env:GITHUB_WORKSPACE/nuget/build/native/x64/Debug" -DBUILD_SHARED_LIBS=ON -DCURL_ZLIB=OFF -DCMAKE_BUILD_TYPE=Debug
-        cmake --build build-debug-x64 --target install
+        cmake --build build-debug-x64 --config Debug --target install
 
     # ────────────────────────── Pack, push, artefact ─────────────────────────────
     - name: Create NuGet package
