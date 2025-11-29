@@ -1,12 +1,12 @@
 #include "cpr/sse.h"
 
 #include <charconv>
-#include <utility>
 #include <cstddef>
 #include <functional>
 #include <string>
 #include <string_view>
 #include <system_error>
+#include <utility>
 
 namespace cpr {
 
@@ -87,7 +87,9 @@ bool ServerSentEventParser::processLine(const std::string& line, const std::func
         // Parse retry value as integer
         size_t retry_value = 0;
         const std::string_view sv(value);
-        auto [ptr, ec] = std::from_chars(sv.begin(), sv.end(), retry_value);
+        const char* begin = sv.data();
+        const char* end = begin + sv.size(); // NOLINT (cppcoreguidelines-pro-bounds-pointer-arithmetic) Required here since Windows and Clang/GCC have different std::string_view iterator implementations
+        auto [ptr, ec] = std::from_chars(begin, end, retry_value);
         if (ec == std::errc()) {
             current_event_.retry = retry_value;
         }
