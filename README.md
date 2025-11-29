@@ -13,8 +13,8 @@
 | Release                   | Min. C++ Standard | Status                   | Notes |
 |---------------------------|-------------------|--------------------------|-------|
 | master                    | `cpp17`           | ![alt text][preview]     |       |
-| 1.13.x                    | `cpp17`           | ![alt text][supported]   |       |
-| 1.10.x - 1.12.x           | `cpp17`           | ![alt text][unsupported] |       |
+| 1.14.x                    | `cpp17`           | ![alt text][supported]   |       |
+| 1.10.x - 1.13.x           | `cpp17`           | ![alt text][unsupported] |       |
 | <= 1.9.x                  | `cpp11`           | ![alt text][unsupported] |       |
 
 [unsupported]: https://img.shields.io/badge/-unsupported-red "unsupported"
