@@ -16,7 +16,8 @@ class Timeout {
 
     // No way around since curl uses a long here.
     // NOLINTNEXTLINE(google-runtime-int)
-    [[nodiscard]] long Milliseconds() const;
+    [[nodiscard]]
+    long Milliseconds() const;
 
     std::chrono::milliseconds ms;
 };

@@ -16,8 +16,8 @@
 
 #define CPR_DEFAULT_THREAD_POOL_MAX_THREAD_NUM std::thread::hardware_concurrency()
 
-constexpr size_t CPR_DEFAULT_THREAD_POOL_MIN_THREAD_NUM = 1;
-constexpr std::chrono::milliseconds CPR_DEFAULT_THREAD_POOL_MAX_IDLE_TIME{250};
+inline constexpr size_t CPR_DEFAULT_THREAD_POOL_MIN_THREAD_NUM = 1;
+inline constexpr std::chrono::milliseconds CPR_DEFAULT_THREAD_POOL_MAX_IDLE_TIME{250};
 
 namespace cpr {
 
