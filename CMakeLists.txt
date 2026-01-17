@@ -67,6 +67,7 @@ cpr_option(CPR_FORCE_DARWINSSL_BACKEND "Force to use the DarwinSSL backend. If C
 cpr_option(CPR_FORCE_MBEDTLS_BACKEND "Force to use the Mbed TLS backend. If CPR_FORCE_OPENSSL_BACKEND, CPR_FORCE_DARWINSSL_BACKEND, CPR_FORCE_MBEDTLS_BACKEND, and CPR_FORCE_WINSSL_BACKEND are set to to OFF, cpr will try to automatically detect the best available SSL backend (WinSSL - Windows, OpenSSL - Linux, DarwinSSL - Mac ...)." OFF)
 cpr_option(CPR_ENABLE_LINTING "Set to ON to enable clang linting." OFF)
 cpr_option(CPR_ENABLE_CPPCHECK "Set to ON to enable Cppcheck static analysis. Requires CPR_BUILD_TESTS and CPR_BUILD_TESTS_SSL to be OFF to prevent checking google tests source code." OFF)
+cpr_option(CPR_BUILD_MODULES "Set to ON to build cpr as a C++ module." OFF)
 cpr_option(CPR_BUILD_TESTS "Set to ON to build cpr tests." OFF)
 cpr_option(CPR_BUILD_TESTS_SSL "Set to ON to build cpr ssl tests" ${CPR_BUILD_TESTS})
 cpr_option(CPR_BUILD_TESTS_PROXY "Set to ON to build proxy tests. They fail in case there is no valid proxy server available in proxy_tests.cpp" OFF)
@@ -320,6 +321,10 @@ if(TARGET libcurl)
 else()
     # New curl CMake target name
     set(CURL_LIB CURL::libcurl)
+endif()
+
+if(CPR_BUILD_MODULES)
+    add_subdirectory(modules)
 endif()
 
 # GTest configuration

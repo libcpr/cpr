@@ -12,7 +12,7 @@ namespace cpr {
  * EXPIRES_STRING_SIZE is an explicitly static and const variable that could be only accessed within the same namespace and is immutable.
  * To be used for "std::array", the expression must have a constant value, so EXPIRES_STRING_SIZE must be a const value.
  **/
-static const std::size_t EXPIRES_STRING_SIZE = 100;
+inline const std::size_t EXPIRES_STRING_SIZE = 100;
 
 class Cookie {
   public:
