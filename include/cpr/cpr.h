@@ -10,7 +10,9 @@
 #include "cpr/connection_pool.h"
 #include "cpr/cookies.h"
 #include "cpr/cprtypes.h"
+#ifndef CPR_AS_MODULE
 #include "cpr/cprver.h"
+#endif
 #include "cpr/curl_container.h"
 #include "cpr/curlholder.h"
 #include "cpr/error.h"
