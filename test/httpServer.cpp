@@ -317,7 +317,7 @@ void HttpServer::OnRequestHeaderReflect(mg_connection* conn, mg_http_message* ms
             hasContentTypeHeader = true;
         }
 
-        if (std::string{"Host"} != name && std::string{"Accept"} != name) {
+        if (std::string{"Host"} != name && std::string{"Accept"} != name && std::string{"Content-Length"} != name) {
             if (header.value.ptr) {
                 headers.append(name + ": " + std::string(header.value.ptr, header.value.len) + "\r\n");
             }
