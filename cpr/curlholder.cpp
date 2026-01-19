@@ -20,13 +20,43 @@ CurlHolder::CurlHolder() {
     curl_easy_init_mutex_().unlock();
 
     assert(handle);
-} // namespace cpr
+}
+
+CurlHolder::CurlHolder(CurlHolder&& old) noexcept : handle(old.handle), chunk(old.chunk), resolveCurlList(old.resolveCurlList), multipart(old.multipart), error(std::move(old.error)) {
+    // Avoid double free
+    old.handle = nullptr;
+    old.chunk = nullptr;
+    old.resolveCurlList = nullptr;
+    old.multipart = nullptr;
+}
 
 CurlHolder::~CurlHolder() {
     curl_slist_free_all(chunk);
     curl_slist_free_all(resolveCurlList);
     curl_mime_free(multipart);
     curl_easy_cleanup(handle);
+}
+
+CurlHolder& CurlHolder::operator=(CurlHolder&& old) noexcept {
+    // Free the previous stuff
+    curl_slist_free_all(chunk);
+    curl_slist_free_all(resolveCurlList);
+    curl_mime_free(multipart);
+    curl_easy_cleanup(handle);
+
+    // Move
+    handle = old.handle;
+    chunk = old.chunk;
+    resolveCurlList = old.resolveCurlList;
+    multipart = old.multipart;
+    error = std::move(old.error);
+
+    // Avoid double free
+    old.handle = nullptr;
+    old.chunk = nullptr;
+    old.resolveCurlList = nullptr;
+    old.multipart = nullptr;
+    return *this;
 }
 
 util::SecureString CurlHolder::urlEncode(std::string_view s) const {
