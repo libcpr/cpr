@@ -10,6 +10,7 @@ class UnixSocket {
     // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
     UnixSocket(std::string unix_socket) : unix_socket_(std::move(unix_socket)) {}
 
+    [[nodiscard]]
     const char* GetUnixSocketString() const noexcept;
 
   private:
