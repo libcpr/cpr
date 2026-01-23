@@ -25,7 +25,7 @@ jobs:
       env:
         DEBIAN_FRONTEND: noninteractive
     - name: Setup cmake
-      uses: jwlawson/actions-setup-cmake@v1.14
+      uses: jwlawson/actions-setup-cmake@v2.1
       with:
         cmake-version: '3.22.x'
     - name: Checkout
@@ -62,7 +62,7 @@ jobs:
       env:
         DEBIAN_FRONTEND: noninteractive
     - name: Setup cmake
-      uses: jwlawson/actions-setup-cmake@v1.14
+      uses: jwlawson/actions-setup-cmake@v2.1
       with:
         cmake-version: '3.22.x'
     - name: Checkout
@@ -93,7 +93,7 @@ jobs:
       env:
         DEBIAN_FRONTEND: noninteractive
     - name: Setup cmake
-      uses: jwlawson/actions-setup-cmake@v1.14
+      uses: jwlawson/actions-setup-cmake@v2.1
       with:
         cmake-version: '3.22.x'
     - name: Checkout
