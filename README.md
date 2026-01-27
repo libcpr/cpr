@@ -168,7 +168,13 @@ load("@rules_foreign_cc//foreign_cc:defs.bzl", "cmake")
 
 filegroup(
     name = "srcs",
-    srcs = glob(["**"], ["bazel-*/**"]),
+    srcs = glob(
+        include = ["**"],
+        exclude = [
+            "bazel-*/**",
+            "test/data/**",  # Exclude test data.
+        ],
+    ),
     visibility = ["//visibility:public"],
 )
 
