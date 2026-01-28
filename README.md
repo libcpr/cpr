@@ -147,8 +147,6 @@ ctest -VV # -VV is optional since it enables verbose output
 ```
 
 ### Bazel
-Please refer to [hedronvision/bazel-make-cc-https-easy](https://github.com/hedronvision/bazel-make-cc-https-easy) or
-
 `cpr` can be added as an extension by adding the following lines to your bazel MODULE file (tested with Bazel 8). Edit the versions as needed.
 ```starlark
 bazel_dep(name = "curl", version = "8.8.0.bcr.3")
