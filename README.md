@@ -152,48 +152,43 @@ Please refer to [hedronvision/bazel-make-cc-https-easy](https://github.com/hedro
 `cpr` can be added as an extension by adding the following lines to your bazel MODULE file (tested with Bazel 8). Edit the versions as needed.
 ```starlark
 bazel_dep(name = "curl", version = "8.8.0.bcr.3")
-bazel_dep(name = "platforms", version = "0.0.11")
-bazel_dep(name = "zlib", version = "1.3.1.bcr.5")
-bazel_dep(name = "boringssl", version = "0.20250212.0")
-bazel_dep(name = "rules_foreign_cc", version = "0.14.0")
-
-http_archive = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
-http_archive(
+git_repository = use_repo_rule("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
+git_repository(
     name = "cpr",
-    url = "https://github.com/libcpr/cpr/archive/refs/tags/1.11.2.tar.gz",
-    strip_prefix = "cpr-1.11.2",
-    sha256 = "3795a3581109a9ba5e48fbb50f9efe3399a3ede22f2ab606b71059a615cd6084",
-    build_file_content = """
-load("@rules_foreign_cc//foreign_cc:defs.bzl", "cmake")
-
-filegroup(
-    name = "srcs",
-    srcs = glob(
-        include = ["**"],
-        exclude = [
-            "bazel-*/**",
-            "test/data/**",  # Exclude test data.
-        ],
-    ),
-    visibility = ["//visibility:public"],
+    build_file = "//path/to/build:cpr.BUILD",
+    commit = "516cb3e5f4e38bede088f69fcf122c6089e38f00",
+    remote = "https://github.com/libcpr/cpr.git",
+    patches = ["//path/to/patch:cpr.PATCH"]
 )
+```
 
-cmake(
+```starlark
+// cpr.BUILD
+cc_library(
     name = "cpr",
-    cache_entries = {
-    },
-    tags = ["requires-network"],
-    includes = ["include/cpr"],
-    lib_source = ":srcs",
-    out_shared_libs = select({
-        "@platforms//os:macos": ["libcpr.dylib"],
-        "@platforms//os:windows": ["libcpr.dll"],
-        "//conditions:default": ["libcpr.so.1"],
-    }),
+    hdrs = glob(["include/**/*.h"]),
+    includes = ["include"],
     visibility = ["//visibility:public"],
+
+    srcs = glob(["cpr/**/*.cpp"]),
+    deps = [
+        "@curl//:curl"
+    ],
 )
-"""
-)
+```
+
+```starlark
+// Remove this line: cpr.PATCH
+--- include/cpr/cpr.h
++++ include/cpr/cpr.h
+@@ -10,7 +10,6 @@
+ #include "cpr/connection_pool.h"
+ #include "cpr/cookies.h"
+ #include "cpr/cprtypes.h"
+-#include "cpr/cprver.h"
+ #include "cpr/curl_container.h"
+ #include "cpr/curlholder.h"
+ #include "cpr/error.h"
 ```
 
 ### Packages for Linux Distributions
