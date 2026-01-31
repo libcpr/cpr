@@ -21,12 +21,12 @@ enum class PostRedirectFlags : uint8_t {
      **/
     POST_303 = 0x1 << 2,
     /**
-     * Default value.
      * Convenience option to enable all flags.
      * Same as CURL_REDIR_POST_ALL (https://curl.se/libcurl/c/CURLOPT_POSTREDIR.html).
      **/
     POST_ALL = POST_301 | POST_302 | POST_303,
     /**
+     * Default value.
      * * Convenience option to disable all flags.
      **/
     NONE = 0x0
@@ -66,9 +66,9 @@ class Redirect {
     bool cont_send_cred{false};
     /**
      * Flags to control how to act after a redirect for a post request.
-     * Default: POST_ALL
+     * Default: NONE (matches libcurl)
      **/
-    PostRedirectFlags post_flags{PostRedirectFlags::POST_ALL};
+    PostRedirectFlags post_flags{PostRedirectFlags::NONE};
 
     Redirect() = default;
     // NOLINTNEXTLINE (google-runtime-int)
