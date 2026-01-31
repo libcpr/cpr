@@ -718,7 +718,7 @@ TEST(UrlEncodedPostTests, PostBodyWithBuffer) {
 
 TEST(PostRedirectTests, TempRedirectTest) {
     Url url{server->GetBaseUrl() + "/temporary_redirect.html"};
-    Response response = cpr::Post(url, Payload{{"x", "5"}}, Header{{"RedirectLocation", "url_post.html"}});
+    Response response = cpr::Post(url, Payload{{"x", "5"}}, Header{{"RedirectLocation", "url_post.html"}}, Redirect(PostRedirectFlags::POST_ALL));
     std::string expected_text{
             "{\n"
             "  \"x\": 5\n"
@@ -740,7 +740,7 @@ TEST(PostRedirectTests, TempRedirectNoneTest) {
 
 TEST(PostRedirectTests, PermRedirectTest) {
     Url url{server->GetBaseUrl() + "/permanent_redirect.html"};
-    Response response = cpr::Post(url, Payload{{"x", "5"}}, Header{{"RedirectLocation", "url_post.html"}});
+    Response response = cpr::Post(url, Payload{{"x", "5"}}, Header{{"RedirectLocation", "url_post.html"}}, Redirect(PostRedirectFlags::POST_ALL));
     std::string expected_text{
             "{\n"
             "  \"x\": 5\n"
@@ -755,6 +755,24 @@ TEST(PostRedirectTests, PermRedirectTest) {
 TEST(PostRedirectTests, PermRedirectNoneTest) {
     Url url{server->GetBaseUrl() + "/permanent_redirect.html"};
     Response response = cpr::Post(url, Payload{{"x", "5"}}, Header{{"RedirectLocation", "url_post.html"}}, Redirect(PostRedirectFlags::NONE));
+    EXPECT_EQ(response.url, server->GetBaseUrl() + "/url_post.html");
+    EXPECT_EQ(405, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
+TEST(PostRedirectTests, TempRedirectDefaultTest) {
+    Url url{server->GetBaseUrl() + "/temporary_redirect.html"};
+    // Default PostRedirectFlags is NONE, so POST should not be preserved on redirect
+    Response response = cpr::Post(url, Payload{{"x", "5"}}, Header{{"RedirectLocation", "url_post.html"}});
+    EXPECT_EQ(response.url, server->GetBaseUrl() + "/url_post.html");
+    EXPECT_EQ(405, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
+TEST(PostRedirectTests, PermRedirectDefaultTest) {
+    Url url{server->GetBaseUrl() + "/permanent_redirect.html"};
+    // Default PostRedirectFlags is NONE, so POST should not be preserved on redirect
+    Response response = cpr::Post(url, Payload{{"x", "5"}}, Header{{"RedirectLocation", "url_post.html"}});
     EXPECT_EQ(response.url, server->GetBaseUrl() + "/url_post.html");
     EXPECT_EQ(405, response.status_code);
     EXPECT_EQ(ErrorCode::OK, response.error.code);
