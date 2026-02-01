@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
 
+set(CMAKE_CXX_SCAN_FOR_MODULES ON)
+
 add_library(cpr_module)
 
 target_sources(cpr_module
