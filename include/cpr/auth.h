@@ -1,6 +1,7 @@
 #ifndef CPR_AUTH_H
 #define CPR_AUTH_H
 
+#include <cstdint>
 #include <string>
 #include <string_view>
 
@@ -8,14 +9,14 @@
 
 namespace cpr {
 
-enum class AuthMode { BASIC, DIGEST, NTLM, NEGOTIATE, ANY, ANYSAFE };
+enum class AuthMode : uint8_t { BASIC, DIGEST, NTLM, NEGOTIATE, ANY, ANYSAFE };
 
 class Authentication {
   public:
     Authentication(std::string_view username, std::string_view password, AuthMode auth_mode);
 
-    const char* GetAuthString() const noexcept;
-    AuthMode GetAuthMode() const noexcept;
+    [[nodiscard]] const char* GetAuthString() const noexcept;
+    [[nodiscard]] AuthMode GetAuthMode() const noexcept;
 
   private:
     util::SecureString auth_string_;

@@ -23,7 +23,6 @@ struct File {
 class Files {
   public:
     Files() = default;
-    // NOLINTNEXTLINE(google-explicit-constructor)
     Files(const File& p_file) : files{p_file} {}
 
     Files(const Files& other) = default;

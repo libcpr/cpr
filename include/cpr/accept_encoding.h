@@ -1,15 +1,17 @@
 #ifndef CPR_ACCEPT_ENCODING_H
 #define CPR_ACCEPT_ENCODING_H
 
+#include <cstdint>
 #include <curl/curlver.h>
 #include <initializer_list>
 #include <map>
 #include <string>
+#include <sys/types.h>
 #include <unordered_set>
 
 namespace cpr {
 
-enum class AcceptEncodingMethods {
+enum class AcceptEncodingMethods : uint8_t {
     identity,
     deflate,
     zlib,
@@ -23,9 +25,7 @@ static const std::map<AcceptEncodingMethods, std::string> AcceptEncodingMethodsS
 class AcceptEncoding {
   public:
     AcceptEncoding() = default;
-    // NOLINTNEXTLINE(google-explicit-constructor)
     AcceptEncoding(const std::initializer_list<AcceptEncodingMethods>& methods);
-    // NOLINTNEXTLINE(google-explicit-constructor)
     AcceptEncoding(const std::initializer_list<std::string>& methods);
 
     [[nodiscard]] bool empty() const noexcept;

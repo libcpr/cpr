@@ -16,11 +16,9 @@ struct SecureAllocator : private std::allocator<T> {
     friend struct SecureAllocator;
     SecureAllocator() = default;
     template <typename U>
-    // NOLINTNEXTLINE(google-explicit-constructor,hicpp-explicit-conversions)
     SecureAllocator(const SecureAllocator<U>& rhs) noexcept : std::allocator<T>(static_cast<const std::allocator<U>&>(rhs)) {}
     template <typename U>
-    // NOLINTNEXTLINE(google-explicit-constructor,hicpp-explicit-conversions)
-    SecureAllocator(SecureAllocator<U>&& rhs) noexcept : std::allocator<T>(static_cast<std::allocator<U>&&>(rhs)) {}
+    SecureAllocator(SecureAllocator<U>&& rhs) noexcept : std::allocator<T>(static_cast<std::allocator<U>&&>(std::move(rhs))) {}
     template <typename U>
     SecureAllocator& operator=(const SecureAllocator<U>& rhs) noexcept {
         static_cast<std::allocator<T>&>(*this) = static_cast<const std::allocator<U>&>(rhs);
@@ -28,7 +26,7 @@ struct SecureAllocator : private std::allocator<T> {
     }
     template <typename U>
     SecureAllocator& operator=(SecureAllocator<U>&& rhs) noexcept {
-        static_cast<std::allocator<T>&>(*this) = static_cast<std::allocator<U>&&>(rhs);
+        static_cast<std::allocator<T>&>(*this) = static_cast<std::allocator<U>&&>(std::move(rhs));
         return *this;
     }
 

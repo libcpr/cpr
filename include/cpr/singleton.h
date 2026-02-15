@@ -4,6 +4,8 @@
 #include <cassert>
 #include <mutex>
 
+// NOLINTBEGIN(cppcoreguidelines-macro-usage, bugprone-macro-parentheses)
+
 #ifndef CPR_DISABLE_COPY
 #define CPR_DISABLE_COPY(Class)   \
     Class(const Class&) = delete; \
@@ -40,5 +42,7 @@
         });                                                                  \
     }
 #endif
+
+// NOLINTEND(cppcoreguidelines-macro-usage, bugprone-macro-parentheses)
 
 #endif

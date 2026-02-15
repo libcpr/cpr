@@ -13,7 +13,7 @@ namespace fs = boost::filesystem;
 #include <filesystem>
 namespace cpr {
 namespace fs = std::filesystem;
-}
+} // namespace cpr
 #elif __has_include("experimental/filesystem")
 #include <experimental/filesystem>
 namespace cpr {

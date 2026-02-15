@@ -67,7 +67,7 @@ CURLcode sslctx_function_load_ca_cert_from_buffer(CURL* /*curl*/, void* sslctx, 
 
     // Create a memory BIO using the data of cert_buf
     // Note: It is assumed, that cert_buf is nul terminated and its length is determined by strlen
-    char* cert_buf = static_cast<char*>(raw_cert_buf);
+    const char* cert_buf = static_cast<char*>(raw_cert_buf);
     BIO* bio = BIO_new_mem_buf(cert_buf, -1);
 
     // Get a pointer to the current certificate verification storage

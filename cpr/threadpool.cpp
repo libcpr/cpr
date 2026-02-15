@@ -16,10 +16,10 @@ ThreadPool::~ThreadPool() {
 }
 
 int ThreadPool::Start(size_t start_threads) {
-    if (status != STOP) {
+    if (status != Status::STOP) {
         return -1;
     }
-    status = RUNNING;
+    status = Status::RUNNING;
     start_threads = std::clamp(start_threads, min_thread_num, max_thread_num);
     for (size_t i = 0; i < start_threads; ++i) {
         CreateThread();
@@ -29,11 +29,11 @@ int ThreadPool::Start(size_t start_threads) {
 
 int ThreadPool::Stop() {
     const std::unique_lock status_lock(status_wait_mutex);
-    if (status == STOP) {
+    if (status == Status::STOP) {
         return -1;
     }
 
-    status = STOP;
+    status = Status::STOP;
     status_wait_cond.notify_all();
     task_cond.notify_all();
 
@@ -50,29 +50,28 @@ int ThreadPool::Stop() {
 }
 
 int ThreadPool::Pause() {
-    if (status == RUNNING) {
-        status = PAUSE;
+    if (status == Status::RUNNING) {
+        status = Status::PAUSE;
     }
     return 0;
 }
 
 int ThreadPool::Resume() {
     const std::unique_lock status_lock(status_wait_mutex);
-    if (status == PAUSE) {
-        status = RUNNING;
+    if (status == Status::PAUSE) {
+        status = Status::RUNNING;
         status_wait_cond.notify_all();
     }
     return 0;
 }
 
-int ThreadPool::Wait() const {
+void ThreadPool::Wait() {
     while (true) {
-        if (status == STOP || (tasks.empty() && idle_thread_num == cur_thread_num)) {
+        if (status == Status::STOP || (tasks.empty() && idle_thread_num == cur_thread_num)) {
             break;
         }
         std::this_thread::yield();
     }
-    return 0;
 }
 
 bool ThreadPool::CreateThread() {
@@ -81,7 +80,7 @@ bool ThreadPool::CreateThread() {
     }
     auto thread = std::make_shared<std::thread>([this] {
         bool initialRun = true;
-        while (status != STOP) {
+        while (status != Status::STOP) {
             {
                 std::unique_lock status_lock(status_wait_mutex);
                 status_wait_cond.wait(status_lock, [this]() { return status != Status::PAUSE; });
@@ -90,8 +89,8 @@ bool ThreadPool::CreateThread() {
             Task task;
             {
                 std::unique_lock<std::mutex> locker(task_mutex);
-                task_cond.wait_for(locker, std::chrono::milliseconds(max_idle_time), [this]() { return status == STOP || !tasks.empty(); });
-                if (status == STOP) {
+                task_cond.wait_for(locker, std::chrono::milliseconds(max_idle_time), [this]() { return status == Status::STOP || !tasks.empty(); });
+                if (status == Status::STOP) {
                     return;
                 }
                 if (tasks.empty()) {
@@ -124,7 +123,7 @@ void ThreadPool::AddThread(const std::shared_ptr<std::thread>& thread) {
     ThreadData data;
     data.thread = thread;
     data.id = thread->get_id();
-    data.status = RUNNING;
+    data.status = Status::RUNNING;
     data.start_time = std::chrono::steady_clock::now();
     data.stop_time = std::chrono::steady_clock::time_point::max();
     threads.emplace_back(data);
@@ -139,14 +138,14 @@ void ThreadPool::DelThread(std::thread::id id) {
     --idle_thread_num;
     auto iter = threads.begin();
     while (iter != threads.end()) {
-        if (iter->status == STOP && now > iter->stop_time) {
+        if (iter->status == Status::STOP && now > iter->stop_time) {
             if (iter->thread->joinable()) {
                 iter->thread->join();
                 iter = threads.erase(iter);
                 continue;
             }
         } else if (iter->id == id) {
-            iter->status = STOP;
+            iter->status = Status::STOP;
             iter->stop_time = std::chrono::steady_clock::now();
         }
         ++iter;

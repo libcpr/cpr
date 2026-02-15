@@ -42,7 +42,7 @@ bool isTrue(const std::string& s);
  * Parses the given std::string into time_t (unix ms).
  * This parsing happens time_t size agnostic since time_t does not use the same underlying type on all systems/compilers.
  **/
-time_t sTimestampToT(const std::string&);
+time_t sTimestampToT(const std::string& /*st*/);
 
 } // namespace cpr::util
 

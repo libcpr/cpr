@@ -28,21 +28,21 @@ class Response {
     // Ignored here since libcurl uses a long for this.
     // NOLINTNEXTLINE(google-runtime-int)
     long status_code{};
-    std::string text{};
-    Header header{};
-    Url url{};
+    std::string text;
+    Header header;
+    Url url;
     double elapsed{};
-    Cookies cookies{};
-    Error error{};
-    std::string raw_header{};
-    std::string status_line{};
-    std::string reason{};
+    Cookies cookies;
+    Error error;
+    std::string raw_header;
+    std::string status_line;
+    std::string reason;
     cpr_off_t uploaded_bytes{};
     cpr_off_t downloaded_bytes{};
     // Ignored here since libcurl uses a long for this.
     // NOLINTNEXTLINE(google-runtime-int)
     long redirect_count{};
-    std::string primary_ip{};
+    std::string primary_ip;
     std::uint16_t primary_port{};
 
     Response() = default;

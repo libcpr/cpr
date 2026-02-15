@@ -7,9 +7,9 @@ namespace cpr {
 
 class ReserveSize {
   public:
-    ReserveSize(const size_t _size) : size(_size) {}
+    ReserveSize(const std::size_t _size) : size(_size) {}
 
-    size_t size = 0;
+    std::size_t size = 0;
 };
 
 } // namespace cpr

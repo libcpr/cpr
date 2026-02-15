@@ -6,8 +6,8 @@
 #include <gtest/gtest.h>
 #include <memory>
 #include <mutex>
-#include <string>
 #include <set>
+#include <string>
 
 #include "cpr/cpr.h"
 #include "mongoose.h"

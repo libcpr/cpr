@@ -18,7 +18,7 @@
 #include <type_traits>
 #include <vector>
 
-#if defined(_Win32)
+#ifdef _Win32
 #include <Windows.h>
 #else
 #ifdef __clang__
@@ -52,7 +52,7 @@ enum class CurlHTTPCookieField : uint8_t {
 Cookies parseCookies(curl_slist* raw_cookies) {
     const int CURL_HTTP_COOKIE_SIZE = static_cast<int>(CurlHTTPCookieField::Value) + 1;
     Cookies cookies;
-    for (curl_slist* nc = raw_cookies; nc; nc = nc->next) {
+    for (const curl_slist* nc = raw_cookies; nc; nc = nc->next) {
         std::vector<std::string> tokens = cpr::util::split(nc->data, '\t');
         while (tokens.size() < CURL_HTTP_COOKIE_SIZE) {
             tokens.emplace_back("");

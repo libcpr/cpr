@@ -1,5 +1,5 @@
-#ifndef CPR_CURL_HOLDER_H
-#define CPR_CURL_HOLDER_H
+#ifndef CPR_CURLHOLDER_H
+#define CPR_CURLHOLDER_H
 
 #include <array>
 #include <curl/curl.h>

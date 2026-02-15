@@ -24,10 +24,10 @@ class CertInfo {
     std::string& operator[](const size_t& pos);
     iterator begin();
     iterator end();
-    const_iterator begin() const;
-    const_iterator end() const;
-    const_iterator cbegin() const;
-    const_iterator cend() const;
+    [[nodiscard]] const_iterator begin() const;
+    [[nodiscard]] const_iterator end() const;
+    [[nodiscard]] const_iterator cbegin() const;
+    [[nodiscard]] const_iterator cend() const;
     void emplace_back(const std::string& str);
     void push_back(const std::string& str);
     void pop_back();

@@ -21,7 +21,7 @@ Response::Response(std::shared_ptr<CurlHolder> curl, std::string&& p_text, std::
     assert(curl_->handle);
     curl_easy_getinfo(curl_->handle, CURLINFO_RESPONSE_CODE, &status_code);
     curl_easy_getinfo(curl_->handle, CURLINFO_TOTAL_TIME, &elapsed);
-    char* url_string{nullptr};
+    const char* url_string{nullptr};
     curl_easy_getinfo(curl_->handle, CURLINFO_EFFECTIVE_URL, &url_string);
     url = Url(url_string);
 #if LIBCURL_VERSION_NUM >= 0x073700 // 7.55.0
@@ -36,7 +36,7 @@ Response::Response(std::shared_ptr<CurlHolder> curl, std::string&& p_text, std::
 #endif
     curl_easy_getinfo(curl_->handle, CURLINFO_REDIRECT_COUNT, &redirect_count);
 #if LIBCURL_VERSION_NUM >= 0x071300 // 7.19.0
-    char* ip_ptr{nullptr};
+    const char* ip_ptr{nullptr};
     if (curl_easy_getinfo(curl_->handle, CURLINFO_PRIMARY_IP, &ip_ptr) == CURLE_OK && ip_ptr) {
         primary_ip = ip_ptr;
     }
@@ -54,7 +54,7 @@ Response::Response(std::shared_ptr<CurlHolder> curl, std::string&& p_text, std::
 std::vector<CertInfo> Response::GetCertInfos() const {
     assert(curl_);
     assert(curl_->handle);
-    curl_certinfo* ci{nullptr};
+    const curl_certinfo* ci{nullptr};
     curl_easy_getinfo(curl_->handle, CURLINFO_CERTINFO, &ci);
 
     std::vector<CertInfo> cert_infos;

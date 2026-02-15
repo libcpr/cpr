@@ -9,7 +9,7 @@
 namespace cpr {
 class Interceptor {
   public:
-    enum class ProceedHttpMethod {
+    enum class ProceedHttpMethod : uint8_t {
         GET_REQUEST = 0,
         POST_REQUEST,
         PUT_REQUEST,
@@ -40,7 +40,7 @@ class Interceptor {
 
 class InterceptorMulti {
   public:
-    enum class ProceedHttpMethod {
+    enum class ProceedHttpMethod : uint8_t {
         GET_REQUEST = 0,
         POST_REQUEST,
         PUT_REQUEST,

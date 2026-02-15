@@ -1,5 +1,5 @@
-#ifndef CPR_SPEED_LIMIT_H
-#define CPR_SPEED_LIMIT_H
+#ifndef CPR_LIMIT_RATE_H
+#define CPR_LIMIT_RATE_H
 
 #include <cstdint>
 
