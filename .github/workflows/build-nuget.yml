@@ -98,7 +98,7 @@ jobs:
       run: nuget push "$env:GITHUB_WORKSPACE\*.nupkg" $env:NUGET_API_KEY -Source https://api.nuget.org/v3/index.json
 
     - name: Upload built .nupkg as workflow artefact
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v6
       with:
         name: artifact-nuget
         path: '*.nupkg'
