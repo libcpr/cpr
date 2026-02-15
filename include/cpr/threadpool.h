@@ -52,11 +52,6 @@ class ThreadPool {
      **/
     struct WorkerThread {
         std::unique_ptr<std::thread> thread{nullptr};
-        /**
-         * RUNNING: The thread is still active and working on or awaiting new work.
-         * STOP: The thread is shutting down or has already been shut down and is ready to be joined.
-         **/
-        State state{State::RUNNING};
     };
 
     /**
@@ -68,14 +63,9 @@ class ThreadPool {
      **/
     std::list<WorkerThread> workers;
     /**
-     * Number of threads ready to be joined where their state is 'STOP'.
-     **/
-    std::atomic_size_t workerJoinReadyCount{0};
-
-    /**
      * Mutex for synchronizing access to the task queue.
      **/
-    std::mutex taskQueueMutex;
+    mutable std::mutex taskQueueMutex;
     /**
      * Conditional variable to let threads wait for new work to arrive.
      **/
@@ -183,32 +173,30 @@ class ThreadPool {
      **/
     template <class Fn, class... Args>
     auto Submit(Fn&& fn, Args&&... args) {
+        // Add task to queue
+        using RetType = decltype(fn(args...));
+        const std::shared_ptr<std::packaged_task<RetType()>> task =
+                std::make_shared<std::packaged_task<RetType()>>([fn = std::forward<Fn>(fn), args...]() mutable { return std::invoke(fn, args...); });
+        std::future<RetType> future = task->get_future();
+
         {
             const std::unique_lock lockControl(controlMutex);
-            // Add a new worker thread in case the tasks queue is not empty and we still can add a thread
-            bool shouldAddThread{false};
+            size_t queueSize{0};
             {
                 std::unique_lock lockQueue(taskQueueMutex);
-                if (idleThreadCount <= tasks.size() && curThreadCount < maxThreadCount) {
-                    if (state == State::RUNNING) {
-                        shouldAddThread = true;
-                    }
-                }
+                tasks.emplace([task] { (*task)(); });
+                queueSize = tasks.size();
             }
 
-            // We add a thread outside the 'taskQueueMutex' mutex block to avoid a potential deadlock caused within the 'addThread()' function.
+            // Add a new worker thread if queued tasks exceed idle workers and we can still scale out.
+            bool shouldAddThread{false};
+            if (state == State::RUNNING && idleThreadCount < queueSize && curThreadCount < maxThreadCount) {
+                shouldAddThread = true;
+            }
+
             if (shouldAddThread) {
                 addThread();
             }
-        }
-
-        // Add task to queue
-        using RetType = decltype(fn(args...));
-        const std::shared_ptr<std::packaged_task<RetType()>> task = std::make_shared<std::packaged_task<RetType()>>([fn = std::forward<Fn>(fn), args...]() mutable { return std::invoke(fn, args...); });
-        std::future<RetType> future = task->get_future();
-        {
-            std::unique_lock lock(taskQueueMutex);
-            tasks.emplace([task] { (*task)(); });
         }
 
         taskQueueCondVar.notify_one();
@@ -225,15 +213,11 @@ class ThreadPool {
      * Adds a new worker thread.
      **/
     void addThread();
-    /**
-     * Goes through the worker threads list and joins all threads where their state is STOP.
-     **/
-    void joinStoppedThreads();
 
     /**
      * The thread entry point where the heavy lifting happens.
      **/
-    void threadFunc(WorkerThread& workerThread);
+    void threadFunc();
 };
 } // namespace cpr
 #endif
