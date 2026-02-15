@@ -7,9 +7,7 @@ namespace cpr {
 
 class ConnectTimeout : public Timeout {
   public:
-    // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
     ConnectTimeout(const std::chrono::milliseconds& duration) : Timeout{duration} {}
-    // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
     ConnectTimeout(const std::int32_t& milliseconds) : Timeout{milliseconds} {}
 };
 

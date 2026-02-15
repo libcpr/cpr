@@ -18,11 +18,11 @@ namespace cpr {
  * ```cpp
  * // Create a connection pool
  * cpr::ConnectionPool pool;
- * 
+ *
  * // Use the pool with requests to reuse connections
  * cpr::Response r1 = cpr::Get(cpr::Url{"http://example.com/api/data"}, pool);
  * cpr::Response r2 = cpr::Get(cpr::Url{"http://example.com/api/more"}, pool);
- * 
+ *
  * // Or with async requests
  * auto future1 = cpr::GetAsync(cpr::Url{"http://example.com/api/data"}, pool);
  * auto future2 = cpr::GetAsync(cpr::Url{"http://example.com/api/more"}, pool);
@@ -35,24 +35,24 @@ class ConnectionPool {
      * Initializes the underlying CURLSH handle and sets up thread-safe locking mechanisms.
      **/
     ConnectionPool();
-    
+
     /**
      * Copy constructor - creates a new connection pool sharing the same connection state.
      * Multiple ConnectionPool instances can share the same underlying connection pool.
      **/
     ConnectionPool(const ConnectionPool&) = default;
-    
+
     /**
      * Copy assignment operator is deleted to prevent accidental copying.
      * Use the copy constructor if you need to share the connection pool.
      **/
     ConnectionPool& operator=(const ConnectionPool&) = delete;
-    
+
     /**
      * Configures a CURL easy handle to use this connection pool.
      * This method sets up the easy handle to participate in connection sharing
      * managed by this pool.
-     * 
+     *
      * @param easy_handler The CURL easy handle to configure for connection sharing.
      **/
     void SetupHandler(CURL* easy_handler) const;
@@ -65,7 +65,7 @@ class ConnectionPool {
      * to ensure it's destroyed last, after the CURLSH handle that references it.
      **/
     std::shared_ptr<std::mutex> connection_mutex_;
-    
+
     /**
      * Shared CURL handle (CURLSH) that manages the actual connection sharing.
      * This handle maintains the pool of reusable connections and is configured
@@ -77,4 +77,4 @@ class ConnectionPool {
     std::shared_ptr<CURLSH> curl_sh_;
 };
 } // namespace cpr
-#endif 
+#endif

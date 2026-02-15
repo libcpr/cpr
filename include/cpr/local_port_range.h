@@ -7,7 +7,6 @@ namespace cpr {
 
 class LocalPortRange {
   public:
-    // NOLINTNEXTLINE(google-explicit-constructor)
     LocalPortRange(const std::uint16_t p_localportrange) : localportrange_(p_localportrange) {}
 
     operator std::uint16_t() const {

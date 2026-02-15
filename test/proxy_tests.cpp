@@ -1,9 +1,9 @@
 #include <gtest/gtest.h>
 
 #include <chrono>
+#include <sstream>
 #include <stdlib.h>
 #include <string>
-#include <sstream>
 
 #include "cpr/cpr.h"
 

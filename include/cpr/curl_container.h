@@ -1,5 +1,5 @@
-#ifndef CURL_CONTAINER_H
-#define CURL_CONTAINER_H
+#ifndef CPR_CURL_CONTAINER_H
+#define CPR_CURL_CONTAINER_H
 
 #include <initializer_list>
 #include <memory>
@@ -35,22 +35,22 @@ class CurlContainer {
     bool encode = true;
 
     CurlContainer() = default;
-    CurlContainer(const std::initializer_list<T>&);
+    CurlContainer(const std::initializer_list<T>& /*containerList*/);
 
-    void Add(const std::initializer_list<T>&);
-    void Add(const T&);
+    void Add(const std::initializer_list<T>& /*containerList*/);
+    void Add(const T& /*element*/);
 
     /**
      * Returns the URL using curl_easy_escape(...) for escaping the given parameters.
      * Requires `CurlHolder`.
      **/
-    const std::string GetContent(const CurlHolder&) const;
+    [[nodiscard]] const std::string GetContent(const CurlHolder& /*holder*/) const;
 
     /**
      * Returns the URL while ignoring `encode`. This allows calling without
      * active `CurlHolder`.
      **/
-    const std::string GetContent() const;
+    [[nodiscard]] const std::string GetContent() const;
 
   protected:
     std::vector<T> containerList_;
@@ -58,4 +58,4 @@ class CurlContainer {
 
 } // namespace cpr
 
-#endif //
+#endif // CPR_CURL_CONTAINER_H

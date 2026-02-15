@@ -1,9 +1,9 @@
 #include <gtest/gtest.h>
 
-#include <string>
-#include <vector>
-#include <thread>
 #include <chrono>
+#include <string>
+#include <thread>
+#include <vector>
 
 #include <cpr/cpr.h>
 
@@ -48,22 +48,22 @@ TEST(MultipleGetTests, PoolAsyncGetMultipleTest) {
     server->ResetConnectionCount();
 
     const size_t NUM_BATCHES = 2;
-    const size_t BATCH_SIZE = NUM_REQUESTS / 2;  // 5 requests per batch
+    const size_t BATCH_SIZE = NUM_REQUESTS / 2; // 5 requests per batch
 
     // Without shared connection pool - two batches with 10ms sleep
     responses.reserve(NUM_REQUESTS);
-    
+
     for (size_t batch = 0; batch < NUM_BATCHES; ++batch) {
         for (size_t i = 0; i < BATCH_SIZE; ++i) {
             responses.emplace_back(cpr::GetAsync(url));
         }
-        
+
         // Sleep between batches but not after the last batch
         if (batch != NUM_BATCHES - 1) {
             std::this_thread::sleep_for(std::chrono::milliseconds(5));
         }
     }
-    
+
     // Wait for all responses
     for (AsyncResponse& future : responses) {
         Response response = future.get();
@@ -78,12 +78,12 @@ TEST(MultipleGetTests, PoolAsyncGetMultipleTest) {
     server->ResetConnectionCount();
     responses.clear();
     responses.reserve(NUM_REQUESTS);
-    
+
     for (size_t batch = 0; batch < NUM_BATCHES; ++batch) {
         for (size_t i = 0; i < BATCH_SIZE; ++i) {
             responses.emplace_back(cpr::GetAsync(url, pool));
         }
-        
+
         // Sleep between batches but not after the last batch
         if (batch != NUM_BATCHES - 1) {
             std::this_thread::sleep_for(std::chrono::milliseconds(5));
@@ -98,7 +98,7 @@ TEST(MultipleGetTests, PoolAsyncGetMultipleTest) {
         EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
         EXPECT_EQ(200, response.status_code);
     }
-    
+
     // With connection pooling, should use fewer connections than requests
     EXPECT_LT(server->GetConnectionCount(), NUM_REQUESTS);
 }
@@ -107,4 +107,4 @@ int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
     ::testing::AddGlobalTestEnvironment(server);
     return RUN_ALL_TESTS();
-} 
+}

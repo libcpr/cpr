@@ -39,4 +39,8 @@
     <suppress>
         <id>postfixOperator</id>
     </suppress>
+    <suppress>
+        <id>syntaxError</id>
+        <fileName>*/cpr/util.cpp</fileName>
+    </suppress>
 </suppressions>

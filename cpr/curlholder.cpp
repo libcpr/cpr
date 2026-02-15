@@ -22,7 +22,7 @@ CurlHolder::CurlHolder() {
     assert(handle);
 }
 
-CurlHolder::CurlHolder(CurlHolder&& old) noexcept : handle(old.handle), chunk(old.chunk), resolveCurlList(old.resolveCurlList), multipart(old.multipart), error(std::move(old.error)) {
+CurlHolder::CurlHolder(CurlHolder&& old) noexcept : handle(old.handle), chunk(old.chunk), resolveCurlList(old.resolveCurlList), multipart(old.multipart), error(old.error) {
     // Avoid double free
     old.handle = nullptr;
     old.chunk = nullptr;
@@ -49,7 +49,7 @@ CurlHolder& CurlHolder::operator=(CurlHolder&& old) noexcept {
     chunk = old.chunk;
     resolveCurlList = old.resolveCurlList;
     multipart = old.multipart;
-    error = std::move(old.error);
+    error = old.error;
 
     // Avoid double free
     old.handle = nullptr;

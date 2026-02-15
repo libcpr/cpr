@@ -143,7 +143,7 @@ void Session::SetBearer(const Bearer& token) {
 
 Session::Session() : curl_(new CurlHolder()) {
     // Set up some sensible defaults
-    curl_version_info_data* version_info = curl_version_info(CURLVERSION_NOW);
+    const curl_version_info_data* version_info = curl_version_info(CURLVERSION_NOW);
     const std::string version = "curl/" + std::string{version_info->version};
     curl_easy_setopt(curl_->handle, CURLOPT_USERAGENT, version.c_str());
     SetRedirect(Redirect());
@@ -1125,7 +1125,7 @@ void Session::SetOption(const LocalPortRange& local_port_range) { SetLocalPortRa
 void Session::SetOption(const HttpVersion& version) { SetHttpVersion(version); }
 void Session::SetOption(const Range& range) { SetRange(range); }
 void Session::SetOption(const MultiRange& multi_range) { SetMultiRange(multi_range); }
-void Session::SetOption(const ReserveSize& reserve_size) { SetReserveSize(reserve_size.size); }
+void Session::SetOption(const ReserveSize& reserve_size) { SetReserveSize(reserve_size); }
 void Session::SetOption(const AcceptEncoding& accept_encoding) { SetAcceptEncoding(accept_encoding); }
 void Session::SetOption(AcceptEncoding&& accept_encoding) { SetAcceptEncoding(std::move(accept_encoding)); }
 void Session::SetOption(const ConnectionPool& pool) { SetConnectionPool(pool); }

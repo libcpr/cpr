@@ -16,7 +16,7 @@ struct Part {
     Part(const std::string& p_name, const std::string& p_value, const std::string& p_content_type = {}) : name{p_name}, value{p_value}, content_type{p_content_type}, is_file{false}, is_buffer{false} {}
     Part(const std::string& p_name, const std::int32_t& p_value, const std::string& p_content_type = {}) : name{p_name}, value{std::to_string(p_value)}, content_type{p_content_type}, is_file{false}, is_buffer{false} {}
     Part(const std::string& p_name, const Files& p_files, const std::string& p_content_type = {}) : name{p_name}, content_type{p_content_type}, is_file{true}, is_buffer{false}, files{p_files} {}
-    Part(const std::string& p_name, Files&& p_files, const std::string& p_content_type = {}) : name{p_name}, content_type{p_content_type}, is_file{true}, is_buffer{false}, files{p_files} {}
+    Part(const std::string& p_name, Files&& p_files, const std::string& p_content_type = {}) : name{p_name}, content_type{p_content_type}, is_file{true}, is_buffer{false}, files{std::move(p_files)} {}
     Part(const std::string& p_name, const Buffer& buffer, const std::string& p_content_type = {}) : name{p_name}, value{buffer.filename.string()}, content_type{p_content_type}, data{buffer.data}, datalen{buffer.datalen}, is_file{false}, is_buffer{true} {}
 
     std::string name;
@@ -34,8 +34,8 @@ struct Part {
 class Multipart {
   public:
     Multipart(const std::initializer_list<Part>& parts);
-    Multipart(const std::vector<Part>& parts);
-    Multipart(const std::vector<Part>&& parts);
+    explicit Multipart(const std::vector<Part>& parts);
+    explicit Multipart(const std::vector<Part>&& parts);
 
     std::vector<Part> parts;
 };

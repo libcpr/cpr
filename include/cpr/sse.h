@@ -3,10 +3,10 @@
 
 #include <cstdint>
 #include <functional>
-#include <utility>
 #include <optional>
 #include <string>
 #include <string_view>
+#include <utility>
 
 namespace cpr {
 
@@ -74,7 +74,6 @@ class ServerSentEventParser {
 class ServerSentEventCallback {
   public:
     ServerSentEventCallback() = default;
-    // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
     ServerSentEventCallback(std::function<bool(ServerSentEvent&& event, intptr_t userdata)> p_callback, intptr_t p_userdata = 0) : userdata(p_userdata), callback(std::move(p_callback)) {}
 
     bool operator()(ServerSentEvent&& event) const {

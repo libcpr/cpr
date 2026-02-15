@@ -6,6 +6,7 @@
 #include <atomic>
 #include <cstdint>
 #include <functional>
+#include <memory>
 #include <optional>
 #include <utility>
 
@@ -14,12 +15,10 @@ namespace cpr {
 class ReadCallback {
   public:
     ReadCallback() = default;
-    // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
     ReadCallback(std::function<bool(char* buffer, size_t& size, intptr_t userdata)> p_callback, intptr_t p_userdata = 0) : userdata(p_userdata), size{-1}, callback{std::move(p_callback)} {}
     ReadCallback(cpr_off_t p_size, std::function<bool(char* buffer, size_t& size, intptr_t userdata)> p_callback, intptr_t p_userdata = 0) : userdata(p_userdata), size{p_size}, callback{std::move(p_callback)} {}
     bool operator()(char* buffer, size_t& buffer_size) const {
-        if(!callback)
-        {
+        if (!callback) {
             return true;
         }
         return callback(buffer, buffer_size, userdata);
@@ -33,11 +32,9 @@ class ReadCallback {
 class HeaderCallback {
   public:
     HeaderCallback() = default;
-    // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
     HeaderCallback(std::function<bool(std::string_view header, intptr_t userdata)> p_callback, intptr_t p_userdata = 0) : userdata(p_userdata), callback(std::move(p_callback)) {}
     bool operator()(std::string_view header) const {
-        if(!callback)
-        {
+        if (!callback) {
             return true;
         }
         return callback(header, userdata);
@@ -50,11 +47,9 @@ class HeaderCallback {
 class WriteCallback {
   public:
     WriteCallback() = default;
-    // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
     WriteCallback(std::function<bool(std::string_view data, intptr_t userdata)> p_callback, intptr_t p_userdata = 0) : userdata(p_userdata), callback(std::move(p_callback)) {}
     bool operator()(std::string_view data) const {
-        if(!callback)
-        {
+        if (!callback) {
             return true;
         }
         return callback(data, userdata);
@@ -67,11 +62,9 @@ class WriteCallback {
 class ProgressCallback {
   public:
     ProgressCallback() = default;
-    // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
     ProgressCallback(std::function<bool(cpr_pf_arg_t downloadTotal, cpr_pf_arg_t downloadNow, cpr_pf_arg_t uploadTotal, cpr_pf_arg_t uploadNow, intptr_t userdata)> p_callback, intptr_t p_userdata = 0) : userdata(p_userdata), callback(std::move(p_callback)) {}
     bool operator()(cpr_pf_arg_t downloadTotal, cpr_pf_arg_t downloadNow, cpr_pf_arg_t uploadTotal, cpr_pf_arg_t uploadNow) const {
-        if(!callback)
-        {
+        if (!callback) {
             return true;
         }
         return callback(downloadTotal, downloadNow, uploadTotal, uploadNow, userdata);
@@ -83,7 +76,7 @@ class ProgressCallback {
 
 class DebugCallback {
   public:
-    enum class InfoType {
+    enum class InfoType : uint8_t {
         TEXT = 0,
         HEADER_IN = 1,
         HEADER_OUT = 2,
@@ -93,11 +86,9 @@ class DebugCallback {
         SSL_DATA_OUT = 6,
     };
     DebugCallback() = default;
-    // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
     DebugCallback(std::function<void(InfoType type, std::string_view data, intptr_t userdata)> p_callback, intptr_t p_userdata = 0) : userdata(p_userdata), callback(std::move(p_callback)) {}
     void operator()(InfoType type, std::string_view data) const {
-        if(!callback)
-        {
+        if (!callback) {
             return;
         }
         callback(type, data, userdata);
@@ -122,7 +113,7 @@ class CancellationCallback {
     void SetProgressCallback(ProgressCallback& u_cb);
 
   private:
-    std::shared_ptr<std::atomic_bool> cancellation_state;
+    std::shared_ptr<std::atomic_bool> cancellation_state{nullptr};
     std::optional<std::reference_wrapper<ProgressCallback>> user_cb;
 };
 

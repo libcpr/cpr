@@ -1,8 +1,8 @@
 #include "cpr/cprtypes.h"
-
 #include <algorithm>
 #include <cctype>
 #include <string>
+
 
 namespace cpr {
 bool CaseInsensitiveCompare::operator()(const std::string& a, const std::string& b) const noexcept {

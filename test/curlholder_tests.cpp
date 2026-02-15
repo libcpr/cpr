@@ -10,7 +10,7 @@
 TEST(CurlholderTests, MoveOperator) {
     cpr::CurlHolder a;
     cpr::CurlHolder b;
-    
+
     a = std::move(b);
 }
 

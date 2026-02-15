@@ -1,9 +1,10 @@
-#ifndef CPR_THREAD_POOL_H
-#define CPR_THREAD_POOL_H
+#ifndef CPR_THREADPOOL_H
+#define CPR_THREADPOOL_H
 
 #include <atomic>
 #include <chrono>
 #include <condition_variable>
+#include <cstdint>
 #include <functional>
 #include <future>
 #include <list>
@@ -53,19 +54,19 @@ class ThreadPool {
         return idle_thread_num;
     }
 
-    bool IsStarted() const {
-        return status != STOP;
+    [[nodiscard]] bool IsStarted() const {
+        return status != Status::STOP;
     }
 
-    bool IsStopped() const {
-        return status == STOP;
+    [[nodiscard]] bool IsStopped() const {
+        return status == Status::STOP;
     }
 
     int Start(size_t start_threads = 0);
     int Stop();
     int Pause();
     int Resume();
-    int Wait() const;
+    void Wait();
 
     /**
      * Return a future, calling future.get() will wait task done and return RetType.
@@ -75,7 +76,7 @@ class ThreadPool {
      **/
     template <class Fn, class... Args>
     auto Submit(Fn&& fn, Args&&... args) {
-        if (status == STOP) {
+        if (status == Status::STOP) {
             Start();
         }
         if (idle_thread_num <= 0 && cur_thread_num < max_thread_num) {
@@ -85,7 +86,7 @@ class ThreadPool {
         auto task = std::make_shared<std::packaged_task<RetType()>>([fn = std::forward<Fn>(fn), args...]() mutable { return std::invoke(fn, args...); });
         std::future<RetType> future = task->get_future();
         {
-            std::lock_guard<std::mutex> locker(task_mutex);
+            std::scoped_lock const locker(task_mutex);
             tasks.emplace([task] { (*task)(); });
         }
 
@@ -104,7 +105,7 @@ class ThreadPool {
     std::chrono::milliseconds max_idle_time;
 
   private:
-    enum Status {
+    enum class Status : uint8_t {
         STOP,
         RUNNING,
         PAUSE,
@@ -113,24 +114,24 @@ class ThreadPool {
     struct ThreadData {
         std::shared_ptr<std::thread> thread;
         std::thread::id id;
-        Status status;
+        Status status{Status::STOP};
         std::chrono::steady_clock::time_point start_time;
         std::chrono::steady_clock::time_point stop_time;
     };
 
     std::atomic<Status> status{Status::STOP};
-    std::condition_variable status_wait_cond{};
-    std::mutex status_wait_mutex{};
+    std::condition_variable status_wait_cond;
+    std::mutex status_wait_mutex;
 
     std::atomic<size_t> cur_thread_num{0};
     std::atomic<size_t> idle_thread_num{0};
 
-    std::list<ThreadData> threads{};
-    std::mutex thread_mutex{};
+    std::list<ThreadData> threads;
+    std::mutex thread_mutex;
 
-    std::queue<Task> tasks{};
-    std::mutex task_mutex{};
-    std::condition_variable task_cond{};
+    std::queue<Task> tasks;
+    std::mutex task_mutex;
+    std::condition_variable task_cond;
 };
 
 } // namespace cpr

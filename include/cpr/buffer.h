@@ -12,7 +12,7 @@ struct Buffer {
 
     template <typename Iterator>
     Buffer(Iterator begin, Iterator end, fs::path&& p_filename)
-            // Ignored here since libcurl reqires a long.
+            // Ignored here since libcurl requires a long.
             // There is also no way around the reinterpret_cast.
             // NOLINTNEXTLINE(google-runtime-int, cppcoreguidelines-pro-type-reinterpret-cast)
             : data{reinterpret_cast<data_t>(&(*begin))}, datalen{static_cast<size_t>(std::distance(begin, end))}, filename(std::move(p_filename)) {
@@ -21,7 +21,7 @@ struct Buffer {
     }
 
     template <typename Iterator>
-    typename std::enable_if<std::is_same<typename std::iterator_traits<Iterator>::iterator_category, std::random_access_iterator_tag>::value>::type is_random_access_iterator(Iterator /* begin */, Iterator /* end */) {}
+    static std::enable_if_t<std::is_same_v<typename std::iterator_traits<Iterator>::iterator_category, std::random_access_iterator_tag>> is_random_access_iterator(Iterator /* begin */, Iterator /* end */) {}
 
     data_t data;
     size_t datalen;

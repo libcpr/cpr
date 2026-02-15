@@ -7,7 +7,6 @@ namespace cpr {
 
 class LocalPort {
   public:
-    // NOLINTNEXTLINE(google-explicit-constructor)
     LocalPort(const std::uint16_t p_localport) : localport_(p_localport) {}
 
     operator std::uint16_t() const {

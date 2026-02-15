@@ -42,7 +42,7 @@ class Cookie {
     /**
      * TODO: Update the implementation using `std::chrono::utc_clock` of C++20
      **/
-    std::chrono::system_clock::time_point expires_{};
+    std::chrono::system_clock::time_point expires_;
 };
 
 class Cookies {
@@ -60,10 +60,8 @@ class Cookies {
      **/
     bool encode{true};
 
-    // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
     Cookies(bool p_encode = true) : encode{p_encode} {}
     Cookies(const std::initializer_list<cpr::Cookie>& cookies, bool p_encode = true) : encode{p_encode}, cookies_{cookies} {}
-    // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
     Cookies(const cpr::Cookie& cookie, bool p_encode = true) : encode{p_encode}, cookies_{cookie} {}
 
     cpr::Cookie& operator[](size_t pos);
@@ -86,7 +84,6 @@ class Cookies {
   private:
     std::vector<cpr::Cookie> cookies_;
 };
-
 } // namespace cpr
 
 #endif
