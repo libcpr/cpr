@@ -9,10 +9,15 @@
 #include <mutex>
 #include <thread>
 #include <utility>
+#include <vector>
 
 namespace cpr {
 // NOLINTNEXTLINE(cert-err58-cpp) Not relevant since trivial function.
 size_t ThreadPool::DEFAULT_MAX_THREAD_COUNT = std::max<size_t>(std::thread::hardware_concurrency(), static_cast<size_t>(1));
+
+namespace {
+constexpr std::chrono::milliseconds THREAD_IDLE_TIMEOUT{250};
+} // namespace
 
 ThreadPool::ThreadPool(size_t minThreadCount, size_t maxThreadCount) : minThreadCount(minThreadCount), maxThreadCount(maxThreadCount) {
     assert(minThreadCount <= maxThreadCount);
@@ -44,45 +49,92 @@ size_t ThreadPool::GetMinThreadCount() const {
 }
 
 void ThreadPool::SetMinThreadCount(size_t minThreadCount) {
-    assert(minThreadCount <= maxThreadCount);
+    const std::unique_lock lock(controlMutex);
+    assert(minThreadCount <= maxThreadCount.load());
     this->minThreadCount = minThreadCount;
+
+    if (state == State::RUNNING) {
+        while (curThreadCount < this->minThreadCount) {
+            addThread();
+        }
+    }
 }
 
 void ThreadPool::SetMaxThreadCount(size_t maxThreadCount) {
-    assert(minThreadCount <= maxThreadCount);
+    const std::unique_lock lock(controlMutex);
+    assert(minThreadCount.load() <= maxThreadCount);
     this->maxThreadCount = maxThreadCount;
 }
 
 void ThreadPool::Start() {
     const std::unique_lock lock(controlMutex);
     if (setState(State::RUNNING)) {
-        for (size_t i = 0; i < std::max(minThreadCount.load(), tasks.size()); i++) {
+        size_t taskCount{0};
+        {
+            const std::unique_lock queueLock(taskQueueMutex);
+            taskCount = tasks.size();
+        }
+
+        const size_t targetThreadCount = std::min(maxThreadCount.load(), std::max(minThreadCount.load(), taskCount));
+        while (curThreadCount < targetThreadCount) {
             addThread();
         }
     }
 }
 
 void ThreadPool::Stop() {
-    const std::unique_lock controlLock(controlMutex);
-    setState(State::STOP);
+    {
+        const std::unique_lock controlLock(controlMutex);
+        setState(State::STOP);
+    }
     taskQueueCondVar.notify_all();
 
-    // Join all workers
-    const std::unique_lock workersLock{workerMutex};
-    auto iter = workers.begin();
-    while (iter != workers.end()) {
-        if (iter->thread->joinable()) {
-            iter->thread->join();
+    std::vector<std::unique_ptr<std::thread>> workersToJoin;
+    {
+        const std::unique_lock workersLock{workerMutex};
+        workersToJoin.reserve(workers.size());
+        for (auto& worker : workers) {
+            workersToJoin.emplace_back(std::move(worker.thread));
         }
-        iter = workers.erase(iter);
+        workers.clear();
     }
+
+    for (auto& worker : workersToJoin) {
+        if (worker != nullptr && worker->joinable()) {
+            worker->join();
+        }
+    }
+
+    {
+        const std::unique_lock queueLock(taskQueueMutex);
+        std::queue<std::function<void()>> emptyTasks;
+        tasks.swap(emptyTasks);
+    }
+
+    curThreadCount = 0;
+    idleThreadCount = 0;
 }
 
 void ThreadPool::Wait() const {
     while (true) {
-        if ((state != State::RUNNING && curThreadCount <= 0) || (tasks.empty() && curThreadCount <= idleThreadCount)) {
+        const State currentState = state.load();
+        const size_t currentThreadCount = curThreadCount.load();
+        const size_t currentIdleThreadCount = idleThreadCount.load();
+
+        bool hasPendingTasks{false};
+        {
+            const std::unique_lock queueLock(taskQueueMutex);
+            hasPendingTasks = !tasks.empty();
+        }
+
+        if (currentState != State::RUNNING) {
+            if (currentThreadCount == 0) {
+                break;
+            }
+        } else if (!hasPendingTasks && currentThreadCount <= currentIdleThreadCount) {
             break;
         }
+
         std::this_thread::yield();
     }
 }
@@ -97,82 +149,56 @@ bool ThreadPool::setState(State state) {
 }
 
 void ThreadPool::addThread() {
-    assert(state != State::STOP);
+    const std::unique_lock controlLock(controlMutex);
+    if (state == State::STOP || curThreadCount >= maxThreadCount) {
+        return;
+    }
 
     const std::unique_lock lock{workerMutex};
     workers.emplace_back();
-    workers.back().thread = std::make_unique<std::thread>(&ThreadPool::threadFunc, this, std::ref(workers.back()));
+    workers.back().thread = std::make_unique<std::thread>(&ThreadPool::threadFunc, this);
     curThreadCount++;
     idleThreadCount++;
 }
 
-void ThreadPool::threadFunc(WorkerThread& workerThread) {
+void ThreadPool::threadFunc() {
     while (true) {
-        std::cv_status result{std::cv_status::no_timeout};
+        std::function<void()> task;
+        bool waitTimedOut{false};
         {
-            std::unique_lock lock(taskQueueMutex);
-            if (tasks.empty()) {
-                result = taskQueueCondVar.wait_for(lock, std::chrono::milliseconds(250));
-            }
-        }
+            std::unique_lock queueLock(taskQueueMutex);
 
-        if (state == State::STOP) {
-            curThreadCount--;
-            break;
-        }
+            const bool shouldContinue = taskQueueCondVar.wait_for(queueLock, THREAD_IDLE_TIMEOUT, [this]() { return state == State::STOP || !tasks.empty(); });
+            waitTimedOut = !shouldContinue;
 
-        // A timeout has been reached check if we should cleanup the thread
-        if (result == std::cv_status::timeout) {
-            const std::unique_lock lock(controlMutex);
-            if (curThreadCount > minThreadCount) {
-                curThreadCount--;
+            if (state == State::STOP) {
                 break;
             }
-        }
 
-        // Check for tasks and execute one
-        std::function<void()> task;
-        {
-            const std::unique_lock lock(taskQueueMutex);
-            if (!tasks.empty()) {
+            if (!waitTimedOut && !tasks.empty()) {
                 idleThreadCount--;
                 task = std::move(tasks.front());
                 tasks.pop();
             }
         }
 
-        // Execute the task
+        if (waitTimedOut) {
+            const std::unique_lock lock(controlMutex);
+            if (curThreadCount > minThreadCount) {
+                curThreadCount--;
+                idleThreadCount--;
+                return;
+            }
+            continue;
+        }
+
         if (task) {
             task();
             idleThreadCount++;
         }
     }
 
-    // Make sure we clean up other stopped threads
-    if (state != State::STOP) {
-        joinStoppedThreads();
-    }
-
-    workerThread.state = State::STOP;
-
-    // Mark worker thread to be removed
-    workerJoinReadyCount++;
+    curThreadCount--;
     idleThreadCount--;
-}
-
-void ThreadPool::joinStoppedThreads() {
-    const std::unique_lock lock{workerMutex};
-    auto iter = workers.begin();
-    while (iter != workers.end()) {
-        if (iter->state == State::STOP) {
-            if (iter->thread->joinable()) {
-                iter->thread->join();
-            }
-            iter = workers.erase(iter);
-            workerJoinReadyCount--;
-        } else {
-            iter++;
-        }
-    }
 }
 } // namespace cpr
