@@ -1,0 +1,167 @@
+name: C++20 Modules CI
+on: [push, workflow_dispatch, pull_request]
+
+env:
+  # Enable verbose output for CMake and tests
+  VERBOSE: 1
+  CTEST_OUTPUT_ON_FAILURE: 1
+
+jobs:
+  ubuntu-clang-modules:
+    strategy:
+      matrix:
+        buildType: [Debug, Release]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Update package list
+      run: sudo apt update
+    - name: Install Dependencies
+      run: |
+        sudo apt install -y git libssl-dev build-essential libcurl4-openssl-dev libpsl-dev meson libunistring-dev ninja-build wget
+        # Install Clang 21+
+        wget https://apt.llvm.org/llvm.sh
+        chmod +x llvm.sh
+        sudo ./llvm.sh 21
+        sudo apt install -y libc++-21-dev libc++abi-21-dev
+      env:
+        DEBIAN_FRONTEND: noninteractive
+    - name: Install CMake 3.28+
+      run: |
+        wget -O cmake.sh https://github.com/Kitware/CMake/releases/download/v3.28.3/cmake-3.28.3-linux-x86_64.sh
+        sudo sh cmake.sh --prefix=/usr/local --skip-license
+        cmake --version
+    - name: Checkout
+      uses: actions/checkout@v5
+    - name: Configure
+      run: |
+        cmake -S . -B build \
+          -DCMAKE_BUILD_TYPE=${{ matrix.buildType }} \
+          -DCMAKE_CXX_COMPILER=clang++-21 \
+          -DCMAKE_C_COMPILER=clang-21 \
+          -DCPR_BUILD_MODULES=ON \
+          -DCPR_BUILD_TESTS=ON \
+          -DCPR_BUILD_TESTS_SSL=ON \
+          -DCPR_FORCE_OPENSSL_BACKEND=ON \
+          -DCPR_USE_SYSTEM_CURL=OFF \
+          -G Ninja
+    - name: Build
+      run: cmake --build build --verbose
+    - name: Test
+      run: ctest --test-dir build --output-on-failure --repeat until-pass:5
+    - name: Verify Module Build
+      run: |
+        echo "Contents of build/modules:"
+        ls -la build/modules/
+        if [ -f build/modules/libcpr_module.a ] || [ -f build/modules/libcpr_module.so ] || [ -f build/modules/cpr_module.a ] || find build/modules -name "*cpr_module*" -type f | grep -q .; then
+          echo "Module library built successfully"
+        else
+          echo "Error: Module library not found"
+          exit 1
+        fi
+
+  fedora-gcc-modules:
+    runs-on: ubuntu-latest
+    container: "fedora:latest"
+    steps:
+    - name: Update package list
+      run: dnf update -y
+    - name: Install Dependencies
+      run: dnf install -y gcc g++ git make openssl-devel libcurl-devel cmake libpsl-devel libunistring-devel meson ninja-build
+    - name: Checkout
+      uses: actions/checkout@v5
+    - name: Configure
+      run: |
+        cmake -S . -B build \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DCPR_BUILD_MODULES=ON \
+          -DCPR_BUILD_TESTS=ON \
+          -DCPR_BUILD_TESTS_SSL=ON \
+          -DCPR_FORCE_OPENSSL_BACKEND=ON \
+          -DCPR_USE_SYSTEM_CURL=OFF \
+          -G Ninja
+    - name: Build
+      run: cmake --build build --verbose
+    - name: Test
+      run: ctest --test-dir build --output-on-failure --repeat until-pass:5
+    - name: Verify Module Build
+      run: |
+        echo "Contents of build/modules:"
+        ls -la build/modules/
+        if [ -f build/modules/libcpr_module.a ] || [ -f build/modules/libcpr_module.so ] || [ -f build/modules/cpr_module.a ] || find build/modules -name "*cpr_module*" -type f | grep -q .; then
+          echo "Module library built successfully"
+        else
+          echo "Error: Module library not found"
+          exit 1
+        fi
+
+  windows-msvc-modules:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/setup-python@v6
+    - name: Install meson
+      run: pip install meson
+    - name: Setup MSVC environment
+      uses: ilammy/msvc-dev-cmd@v1
+    - name: Checkout
+      uses: actions/checkout@v5
+    - name: Install dependencies via vcpkg
+      run: |
+        vcpkg install curl zlib openssl --triplet x64-windows
+      shell: pwsh
+    - name: Configure
+      run: |
+        cmake -S . -B build `
+          -DCMAKE_BUILD_TYPE=Release `
+          -DCMAKE_TOOLCHAIN_FILE="C:/vcpkg/scripts/buildsystems/vcpkg.cmake" `
+          -DVCPKG_TARGET_TRIPLET=x64-windows `
+          -DCPR_BUILD_MODULES=ON `
+          -DCPR_BUILD_TESTS=ON `
+          -DCPR_BUILD_TESTS_SSL=OFF `
+          -DCPR_USE_SYSTEM_CURL=ON `
+          -G "Visual Studio 17 2022"
+      shell: pwsh
+    - name: Build
+      run: cmake --build build --config Release --verbose
+    - name: Test
+      run: ctest --test-dir build -C Release --output-on-failure --repeat until-pass:5
+    - name: Verify Module Build
+      run: |
+        Write-Host "Contents of build/modules/Release:"
+        Get-ChildItem -Path build/modules/Release -Force
+        if (!(Test-Path "build/modules/Release/cpr_module.lib") -and !(Get-ChildItem -Path build/modules -Recurse -Filter "*cpr_module*")) {
+          throw "Module library not found"
+        }
+        Write-Host "Module library built successfully"
+      shell: pwsh
+
+  macos-clang-modules:
+    runs-on: macos-latest
+    steps:
+    - name: Install Dependencies
+      run: |
+        brew install libpsl ninja
+    - name: Checkout
+      uses: actions/checkout@v5
+    - name: Configure
+      run: |
+        cmake -S . -B build \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DCPR_BUILD_MODULES=ON \
+          -DCPR_BUILD_TESTS=ON \
+          -DCPR_BUILD_TESTS_SSL=OFF \
+          -DCPR_USE_SYSTEM_LIB_PSL=ON \
+          -G Ninja
+    - name: Build
+      run: cmake --build build --verbose
+    - name: Test
+      run: ctest --test-dir build --output-on-failure --repeat until-pass:5
+    - name: Verify Module Build
+      run: |
+        echo "Contents of build/modules:"
+        ls -la build/modules/
+        if [ -f build/modules/libcpr_module.a ] || [ -f build/modules/libcpr_module.dylib ] || [ -f build/modules/cpr_module.a ] || find build/modules -name "*cpr_module*" -type f | grep -q .; then
+          echo "Module library built successfully"
+        else
+          echo "Error: Module library not found"
+          exit 1
+        fi

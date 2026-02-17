@@ -9,7 +9,8 @@ class UnixSocket {
   public:
     UnixSocket(std::string unix_socket) : unix_socket_(std::move(unix_socket)) {}
 
-    [[nodiscard]] const char* GetUnixSocketString() const noexcept;
+    [[nodiscard]]
+    const char* GetUnixSocketString() const noexcept;
 
   private:
     const std::string unix_socket_;
