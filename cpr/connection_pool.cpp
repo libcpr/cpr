@@ -19,6 +19,7 @@ ConnectionPool::ConnectionPool() {
     };
 
     curl_share_setopt(curl_share, CURLSHOPT_SHARE, CURL_LOCK_DATA_CONNECT);
+    curl_share_setopt(curl_share, CURLSHOPT_SHARE, CURL_LOCK_DATA_SSL_SESSION);
     curl_share_setopt(curl_share, CURLSHOPT_USERDATA, this->connection_mutex_.get());
     curl_share_setopt(curl_share, CURLSHOPT_LOCKFUNC, lock_f);
     curl_share_setopt(curl_share, CURLSHOPT_UNLOCKFUNC, unlock_f);
