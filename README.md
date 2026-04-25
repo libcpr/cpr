@@ -147,47 +147,8 @@ ctest -VV # -VV is optional since it enables verbose output
 ```
 
 ### Bazel
-`cpr` can be added as an extension by adding the following lines to your bazel MODULE file (tested with Bazel 8). Edit the versions as needed.
-```starlark
-bazel_dep(name = "curl", version = "8.8.0.bcr.3")
-git_repository = use_repo_rule("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
-git_repository(
-    name = "cpr",
-    build_file = "//path/to/build:cpr.BUILD",
-    commit = "516cb3e5f4e38bede088f69fcf122c6089e38f00",
-    remote = "https://github.com/libcpr/cpr.git",
-    patches = ["//path/to/patch:cpr.PATCH"]
-)
-```
+`cpr` is available as a module from the [Bazel Central Registry](https://registry.bazel.build/). Please refer to the [module page](https://registry.bazel.build/modules/cpr) on how to use it within your project.
 
-```starlark
-// cpr.BUILD
-cc_library(
-    name = "cpr",
-    hdrs = glob(["include/**/*.h"]),
-    includes = ["include"],
-    visibility = ["//visibility:public"],
-
-    srcs = glob(["cpr/**/*.cpp"]),
-    deps = [
-        "@curl//:curl"
-    ],
-)
-```
-
-```starlark
-// Remove this line: cpr.PATCH
---- include/cpr/cpr.h
-+++ include/cpr/cpr.h
-@@ -10,7 +10,6 @@
- #include "cpr/connection_pool.h"
- #include "cpr/cookies.h"
- #include "cpr/cprtypes.h"
--#include "cpr/cprver.h"
- #include "cpr/curl_container.h"
- #include "cpr/curlholder.h"
- #include "cpr/error.h"
-```
 
 ### Packages for Linux Distributions
 
