@@ -1,6 +1,8 @@
 #ifndef CPR_SESSION_H
 #define CPR_SESSION_H
 
+#include "cpr/export.h"
+
 #include <cstdint>
 #include <fstream>
 #include <functional>
@@ -48,13 +50,13 @@
 
 namespace cpr {
 
-using AsyncResponse = AsyncWrapper<Response>;
-using Content = std::variant<std::monostate, cpr::Payload, cpr::Body, cpr::BodyView, cpr::Multipart>;
+EXPORT_CPR using AsyncResponse = AsyncWrapper<Response>;
+EXPORT_CPR using Content = std::variant<std::monostate, cpr::Payload, cpr::Body, cpr::BodyView, cpr::Multipart>;
 
-class Interceptor;
-class MultiPerform;
+EXPORT_CPR class Interceptor;
+EXPORT_CPR class MultiPerform;
 
-class Session : public std::enable_shared_from_this<Session> {
+EXPORT_CPR class Session : public std::enable_shared_from_this<Session> {
   public:
     Session();
     Session(const Session& other) = delete;

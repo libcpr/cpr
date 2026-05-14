@@ -1,13 +1,15 @@
 #ifndef CPR_ASYNC_H
 #define CPR_ASYNC_H
 
+#include "cpr/export.h"
+
 #include "async_wrapper.h"
 #include "singleton.h"
 #include "threadpool.h"
 
 namespace cpr {
 
-class GlobalThreadPool : public ThreadPool {
+EXPORT_CPR class GlobalThreadPool : public ThreadPool {
     CPR_SINGLETON_DECL(GlobalThreadPool)
   protected:
     GlobalThreadPool() = default;
@@ -22,7 +24,7 @@ class GlobalThreadPool : public ThreadPool {
  * async(std::bind(&Class::mem_fn, &obj))
  * async(std::mem_fn(&Class::mem_fn, &obj))
  **/
-template <bool isCancellable = false, class Fn, class... Args>
+EXPORT_CPR template <bool isCancellable = false, class Fn, class... Args>
 auto async(Fn&& fn, Args&&... args) {
     std::future future = GlobalThreadPool::GetInstance()->Submit(std::forward<Fn>(fn), std::forward<Args>(args)...);
     using async_wrapper_t = AsyncWrapper<decltype(future.get()), isCancellable>;
@@ -33,7 +35,7 @@ auto async(Fn&& fn, Args&&... args) {
     }
 }
 
-class async {
+EXPORT_CPR class async {
   public:
     static void startup(size_t min_threads = CPR_DEFAULT_THREAD_POOL_MIN_THREAD_NUM, size_t max_threads = CPR_DEFAULT_THREAD_POOL_MAX_THREAD_NUM, std::chrono::milliseconds max_idle_ms = CPR_DEFAULT_THREAD_POOL_MAX_IDLE_TIME) {
         GlobalThreadPool* gtp = GlobalThreadPool::GetInstance();

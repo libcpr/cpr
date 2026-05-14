@@ -1,6 +1,8 @@
 #ifndef CPR_SSL_OPTIONS_H
 #define CPR_SSL_OPTIONS_H
 
+#include "cpr/export.h"
+
 #include <memory>
 #include <string>
 #include <vector>
@@ -76,7 +78,7 @@
 
 namespace cpr {
 
-class VerifySsl {
+EXPORT_CPR class VerifySsl {
   public:
     VerifySsl() = default;
     VerifySsl(bool p_verify) : verify(p_verify) {}
@@ -91,7 +93,7 @@ class VerifySsl {
 namespace ssl {
 
 // set SSL client certificate
-class CertFile {
+EXPORT_CPR class CertFile {
   public:
     CertFile(fs::path&& p_filename) : filename(std::move(p_filename)) {}
 
@@ -104,9 +106,9 @@ class CertFile {
     }
 };
 
-using PemCert = CertFile;
+EXPORT_CPR using PemCert = CertFile;
 
-class DerCert : public CertFile {
+EXPORT_CPR class DerCert : public CertFile {
   public:
     DerCert(fs::path&& p_filename) : CertFile(std::move(p_filename)) {}
 
@@ -119,7 +121,7 @@ class DerCert : public CertFile {
 
 
 #if SUPPORT_CURLOPT_SSLCERT_BLOB
-class CertBlob {
+EXPORT_CPR class CertBlob {
   public:
     CertBlob(std::string&& p_blob) : blob(std::move(p_blob)) {}
 
@@ -132,9 +134,9 @@ class CertBlob {
     }
 };
 
-using PemBlob = CertBlob;
+EXPORT_CPR using PemBlob = CertBlob;
 
-class DerBlob : public CertBlob {
+EXPORT_CPR class DerBlob : public CertBlob {
   public:
     template <typename BlobType>
     // NOLINTNEXTLINE(bugprone-forwarding-reference-overload)
@@ -149,7 +151,7 @@ class DerBlob : public CertBlob {
 #endif
 
 // specify private keyfile for TLS and SSL client cert
-class KeyFile {
+EXPORT_CPR class KeyFile {
   public:
     KeyFile(fs::path&& p_filename) : filename(std::move(p_filename)) {}
 
@@ -167,7 +169,7 @@ class KeyFile {
 };
 
 #if SUPPORT_CURLOPT_SSLKEY_BLOB
-class KeyBlob {
+EXPORT_CPR class KeyBlob {
   public:
     KeyBlob(std::string&& p_blob) : blob(std::move(p_blob)) {}
 
@@ -185,9 +187,9 @@ class KeyBlob {
 };
 #endif
 
-using PemKey = KeyFile;
+EXPORT_CPR using PemKey = KeyFile;
 
-class DerKey : public KeyFile {
+EXPORT_CPR class DerKey : public KeyFile {
   public:
     DerKey(fs::path&& p_filename) : KeyFile(std::move(p_filename)) {}
 
@@ -201,7 +203,7 @@ class DerKey : public KeyFile {
     }
 };
 
-class PinnedPublicKey {
+EXPORT_CPR class PinnedPublicKey {
   public:
     PinnedPublicKey(std::string&& p_pinned_public_key) : pinned_public_key(std::move(p_pinned_public_key)) {}
 
@@ -211,7 +213,7 @@ class PinnedPublicKey {
 #if SUPPORT_ALPN
 // This option enables/disables ALPN in the SSL handshake (if the SSL backend libcurl is built to
 // use supports it), which can be used to negotiate http2.
-class ALPN {
+EXPORT_CPR class ALPN {
   public:
     ALPN() = default;
     ALPN(bool p_enabled) : enabled(p_enabled) {}
@@ -227,7 +229,7 @@ class ALPN {
 #if SUPPORT_NPN
 //  This option enables/disables NPN in the SSL handshake (if the SSL backend libcurl is built to
 //  use supports it), which can be used to negotiate http2.
-class NPN {
+EXPORT_CPR class NPN {
   public:
     NPN() = default;
     NPN(bool p_enabled) : enabled(p_enabled) {}
@@ -242,7 +244,7 @@ class NPN {
 
 // This option determines whether libcurl verifies that the server cert is for the server it is
 // known as.
-class VerifyHost {
+EXPORT_CPR class VerifyHost {
   public:
     VerifyHost() = default;
     VerifyHost(bool p_enabled) : enabled(p_enabled) {}
@@ -255,7 +257,7 @@ class VerifyHost {
 };
 
 // This option determines whether libcurl verifies the authenticity of the peer's certificate.
-class VerifyPeer {
+EXPORT_CPR class VerifyPeer {
   public:
     VerifyPeer() = default;
     VerifyPeer(bool p_enabled) : enabled(p_enabled) {}
@@ -269,7 +271,7 @@ class VerifyPeer {
 
 // This option determines whether libcurl verifies the status of the server cert using the
 // "Certificate Status Request" TLS extension (aka. OCSP stapling).
-class VerifyStatus {
+EXPORT_CPR class VerifyStatus {
   public:
     VerifyStatus(bool p_enabled) : enabled(p_enabled) {}
 
@@ -281,55 +283,55 @@ class VerifyStatus {
 };
 
 // TLS v1.0 or later
-struct TLSv1 {};
+EXPORT_CPR struct TLSv1 {};
 #if SUPPORT_SSLv2
 // SSL v2 (but not SSLv3)
-struct SSLv2 {};
+EXPORT_CPR struct SSLv2 {};
 #endif
 #if SUPPORT_SSLv3
 // SSL v3 (but not SSLv2)
-struct SSLv3 {};
+EXPORT_CPR struct SSLv3 {};
 #endif
 #if SUPPORT_TLSv1_0
 // TLS v1.0 or later (Added in 7.34.0)
-struct TLSv1_0 {};
+EXPORT_CPR struct TLSv1_0 {};
 #endif
 #if SUPPORT_TLSv1_1
 // TLS v1.1 or later (Added in 7.34.0)
-struct TLSv1_1 {};
+EXPORT_CPR struct TLSv1_1 {};
 #endif
 #if SUPPORT_TLSv1_2
 // TLS v1.2 or later (Added in 7.34.0)
-struct TLSv1_2 {};
+EXPORT_CPR struct TLSv1_2 {};
 #endif
 #if SUPPORT_TLSv1_3
 // TLS v1.3 or later (Added in 7.52.0)
-struct TLSv1_3 {};
+EXPORT_CPR struct TLSv1_3 {};
 #endif
 #if SUPPORT_MAX_TLS_VERSION
 // The flag defines the maximum supported TLS version by libcurl, or the default value from the SSL
 // library is used.
-struct MaxTLSVersion {};
+EXPORT_CPR struct MaxTLSVersion {};
 #endif
 #if SUPPORT_MAX_TLSv1_0
 // The flag defines maximum supported TLS version as TLSv1.0. (Added in 7.54.0)
-struct MaxTLSv1_0 {};
+EXPORT_CPR struct MaxTLSv1_0 {};
 #endif
 #if SUPPORT_MAX_TLSv1_1
 // The flag defines maximum supported TLS version as TLSv1.1. (Added in 7.54.0)
-struct MaxTLSv1_1 {};
+EXPORT_CPR struct MaxTLSv1_1 {};
 #endif
 #if SUPPORT_MAX_TLSv1_2
 // The flag defines maximum supported TLS version as TLSv1.2. (Added in 7.54.0)
-struct MaxTLSv1_2 {};
+EXPORT_CPR struct MaxTLSv1_2 {};
 #endif
 #if SUPPORT_MAX_TLSv1_3
 // The flag defines maximum supported TLS version as TLSv1.3. (Added in 7.54.0)
-struct MaxTLSv1_3 {};
+EXPORT_CPR struct MaxTLSv1_3 {};
 #endif
 
 // path to Certificate Authority (CA) bundle
-class CaInfo {
+EXPORT_CPR class CaInfo {
   public:
     CaInfo(fs::path&& p_filename) : filename(std::move(p_filename)) {}
 
@@ -338,7 +340,7 @@ class CaInfo {
 
 #if SUPPORT_CURLOPT_CAINFO_BLOB
 // Certificate Authority (CA) bundle as blob
-class CaInfoBlob {
+EXPORT_CPR class CaInfoBlob {
   public:
     CaInfoBlob(std::string&& p_blob) : blob(std::move(p_blob)) {}
 
@@ -347,7 +349,7 @@ class CaInfoBlob {
 #endif
 
 // specify directory holding CA certificates
-class CaPath {
+EXPORT_CPR class CaPath {
   public:
     CaPath(fs::path&& p_filename) : filename(std::move(p_filename)) {}
 
@@ -355,7 +357,7 @@ class CaPath {
 };
 
 #if SUPPORT_CURLOPT_SSL_CTX_FUNCTION
-class CaBuffer {
+EXPORT_CPR class CaBuffer {
   public:
     CaBuffer(std::string&& p_buffer) : buffer(std::move(p_buffer)) {}
 
@@ -364,7 +366,7 @@ class CaBuffer {
 #endif
 
 // specify a Certificate Revocation List file
-class Crl {
+EXPORT_CPR class Crl {
   public:
     Crl(fs::path&& p_filename) : filename(std::move(p_filename)) {}
 
@@ -372,7 +374,7 @@ class Crl {
 };
 
 // specify ciphers to use for TLS
-class Ciphers {
+EXPORT_CPR class Ciphers {
   public:
     Ciphers(std::string&& p_ciphers) : ciphers(std::move(p_ciphers)) {}
 
@@ -381,7 +383,7 @@ class Ciphers {
 
 #if SUPPORT_TLSv13_CIPHERS
 // specify ciphers suites to use for TLS 1.3
-class TLS13_Ciphers {
+EXPORT_CPR class TLS13_Ciphers {
   public:
     TLS13_Ciphers(std::string&& p_ciphers) : ciphers(std::move(p_ciphers)) {}
 
@@ -391,7 +393,7 @@ class TLS13_Ciphers {
 
 #if SUPPORT_SESSIONID_CACHE
 // enable/disable use of the SSL session-ID cache
-class SessionIdCache {
+EXPORT_CPR class SessionIdCache {
   public:
     SessionIdCache() = default;
     SessionIdCache(bool p_enabled) : enabled(p_enabled) {}
@@ -405,7 +407,7 @@ class SessionIdCache {
 #endif
 
 #if SUPPORT_SSL_FALSESTART
-class SslFastStart {
+EXPORT_CPR class SslFastStart {
   public:
     SslFastStart() = default;
     SslFastStart(bool p_enabled) : enabled(p_enabled) {}
@@ -418,7 +420,7 @@ class SslFastStart {
 };
 #endif
 
-class NoRevoke {
+EXPORT_CPR class NoRevoke {
   public:
     NoRevoke() = default;
     NoRevoke(bool p_enabled) : enabled(p_enabled) {}
@@ -432,7 +434,7 @@ class NoRevoke {
 
 } // namespace ssl
 
-struct SslOptions {
+EXPORT_CPR struct SslOptions {
     // We don't use fs::path here, as this leads to problems using windows
     std::string cert_file;
 #if SUPPORT_CURLOPT_SSLCERT_BLOB
@@ -640,7 +642,7 @@ void set_ssl_option(SslOptions& opts, T&& t, Ts&&... ts) {
 
 } // namespace priv
 
-template <typename... Ts>
+EXPORT_CPR template <typename... Ts>
 SslOptions Ssl(Ts&&... ts) {
     SslOptions opts;
     priv::set_ssl_option(opts, std::forward<Ts>(ts)...);

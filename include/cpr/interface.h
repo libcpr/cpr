@@ -1,6 +1,8 @@
 #ifndef CPR_INTERFACE_H
 #define CPR_INTERFACE_H
 
+#include "cpr/export.h"
+
 #include <initializer_list>
 #include <string>
 
@@ -8,7 +10,7 @@
 
 namespace cpr {
 
-class Interface : public StringHolder<Interface> {
+EXPORT_CPR class Interface : public StringHolder<Interface> {
   public:
     Interface() = default;
     Interface(std::string iface) : StringHolder<Interface>(std::move(iface)) {}

@@ -1,6 +1,8 @@
 #ifndef CPR_CONNECTION_POOL_H
 #define CPR_CONNECTION_POOL_H
 
+#include "cpr/export.h"
+
 #include <curl/curl.h>
 #include <memory>
 #include <mutex>
@@ -28,7 +30,7 @@ namespace cpr {
  * auto future2 = cpr::GetAsync(cpr::Url{"http://example.com/api/more"}, pool);
  * ```
  **/
-class ConnectionPool {
+EXPORT_CPR class ConnectionPool {
   public:
     /**
      * Creates a new connection pool with shared connection state.

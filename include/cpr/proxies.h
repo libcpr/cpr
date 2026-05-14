@@ -1,12 +1,14 @@
 #ifndef CPR_PROXIES_H
 #define CPR_PROXIES_H
 
+#include "cpr/export.h"
+
 #include <initializer_list>
 #include <map>
 #include <string>
 
 namespace cpr {
-class Proxies {
+EXPORT_CPR class Proxies {
   public:
     Proxies() = default;
     Proxies(const std::initializer_list<std::pair<const std::string, std::string>>& hosts);

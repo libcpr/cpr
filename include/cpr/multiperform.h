@@ -1,6 +1,8 @@
 #ifndef CPR_MULTIPERFORM_H
 #define CPR_MULTIPERFORM_H
 
+#include "cpr/export.h"
+
 #include "cpr/curlmultiholder.h"
 #include "cpr/response.h"
 #include "cpr/session.h"
@@ -12,9 +14,9 @@
 
 namespace cpr {
 
-class InterceptorMulti;
+EXPORT_CPR class InterceptorMulti;
 
-class MultiPerform {
+EXPORT_CPR class MultiPerform {
   public:
     enum class HttpMethod : uint8_t {
         UNDEFINED = 0,

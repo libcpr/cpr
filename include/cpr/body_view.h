@@ -1,13 +1,15 @@
 #ifndef CPR_BODY_VIEW_H
 #define CPR_BODY_VIEW_H
 
+#include "cpr/export.h"
+
 #include <string_view>
 
 #include "cpr/buffer.h"
 
 namespace cpr {
 
-class BodyView final {
+EXPORT_CPR class BodyView final {
   public:
     BodyView() = default;
     BodyView(std::string_view body) : m_body(body) {}

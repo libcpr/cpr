@@ -1,6 +1,8 @@
 #ifndef CPR_CURL_CONTAINER_H
 #define CPR_CURL_CONTAINER_H
 
+#include "cpr/export.h"
+
 #include <initializer_list>
 #include <memory>
 #include <string>
@@ -11,14 +13,14 @@
 
 namespace cpr {
 
-struct Parameter {
+EXPORT_CPR struct Parameter {
     Parameter(std::string p_key, std::string p_value) : key{std::move(p_key)}, value{std::move(p_value)} {}
 
     std::string key;
     std::string value;
 };
 
-struct Pair {
+EXPORT_CPR struct Pair {
     Pair(std::string p_key, std::string p_value) : key(std::move(p_key)), value(std::move(p_value)) {}
 
     std::string key;
@@ -26,7 +28,7 @@ struct Pair {
 };
 
 
-template <class T>
+EXPORT_CPR template <class T>
 class CurlContainer {
   public:
     /**

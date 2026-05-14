@@ -1,6 +1,8 @@
 #ifndef CPR_RESPONSE_H
 #define CPR_RESPONSE_H
 
+#include "cpr/export.h"
+
 #include <cassert>
 #include <cstdint>
 #include <memory>
@@ -17,9 +19,9 @@
 
 namespace cpr {
 
-class MultiPerform;
+EXPORT_CPR class MultiPerform;
 
-class Response {
+EXPORT_CPR class Response {
   private:
     friend MultiPerform;
     std::shared_ptr<CurlHolder> curl_{nullptr};

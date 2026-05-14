@@ -1,6 +1,8 @@
 #ifndef CPR_CURLHOLDER_H
 #define CPR_CURLHOLDER_H
 
+#include "cpr/export.h"
+
 #include <array>
 #include <curl/curl.h>
 #include <mutex>
@@ -9,7 +11,7 @@
 
 namespace cpr {
 
-struct CurlHolder {
+EXPORT_CPR struct CurlHolder {
   private:
     /**
      * Mutex for curl_easy_init().

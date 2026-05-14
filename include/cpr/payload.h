@@ -1,13 +1,15 @@
 #ifndef CPR_PAYLOAD_H
 #define CPR_PAYLOAD_H
 
+#include "cpr/export.h"
+
 #include <initializer_list>
 
 #include "cpr/curl_container.h"
 
 
 namespace cpr {
-class Payload : public CurlContainer<Pair> {
+EXPORT_CPR class Payload : public CurlContainer<Pair> {
   public:
     template <class It>
     Payload(const It begin, const It end) {
