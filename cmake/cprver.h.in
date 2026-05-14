@@ -3,18 +3,19 @@
 
 #include "cpr/export.h"
 #include <cstdint>
+#include <string_view>
 
 /**
  * CPR version as a string.
  **/
-EXPORT_CPR constexpr std::string CPR_VERSION{"${cpr_VERSION}"};
+EXPORT_CPR inline constexpr std::string_view CPR_VERSION{"${cpr_VERSION}"};
 
 /**
  * CPR version split up into parts.
  **/
-EXPORT_CPR constexpr uint8_t CPR_VERSION_MAJOR{${cpr_VERSION_MAJOR}};
-EXPORT_CPR constexpr uint8_t CPR_VERSION_MINOR{${cpr_VERSION_MINOR}};
-EXPORT_CPR constexpr uint8_t CPR_VERSION_PATCH{${cpr_VERSION_PATCH}};
+EXPORT_CPR inline constexpr uint8_t CPR_VERSION_MAJOR{${cpr_VERSION_MAJOR}};
+EXPORT_CPR inline constexpr uint8_t CPR_VERSION_MINOR{${cpr_VERSION_MINOR}};
+EXPORT_CPR inline constexpr uint8_t CPR_VERSION_PATCH{${cpr_VERSION_PATCH}};
 
 /**
  * CPR version as a single hex digit.
@@ -28,6 +29,6 @@ EXPORT_CPR constexpr uint8_t CPR_VERSION_PATCH{${cpr_VERSION_PATCH}};
  * '0x010702' -> 01.07.02 -> CPR_VERSION: 1.7.2
  * '0xA13722' -> A1.37.22 -> CPR_VERSION: 161.55.34
  **/
-EXPORT_CPR constexpr uint64_t CPR_VERSION_NUM{${cpr_VERSION_NUM}};
+EXPORT_CPR inline constexpr uint64_t CPR_VERSION_NUM{${cpr_VERSION_NUM}};
 
 #endif
