@@ -1,13 +1,15 @@
 #ifndef CPR_CERT_INFO_H
 #define CPR_CERT_INFO_H
 
+#include "cpr/export.h"
+
 #include <initializer_list>
 #include <string>
 #include <vector>
 
 namespace cpr {
 
-class CertInfo {
+EXPORT_CPR class CertInfo {
   private:
     std::vector<std::string> cert_info_;
 

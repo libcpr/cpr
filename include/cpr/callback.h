@@ -1,6 +1,8 @@
 #ifndef CPR_CALLBACK_H
 #define CPR_CALLBACK_H
 
+#include "cpr/export.h"
+
 #include "cprtypes.h"
 
 #include <atomic>
@@ -12,7 +14,7 @@
 
 namespace cpr {
 
-class ReadCallback {
+EXPORT_CPR class ReadCallback {
   public:
     ReadCallback() = default;
     ReadCallback(std::function<bool(char* buffer, size_t& size, intptr_t userdata)> p_callback, intptr_t p_userdata = 0) : userdata(p_userdata), size{-1}, callback{std::move(p_callback)} {}
@@ -29,7 +31,7 @@ class ReadCallback {
     std::function<bool(char* buffer, size_t& size, intptr_t userdata)> callback;
 };
 
-class HeaderCallback {
+EXPORT_CPR class HeaderCallback {
   public:
     HeaderCallback() = default;
     HeaderCallback(std::function<bool(std::string_view header, intptr_t userdata)> p_callback, intptr_t p_userdata = 0) : userdata(p_userdata), callback(std::move(p_callback)) {}
@@ -44,7 +46,7 @@ class HeaderCallback {
     std::function<bool(std::string_view header, intptr_t userdata)> callback;
 };
 
-class WriteCallback {
+EXPORT_CPR class WriteCallback {
   public:
     WriteCallback() = default;
     WriteCallback(std::function<bool(std::string_view data, intptr_t userdata)> p_callback, intptr_t p_userdata = 0) : userdata(p_userdata), callback(std::move(p_callback)) {}
@@ -59,7 +61,7 @@ class WriteCallback {
     std::function<bool(std::string_view data, intptr_t userdata)> callback;
 };
 
-class ProgressCallback {
+EXPORT_CPR class ProgressCallback {
   public:
     ProgressCallback() = default;
     ProgressCallback(std::function<bool(cpr_pf_arg_t downloadTotal, cpr_pf_arg_t downloadNow, cpr_pf_arg_t uploadTotal, cpr_pf_arg_t uploadNow, intptr_t userdata)> p_callback, intptr_t p_userdata = 0) : userdata(p_userdata), callback(std::move(p_callback)) {}
@@ -74,7 +76,7 @@ class ProgressCallback {
     std::function<bool(cpr_pf_arg_t downloadTotal, cpr_pf_arg_t downloadNow, cpr_pf_arg_t uploadTotal, cpr_pf_arg_t uploadNow, intptr_t userdata)> callback;
 };
 
-class DebugCallback {
+EXPORT_CPR class DebugCallback {
   public:
     enum class InfoType : uint8_t {
         TEXT = 0,
@@ -101,7 +103,7 @@ class DebugCallback {
 /**
  * Functor class for progress functions that will be used in cancellable requests.
  */
-class CancellationCallback {
+EXPORT_CPR class CancellationCallback {
   public:
     CancellationCallback() = default;
     explicit CancellationCallback(std::shared_ptr<std::atomic_bool>&& cs) : cancellation_state{std::move(cs)} {}

@@ -1,6 +1,8 @@
 #ifndef CPR_FILE_H
 #define CPR_FILE_H
 
+#include "cpr/export.h"
+
 #include <initializer_list>
 #include <string>
 #include <vector>
@@ -9,7 +11,7 @@
 
 namespace cpr {
 
-struct File {
+EXPORT_CPR struct File {
     explicit File(std::string p_filepath, const std::string& p_overriden_filename = {}) : filepath(std::move(p_filepath)), overriden_filename(p_overriden_filename) {}
 
     std::string filepath;
@@ -20,7 +22,7 @@ struct File {
     }
 };
 
-class Files {
+EXPORT_CPR class Files {
   public:
     Files() = default;
     Files(const File& p_file) : files{p_file} {}

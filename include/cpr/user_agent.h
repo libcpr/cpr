@@ -1,13 +1,15 @@
 #ifndef CPR_USER_AGENT_H
 #define CPR_USER_AGENT_H
 
+#include "cpr/export.h"
+
 #include <initializer_list>
 #include <string>
 
 #include "cpr/cprtypes.h"
 
 namespace cpr {
-class UserAgent : public StringHolder<UserAgent> {
+EXPORT_CPR class UserAgent : public StringHolder<UserAgent> {
   public:
     UserAgent() = default;
     UserAgent(std::string useragent) : StringHolder<UserAgent>(std::move(useragent)) {}

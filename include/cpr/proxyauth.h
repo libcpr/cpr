@@ -1,6 +1,8 @@
 #ifndef CPR_PROXYAUTH_H
 #define CPR_PROXYAUTH_H
 
+#include "cpr/export.h"
+
 #include <initializer_list>
 #include <map>
 #include <string>
@@ -10,9 +12,9 @@
 #include "cpr/util.h"
 
 namespace cpr {
-class ProxyAuthentication;
+EXPORT_CPR class ProxyAuthentication;
 
-class EncodedAuthentication {
+EXPORT_CPR class EncodedAuthentication {
     friend ProxyAuthentication;
 
   public:
@@ -35,7 +37,7 @@ class EncodedAuthentication {
     util::SecureString password;
 };
 
-class ProxyAuthentication {
+EXPORT_CPR class ProxyAuthentication {
   public:
     ProxyAuthentication() = default;
     ProxyAuthentication(const std::initializer_list<std::pair<const std::string, EncodedAuthentication>>& auths) : proxyAuth_{auths} {}

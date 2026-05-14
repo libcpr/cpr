@@ -69,13 +69,13 @@ if(CPR_USE_SYSTEM_CURL)
                 COMPATIBILITY ExactVersion)
 
         if(SSL_BACKEND_USED STREQUAL "OpenSSL")
-            configure_package_config_file(${PROJECT_SOURCE_DIR}/cmake/cprConfig-ssl.cmake.in
-                "${PROJECT_BINARY_DIR}/cpr/cprConfig.cmake"
-                INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/cpr)
+                configure_package_config_file(${PROJECT_SOURCE_DIR}/cmake/cprConfig-ssl.cmake.in
+                        "${PROJECT_BINARY_DIR}/cpr/cprConfig.cmake"
+                        INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/cpr)
         else()
-            configure_package_config_file(${PROJECT_SOURCE_DIR}/cmake/cprConfig.cmake.in
-                "${PROJECT_BINARY_DIR}/cpr/cprConfig.cmake"
-                INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/cpr)
+                configure_package_config_file(${PROJECT_SOURCE_DIR}/cmake/cprConfig.cmake.in
+                        "${PROJECT_BINARY_DIR}/cpr/cprConfig.cmake"
+                        INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/cpr)
         endif()
 
         if (CPR_ENABLE_INSTALL)

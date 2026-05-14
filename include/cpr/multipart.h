@@ -1,6 +1,8 @@
 #ifndef CPR_MULTIPART_H
 #define CPR_MULTIPART_H
 
+#include "cpr/export.h"
+
 #include <cstdint>
 #include <initializer_list>
 #include <string>
@@ -12,7 +14,7 @@
 
 namespace cpr {
 
-struct Part {
+EXPORT_CPR struct Part {
     Part(const std::string& p_name, const std::string& p_value, const std::string& p_content_type = {}) : name{p_name}, value{p_value}, content_type{p_content_type}, is_file{false}, is_buffer{false} {}
     Part(const std::string& p_name, const std::int32_t& p_value, const std::string& p_content_type = {}) : name{p_name}, value{std::to_string(p_value)}, content_type{p_content_type}, is_file{false}, is_buffer{false} {}
     Part(const std::string& p_name, const Files& p_files, const std::string& p_content_type = {}) : name{p_name}, content_type{p_content_type}, is_file{true}, is_buffer{false}, files{p_files} {}
@@ -31,7 +33,7 @@ struct Part {
     Files files;
 };
 
-class Multipart {
+EXPORT_CPR class Multipart {
   public:
     Multipart(const std::initializer_list<Part>& parts);
     explicit Multipart(const std::vector<Part>& parts);

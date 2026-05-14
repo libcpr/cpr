@@ -1,12 +1,14 @@
 #ifndef CPR_TIMEOUT_H
 #define CPR_TIMEOUT_H
 
+#include "cpr/export.h"
+
 #include <chrono>
 #include <cstdint>
 
 namespace cpr {
 
-class Timeout {
+EXPORT_CPR class Timeout {
   public:
     // Template constructor to accept any chrono duration type and convert it to milliseconds
     template <typename Rep, typename Period>

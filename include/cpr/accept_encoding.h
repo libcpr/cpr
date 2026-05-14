@@ -1,6 +1,8 @@
 #ifndef CPR_ACCEPT_ENCODING_H
 #define CPR_ACCEPT_ENCODING_H
 
+#include "cpr/export.h"
+
 #include <cstdint>
 #include <curl/curlver.h>
 #include <initializer_list>
@@ -11,7 +13,7 @@
 
 namespace cpr {
 
-enum class AcceptEncodingMethods : uint8_t {
+EXPORT_CPR enum class AcceptEncodingMethods : uint8_t {
     identity,
     deflate,
     zlib,
@@ -20,9 +22,9 @@ enum class AcceptEncodingMethods : uint8_t {
 };
 
 // NOLINTNEXTLINE(cert-err58-cpp)
-inline const std::map<AcceptEncodingMethods, std::string> AcceptEncodingMethodsStringMap{{AcceptEncodingMethods::identity, "identity"}, {AcceptEncodingMethods::deflate, "deflate"}, {AcceptEncodingMethods::zlib, "zlib"}, {AcceptEncodingMethods::gzip, "gzip"}, {AcceptEncodingMethods::disabled, "disabled"}};
+EXPORT_CPR inline const std::map<AcceptEncodingMethods, std::string> AcceptEncodingMethodsStringMap{{AcceptEncodingMethods::identity, "identity"}, {AcceptEncodingMethods::deflate, "deflate"}, {AcceptEncodingMethods::zlib, "zlib"}, {AcceptEncodingMethods::gzip, "gzip"}, {AcceptEncodingMethods::disabled, "disabled"}};
 
-class AcceptEncoding {
+EXPORT_CPR class AcceptEncoding {
   public:
     AcceptEncoding() = default;
     AcceptEncoding(const std::initializer_list<AcceptEncodingMethods>& methods);

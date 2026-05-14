@@ -1,13 +1,15 @@
 #ifndef CPR_INTERCEPTOR_H
 #define CPR_INTERCEPTOR_H
 
+#include "cpr/export.h"
+
 #include "cpr/multiperform.h"
 #include "cpr/response.h"
 #include "cpr/session.h"
 #include <vector>
 
 namespace cpr {
-class Interceptor {
+EXPORT_CPR class Interceptor {
   public:
     enum class ProceedHttpMethod : uint8_t {
         GET_REQUEST = 0,
@@ -38,7 +40,7 @@ class Interceptor {
     static Response proceed(Session& session, ProceedHttpMethod httpMethod, const WriteCallback& write);
 };
 
-class InterceptorMulti {
+EXPORT_CPR class InterceptorMulti {
   public:
     enum class ProceedHttpMethod : uint8_t {
         GET_REQUEST = 0,

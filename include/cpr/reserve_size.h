@@ -1,11 +1,13 @@
 #ifndef CPR_RESERVE_SIZE_H
 #define CPR_RESERVE_SIZE_H
 
+#include "cpr/export.h"
+
 #include <cstdint>
 
 namespace cpr {
 
-class ReserveSize {
+EXPORT_CPR class ReserveSize {
   public:
     ReserveSize(const std::size_t _size) : size(_size) {}
 

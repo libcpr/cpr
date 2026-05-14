@@ -1,11 +1,13 @@
 #ifndef CPR_HTTP_VERSION_H
 #define CPR_HTTP_VERSION_H
 
+#include "cpr/export.h"
+
 #include <cstdint>
 #include <curl/curlver.h>
 
 namespace cpr {
-enum class HttpVersionCode : uint8_t {
+EXPORT_CPR enum class HttpVersionCode : uint8_t {
     /**
      * Let libcurl decide which version is the best.
      **/
@@ -58,7 +60,7 @@ enum class HttpVersionCode : uint8_t {
 #endif
 };
 
-class HttpVersion {
+EXPORT_CPR class HttpVersion {
   public:
     /**
      * The HTTP version that should be used by libcurl when initiating a HTTP(S) connection.

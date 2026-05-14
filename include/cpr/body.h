@@ -1,6 +1,8 @@
 #ifndef CPR_BODY_H
 #define CPR_BODY_H
 
+#include "cpr/export.h"
+
 #include <exception>
 #include <fstream>
 #include <initializer_list>
@@ -12,7 +14,7 @@
 
 namespace cpr {
 
-class Body : public StringHolder<Body> {
+EXPORT_CPR class Body : public StringHolder<Body> {
   public:
     Body() = default;
     Body(std::string body) : StringHolder<Body>(std::move(body)) {}

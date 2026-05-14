@@ -1,6 +1,8 @@
 #ifndef CPR_CPRTYPES_H
 #define CPR_CPRTYPES_H
 
+#include "cpr/export.h"
+
 #include <curl/curl.h>
 #include <curl/system.h>
 #include <initializer_list>
@@ -14,18 +16,18 @@ namespace cpr {
 /**
  * Wrapper around "curl_off_t" to prevent applications from having to link against libcurl.
  **/
-using cpr_off_t = curl_off_t;
+EXPORT_CPR using cpr_off_t = curl_off_t;
 
 /**
  * The argument type for progress functions, dependent on libcurl version
  **/
 #if LIBCURL_VERSION_NUM < 0x072000
-using cpr_pf_arg_t = double;
+EXPORT_CPR using cpr_pf_arg_t = double;
 #else
-using cpr_pf_arg_t = cpr_off_t;
+EXPORT_CPR using cpr_pf_arg_t = cpr_off_t;
 #endif
 
-template <class T>
+EXPORT_CPR template <class T>
 class StringHolder {
   public:
   private:
@@ -139,13 +141,13 @@ class StringHolder {
     friend T;
 };
 
-template <class T>
+EXPORT_CPR template <class T>
 std::ostream& operator<<(std::ostream& os, const StringHolder<T>& s) {
     os << s.str();
     return os;
 }
 
-class Url : public StringHolder<Url> {
+EXPORT_CPR class Url : public StringHolder<Url> {
   public:
     Url() = default;
     Url(std::string url) : StringHolder<Url>(std::move(url)) {}
@@ -161,11 +163,11 @@ class Url : public StringHolder<Url> {
     Url& operator=(const Url& other) = default;
 };
 
-struct CaseInsensitiveCompare {
+EXPORT_CPR struct CaseInsensitiveCompare {
     bool operator()(const std::string& a, const std::string& b) const noexcept;
 };
 
-using Header = std::map<std::string, std::string, CaseInsensitiveCompare>;
+EXPORT_CPR using Header = std::map<std::string, std::string, CaseInsensitiveCompare>;
 
 } // namespace cpr
 

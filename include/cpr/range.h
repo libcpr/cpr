@@ -1,12 +1,16 @@
 #ifndef CPR_RANGE_H
 #define CPR_RANGE_H
 
+#include "cpr/export.h"
+
 #include <cstdint>
 #include <optional>
+#include <string>
+#include <vector>
 
 namespace cpr {
 
-class Range {
+EXPORT_CPR class Range {
   public:
     explicit Range(const std::optional<std::int64_t> p_resume_from = std::nullopt, const std::optional<std::int64_t> p_finish_at = std::nullopt) {
         resume_from = p_resume_from.value_or(0);
@@ -23,7 +27,7 @@ class Range {
     }
 };
 
-class MultiRange {
+EXPORT_CPR class MultiRange {
   public:
     MultiRange(std::initializer_list<Range> rs) : ranges{rs} {}
 

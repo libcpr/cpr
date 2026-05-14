@@ -22,9 +22,9 @@ endif()
 # Avoid the dll boilerplate code for windows
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
-if (PARENT_CXX_STANDARD)
+if(PARENT_CXX_STANDARD)
     # Don't set CMAKE_CXX_STANDARD if it is already set by parent project
-    if (PARENT_CXX_STANDARD LESS 17)
+    if(PARENT_CXX_STANDARD LESS 17)
         message(FATAL_ERROR "cpr ${cpr_VERSION} does not support ${PARENT_CXX_STANDARD}. Please use cpr <= 1.9.x")
     endif()
 else()
@@ -39,13 +39,16 @@ set(CPR_LIBRARIES cpr CACHE INTERNAL "")
 
 macro(cpr_option OPTION_NAME OPTION_TEXT OPTION_DEFAULT)
     option(${OPTION_NAME} ${OPTION_TEXT} ${OPTION_DEFAULT})
+
     if(DEFINED ENV{${OPTION_NAME}})
         # Allow overriding the option through an environment variable
         set(${OPTION_NAME} $ENV{${OPTION_NAME}})
     endif()
+
     if(${OPTION_NAME})
         add_definitions(-D${OPTION_NAME})
     endif()
+
     message(STATUS "  ${OPTION_NAME}: ${${OPTION_NAME}}")
 endmacro()
 
@@ -68,7 +71,7 @@ cpr_option(CPR_FORCE_DARWINSSL_BACKEND "Force to use the DarwinSSL backend. If C
 cpr_option(CPR_FORCE_MBEDTLS_BACKEND "Force to use the Mbed TLS backend. If CPR_FORCE_OPENSSL_BACKEND, CPR_FORCE_DARWINSSL_BACKEND, CPR_FORCE_MBEDTLS_BACKEND, and CPR_FORCE_WINSSL_BACKEND are set to to OFF, cpr will try to automatically detect the best available SSL backend (WinSSL - Windows, OpenSSL - Linux, DarwinSSL - Mac ...)." OFF)
 cpr_option(CPR_ENABLE_LINTING "Set to ON to enable clang linting." OFF)
 cpr_option(CPR_ENABLE_CPPCHECK "Set to ON to enable Cppcheck static analysis. Requires CPR_BUILD_TESTS and CPR_BUILD_TESTS_SSL to be OFF to prevent checking google tests source code." OFF)
-cpr_option(CPR_BUILD_MODULES "Set to ON to build cpr as a C++ module." OFF)
+cpr_option(CPR_BUILD_MODULES "Set to ON to build cpr as a C++ module." ON)
 cpr_option(CPR_BUILD_TESTS "Set to ON to build cpr tests." OFF)
 cpr_option(CPR_BUILD_TESTS_SSL "Set to ON to build cpr ssl tests" ${CPR_BUILD_TESTS})
 cpr_option(CPR_BUILD_TESTS_PROXY "Set to ON to build proxy tests. They fail in case there is no valid proxy server available in proxy_tests.cpp" OFF)
@@ -82,8 +85,8 @@ cpr_option(CPR_DEBUG_SANITIZER_FLAG_UB "Enables the UndefinedBehaviorSanitizer f
 cpr_option(CPR_DEBUG_SANITIZER_FLAG_ALL "Enables all sanitizers for debug builds except the ThreadSanitizer since it is incompatible with the other sanitizers." OFF)
 message(STATUS "=======================================================")
 
-if (MSVC)
-    if (BUILD_SHARED_LIBS)
+if(MSVC)
+    if(BUILD_SHARED_LIBS)
         message(STATUS "Build windows dynamic libs.")
     else()
         # Add this to build windows pure static library.
@@ -98,7 +101,7 @@ if(CPR_BUILD_VERSION_OUTPUT_ONLY)
     return()
 endif()
 
-if (CPR_FORCE_USE_SYSTEM_CURL)
+if(CPR_FORCE_USE_SYSTEM_CURL)
     message(WARNING "The variable CPR_FORCE_USE_SYSTEM_CURL is deprecated, please use CPR_USE_SYSTEM_CURL instead")
     set(CPR_USE_SYSTEM_CURL ${CPR_FORCE_USE_SYSTEM_CURL})
 endif()
@@ -122,6 +125,7 @@ if(CPR_ENABLE_CPPCHECK)
     if(CPR_BUILD_TESTS OR CPR_BUILD_TESTS_SSL)
         message(FATAL_ERROR "Cppcheck is incompatible with building tests. Make sure to disable CPR_ENABLE_CPPCHECK or disable tests by setting CPR_BUILD_TESTS and CPR_BUILD_TESTS_SSL to OFF. This is because Cppcheck would try to check the google tests source code and then fail. ")
     endif()
+
     include(cmake/cppcheck.cmake)
 endif()
 
@@ -135,12 +139,13 @@ if(CPR_ENABLE_SSL)
         set(DETECT_SSL_BACKEND ON CACHE INTERNAL "" FORCE)
     endif()
 
-    if(CPR_FORCE_WINSSL_BACKEND AND (NOT WIN32))
+    if(CPR_FORCE_WINSSL_BACKEND AND(NOT WIN32))
         message(FATAL_ERROR "WinSSL is only available on Windows! Use either OpenSSL (CPR_FORCE_OPENSSL_BACKEND) or DarwinSSL (CPR_FORCE_DARWINSSL_BACKEND) instead.")
     endif()
 
     if(DETECT_SSL_BACKEND)
         message(STATUS "Detecting SSL backend...")
+
         if(WIN32)
             message(STATUS "SSL auto detect: Using WinSSL.")
             set(SSL_BACKEND_USED "WinSSL")
@@ -150,11 +155,13 @@ if(CPR_ENABLE_SSL)
             set(SSL_BACKEND_USED "DarwinSSL")
         else()
             find_package(OpenSSL)
+
             if(OPENSSL_FOUND)
                 message(STATUS "SSL auto detect: Using OpenSSL.")
                 set(SSL_BACKEND_USED "OpenSSL")
             else()
                 find_package(MbedTLS)
+
                 if(MBEDTLS_FOUND)
                     set(SSL_BACKEND_USED "MbedTLS")
                 else()
@@ -165,6 +172,7 @@ if(CPR_ENABLE_SSL)
     else()
         if(CPR_FORCE_OPENSSL_BACKEND)
             find_package(OpenSSL)
+
             if(OPENSSL_FOUND)
                 message(STATUS "Using OpenSSL.")
                 set(SSL_BACKEND_USED "OpenSSL")
@@ -187,8 +195,8 @@ if(CPR_ENABLE_SSL)
 endif()
 
 if(SSL_BACKEND_USED STREQUAL "OpenSSL")
-# Fix missing OpenSSL includes for Windows since in 'ssl_ctx.cpp' we include OpenSSL directly
-find_package(OpenSSL REQUIRED)
+    # Fix missing OpenSSL includes for Windows since in 'ssl_ctx.cpp' we include OpenSSL directly
+    find_package(OpenSSL REQUIRED)
     add_compile_definitions(OPENSSL_BACKEND_USED)
 endif()
 
@@ -198,15 +206,17 @@ if(CPR_USE_EXISTING_CURL_TARGET)
 elseif(CPR_USE_SYSTEM_CURL)
     if(CPR_ENABLE_SSL)
         find_package(CURL COMPONENTS HTTP HTTPS)
+
         if(CURL_FOUND)
             message(STATUS "Curl ${CURL_VERSION_STRING} found on this system.")
 
             # To be able to load certificates under Windows when using OpenSSL:
-            if(CMAKE_USE_OPENSSL AND WIN32 AND (NOT (CURL_VERSION_STRING VERSION_GREATER_EQUAL "7.71.0")))
+            if(CMAKE_USE_OPENSSL AND WIN32 AND(NOT(CURL_VERSION_STRING VERSION_GREATER_EQUAL "7.71.0")))
                 message(FATAL_ERROR "Your system curl version (${CURL_VERSION_STRING}) is too old to support OpenSSL on Windows which requires curl >= 7.71.0. Update your curl version, use WinSSL, disable SSL or use the built-in version of curl.")
             endif()
         else()
             find_package(CURL COMPONENTS HTTP)
+
             if(CURL_FOUND)
                 message(FATAL_ERROR "Curl found on this system but WITHOUT HTTPS/SSL support. Either disable SSL by setting CPR_ENABLE_SSL to OFF or use the built-in version of curl by setting CPR_USE_SYSTEM_CURL to OFF.")
             else()
@@ -215,6 +225,7 @@ elseif(CPR_USE_SYSTEM_CURL)
         endif()
     else()
         find_package(CURL COMPONENTS HTTP)
+
         if(CURL_FOUND)
             message(STATUS "Curl found on this system.")
         else()
@@ -222,8 +233,8 @@ elseif(CPR_USE_SYSTEM_CURL)
         endif()
     endif()
 
-    # Check for the minimum supported curl version 
-    if(NOT (CURL_VERSION_STRING VERSION_GREATER_EQUAL "7.64.0"))
+    # Check for the minimum supported curl version
+    if(NOT(CURL_VERSION_STRING VERSION_GREATER_EQUAL "7.64.0"))
         message(FATAL_ERROR "Your system curl version (${CURL_VERSION_STRING}) is too old! curl >= 7.64.0 is required. Update your curl version, or use the build in curl version e.g. via `cmake .. -DCPR_USE_SYSTEM_CURL=OFF` during CMake configure.")
     endif()
 else()
@@ -232,26 +243,28 @@ else()
     # ZLIB is optional for curl
     # to disable it:
     # * from command line:
-    #     -DCURL_ZLIB=OFF
+    # -DCURL_ZLIB=OFF
     # * from CMake script:
-    if (CURL_ZLIB OR CURL_ZLIB STREQUAL AUTO OR NOT DEFINED CACHE{CURL_ZLIB})
+    if(CURL_ZLIB OR CURL_ZLIB STREQUAL AUTO OR NOT DEFINED CACHE{CURL_ZLIB})
         include(cmake/zlib_external.cmake)
     endif()
 
-    if (CPR_ENABLE_CURL_HTTP_ONLY)
+    if(CPR_ENABLE_CURL_HTTP_ONLY)
         # We only need HTTP (and HTTPS) support:
         set(HTTP_ONLY ON CACHE INTERNAL "" FORCE)
     endif()
+
     set(BUILD_CURL_EXE OFF CACHE INTERNAL "" FORCE)
     set(BUILD_TESTING OFF)
 
-    if (CURL_VERBOSE_LOGGING)
+    if(CURL_VERBOSE_LOGGING)
         message(STATUS "Enabled curl debug features")
         set(ENABLE_DEBUG ON CACHE INTERNAL "" FORCE)
     endif()
 
-    if (CPR_ENABLE_SSL)
+    if(CPR_ENABLE_SSL)
         set(CURL_ENABLE_SSL ON CACHE INTERNAL "" FORCE)
+
         if(ANDROID)
             set(CURL_CA_PATH "/system/etc/security/cacerts" CACHE INTERNAL "")
         elseif(CPR_SKIP_CA_BUNDLE_SEARCH)
@@ -295,21 +308,23 @@ else()
         set(CURL_USE_MBEDTLS OFF CACHE INTERNAL "" FORCE)
         message(STATUS "Disabled curl SSL")
     endif()
+
     # Disable linting for curl
     clear_variable(DESTINATION CMAKE_CXX_CLANG_TIDY BACKUP CMAKE_CXX_CLANG_TIDY_BKP)
 
-    if (CMAKE_VERSION VERSION_GREATER_EQUAL "3.24.0")
+    if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.24.0")
         cmake_policy(SET CMP0135 NEW)
     endif()
 
     # Since curl 8.13, curl depends on lib psl
     set(CURL_USE_LIBPSL ${CPR_CURL_USE_LIBPSL} CACHE INTERNAL "" FORCE)
+
     if(CPR_CURL_USE_LIBPSL AND NOT CPR_USE_SYSTEM_LIB_PSL)
         include(libpsl)
     endif()
 
     FetchContent_Declare(curl URL https://github.com/curl/curl/releases/download/curl-8_13_0/curl-8.13.0.tar.xz
-                              URL_HASH SHA256=4a093979a3c2d02de2fbc00549a32771007f2e78032c6faa5ecd2f7a9e152025) # the file hash for curl-8.13.0.tar.xz
+        URL_HASH SHA256=4a093979a3c2d02de2fbc00549a32771007f2e78032c6faa5ecd2f7a9e152025) # the file hash for curl-8.13.0.tar.xz
     FetchContent_MakeAvailable(curl)
 
     restore_variable(DESTINATION CMAKE_CXX_CLANG_TIDY BACKUP CMAKE_CXX_CLANG_TIDY_BKP)
@@ -324,17 +339,15 @@ else()
     set(CURL_LIB CURL::libcurl)
 endif()
 
-if(CPR_BUILD_MODULES)
-    add_subdirectory(modules)
-endif()
-
 # GTest configuration
 if(CPR_BUILD_TESTS)
     if(CPR_USE_SYSTEM_GTEST)
         find_package(GTest)
     endif()
+
     if(NOT CPR_USE_SYSTEM_GTEST OR NOT GTEST_FOUND)
         message(STATUS "Not using system gtest, using built-in googletest project instead.")
+
         if(MSVC)
             # By default, GTest compiles on Windows in CRT static linkage mode. We use this
             # variable to force it into using the CRT in dynamic linkage (DLL), just as CPR
@@ -346,25 +359,24 @@ if(CPR_BUILD_TESTS)
         clear_variable(DESTINATION CMAKE_CXX_CLANG_TIDY BACKUP CMAKE_CXX_CLANG_TIDY_BKP)
 
         FetchContent_Declare(googletest
-                             URL                    https://github.com/google/googletest/archive/refs/tags/v1.14.0.tar.gz
-                             URL_HASH               SHA256=8ad598c73ad796e0d8280b082cebd82a630d73e73cd3c70057938a6501bba5d7 # the file hash for release-1.14.0.tar.gz
-                             USES_TERMINAL_DOWNLOAD TRUE)   # <---- This is needed only for Ninja to show download progress
+            URL https://github.com/google/googletest/archive/refs/tags/v1.14.0.tar.gz
+            URL_HASH SHA256=8ad598c73ad796e0d8280b082cebd82a630d73e73cd3c70057938a6501bba5d7 # the file hash for release-1.14.0.tar.gz
+            USES_TERMINAL_DOWNLOAD TRUE) # <---- This is needed only for Ninja to show download progress
         FetchContent_MakeAvailable(googletest)
 
         restore_variable(DESTINATION CMAKE_CXX_CLANG_TIDY BACKUP CMAKE_CXX_CLANG_TIDY_BKP)
-        
+
         add_library(gtest_int INTERFACE)
         target_link_libraries(gtest_int INTERFACE gtest)
         target_include_directories(gtest_int INTERFACE ${googletest_SOURCE_DIR}/include)
 
         add_library(GTest::GTest ALIAS gtest_int)
-       
+
         # Group under the "tests/gtest" project folder in IDEs such as Visual Studio.
-    set_property(TARGET gtest PROPERTY FOLDER "tests/gtest")
-    set_property(TARGET gtest_main PROPERTY FOLDER "tests/gtest")
+        set_property(TARGET gtest PROPERTY FOLDER "tests/gtest")
+        set_property(TARGET gtest_main PROPERTY FOLDER "tests/gtest")
     endif()
 endif()
-
 
 # Mongoose configuration
 if(CPR_BUILD_TESTS)
@@ -387,28 +399,30 @@ if(CPR_BUILD_TESTS)
     # Disable linting for mongoose
     clear_variable(DESTINATION CMAKE_CXX_CLANG_TIDY BACKUP CMAKE_CXX_CLANG_TIDY_BKP)
 
-    FetchContent_Declare(mongoose 
-                         URL                    https://github.com/cesanta/mongoose/archive/7.7.tar.gz
-                         URL_HASH               SHA256=4e5733dae31c3a81156af63ca9aa3a6b9b736547f21f23c3ab2f8e3f1ecc16c0 # the hash for 7.7.tar.gz
-                         USES_TERMINAL_DOWNLOAD TRUE # This is needed only for Ninja to show download progress
-                         SOURCE_SUBDIR          "?") # Nonexistent directory to prevent FetchContent_MakeAvailable from calling add_subdirectory and duplicating the mongoose target
-    if (NOT mongoose_POPULATED)
+    FetchContent_Declare(mongoose
+        URL https://github.com/cesanta/mongoose/archive/7.7.tar.gz
+        URL_HASH SHA256=4e5733dae31c3a81156af63ca9aa3a6b9b736547f21f23c3ab2f8e3f1ecc16c0 # the hash for 7.7.tar.gz
+        USES_TERMINAL_DOWNLOAD TRUE # This is needed only for Ninja to show download progress
+        SOURCE_SUBDIR "?") # Nonexistent directory to prevent FetchContent_MakeAvailable from calling add_subdirectory and duplicating the mongoose target
+
+    if(NOT mongoose_POPULATED)
         FetchContent_MakeAvailable(mongoose)
 
         file(INSTALL cmake/mongoose.CMakeLists.txt DESTINATION ${mongoose_SOURCE_DIR})
         file(RENAME ${mongoose_SOURCE_DIR}/mongoose.CMakeLists.txt ${mongoose_SOURCE_DIR}/CMakeLists.txt)
         add_subdirectory(${mongoose_SOURCE_DIR} ${mongoose_BINARY_DIR})
-
     endif()
+
     # Group under the "external" project folder in IDEs such as Visual Studio.
     set_property(TARGET mongoose PROPERTY FOLDER "external")
     restore_variable(DESTINATION CMAKE_CXX_CLANG_TIDY BACKUP CMAKE_CXX_CLANG_TIDY_BKP)
 endif()
 
-if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
 else()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic -Werror")
-    if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+
+    if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
         # Disable C++98 compatibility support in clang: https://github.com/libcpr/cpr/issues/927
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-nonportable-system-include-path -Wno-exit-time-destructors -Wno-undef -Wno-global-constructors -Wno-switch-enum -Wno-old-style-cast -Wno-covered-switch-default -Wno-undefined-func-template")
     endif()
@@ -416,6 +430,10 @@ endif()
 
 add_subdirectory(cpr)
 add_subdirectory(include)
+
+if(CPR_BUILD_MODULES)
+    add_subdirectory(modules)
+endif()
 
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND CPR_BUILD_TESTS)
     # Disable linting for tests since they are currently not up to the standard

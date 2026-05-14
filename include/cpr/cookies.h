@@ -1,6 +1,8 @@
 #ifndef CPR_COOKIES_H
 #define CPR_COOKIES_H
 
+#include "cpr/export.h"
+
 #include "cpr/curlholder.h"
 #include <chrono>
 #include <initializer_list>
@@ -12,9 +14,9 @@ namespace cpr {
  * EXPIRES_STRING_SIZE is an explicitly static and const variable that could be only accessed within the same namespace and is immutable.
  * To be used for "std::array", the expression must have a constant value, so EXPIRES_STRING_SIZE must be a const value.
  **/
-inline const std::size_t EXPIRES_STRING_SIZE = 100;
+EXPORT_CPR inline const std::size_t EXPIRES_STRING_SIZE = 100;
 
-class Cookie {
+EXPORT_CPR class Cookie {
   public:
     Cookie() = default;
     /**
@@ -45,7 +47,7 @@ class Cookie {
     std::chrono::system_clock::time_point expires_;
 };
 
-class Cookies {
+EXPORT_CPR class Cookies {
   public:
     /**
      * Should we URL-encode cookies when making a request.

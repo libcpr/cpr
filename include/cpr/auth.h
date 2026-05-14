@@ -1,6 +1,8 @@
 #ifndef CPR_AUTH_H
 #define CPR_AUTH_H
 
+#include "cpr/export.h"
+
 #include <cstdint>
 #include <string>
 #include <string_view>
@@ -9,9 +11,9 @@
 
 namespace cpr {
 
-enum class AuthMode : uint8_t { BASIC, DIGEST, NTLM, NEGOTIATE, ANY, ANYSAFE };
+EXPORT_CPR enum class AuthMode : uint8_t { BASIC, DIGEST, NTLM, NEGOTIATE, ANY, ANYSAFE };
 
-class Authentication {
+EXPORT_CPR class Authentication {
   public:
     Authentication(std::string_view username, std::string_view password, AuthMode auth_mode);
 

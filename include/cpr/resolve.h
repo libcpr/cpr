@@ -1,11 +1,14 @@
 #ifndef CPR_RESOLVE_H
 #define CPR_RESOLVE_H
 
+#include "cpr/export.h"
+
+#include <cstdint>
 #include <set>
 #include <string>
 
 namespace cpr {
-class Resolve {
+EXPORT_CPR class Resolve {
   public:
     std::string host;
     std::string addr;
