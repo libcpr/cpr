@@ -3,16 +3,18 @@
 
 #include "cpr/export.h"
 
-#include <memory>
+/**
+ * If we build cpr as C++20 module, we use 'import std;'.
+ * So skip all other imports and declare them in 'cpr.cxx'.
+ **/
+#ifndef CPR_IMPORT_STD
 #include <string>
-#include <vector>
+#include <utility>
+#endif
 
 #include "cpr/filesystem.h"
-#include <curl/curl.h>
-
 #include "cpr/util.h"
-#include "util.h"
-#include <utility>
+#include <curl/curl.h>
 
 #ifndef SUPPORT_ALPN
 #define SUPPORT_ALPN LIBCURL_VERSION_NUM >= 0x072400 // 7.36.0

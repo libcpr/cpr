@@ -3,12 +3,18 @@
 
 #include "cpr/export.h"
 
-#include <cstdint>
+/**
+ * If we build cpr as C++20 module, we use 'import std;'.
+ * So skip all other imports and declare them in 'cpr.cxx'.
+ **/
+#ifndef CPR_IMPORT_STD
 #include <string>
 #include <unordered_map>
+#include <utility>
+#endif
 
 #include "cpr/cprtypes.h"
-#include <utility>
+#include <cstdint>
 
 namespace cpr {
 

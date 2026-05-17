@@ -3,9 +3,8 @@
 
 #include "cpr/export.h"
 
-#include <string>
-
 #include "cpr/filesystem.h"
+#include <cstddef>
 
 namespace cpr {
 
