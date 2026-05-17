@@ -3,10 +3,17 @@
 
 #include "cpr/export.h"
 
+/**
+ * If we build cpr as C++20 module, we use 'import std;'.
+ * So skip all other imports and declare them in 'cpr.cxx'.
+ **/
+#ifndef CPR_IMPORT_STD
+#include <vector>
+#endif
+
 #include "cpr/multiperform.h"
 #include "cpr/response.h"
 #include "cpr/session.h"
-#include <vector>
 
 namespace cpr {
 EXPORT_CPR class Interceptor {

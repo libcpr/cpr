@@ -3,12 +3,16 @@
 
 #include "cpr/export.h"
 
-#include <cassert>
-#include <cstdint>
+/**
+ * If we build cpr as C++20 module, we use 'import std;'.
+ * So skip all other imports and declare them in 'cpr.cxx'.
+ **/
+#ifndef CPR_IMPORT_STD
 #include <memory>
 #include <string>
 #include <utility>
 #include <vector>
+#endif
 
 #include "cpr/cert_info.h"
 #include "cpr/cookies.h"
@@ -16,6 +20,8 @@
 #include "cpr/error.h"
 #include "cpr/ssl_options.h"
 #include "cpr/util.h"
+#include <cassert>
+#include <cstdint>
 
 namespace cpr {
 

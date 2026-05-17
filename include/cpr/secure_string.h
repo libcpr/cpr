@@ -3,9 +3,14 @@
 
 #include "cpr/export.h"
 
+/**
+ * If we build cpr as C++20 module, we use 'import std;'.
+ * So skip all other imports and declare them in 'cpr.cxx'.
+ **/
+#ifndef CPR_IMPORT_STD
 #include <memory>
 #include <string>
-#include <string_view>
+#endif
 
 namespace cpr::util {
 

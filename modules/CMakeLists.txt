@@ -28,7 +28,8 @@ target_sources(cpr_module
     cpr.cxx
 )
 
-target_compile_features(cpr_module PRIVATE cxx_std_23 INTERFACE cxx_std_20)
+target_compile_features(cpr_module PUBLIC cxx_std_23)
+set_target_properties(cpr_module PROPERTIES CXX_MODULE_STD ON)
 
 target_include_directories(cpr_module PUBLIC
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>

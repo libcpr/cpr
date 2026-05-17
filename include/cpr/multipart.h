@@ -3,14 +3,19 @@
 
 #include "cpr/export.h"
 
-#include <cstdint>
+/**
+ * If we build cpr as C++20 module, we use 'import std;'.
+ * So skip all other imports and declare them in 'cpr.cxx'.
+ **/
+#ifndef CPR_IMPORT_STD
 #include <initializer_list>
 #include <string>
-#include <type_traits>
 #include <vector>
+#endif
 
 #include "buffer.h"
 #include "file.h"
+#include <cstdint>
 
 namespace cpr {
 

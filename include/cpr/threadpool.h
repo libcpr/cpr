@@ -3,10 +3,14 @@
 
 #include "cpr/export.h"
 
+/**
+ * If we build cpr as C++20 module, we use 'import std;'.
+ * So skip all other imports and declare them in 'cpr.cxx'.
+ **/
+#ifndef CPR_IMPORT_STD
 #include <atomic>
 #include <chrono>
 #include <condition_variable>
-#include <cstdint>
 #include <functional>
 #include <future>
 #include <list>
@@ -15,6 +19,9 @@
 #include <queue>
 #include <thread>
 #include <utility>
+#endif
+
+#include <cstdint>
 
 #define CPR_DEFAULT_THREAD_POOL_MAX_THREAD_NUM std::thread::hardware_concurrency()
 

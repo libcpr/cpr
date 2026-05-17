@@ -3,9 +3,15 @@
 
 #include "cpr/export.h"
 
+/**
+ * If we build cpr as C++20 module, we use 'import std;'.
+ * So skip all other imports and declare them in 'cpr.cxx'.
+ **/
+#ifndef CPR_IMPORT_STD
 #include <atomic>
 #include <future>
 #include <memory>
+#endif
 
 namespace cpr {
 EXPORT_CPR enum class [[nodiscard]] CancellationResult : uint8_t { failure, success, invalid_operation };

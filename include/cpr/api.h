@@ -3,21 +3,21 @@
 
 #include "cpr/export.h"
 
+/**
+ * If we build cpr as C++20 module, we use 'import std;'.
+ * So skip all other imports and declare them in 'cpr.cxx'.
+ **/
+#ifndef CPR_IMPORT_STD
 #include <fstream>
 #include <functional>
 #include <future>
-#include <string>
 #include <utility>
+#endif
 
 #include "cpr/async.h"
 #include "cpr/async_wrapper.h"
-#include "cpr/auth.h"
-#include "cpr/bearer.h"
 #include "cpr/cprtypes.h"
-#include "cpr/filesystem.h"
-#include "cpr/multipart.h"
 #include "cpr/multiperform.h"
-#include "cpr/payload.h"
 #include "cpr/response.h"
 #include "cpr/session.h"
 
