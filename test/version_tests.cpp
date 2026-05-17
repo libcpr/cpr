@@ -12,7 +12,6 @@ TEST(VersionTests, StringVersionExists) {
 }
 
 TEST(VersionTests, StringVersionValid) {
-    EXPECT_TRUE(CPR_VERSION != nullptr);
     std::string version{CPR_VERSION};
 
     // Check if the version string is: '\d+\.\d+\.\d+'
