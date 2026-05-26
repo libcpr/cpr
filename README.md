@@ -48,7 +48,7 @@ And here's [less functional, more complicated code, without cpr](https://gist.gi
 ## Documentation
 
 [![Documentation](https://img.shields.io/badge/docs-online-informational?style=for-the-badge&link=https://docs.libcpr.dev/)](https://docs.libcpr.dev/)
-You can find the latest documentation [here](https://docs.libcpr.dev/). It's a work in progress, but it should give you a better idea of how to use the library than the [tests](https://github.com/libcpr/cpr/tree/master/test) currently do.
+You can find the latest documentation [here](https://docs.libcpr.dev/). The same content is maintained in the [libcpr/docs](https://github.com/libcpr/docs) repository if you need an offline copy or want to build the docs locally. It's a work in progress, but it should give you a better idea of how to use the library than the [tests](https://github.com/libcpr/cpr/tree/master/test) currently do.
 
 ## Features
 
