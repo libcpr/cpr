@@ -65,6 +65,7 @@ class Cookies {
     Cookies(const cpr::Cookie& cookie, bool p_encode = true) : encode{p_encode}, cookies_{cookie} {}
 
     cpr::Cookie& operator[](size_t pos);
+    cpr::Cookie& operator[](std::string key);
     [[nodiscard]] std::string GetEncoded(const CurlHolder& holder) const;
 
     using iterator = std::vector<cpr::Cookie>::iterator;

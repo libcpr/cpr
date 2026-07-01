@@ -73,6 +73,16 @@ cpr::Cookie& Cookies::operator[](size_t pos) {
     return cookies_[pos];
 }
 
+cpr::Cookie& Cookies::operator[](std::string key) {
+    // Using a C-style for loop to get the index of the cookie within the vector, this allows returning references
+    for (size_t i = 0; i < cookies_.size(); i++) { // NOLINT(*-loop-convert)
+        if (cookies_[i].GetName() == key) {
+            return cookies_[i];
+        }
+    }
+    throw std::out_of_range {"Cookie: " + key + " does not exist"};
+}
+
 Cookies::iterator Cookies::begin() {
     return cookies_.begin();
 }
