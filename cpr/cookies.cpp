@@ -1,5 +1,7 @@
 #include "cpr/cookies.h"
 #include "cpr/curlholder.h"
+
+#include <algorithm>
 #include <chrono>
 #include <ctime>
 #include <iomanip>
@@ -73,14 +75,14 @@ cpr::Cookie& Cookies::operator[](size_t pos) {
     return cookies_[pos];
 }
 
-cpr::Cookie& Cookies::operator[](std::string key) {
-    // Using a C-style for loop to get the index of the cookie within the vector, this allows returning references
-    for (size_t i = 0; i < cookies_.size(); i++) { // NOLINT(*-loop-convert)
-        if (cookies_[i].GetName() == key) {
-            return cookies_[i];
-        }
+cpr::Cookie& Cookies::operator[](const std::string& key) {
+    const auto it = std::find_if(cookies_.begin(), cookies_.end(), [key](const cpr::Cookie& c) { return c.GetName() == key; });
+
+    if (it == cookies_.end()) {
+        throw std::out_of_range{"Cookie: " + key + " does not exist"};
     }
-    throw std::out_of_range {"Cookie: " + key + " does not exist"};
+
+    return *it;
 }
 
 Cookies::iterator Cookies::begin() {
