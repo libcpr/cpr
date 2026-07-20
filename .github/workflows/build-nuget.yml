@@ -40,7 +40,7 @@ jobs:
     # ───────────────────────────── Repository & tools ────────────────────────────
     - uses: actions/checkout@v7
 
-    - uses: actions/setup-python@v6
+    - uses: actions/setup-python@v7
   
     - name: Install meson
       run: pip install meson
