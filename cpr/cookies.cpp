@@ -1,5 +1,7 @@
 #include "cpr/cookies.h"
 #include "cpr/curlholder.h"
+
+#include <algorithm>
 #include <chrono>
 #include <ctime>
 #include <iomanip>
@@ -71,6 +73,16 @@ std::string Cookies::GetEncoded(const CurlHolder& holder) const {
 
 cpr::Cookie& Cookies::operator[](size_t pos) {
     return cookies_[pos];
+}
+
+cpr::Cookie& Cookies::operator[](const std::string& key) {
+    const auto it = std::find_if(cookies_.begin(), cookies_.end(), [key](const cpr::Cookie& c) { return c.GetName() == key; });
+
+    if (it == cookies_.end()) {
+        throw std::out_of_range{"Cookie: " + key + " does not exist"};
+    }
+
+    return *it;
 }
 
 Cookies::iterator Cookies::begin() {
