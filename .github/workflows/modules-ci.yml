@@ -140,6 +140,10 @@ jobs:
 
   macos-clang-modules:
     runs-on: macos-latest
+    # Homebrew's clang++ still uses the macOS system libc++, which ships no
+    # 'libc++.modules.json', so 'import std' cannot be resolved there yet.
+    # Keep the job visible without blocking the branch until that is sorted out.
+    continue-on-error: true
     steps:
     - name: Install Dependencies
       run: |

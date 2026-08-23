@@ -61,7 +61,10 @@ if(CPR_BUILD_MODULES AND NOT CMAKE_EXPERIMENTAL_CXX_IMPORT_STD AND NOT CMAKE_CXX
     else()
         set(CMAKE_EXPERIMENTAL_CXX_IMPORT_STD "f35a9ac6-8463-4d38-8eec-5d6008153e7d")
     endif()
-    set(CMAKE_CXX_MODULE_STD 1)
+    # Deliberately NOT setting CMAKE_CXX_MODULE_STD here: as a directory-scope variable it
+    # initialises the CXX_MODULE_STD property on *every* target created afterwards, including
+    # FetchContent dependencies (zlib, curl, googletest), which then demand C++ standard library
+    # module metadata they neither use nor ship. `cpr_module` opts in via its own target property.
 endif()
 
 project(cpr VERSION 1.15.0 LANGUAGES CXX)
