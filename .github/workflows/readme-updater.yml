@@ -19,7 +19,7 @@ jobs:
       with:
         ref: ${{github.sha}}
     - name: "Replace GIT_TAG"
-      run: sed -i -re 's/(GIT_TAG) [0-9a-f]+/\1 ${{github.sha}}/' README.md
+      run: sed -i -re 's/(GIT_TAG) [^ )]+/\1 ${{github.sha}}/' README.md
     - name: "Commit changes"
       uses: stefanzweifel/git-auto-commit-action@v7
       with:
