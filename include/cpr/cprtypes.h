@@ -130,13 +130,6 @@ class StringHolder {
   protected:
     std::string str_;
     friend T;
-    friend T;
-    friend T;
-    friend T;
-    friend T;
-    friend T;
-    friend T;
-    friend T;
 };
 
 template <class T>
