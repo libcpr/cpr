@@ -1,11 +1,21 @@
 #ifndef CPR_RESOLVE_H
 #define CPR_RESOLVE_H
 
+#include "cpr/export.h"
+
+/**
+ * If we build cpr as C++20 module, we use 'import std;'.
+ * So skip all other imports and declare them in 'cpr.cxx'.
+ **/
+#ifndef CPR_IMPORT_STD
 #include <set>
 #include <string>
+#endif
+
+#include <cstdint>
 
 namespace cpr {
-class Resolve {
+EXPORT_CPR class Resolve {
   public:
     std::string host;
     std::string addr;

@@ -1,24 +1,31 @@
 #ifndef CPR_CURL_CONTAINER_H
 #define CPR_CURL_CONTAINER_H
 
+#include "cpr/export.h"
+
+/**
+ * If we build cpr as C++20 module, we use 'import std;'.
+ * So skip all other imports and declare them in 'cpr.cxx'.
+ **/
+#ifndef CPR_IMPORT_STD
 #include <initializer_list>
-#include <memory>
 #include <string>
 #include <vector>
+#endif
 
 #include "cpr/curlholder.h"
 
 
 namespace cpr {
 
-struct Parameter {
+EXPORT_CPR struct Parameter {
     Parameter(std::string p_key, std::string p_value) : key{std::move(p_key)}, value{std::move(p_value)} {}
 
     std::string key;
     std::string value;
 };
 
-struct Pair {
+EXPORT_CPR struct Pair {
     Pair(std::string p_key, std::string p_value) : key(std::move(p_key)), value(std::move(p_value)) {}
 
     std::string key;
@@ -26,7 +33,7 @@ struct Pair {
 };
 
 
-template <class T>
+EXPORT_CPR template <class T>
 class CurlContainer {
   public:
     /**

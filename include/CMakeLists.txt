@@ -23,6 +23,7 @@ target_sources(cpr PRIVATE
     cpr/curlholder.h
     cpr/curlholder.h
     cpr/error.h
+    cpr/export.h
     cpr/file.h
     cpr/limit_rate.h
     cpr/local_port.h

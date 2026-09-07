@@ -1,12 +1,20 @@
 #ifndef CPR_ASYNC_WRAPPER_H
 #define CPR_ASYNC_WRAPPER_H
 
+#include "cpr/export.h"
+
+/**
+ * If we build cpr as C++20 module, we use 'import std;'.
+ * So skip all other imports and declare them in 'cpr.cxx'.
+ **/
+#ifndef CPR_IMPORT_STD
 #include <atomic>
 #include <future>
 #include <memory>
+#endif
 
 namespace cpr {
-enum class [[nodiscard]] CancellationResult : uint8_t { failure, success, invalid_operation };
+EXPORT_CPR enum class [[nodiscard]] CancellationResult : uint8_t { failure, success, invalid_operation };
 
 /**
  * A class template intended to wrap results of async operations (instances of std::future<T>)
@@ -14,7 +22,7 @@ enum class [[nodiscard]] CancellationResult : uint8_t { failure, success, invali
  *
  * The RAII semantics are the same as std::future<T> - moveable, not copyable.
  */
-template <typename T, bool isCancellable = false>
+EXPORT_CPR template <typename T, bool isCancellable = false>
 class AsyncWrapper;
 
 template <typename T>
@@ -149,10 +157,10 @@ class AsyncWrapper<T, true> : public AsyncWrapper<T, false> {
 };
 
 // Deduction guides
-template <typename T>
+EXPORT_CPR template <typename T>
 AsyncWrapper(std::future<T>&&) -> AsyncWrapper<T, false>;
 
-template <typename T>
+EXPORT_CPR template <typename T>
 AsyncWrapper(std::future<T>&&, std::shared_ptr<std::atomic_bool>&&) -> AsyncWrapper<T, true>;
 
 } // namespace cpr

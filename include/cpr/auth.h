@@ -1,17 +1,24 @@
 #ifndef CPR_AUTH_H
 #define CPR_AUTH_H
 
-#include <cstdint>
-#include <string>
+#include "cpr/export.h"
+
+/**
+ * If we build cpr as C++20 module, we use 'import std;'.
+ * So skip all other imports and declare them in 'cpr.cxx'.
+ **/
+#ifndef CPR_IMPORT_STD
 #include <string_view>
+#endif
 
 #include "cpr/util.h"
+#include <cstdint>
 
 namespace cpr {
 
-enum class AuthMode : uint8_t { BASIC, DIGEST, NTLM, NEGOTIATE, ANY, ANYSAFE };
+EXPORT_CPR enum class AuthMode : uint8_t { BASIC, DIGEST, NTLM, NEGOTIATE, ANY, ANYSAFE };
 
-class Authentication {
+EXPORT_CPR class Authentication {
   public:
     Authentication(std::string_view username, std::string_view password, AuthMode auth_mode);
 

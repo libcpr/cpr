@@ -1,12 +1,21 @@
 #ifndef CPR_TIMEOUT_H
 #define CPR_TIMEOUT_H
 
+#include "cpr/export.h"
+
+/**
+ * If we build cpr as C++20 module, we use 'import std;'.
+ * So skip all other imports and declare them in 'cpr.cxx'.
+ **/
+#ifndef CPR_IMPORT_STD
 #include <chrono>
+#endif
+
 #include <cstdint>
 
 namespace cpr {
 
-class Timeout {
+EXPORT_CPR class Timeout {
   public:
     // Template constructor to accept any chrono duration type and convert it to milliseconds
     template <typename Rep, typename Period>
@@ -16,7 +25,8 @@ class Timeout {
 
     // No way around since curl uses a long here.
     // NOLINTNEXTLINE(google-runtime-int)
-    [[nodiscard]] long Milliseconds() const;
+    [[nodiscard]]
+    long Milliseconds() const;
 
     std::chrono::milliseconds ms;
 };

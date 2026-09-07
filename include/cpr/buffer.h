@@ -1,13 +1,14 @@
 #ifndef CPR_BUFFER_H
 #define CPR_BUFFER_H
 
-#include <string>
+#include "cpr/export.h"
 
 #include "cpr/filesystem.h"
+#include <cstddef>
 
 namespace cpr {
 
-struct Buffer {
+EXPORT_CPR struct Buffer {
     using data_t = const char*;
 
     template <typename Iterator>

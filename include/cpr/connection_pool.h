@@ -1,9 +1,18 @@
 #ifndef CPR_CONNECTION_POOL_H
 #define CPR_CONNECTION_POOL_H
 
-#include <curl/curl.h>
+#include "cpr/export.h"
+
+/**
+ * If we build cpr as C++20 module, we use 'import std;'.
+ * So skip all other imports and declare them in 'cpr.cxx'.
+ **/
+#ifndef CPR_IMPORT_STD
 #include <memory>
 #include <mutex>
+#endif
+
+#include <curl/curl.h>
 
 namespace cpr {
 /**
@@ -28,7 +37,7 @@ namespace cpr {
  * auto future2 = cpr::GetAsync(cpr::Url{"http://example.com/api/more"}, pool);
  * ```
  **/
-class ConnectionPool {
+EXPORT_CPR class ConnectionPool {
   public:
     /**
      * Creates a new connection pool with shared connection state.

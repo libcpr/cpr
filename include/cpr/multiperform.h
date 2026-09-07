@@ -1,20 +1,28 @@
 #ifndef CPR_MULTIPERFORM_H
 #define CPR_MULTIPERFORM_H
 
+#include "cpr/export.h"
+
+/**
+ * If we build cpr as C++20 module, we use 'import std;'.
+ * So skip all other imports and declare them in 'cpr.cxx'.
+ **/
+#ifndef CPR_IMPORT_STD
+#include <functional>
+#include <memory>
+#include <stdexcept>
+#include <vector>
+#endif
+
 #include "cpr/curlmultiholder.h"
 #include "cpr/response.h"
 #include "cpr/session.h"
-#include <functional>
-#include <memory>
-#include <queue>
-#include <stdexcept>
-#include <vector>
 
 namespace cpr {
 
-class InterceptorMulti;
+EXPORT_CPR class InterceptorMulti;
 
-class MultiPerform {
+EXPORT_CPR class MultiPerform {
   public:
     enum class HttpMethod : uint8_t {
         UNDEFINED = 0,

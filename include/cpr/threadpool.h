@@ -1,10 +1,16 @@
 #ifndef CPR_THREADPOOL_H
 #define CPR_THREADPOOL_H
 
+#include "cpr/export.h"
+
+/**
+ * If we build cpr as C++20 module, we use 'import std;'.
+ * So skip all other imports and declare them in 'cpr.cxx'.
+ **/
+#ifndef CPR_IMPORT_STD
 #include <atomic>
 #include <chrono>
 #include <condition_variable>
-#include <cstdint>
 #include <functional>
 #include <future>
 #include <list>
@@ -13,15 +19,18 @@
 #include <queue>
 #include <thread>
 #include <utility>
+#endif
+
+#include <cstdint>
 
 #define CPR_DEFAULT_THREAD_POOL_MAX_THREAD_NUM std::thread::hardware_concurrency()
 
-constexpr size_t CPR_DEFAULT_THREAD_POOL_MIN_THREAD_NUM = 1;
-constexpr std::chrono::milliseconds CPR_DEFAULT_THREAD_POOL_MAX_IDLE_TIME{250};
+EXPORT_CPR inline constexpr size_t CPR_DEFAULT_THREAD_POOL_MIN_THREAD_NUM = 1;
+EXPORT_CPR inline constexpr std::chrono::milliseconds CPR_DEFAULT_THREAD_POOL_MAX_IDLE_TIME{250};
 
 namespace cpr {
 
-class ThreadPool {
+EXPORT_CPR class ThreadPool {
   public:
     using Task = std::function<void()>;
 

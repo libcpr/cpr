@@ -1,14 +1,22 @@
 #ifndef CPR_INTERFACE_H
 #define CPR_INTERFACE_H
 
+#include "cpr/export.h"
+
+/**
+ * If we build cpr as C++20 module, we use 'import std;'.
+ * So skip all other imports and declare them in 'cpr.cxx'.
+ **/
+#ifndef CPR_IMPORT_STD
 #include <initializer_list>
 #include <string>
+#endif
 
 #include "cpr/cprtypes.h"
 
 namespace cpr {
 
-class Interface : public StringHolder<Interface> {
+EXPORT_CPR class Interface : public StringHolder<Interface> {
   public:
     Interface() = default;
     Interface(std::string iface) : StringHolder<Interface>(std::move(iface)) {}

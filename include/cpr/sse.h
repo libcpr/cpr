@@ -1,12 +1,21 @@
 #ifndef CPR_SSE_H
 #define CPR_SSE_H
 
-#include <cstdint>
+#include "cpr/export.h"
+
+/**
+ * If we build cpr as C++20 module, we use 'import std;'.
+ * So skip all other imports and declare them in 'cpr.cxx'.
+ **/
+#ifndef CPR_IMPORT_STD
 #include <functional>
 #include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
+#endif
+
+#include <cstdint>
 
 namespace cpr {
 
@@ -14,7 +23,7 @@ namespace cpr {
  * Represents a Server-Sent Event (SSE) as defined in the HTML5 specification.
  * https://html.spec.whatwg.org/multipage/server-sent-events.html
  */
-struct ServerSentEvent {
+EXPORT_CPR struct ServerSentEvent {
     /**
      * The event ID. Can be used to track the last received event and resume from there.
      */
@@ -42,7 +51,7 @@ struct ServerSentEvent {
  * Parser for Server-Sent Events (SSE) streams.
  * This parser handles incoming SSE data according to the HTML5 specification.
  */
-class ServerSentEventParser {
+EXPORT_CPR class ServerSentEventParser {
   public:
     ServerSentEventParser() = default;
 
@@ -71,7 +80,7 @@ class ServerSentEventParser {
  * Callback for handling Server-Sent Events.
  * The callback receives each parsed SSE event and can return false to abort the connection.
  */
-class ServerSentEventCallback {
+EXPORT_CPR class ServerSentEventCallback {
   public:
     ServerSentEventCallback() = default;
     ServerSentEventCallback(std::function<bool(ServerSentEvent&& event, intptr_t userdata)> p_callback, intptr_t p_userdata = 0) : userdata(p_userdata), callback(std::move(p_callback)) {}

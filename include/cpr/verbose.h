@@ -1,9 +1,11 @@
 #ifndef CPR_VERBOSE_H_
 #define CPR_VERBOSE_H_
 
+#include "cpr/export.h"
+
 namespace cpr {
 
-class Verbose {
+EXPORT_CPR class Verbose {
   public:
     Verbose() = default;
     Verbose(const bool p_verbose) : verbose{p_verbose} {}
