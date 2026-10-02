@@ -655,6 +655,14 @@ void Session::SetVerbose(const Verbose& verbose) {
     curl_easy_setopt(curl_->handle, CURLOPT_VERBOSE, verbose.verbose ? ON : OFF);
 }
 
+void Session::SetDohUrl(const DohUrl& doh_url) {
+    if (doh_url.str().empty()) {
+        curl_easy_setopt(curl_->handle, CURLOPT_DOH_URL, nullptr);
+    } else {
+        curl_easy_setopt(curl_->handle, CURLOPT_DOH_URL, doh_url.c_str());
+    }
+}
+
 void Session::SetInterface(const Interface& iface) {
     if (iface.str().empty()) {
         curl_easy_setopt(curl_->handle, CURLOPT_INTERFACE, nullptr);
@@ -1119,6 +1127,7 @@ void Session::SetOption(const VerifySsl& verify) { SetVerifySsl(verify); }
 void Session::SetOption(const Verbose& verbose) { SetVerbose(verbose); }
 void Session::SetOption(const UnixSocket& unix_socket) { SetUnixSocket(unix_socket); }
 void Session::SetOption(const SslOptions& options) { SetSslOptions(options); }
+void Session::SetOption(const DohUrl& doh_url) { SetDohUrl(doh_url); }
 void Session::SetOption(const Interface& iface) { SetInterface(iface); }
 void Session::SetOption(const LocalPort& local_port) { SetLocalPort(local_port); }
 void Session::SetOption(const LocalPortRange& local_port_range) { SetLocalPortRange(local_port_range); }
