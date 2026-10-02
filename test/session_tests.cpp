@@ -1680,6 +1680,47 @@ TEST(CallbackTests, Move) {
 }
 
 
+TEST(DohUrlTests, SetDohUrlTest) {
+    Url url{server->GetBaseUrl() + "/hello.html"};
+    Session session;
+    session.SetUrl(url);
+    // The test server does not run a DoH resolver. The request target is an IP literal, and libcurl
+    // only consults the DoH server when it has to resolve a name, so the option is accepted and
+    // applied without affecting this request.
+    session.SetDohUrl(DohUrl{"https://dns.google/dns-query"});
+    Response response = session.Get();
+
+    EXPECT_EQ(std::string{"Hello world!"}, response.text);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
+TEST(DohUrlTests, SetOptionTest) {
+    Url url{server->GetBaseUrl() + "/hello.html"};
+    Session session;
+    session.SetUrl(url);
+    session.SetOption(DohUrl{"https://dns.google/dns-query"});
+    Response response = session.Get();
+
+    EXPECT_EQ(std::string{"Hello world!"}, response.text);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
+TEST(DohUrlTests, ResetDohUrlTest) {
+    Url url{server->GetBaseUrl() + "/hello.html"};
+    Session session;
+    session.SetUrl(url);
+    session.SetDohUrl(DohUrl{"https://dns.google/dns-query"});
+    // An empty DoH URL clears the option again.
+    session.SetDohUrl(DohUrl{});
+    Response response = session.Get();
+
+    EXPECT_EQ(std::string{"Hello world!"}, response.text);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
     ::testing::AddGlobalTestEnvironment(server);

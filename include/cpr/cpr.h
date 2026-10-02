@@ -13,6 +13,7 @@
 #include "cpr/cprver.h"
 #include "cpr/curl_container.h"
 #include "cpr/curlholder.h"
+#include "cpr/doh_url.h"
 #include "cpr/error.h"
 #include "cpr/http_version.h"
 #include "cpr/interceptor.h"
