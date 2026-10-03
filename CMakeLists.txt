@@ -400,8 +400,7 @@ if(CPR_BUILD_TESTS)
     restore_variable(DESTINATION CMAKE_CXX_CLANG_TIDY BACKUP CMAKE_CXX_CLANG_TIDY_BKP)
 endif()
 
-if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
-else()
+if(NOT MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic -Werror")
     if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
         # Disable C++98 compatibility support in clang: https://github.com/libcpr/cpr/issues/927
