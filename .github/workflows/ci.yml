@@ -27,7 +27,7 @@ jobs:
     - name: Setup cmake
       uses: jwlawson/actions-setup-cmake@v2.2
       with:
-        cmake-version: '3.22.x'
+        cmake-version: '3.24.x'
     - name: Checkout
       uses: actions/checkout@v7
     - name: "Build & Test"
@@ -64,7 +64,7 @@ jobs:
     - name: Setup cmake
       uses: jwlawson/actions-setup-cmake@v2.2
       with:
-        cmake-version: '3.22.x'
+        cmake-version: '3.24.x'
     - name: Checkout
       uses: actions/checkout@v7
     - name: "Build & Test"
@@ -95,7 +95,7 @@ jobs:
     - name: Setup cmake
       uses: jwlawson/actions-setup-cmake@v2.2
       with:
-        cmake-version: '3.22.x'
+        cmake-version: '3.24.x'
     - name: Checkout
       uses: actions/checkout@v7
     - name: "Build & Test"

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.18)
+cmake_minimum_required(VERSION 3.24)
 project(cpr VERSION 1.15.0 LANGUAGES CXX)
 
 math(EXPR cpr_VERSION_NUM "${cpr_VERSION_MAJOR} * 0x10000 + ${cpr_VERSION_MINOR} * 0x100 + ${cpr_VERSION_PATCH}" OUTPUT_FORMAT HEXADECIMAL)
@@ -51,6 +51,7 @@ endmacro()
 
 message(STATUS "C++ Requests CMake Options")
 message(STATUS "=======================================================")
+option(CPR_WARNINGS_AS_ERRORS "Treat warnings as errors when building cpr." ${PROJECT_IS_TOP_LEVEL})
 cpr_option(CPR_ENABLE_INSTALL "Set to ON to enable all cpr install targets." ON)
 cpr_option(CPR_GENERATE_COVERAGE "Set to ON to generate coverage reports." OFF)
 cpr_option(CPR_CURL_NOSIGNAL "Set to ON to disable use of signals in libcurl." OFF)
@@ -402,13 +403,14 @@ endif()
 
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
 else()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic -Werror")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic")
     if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
         # Disable C++98 compatibility support in clang: https://github.com/libcpr/cpr/issues/927
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-nonportable-system-include-path -Wno-exit-time-destructors -Wno-undef -Wno-global-constructors -Wno-switch-enum -Wno-old-style-cast -Wno-covered-switch-default -Wno-undefined-func-template")
     endif()
 endif()
 
+set(CMAKE_COMPILE_WARNING_AS_ERROR ${CPR_WARNINGS_AS_ERRORS})
 add_subdirectory(cpr)
 add_subdirectory(include)
 
