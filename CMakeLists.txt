@@ -331,8 +331,8 @@ else()
         include(libpsl)
     endif()
 
-    FetchContent_Declare(curl URL https://github.com/curl/curl/releases/download/curl-8_13_0/curl-8.13.0.tar.xz
-                              URL_HASH SHA256=4a093979a3c2d02de2fbc00549a32771007f2e78032c6faa5ecd2f7a9e152025) # the file hash for curl-8.13.0.tar.xz
+    FetchContent_Declare(curl URL https://github.com/curl/curl/releases/download/curl-8_22_0/curl-8.22.0.tar.xz
+                              URL_HASH SHA256=f7ef3ae8a22e521f289803fe93543eb64c329b58aa73a9e224dfd915a2a5f4f7) # the file hash for curl-8.22.0.tar.xz
     FetchContent_MakeAvailable(curl)
 
     restore_variable(DESTINATION CMAKE_CXX_CLANG_TIDY BACKUP CMAKE_CXX_CLANG_TIDY_BKP)
@@ -365,8 +365,8 @@ if(CPR_BUILD_TESTS)
         clear_variable(DESTINATION CMAKE_CXX_CLANG_TIDY BACKUP CMAKE_CXX_CLANG_TIDY_BKP)
 
         FetchContent_Declare(googletest
-                             URL                    https://github.com/google/googletest/archive/refs/tags/v1.14.0.tar.gz
-                             URL_HASH               SHA256=8ad598c73ad796e0d8280b082cebd82a630d73e73cd3c70057938a6501bba5d7 # the file hash for release-1.14.0.tar.gz
+                             URL                    https://github.com/google/googletest/archive/refs/tags/v1.18.0.tar.gz
+                             URL_HASH               SHA256=6e3191c1455468b3fc35a417fb565c1c5071aee1b7e7f85e30cf48a98d37d8b5 # the file hash for release-1.18.0.tar.gz
                              USES_TERMINAL_DOWNLOAD TRUE)   # <---- This is needed only for Ninja to show download progress
         FetchContent_MakeAvailable(googletest)
 
@@ -407,8 +407,8 @@ if(CPR_BUILD_TESTS)
     clear_variable(DESTINATION CMAKE_CXX_CLANG_TIDY BACKUP CMAKE_CXX_CLANG_TIDY_BKP)
 
     FetchContent_Declare(mongoose 
-                         URL                    https://github.com/cesanta/mongoose/archive/7.7.tar.gz
-                         URL_HASH               SHA256=4e5733dae31c3a81156af63ca9aa3a6b9b736547f21f23c3ab2f8e3f1ecc16c0 # the hash for 7.7.tar.gz
+                         URL                    https://github.com/cesanta/mongoose/archive/7.23.tar.gz
+                         URL_HASH               SHA256=93208f164038b05d156935b8b725063e1afb3984a362dbcf3a9ea37b6f1f2255 # the hash for 7.23.tar.gz
                          USES_TERMINAL_DOWNLOAD TRUE # This is needed only for Ninja to show download progress
                          SOURCE_SUBDIR          "?") # Nonexistent directory to prevent FetchContent_MakeAvailable from calling add_subdirectory and duplicating the mongoose target
     if (NOT mongoose_POPULATED)

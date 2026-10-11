@@ -5,8 +5,8 @@ namespace cpr {
 HttpsServer::HttpsServer(fs::path&& baseDirPath, fs::path&& sslCertFileName, fs::path&& sslKeyFileName) : baseDirPath(baseDirPath.make_preferred().string()), sslCertFileName(sslCertFileName.make_preferred().string()), sslKeyFileName(sslKeyFileName.make_preferred().string()) {
     // See https://mongoose.ws/tutorials/tls/
     memset(static_cast<void*>(&tlsOpts), 0, sizeof(tlsOpts));
-    tlsOpts.cert = this->sslCertFileName.c_str();
-    tlsOpts.certkey = this->sslKeyFileName.c_str();
+    tlsOpts.cert = mg_str(this->sslCertFileName.c_str());
+    tlsOpts.key = mg_str(this->sslKeyFileName.c_str());
 }
 
 std::string HttpsServer::GetBaseUrl() {
@@ -32,7 +32,7 @@ void HttpsServer::acceptConnection(mg_connection* conn) {
 }
 
 void HttpsServer::OnRequest(mg_connection* conn, mg_http_message* msg) {
-    std::string uri = std::string(msg->uri.ptr, msg->uri.len);
+    std::string uri = std::string(msg->uri.buf, msg->uri.len);
     if (uri == "/hello.html") {
         OnRequestHello(conn, msg);
     } else {

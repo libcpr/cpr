@@ -276,6 +276,35 @@ TEST(BasicAuthenticationTests, BasicDigestSuccessTest) {
     EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
+TEST(BasicAuthenticationTests, RejectMalformedBasicScheme) {
+    Url url{server->GetBaseUrl() + "/basic_auth.html"};
+    for (const char* authorization : {"BasicX dXNlcjpwYXNzd29yZA==", "Basic", "B"}) {
+        SCOPED_TRACE(authorization);
+        Response response = cpr::Get(url, Header{{"Authorization", authorization}});
+        EXPECT_EQ(401, response.status_code);
+        EXPECT_EQ(ErrorCode::OK, response.error.code);
+    }
+}
+
+TEST(BasicAuthenticationTests, RejectMalformedBearerScheme) {
+    Url url{server->GetBaseUrl() + "/bearer_token.html"};
+    for (const char* authorization : {"BearerX the_token", "Bearer", "B"}) {
+        SCOPED_TRACE(authorization);
+        Response response = cpr::Get(url, Header{{"Authorization", authorization}});
+        EXPECT_EQ(401, response.status_code);
+        EXPECT_EQ(ErrorCode::OK, response.error.code);
+    }
+}
+
+TEST(BasicAuthenticationTests, MixedCaseSchemes) {
+    Response basic = cpr::Get(Url{server->GetBaseUrl() + "/basic_auth.html"}, Header{{"Authorization", "bAsIc dXNlcjpwYXNzd29yZA=="}});
+    EXPECT_EQ(200, basic.status_code);
+    EXPECT_EQ(ErrorCode::OK, basic.error.code);
+    Response bearer = cpr::Get(Url{server->GetBaseUrl() + "/bearer_token.html"}, Header{{"Authorization", "bEaReR the_token"}});
+    EXPECT_EQ(200, bearer.status_code);
+    EXPECT_EQ(ErrorCode::OK, bearer.error.code);
+}
+
 TEST(BasicAthenticationParameterTests, BasicAuthenticationSuccessSingleParameterTest) {
     Url url{server->GetBaseUrl() + "/basic_auth.html"};
     Response response = cpr::Get(url, Authentication{"user", "password", AuthMode::BASIC}, Parameters{{"hello", "world"}});

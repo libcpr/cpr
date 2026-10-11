@@ -388,6 +388,15 @@ TEST(UrlEncodedPostTests, FormPostFileNoCopyTestWithOverridenFilename) {
     EXPECT_EQ(ErrorCode::OK, response.error.code);
 }
 
+TEST(UrlEncodedPostTests, JsonPostPreservesPercentSigns) {
+    Url url{server->GetBaseUrl() + "/json_post.html"};
+    std::string body{R"({"value":"100%% complete"})"};
+    Response response = cpr::Post(url, Header{{"Content-Type", "application/json"}}, Body{body});
+    EXPECT_EQ(body, response.text);
+    EXPECT_EQ(201, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
 TEST(UrlEncodedPostTests, TimeoutPostTest) {
     Url url{server->GetBaseUrl() + "/json_post.html"};
     std::string body{R"({"RegisterObject": {"DeviceID": "65010000005030000001"}})"};
