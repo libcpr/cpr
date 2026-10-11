@@ -8,7 +8,6 @@
 namespace cpr {
 namespace fs = boost::filesystem;
 }
-// cppcheck-suppress preprocessorErrorDirective
 #elif __has_include(<filesystem>)
 #include <filesystem>
 namespace cpr {
@@ -20,6 +19,8 @@ namespace cpr {
 namespace fs = std::experimental::filesystem;
 }
 #else
+// cppcheck cannot resolve __has_include for the selected standard library here.
+// cppcheck-suppress preprocessorErrorDirective
 #error "Failed to include <filesystem> header!"
 #endif
 

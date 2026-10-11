@@ -67,6 +67,12 @@ cpu = '${MESON_TARGET_HOST_CPU_FAMILY}'
 endian = '${MESON_ENDIAN}'
 ")
 
+if(WIN32)
+    # The Windows CI toolchain detects ICU, but curl's static libpsl dependency
+    # does not propagate ICU's libraries to the libcurl DLL link step.
+    set(LIBPSL_MESON_RUNTIME_ARGS -Druntime=no)
+endif()
+
 # Meson configure
 # We only care about static libraries of psl. In case you need a dynamic version, feel free to add support for it.
 message(STATUS "Configuring libpsl...")
@@ -75,6 +81,7 @@ execute_process(COMMAND "${MESON_PATH}" setup
                         "${LIBPSL_SOURCE_DIR}"
                         -Dtests=false
                         -Ddocs=false
+                        ${LIBPSL_MESON_RUNTIME_ARGS}
                         --cross-file "${CMAKE_BINARY_DIR}/libpsl-meson-cross.txt"
                         --buildtype=${MESON_BUILD_TYPE}
                         --prefix "${LIBPSL_INSTALL_DIR}"
