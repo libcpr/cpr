@@ -500,7 +500,7 @@ TEST(HeaderTests, HeaderReflectUpdateHeaderAddSessionTest) {
  * https://github.com/whoshuu/cpr/issues/532
  **/
 TEST(HeaderTests, SessionHeaderReflectTest) {
-    std::unique_ptr<cpr::Session> session(new cpr::Session());
+    std::unique_ptr<cpr::Session> session = std::make_unique<cpr::Session>();
     session->SetUrl({server->GetBaseUrl() + "/header_reflect.html"});
     session->SetBody("Some Body to post");
     session->SetHeader({{"Content-Type", "application/json"}});
