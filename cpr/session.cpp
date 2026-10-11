@@ -67,6 +67,36 @@
 #endif
 
 
+// NOLINTNEXTLINE(misc-use-anonymous-namespace) LLVM prefers static callbacks.
+static size_t ReadMultipartStream(char* buffer, size_t size, size_t count, void* userdata) noexcept {
+    const auto& stream = *static_cast<cpr::MultipartStream*>(userdata);
+    const size_t capacity = size * count;
+    size_t bytes = capacity;
+    try {
+        if (!stream.read.callback || !stream.read(buffer, bytes) || bytes > capacity) {
+            return CURL_READFUNC_ABORT;
+        }
+        return bytes;
+    } catch (...) {
+        return CURL_READFUNC_ABORT;
+    }
+}
+
+// NOLINTNEXTLINE(misc-use-anonymous-namespace) LLVM prefers static callbacks.
+static int SeekMultipartStream(void* userdata, curl_off_t offset, int origin) noexcept {
+    const auto& stream = *static_cast<cpr::MultipartStream*>(userdata);
+    try {
+        return stream.seek(offset, origin) ? CURL_SEEKFUNC_OK : CURL_SEEKFUNC_FAIL;
+    } catch (...) {
+        return CURL_SEEKFUNC_FAIL;
+    }
+}
+
+// NOLINTNEXTLINE(misc-use-anonymous-namespace) LLVM prefers static callbacks.
+static void FreeMultipartStream(void* userdata) noexcept {
+    delete static_cast<cpr::MultipartStream*>(userdata);
+}
+
 namespace cpr {
 // Ignored here since libcurl reqires a long:
 // NOLINTNEXTLINE(google-runtime-int)
@@ -1062,7 +1092,19 @@ void Session::prepareBodyPayloadOrMultipart() const {
                 if (!part.content_type.empty()) {
                     curl_mime_type(mimePart, part.content_type.c_str());
                 }
-                if (part.is_buffer) {
+                if (part.stream) {
+                    auto stream = std::make_unique<MultipartStream>(*part.stream);
+                    curl_mime_name(mimePart, part.name.c_str());
+                    if (!stream->filename.empty()) {
+                        curl_mime_filename(mimePart, stream->filename.c_str());
+                    }
+                    const CURLcode result = curl_mime_data_cb(mimePart, stream->read.size, ReadMultipartStream, stream->seek ? SeekMultipartStream : nullptr, FreeMultipartStream, stream.get());
+                    if (result != CURLE_OK) {
+                        throw std::runtime_error(curl_easy_strerror(result));
+                    }
+                    // The MIME part now owns the callback state, including any captured resources.
+                    (void) stream.release(); // NOLINT(bugprone-unused-return-value) Ownership was transferred to libcurl.
+                } else if (part.is_buffer) {
                     // Do not use formdata, to prevent having to use reinterpreter_cast:
                     curl_mime_name(mimePart, part.name.c_str());
                     curl_mime_data(mimePart, part.data, part.datalen);

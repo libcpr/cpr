@@ -519,7 +519,10 @@ void HttpServer::OnRequestFileUploadPost(mg_connection* conn, mg_http_message* m
     response.erase(response.find_last_not_of(",\n") + 1);
     response += "\n}";
 
-    mg_http_reply(conn, 201, headers.c_str(), response.c_str());
+    // Echo all bytes, including NULs and percent signs, for binary upload tests.
+    mg_printf(conn, "HTTP/1.1 201 Created\r\n%sContent-Length: %zu\r\n\r\n", headers.c_str(), response.size());
+    mg_send(conn, response.data(), response.size());
+    conn->is_resp = 0;
 }
 
 void HttpServer::OnRequestDelete(mg_connection* conn, mg_http_message* msg) {

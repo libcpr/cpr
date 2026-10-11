@@ -2,13 +2,16 @@
 #include <cstddef>
 #include <gtest/gtest.h>
 
+#include <algorithm>
 #include <array>
 #include <cstdio>
+#include <cstring>
 #include <fstream>
+#include <memory>
+#include <stdexcept>
 #include <string>
 
 #include "cpr/cookies.h"
-#include "cpr/cpr.h"
 #include "cpr/multipart.h"
 
 #include "httpServer.hpp"
@@ -16,6 +19,154 @@
 using namespace cpr;
 
 static HttpServer* server = new HttpServer();
+
+namespace {
+struct StreamState {
+    std::string data;
+    size_t position{0};
+};
+
+MultipartStream MakeMultipartStream(std::string data, std::string filename = {}, bool known_size = true, bool seekable = true) {
+    auto state = std::make_shared<StreamState>(StreamState{std::move(data)});
+    ReadCallback read{known_size ? static_cast<cpr_off_t>(state->data.size()) : -1, [state](char* buffer, size_t& size, intptr_t) {
+                          size = std::min({size, size_t{17}, state->data.size() - state->position});
+                          std::memcpy(buffer, state->data.data() + state->position, size);
+                          state->position += size;
+                          return true;
+                      }};
+    MultipartStream::SeekFunction seek;
+    if (seekable) {
+        seek = [state](cpr_off_t offset, int origin) {
+            if (origin != SEEK_SET || offset < 0 || static_cast<size_t>(offset) > state->data.size()) {
+                return false;
+            }
+            state->position = static_cast<size_t>(offset);
+            return true;
+        };
+    }
+    return MultipartStream{std::move(read), std::move(filename), std::move(seek)};
+}
+} // namespace
+
+TEST(MultipartStreamTests, MixedPartsAndIncrementalReads) {
+    const std::string data(4096, 'x');
+    const Response response = cpr::Post(Url{server->GetBaseUrl() + "/post_file_upload.html"}, Multipart{{Part{"field", "value"}, Part{"file", MakeMultipartStream(data, "stream.bin"), "application/octet-stream"}, Part{"other", MakeMultipartStream("second")}}});
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+    EXPECT_EQ(201, response.status_code);
+    EXPECT_EQ("{\n  \"field\": \"value\",\n  \"file\": \"stream.bin=" + data + "\",\n  \"other\": \"second\"\n}", response.text);
+}
+
+TEST(MultipartStreamTests, UnknownLengthAndEmptyBody) {
+    const Response response = cpr::Post(Url{server->GetBaseUrl() + "/post_file_upload.html"}, Multipart{{Part{"file", MakeMultipartStream("unknown length", "", false)}, Part{"empty", MakeMultipartStream("")}}});
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+    EXPECT_EQ(201, response.status_code);
+    EXPECT_EQ("{\n  \"file\": \"unknown length\",\n  \"empty\": \"\"\n}", response.text);
+}
+
+TEST(MultipartStreamTests, AsyncOwnsTemporaryCallbacks) {
+    auto response = cpr::PostAsync(Url{server->GetBaseUrl() + "/post_file_upload.html"}, Multipart{{Part{"file", MakeMultipartStream("async data", "async.txt")}}}).get();
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+    EXPECT_EQ("{\n  \"file\": \"async.txt=async data\"\n}", response.text);
+}
+
+TEST(MultipartStreamTests, RedirectRewindsPart) {
+    const Response response = cpr::Post(Url{server->GetBaseUrl() + "/temporary_redirect.html"}, Multipart{{Part{"file", MakeMultipartStream("redirect data", "file.txt")}}}, Header{{"RedirectLocation", "post_file_upload.html"}}, Redirect{PostRedirectFlags::POST_ALL});
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+    EXPECT_EQ(201, response.status_code);
+    EXPECT_EQ("{\n  \"file\": \"file.txt=redirect data\"\n}", response.text);
+}
+
+TEST(MultipartStreamTests, NonSeekableRedirectFails) {
+    const Response response = cpr::Post(Url{server->GetBaseUrl() + "/temporary_redirect.html"}, Multipart{{Part{"file", MakeMultipartStream("redirect data", "", true, false)}}}, Header{{"RedirectLocation", "post_file_upload.html"}}, Redirect{PostRedirectFlags::POST_ALL});
+    EXPECT_NE(ErrorCode::OK, response.error.code);
+}
+
+TEST(MultipartStreamTests, ReadFailureAndExceptionAbort) {
+    for (bool throws : {false, true}) {
+        SCOPED_TRACE(throws);
+        MultipartStream stream{ReadCallback{[throws](char*, size_t&, intptr_t) -> bool {
+            if (throws) {
+                throw std::runtime_error("read failed");
+            }
+            return false;
+        }}};
+        const Response response = cpr::Post(Url{server->GetBaseUrl() + "/post_file_upload.html"}, Multipart{{Part{"file", std::move(stream)}}});
+        EXPECT_EQ(ErrorCode::ABORTED_BY_CALLBACK, response.error.code);
+    }
+}
+
+TEST(MultipartStreamTests, BinaryBytes) {
+    const std::string data{"a\0b%\xff", 6};
+    const Response response = cpr::Post(Url{server->GetBaseUrl() + "/post_file_upload.html"}, Multipart{{Part{"file", MakeMultipartStream(data, "binary.dat")}}});
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+    EXPECT_EQ(201, response.status_code);
+    EXPECT_EQ("{\n  \"file\": \"binary.dat=" + data + "\"\n}", response.text);
+}
+
+TEST(MultipartStreamTests, CallbackResourcesReleasedOnRemoveContent) {
+    std::weak_ptr<StreamState> resource;
+    {
+        Session session;
+        session.SetUrl(Url{server->GetBaseUrl() + "/post_file_upload.html"});
+        {
+            auto state = std::make_shared<StreamState>(StreamState{"owned data"});
+            resource = state;
+            ReadCallback read{static_cast<cpr_off_t>(state->data.size()), [state](char* buffer, size_t& size, intptr_t) {
+                                  size = std::min(size, state->data.size() - state->position);
+                                  std::memcpy(buffer, state->data.data() + state->position, size);
+                                  state->position += size;
+                                  return true;
+                              }};
+            session.SetMultipart(Multipart{{Part{"file", MultipartStream{std::move(read)}}}});
+        }
+        EXPECT_FALSE(resource.expired());
+        EXPECT_EQ(ErrorCode::OK, session.Post().error.code);
+        session.RemoveContent();
+        EXPECT_TRUE(resource.expired());
+    }
+    EXPECT_TRUE(resource.expired());
+}
+
+TEST(MultipartStreamTests, InvalidByteCountAborts) {
+    MultipartStream stream{ReadCallback{[](char*, size_t& size, intptr_t) {
+        ++size;
+        return true;
+    }}};
+    const Response response = cpr::Post(Url{server->GetBaseUrl() + "/post_file_upload.html"}, Multipart{{Part{"file", std::move(stream)}}});
+    EXPECT_EQ(ErrorCode::ABORTED_BY_CALLBACK, response.error.code);
+}
+
+TEST(MultipartStreamTests, SeekFailureAndExceptionFailRewind) {
+    for (bool throws : {false, true}) {
+        SCOPED_TRACE(throws);
+        auto stream = MakeMultipartStream("redirect data");
+        stream.seek = [throws](cpr_off_t, int) -> bool {
+            if (throws) {
+                throw std::runtime_error("seek failed");
+            }
+            return false;
+        };
+        const Response response = cpr::Post(Url{server->GetBaseUrl() + "/temporary_redirect.html"}, Multipart{{Part{"file", std::move(stream)}}}, Header{{"RedirectLocation", "post_file_upload.html"}}, Redirect{PostRedirectFlags::POST_ALL}, Timeout{1000});
+        EXPECT_EQ(ErrorCode::SEND_FAIL_REWIND, response.error.code);
+    }
+}
+
+TEST(MultipartStreamTests, SessionReplacesStream) {
+    Session session;
+    session.SetTimeout(Timeout{1000});
+    session.SetUrl(Url{server->GetBaseUrl() + "/post_file_upload.html"});
+    session.SetMultipart(Multipart{{Part{"file", MakeMultipartStream("first")}}});
+    EXPECT_EQ("{\n  \"file\": \"first\"\n}", session.Post().text);
+    session.SetMultipart(Multipart{{Part{"file", MakeMultipartStream("second")}}});
+    const auto response = session.Post();
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+    EXPECT_EQ("{\n  \"file\": \"second\"\n}", response.text);
+}
+
+TEST(MultipartStreamTests, RejectInvalidReader) {
+    EXPECT_THROW((MultipartStream{ReadCallback{}}), std::invalid_argument);
+    EXPECT_THROW((MultipartStream{ReadCallback{-2, [](char*, size_t&, intptr_t) { return true; }}}), std::invalid_argument);
+}
 
 TEST(UrlEncodedPostTests, UrlPostSingleTest) {
     Url url{server->GetBaseUrl() + "/url_post.html"};
