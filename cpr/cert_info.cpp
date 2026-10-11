@@ -5,7 +5,7 @@
 namespace cpr {
 
 std::string& CertInfo::operator[](const size_t& pos) {
-    return cert_info_[pos];
+    return cert_info_[pos]; // NOLINT(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access) Check should happen by the caller.
 }
 
 CertInfo::iterator CertInfo::begin() {

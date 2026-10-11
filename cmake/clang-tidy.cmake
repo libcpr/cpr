@@ -11,6 +11,11 @@ if (NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
 
     message(STATUS "Enabling clang-tidy: ${CLANG_TIDY_EXECUTABLE}")
     set(CMAKE_CXX_CLANG_TIDY "${CLANG_TIDY_EXECUTABLE};-warnings-as-errors=*")
+
+    # If enabled, clang-tidy will try to apply suggested fixes
+    if (CPR_ENABLE_LINTING_AUTO_FIX)
+        set(CMAKE_CXX_CLANG_TIDY "${CMAKE_CXX_CLANG_TIDY};--fix;--fix-errors;--fix-notes")
+    endif ()
 else ()
     message(FATAL_ERROR "Clang-tidy is not supported when building for windows")
 endif ()

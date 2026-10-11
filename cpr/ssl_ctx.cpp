@@ -34,6 +34,16 @@
 #include <openssl/pemerr.h>
 #endif
 
+namespace {
+template <auto fn>
+struct deleter_from_fn {
+    template <typename T>
+    constexpr void operator()(T* arg) const {
+        fn(arg);
+    }
+};
+} // namespace
+
 namespace cpr {
 
 /**
@@ -44,14 +54,6 @@ namespace cpr {
  * Sources: https://curl.se/libcurl/c/CURLOPT_SSL_CTX_FUNCTION.html
  *          https://curl.se/libcurl/c/CURLOPT_SSL_CTX_DATA.html
  */
-
-template <auto fn>
-struct deleter_from_fn {
-    template <typename T>
-    constexpr void operator()(T* arg) const {
-        fn(arg);
-    }
-};
 
 template <typename T, auto fn>
 using custom_unique_ptr = std::unique_ptr<T, deleter_from_fn<fn>>;
