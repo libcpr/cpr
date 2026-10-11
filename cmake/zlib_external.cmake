@@ -6,7 +6,7 @@ if(WIN32 AND (${CMAKE_PROJECT_NAME} STREQUAL ${PROJECT_NAME}))
 endif()
 
 set(ZLIB_COMPAT ON CACHE INTERNAL "" FORCE)
-set(ZLIB_ENABLE_TESTS OFF CACHE INTERNAL "" FORCE)
+set(BUILD_TESTING OFF CACHE INTERNAL "" FORCE)
 
 FetchContent_Declare(zlib
                     URL https://github.com/zlib-ng/zlib-ng/archive/2.3.3.tar.gz

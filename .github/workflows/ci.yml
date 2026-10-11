@@ -85,6 +85,7 @@ jobs:
 
   ubuntu-gcc-mbedtls:
     runs-on: ubuntu-latest
+    container: ubuntu:latest
     steps:
     - name: Update package list
       run: sudo apt update
