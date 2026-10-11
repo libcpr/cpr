@@ -1,12 +1,31 @@
 #include "httpsServer.hpp"
-#include <system_error>
+#include <fstream>
+#include <ios>
+#include <iterator>
+#include <stdexcept>
+#include <string>
+
+#include "cpr/filesystem.h" // IWYU pragma: keep
+#include "mongoose.h"
+
+// NOLINTNEXTLINE(misc-use-anonymous-namespace) LLVM prefers static functions.
+static std::string LoadTlsFile(const std::string& path) {
+    std::ifstream file{path, std::ios::binary};
+    if (!file.is_open()) {
+        throw std::runtime_error("Failed to open TLS file: " + path);
+    }
+    std::string content{std::istreambuf_iterator<char>{file}, std::istreambuf_iterator<char>{}};
+    if (file.bad() || content.empty()) {
+        throw std::runtime_error("Failed to read TLS file: " + path);
+    }
+    return content;
+}
 
 namespace cpr {
-HttpsServer::HttpsServer(fs::path&& baseDirPath, fs::path&& sslCertFileName, fs::path&& sslKeyFileName) : baseDirPath(baseDirPath.make_preferred().string()), sslCertFileName(sslCertFileName.make_preferred().string()), sslKeyFileName(sslKeyFileName.make_preferred().string()) {
+HttpsServer::HttpsServer(fs::path&& baseDirPath, fs::path&& sslCertFileName, fs::path&& sslKeyFileName) : baseDirPath(baseDirPath.make_preferred().string()), sslCertFileName(sslCertFileName.make_preferred().string()), sslKeyFileName(sslKeyFileName.make_preferred().string()), sslCert(LoadTlsFile(this->sslCertFileName)), sslKey(LoadTlsFile(this->sslKeyFileName)) {
     // See https://mongoose.ws/tutorials/tls/
-    memset(static_cast<void*>(&tlsOpts), 0, sizeof(tlsOpts));
-    tlsOpts.cert = mg_str(this->sslCertFileName.c_str());
-    tlsOpts.key = mg_str(this->sslKeyFileName.c_str());
+    tlsOpts.cert = mg_str(sslCert.c_str());
+    tlsOpts.key = mg_str(sslKey.c_str());
 }
 
 std::string HttpsServer::GetBaseUrl() {
@@ -21,7 +40,6 @@ uint16_t HttpsServer::GetPort() {
 mg_connection* HttpsServer::initServer(mg_mgr* mgr, mg_event_handler_t event_handler) {
     mg_mgr_init(mgr);
 
-    std::string port = std::to_string(GetPort());
     mg_connection* c = mg_http_listen(mgr, GetBaseUrl().c_str(), event_handler, this);
     return c;
 }
