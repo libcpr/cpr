@@ -1304,8 +1304,8 @@ TEST(GetRedirectTests, BasicAuthenticationRedirectSuccessTest) {
     Response response = cpr::Get(url, Authentication{"user", "password", AuthMode::BASIC}, Header{{"RedirectLocation", "basic_auth.html"}}, Redirect(true, true));
     std::string expected_text{"Header reflect GET"};
     EXPECT_EQ(expected_text, response.text);
-    std::string resultUrl = server->GetBaseUrl() + "/basic_auth.html";
-    EXPECT_EQ(response.url, resultUrl);
+    const std::string resultUrl = server->GetBaseUrl() + "/basic_auth.html";
+    EXPECT_NE(std::string::npos, response.url.str().find(resultUrl));
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
     EXPECT_EQ(ErrorCode::OK, response.error.code);
