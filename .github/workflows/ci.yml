@@ -113,6 +113,48 @@ jobs:
         run-test: true
         ctest-options: ${{ env.CTEST_OPTIONS }}
 
+  ubuntu-wolfssl:
+    strategy:
+      matrix:
+        compiler: [gcc, clang]
+        buildType: [Debug, Release]
+        include:
+        - compiler: gcc
+          cxx: g++
+        - compiler: clang
+          cxx: clang++
+    runs-on: ubuntu-latest
+    steps:
+    - name: Update package list
+      run: sudo apt update
+    - name: Install Dependencies
+      run: sudo apt install -y libwolfssl-dev libgtest-dev cmake build-essential clang libpsl-dev
+      env:
+        DEBIAN_FRONTEND: noninteractive
+    - name: Setup cmake
+      uses: jwlawson/actions-setup-cmake@v2.2
+      with:
+        cmake-version: '3.24.x'
+    - name: Checkout
+      uses: actions/checkout@v7
+    - name: "Build & Test"
+      env:
+        CPR_BUILD_TESTS: ON
+        CPR_BUILD_TESTS_SSL: OFF # The mongoose TLS test server requires OpenSSL.
+        CPR_FORCE_WOLFSSL_BACKEND: ON
+        CPR_USE_SYSTEM_CURL: OFF
+        CPR_USE_SYSTEM_GTEST: ON
+        CPR_USE_SYSTEM_LIB_PSL: ON
+      uses: ashutoshvarma/action-cmake-build@master
+      with:
+        build-dir: ${{ github.workspace }}/build
+        source-dir: ${{ github.workspace }}
+        cc: ${{ matrix.compiler }}
+        cxx: ${{ matrix.cxx }}
+        build-type: ${{ matrix.buildType }}
+        run-test: true
+        ctest-options: ${{ env.CTEST_OPTIONS }}
+
   fedora-clang-openssl:
     runs-on: ubuntu-latest
     container: "fedora:latest"
@@ -241,6 +283,7 @@ jobs:
         CMAKE_GENERATOR: "Visual Studio 17 2022"
         CPR_BUILD_TESTS: ON
         CPR_BUILD_TESTS_SSL: OFF
+        CPR_FORCE_WINSSL_BACKEND: ON
       uses: ashutoshvarma/action-cmake-build@master
       with:
         build-dir: ${{ github.workspace }}/build

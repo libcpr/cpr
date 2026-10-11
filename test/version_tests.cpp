@@ -1,6 +1,7 @@
 #include "cpr/cpr.h"
 #include <cctype>
 #include <cstddef>
+#include <curl/curl.h>
 #include <gtest/gtest.h>
 #include <string>
 
@@ -57,6 +58,62 @@ TEST(VersionTests, VersionNumExists) {
     EXPECT_TRUE(false);
 #endif // CPR_VERSION_NUM
 }
+
+#if defined(CPR_ENABLE_SSL)
+#if defined(CPR_FORCE_OPENSSL_BACKEND)
+TEST(VersionTests, OpenSSLBackendUsed) {
+    const curl_version_info_data* version = curl_version_info(CURLVERSION_NOW);
+    ASSERT_NE(version, nullptr);
+    ASSERT_NE(version->ssl_version, nullptr);
+    EXPECT_NE(version->features & CURL_VERSION_SSL, 0);
+    const std::string backend{version->ssl_version};
+    // OpenSSL-compatible libraries also use curl's OpenSSL backend.
+    EXPECT_TRUE(backend.find("OpenSSL/") == 0 || backend.find("LibreSSL/") == 0 ||
+                backend.find("BoringSSL") == 0 || backend.find("AWS-LC/") == 0 ||
+                backend.find("quictls/") == 0) << backend;
+}
+#endif
+
+#if defined(CPR_FORCE_WINSSL_BACKEND)
+TEST(VersionTests, WinSSLBackendUsed) {
+    const curl_version_info_data* version = curl_version_info(CURLVERSION_NOW);
+    ASSERT_NE(version, nullptr);
+    ASSERT_NE(version->ssl_version, nullptr);
+    EXPECT_NE(version->features & CURL_VERSION_SSL, 0);
+    EXPECT_EQ(std::string{version->ssl_version}.find("Schannel"), 0);
+}
+#endif
+
+#if defined(CPR_FORCE_DARWINSSL_BACKEND)
+TEST(VersionTests, DarwinSSLBackendUsed) {
+    const curl_version_info_data* version = curl_version_info(CURLVERSION_NOW);
+    ASSERT_NE(version, nullptr);
+    ASSERT_NE(version->ssl_version, nullptr);
+    EXPECT_NE(version->features & CURL_VERSION_SSL, 0);
+    EXPECT_EQ(std::string{version->ssl_version}.find("SecureTransport"), 0);
+}
+#endif
+
+#if defined(CPR_FORCE_MBEDTLS_BACKEND)
+TEST(VersionTests, MbedTLSBackendUsed) {
+    const curl_version_info_data* version = curl_version_info(CURLVERSION_NOW);
+    ASSERT_NE(version, nullptr);
+    ASSERT_NE(version->ssl_version, nullptr);
+    EXPECT_NE(version->features & CURL_VERSION_SSL, 0);
+    EXPECT_EQ(std::string{version->ssl_version}.find("mbedTLS/"), 0);
+}
+#endif
+
+#if defined(CPR_FORCE_WOLFSSL_BACKEND)
+TEST(VersionTests, WolfSSLBackendUsed) {
+    const curl_version_info_data* version = curl_version_info(CURLVERSION_NOW);
+    ASSERT_NE(version, nullptr);
+    ASSERT_NE(version->ssl_version, nullptr);
+    EXPECT_NE(version->features & CURL_VERSION_SSL, 0);
+    EXPECT_EQ(std::string{version->ssl_version}.find("wolfSSL/"), 0);
+}
+#endif
+#endif // CPR_ENABLE_SSL
 
 
 int main(int argc, char** argv) {
