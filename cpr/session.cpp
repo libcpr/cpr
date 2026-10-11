@@ -154,6 +154,11 @@ Session::Session() : curl_(new CurlHolder()) {
     curl_easy_setopt(curl_->handle, CURLOPT_NOSIGNAL, 1L);
 #endif
 
+#if LIBCURL_VERSION_NUM >= 0x074700 // 7.71.0
+    // Fix loading certs from Windows cert store when using OpenSSL:
+    curl_easy_setopt(curl_->handle, CURLOPT_SSL_OPTIONS, CURLSSLOPT_NATIVE_CA);
+#endif
+
 #if LIBCURL_VERSION_NUM >= 0x071900 // 7.25.0
     curl_easy_setopt(curl_->handle, CURLOPT_TCP_KEEPALIVE, 1L);
 #endif
