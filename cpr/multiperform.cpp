@@ -232,7 +232,7 @@ void MultiPerform::PrepareSessions() {
 }
 
 void MultiPerform::PrepareDownloadSession(size_t sessions_index, const WriteCallback& write) {
-    const auto& [session, method] = sessions_[sessions_index];
+    const auto& [session, method] = sessions_.at(sessions_index);
     switch (method) {
         case HttpMethod::DOWNLOAD_REQUEST:
             session->PrepareDownload(write);
@@ -244,7 +244,7 @@ void MultiPerform::PrepareDownloadSession(size_t sessions_index, const WriteCall
 }
 
 void MultiPerform::PrepareDownloadSession(size_t sessions_index, std::ofstream& file) {
-    const auto& [session, method] = sessions_[sessions_index];
+    const auto& [session, method] = sessions_.at(sessions_index);
     switch (method) {
         case HttpMethod::DOWNLOAD_REQUEST:
             session->PrepareDownload(file);

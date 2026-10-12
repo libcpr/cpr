@@ -19,7 +19,7 @@ enum class AcceptEncodingMethods : uint8_t {
     disabled,
 };
 
-// NOLINTNEXTLINE(cert-err58-cpp)
+// NOLINTNEXTLINE(cert-err58-cpp, bugprone-throwing-static-initialization) If we throw here, more is broken since everything is already known at compile time.
 static const std::map<AcceptEncodingMethods, std::string> AcceptEncodingMethodsStringMap{{AcceptEncodingMethods::identity, "identity"}, {AcceptEncodingMethods::deflate, "deflate"}, {AcceptEncodingMethods::zlib, "zlib"}, {AcceptEncodingMethods::gzip, "gzip"}, {AcceptEncodingMethods::disabled, "disabled"}};
 
 class AcceptEncoding {

@@ -5,10 +5,18 @@
 #include <iomanip>
 #include <sstream>
 #include <string>
+#include <string_view>
 #include <system_error>
 #include <thread>
 
 namespace cpr {
+
+namespace {
+bool HasAuthScheme(const mg_str* value, const char* scheme) {
+    const mg_str expected = mg_str(scheme);
+    return value != nullptr && value->len > expected.len && value->buf[expected.len] == ' ' && mg_strcasecmp(mg_str_n(value->buf, expected.len), expected) == 0;
+}
+} // namespace
 
 std::string HttpServer::GetBaseUrl() {
     return "http://127.0.0.1:" + std::to_string(GetPort());
@@ -33,7 +41,7 @@ mg_connection* HttpServer::initServer(mg_mgr* mgr, mg_event_handler_t event_hand
 void HttpServer::acceptConnection(mg_connection* /* conn */) {}
 
 void HttpServer::OnRequestHello(mg_connection* conn, mg_http_message* msg) {
-    if (std::string{msg->method.ptr, msg->method.len} == std::string{"OPTIONS"}) {
+    if (std::string{msg->method.buf, msg->method.len} == std::string{"OPTIONS"}) {
         OnRequestOptions(conn, msg);
     } else {
         std::string response{"Hello world!"};
@@ -43,7 +51,7 @@ void HttpServer::OnRequestHello(mg_connection* conn, mg_http_message* msg) {
 }
 
 void HttpServer::OnRequestRoot(mg_connection* conn, mg_http_message* msg) {
-    if (std::string{msg->method.ptr, msg->method.len} == std::string{"OPTIONS"}) {
+    if (std::string{msg->method.buf, msg->method.len} == std::string{"OPTIONS"}) {
         OnRequestOptions(conn, msg);
     } else {
         std::string errorMessage{"Method Not Allowed"};
@@ -52,7 +60,7 @@ void HttpServer::OnRequestRoot(mg_connection* conn, mg_http_message* msg) {
 }
 
 void HttpServer::OnRequestNotFound(mg_connection* conn, mg_http_message* msg) {
-    if (std::string{msg->method.ptr, msg->method.len} == std::string{"OPTIONS"}) {
+    if (std::string{msg->method.buf, msg->method.len} == std::string{"OPTIONS"}) {
         OnRequestOptions(conn, msg);
     } else {
         std::string errorMessage{"Not Found"};
@@ -203,7 +211,7 @@ void HttpServer::OnRequestCookiesReflect(mg_connection* conn, mg_http_message* m
         SendError(conn, 400, errorMessage);
         return;
     }
-    std::string cookie_str{request_cookies->ptr, request_cookies->len};
+    std::string cookie_str{request_cookies->buf, request_cookies->len};
     std::string headers = "Content-Type: text/html\r\n";
     mg_http_reply(conn, 200, headers.c_str(), cookie_str.c_str());
 }
@@ -214,7 +222,7 @@ void HttpServer::OnRequestRedirectionWithChangingCookies(mg_connection* conn, mg
     mg_str* request_cookies{nullptr};
     std::string cookie_str;
     if ((request_cookies = mg_http_get_header(msg, "Cookie")) != nullptr) {
-        cookie_str = std::string{request_cookies->ptr, request_cookies->len};
+        cookie_str = std::string{request_cookies->buf, request_cookies->len};
     }
 
     if (cookie_str.find("SID=31d4d96e407aad42") == std::string::npos) {
@@ -238,14 +246,13 @@ void HttpServer::OnRequestRedirectionWithChangingCookies(mg_connection* conn, mg
 }
 
 void HttpServer::OnRequestBasicAuth(mg_connection* conn, mg_http_message* msg) {
-    mg_str* requested_auth;
-    std::string auth{"Basic"};
-    if ((requested_auth = mg_http_get_header(msg, "Authorization")) == nullptr || mg_ncasecmp(requested_auth->ptr, auth.c_str(), auth.length()) != 0) {
+    const mg_str* requested_auth = mg_http_get_header(msg, "Authorization");
+    if (!HasAuthScheme(requested_auth, "Basic")) {
         std::string errorMessage{"Unauthorized"};
         SendError(conn, 401, errorMessage);
         return;
     }
-    std::string auth_string{requested_auth->ptr, requested_auth->len};
+    std::string auth_string{requested_auth->buf, requested_auth->len};
     size_t basic_token = auth_string.find(' ') + 1;
     auth_string = auth_string.substr(basic_token, auth_string.length() - basic_token);
     auth_string = Base64Decode(auth_string);
@@ -261,14 +268,13 @@ void HttpServer::OnRequestBasicAuth(mg_connection* conn, mg_http_message* msg) {
 }
 
 void HttpServer::OnRequestBearerAuth(mg_connection* conn, mg_http_message* msg) {
-    mg_str* requested_auth;
-    std::string auth{"Bearer"};
-    if ((requested_auth = mg_http_get_header(msg, "Authorization")) == nullptr || mg_ncasecmp(requested_auth->ptr, auth.c_str(), auth.length()) != 0) {
+    const mg_str* requested_auth = mg_http_get_header(msg, "Authorization");
+    if (!HasAuthScheme(requested_auth, "Bearer")) {
         std::string errorMessage{"Unauthorized"};
         SendError(conn, 401, errorMessage);
         return;
     }
-    std::string auth_string{requested_auth->ptr, requested_auth->len};
+    std::string auth_string{requested_auth->buf, requested_auth->len};
     size_t basic_token = auth_string.find(' ') + 1;
     auth_string = auth_string.substr(basic_token, auth_string.length() - basic_token);
     if (auth_string == "the_token") {
@@ -292,34 +298,28 @@ void HttpServer::OnRequestBasicJson(mg_connection* conn, mg_http_message* /*msg*
 }
 
 void HttpServer::OnRequestHeaderReflect(mg_connection* conn, mg_http_message* msg) {
-    if (std::string_view{msg->method.ptr, msg->method.len} == "GET") {
-        if (msg->body.len > 0) {
-            std::string errorMessage{"Bad Request: GET shouldn't contain a body."};
-            SendError(conn, 400, errorMessage);
-            return;
-        } else if (msg->chunk.len > 0) {
-            std::string errorMessage{"Bad Request: GET shouldn't contain a body."};
-            SendError(conn, 400, errorMessage);
-            return;
-        }
+    if (std::string_view{msg->method.buf, msg->method.len} == "GET" && msg->body.len > 0) {
+        std::string errorMessage{"Bad Request: GET shouldn't contain a body."};
+        SendError(conn, 400, errorMessage);
+        return;
     }
 
-    std::string response = "Header reflect " + std::string{msg->method.ptr, msg->method.len};
+    std::string response = "Header reflect " + std::string{msg->method.buf, msg->method.len};
     std::string headers;
     bool hasContentTypeHeader = false;
     for (const mg_http_header& header : msg->headers) {
-        if (!header.name.ptr) {
+        if (!header.name.buf) {
             continue;
         }
 
-        std::string name = std::string(header.name.ptr, header.name.len);
+        std::string name = std::string(header.name.buf, header.name.len);
         if (std::string{"Content-Type"} == name) {
             hasContentTypeHeader = true;
         }
 
         if (std::string{"Host"} != name && std::string{"Accept"} != name && std::string{"Content-Length"} != name) {
-            if (header.value.ptr) {
-                headers.append(name + ": " + std::string(header.value.ptr, header.value.len) + "\r\n");
+            if (header.value.buf) {
+                headers.append(name + ": " + std::string(header.value.buf, header.value.len) + "\r\n");
             }
         }
     }
@@ -334,13 +334,13 @@ void HttpServer::OnRequestTempRedirect(mg_connection* conn, mg_http_message* msg
     // Get the requested target location:
     std::string location;
     for (mg_http_header& header : msg->headers) {
-        if (!header.name.ptr) {
+        if (!header.name.buf) {
             continue;
         }
 
-        std::string name = std::string(header.name.ptr, header.name.len);
+        std::string name = std::string(header.name.buf, header.name.len);
         if (std::string{"RedirectLocation"} == name) {
-            location = std::string(header.value.ptr, header.value.len);
+            location = std::string(header.value.buf, header.value.len);
             break;
         }
     }
@@ -358,13 +358,13 @@ void HttpServer::OnRequestPermRedirect(mg_connection* conn, mg_http_message* msg
     // Get the requested target location:
     std::string location;
     for (mg_http_header& header : msg->headers) {
-        if (!header.name.ptr) {
+        if (!header.name.buf) {
             continue;
         }
 
-        std::string name = std::string(header.name.ptr, header.name.len);
+        std::string name = std::string(header.name.buf, header.name.len);
         if (std::string{"RedirectLocation"} == name) {
-            location = std::string(header.value.ptr, header.value.len);
+            location = std::string(header.value.buf, header.value.len);
             break;
         }
     }
@@ -383,13 +383,13 @@ void HttpServer::OnRequestResolvePermRedirect(mg_connection* conn, mg_http_messa
     // Get the requested target location:
     std::string location;
     for (mg_http_header& header : msg->headers) {
-        if (!header.name.ptr) {
+        if (!header.name.buf) {
             continue;
         }
 
-        std::string name = std::string(header.name.ptr, header.name.len);
+        std::string name = std::string(header.name.buf, header.name.len);
         if (std::string{"RedirectLocation"} == name) {
-            location = std::string(header.value.ptr, header.value.len);
+            location = std::string(header.value.buf, header.value.len);
             break;
         }
     }
@@ -413,7 +413,7 @@ void HttpServer::OnRequestTwoRedirects(mg_connection* conn, mg_http_message* /*m
 }
 
 void HttpServer::OnRequestUrlPost(mg_connection* conn, mg_http_message* msg) {
-    if (std::string{msg->method.ptr, msg->method.len} != std::string{"POST"}) {
+    if (std::string{msg->method.buf, msg->method.len} != std::string{"POST"}) {
         std::string errorMessage{"Method Not Allowed"};
         SendError(conn, 405, errorMessage);
         return;
@@ -453,7 +453,7 @@ void HttpServer::OnRequestUrlPost(mg_connection* conn, mg_http_message* msg) {
 }
 
 void HttpServer::OnRequestBodyGet(mg_connection* conn, mg_http_message* msg) {
-    if (std::string{msg->method.ptr, msg->method.len} != std::string{"GET"}) {
+    if (std::string{msg->method.buf, msg->method.len} != std::string{"GET"}) {
         std::string errorMessage{"Method Not Allowed"};
         SendError(conn, 405, errorMessage);
         return;
@@ -472,14 +472,14 @@ void HttpServer::OnRequestBodyGet(mg_connection* conn, mg_http_message* msg) {
 
 void HttpServer::OnRequestJsonPost(mg_connection* conn, mg_http_message* msg) {
     mg_str* content_type{nullptr};
-    if ((content_type = mg_http_get_header(msg, "Content-Type")) == nullptr || std::string{content_type->ptr, content_type->len} != "application/json") {
+    if ((content_type = mg_http_get_header(msg, "Content-Type")) == nullptr || std::string{content_type->buf, content_type->len} != "application/json") {
         std::string errorMessage{"Unsupported Media Type"};
         SendError(conn, 415, errorMessage);
         return;
     }
 
     std::string headers = "Content-Type: application/json\r\n";
-    mg_http_reply(conn, 201, headers.c_str(), msg->body.ptr);
+    mg_http_reply(conn, 201, headers.c_str(), "%.*s", static_cast<int>(msg->body.len), msg->body.buf);
 }
 
 void HttpServer::OnRequestFormPost(mg_connection* conn, mg_http_message* msg) {
@@ -490,11 +490,11 @@ void HttpServer::OnRequestFormPost(mg_connection* conn, mg_http_message* msg) {
     std::string response{};
     response += "{\n";
     while ((pos = mg_http_next_multipart(msg->body, pos, &part)) > 0) {
-        response += "  \"" + std::string(part.name.ptr, part.name.len) + "\": \"";
-        if (!std::string(part.filename.ptr, part.filename.len).empty()) {
-            response += std::string(part.filename.ptr, part.filename.len) + "=";
+        response += "  \"" + std::string(part.name.buf, part.name.len) + "\": \"";
+        if (!std::string(part.filename.buf, part.filename.len).empty()) {
+            response += std::string(part.filename.buf, part.filename.len) + "=";
         }
-        response += std::string(part.body.ptr, part.body.len) + "\",\n";
+        response += std::string(part.body.buf, part.body.len) + "\",\n";
     }
     response.erase(response.find_last_not_of(",\n") + 1);
     response += "\n}";
@@ -510,11 +510,11 @@ void HttpServer::OnRequestFileUploadPost(mg_connection* conn, mg_http_message* m
     std::string response{};
     response += "{\n";
     while ((pos = mg_http_next_multipart(msg->body, pos, &part)) > 0) {
-        response += "  \"" + std::string(part.name.ptr, part.name.len) + "\": \"";
-        if (!std::string(part.filename.ptr, part.filename.len).empty()) {
-            response += std::string(part.filename.ptr, part.filename.len) + "=";
+        response += "  \"" + std::string(part.name.buf, part.name.len) + "\": \"";
+        if (!std::string(part.filename.buf, part.filename.len).empty()) {
+            response += std::string(part.filename.buf, part.filename.len) + "=";
         }
-        response += std::string(part.body.ptr, part.body.len) + "\",\n";
+        response += std::string(part.body.buf, part.body.len) + "\",\n";
     }
     response.erase(response.find_last_not_of(",\n") + 1);
     response += "\n}";
@@ -525,18 +525,18 @@ void HttpServer::OnRequestFileUploadPost(mg_connection* conn, mg_http_message* m
 void HttpServer::OnRequestDelete(mg_connection* conn, mg_http_message* msg) {
     bool has_json_header = false;
     for (mg_http_header& header : msg->headers) {
-        if (!header.name.ptr) {
+        if (!header.name.buf) {
             continue;
         }
 
-        std::string name = std::string(header.name.ptr, header.name.len);
-        std::string value = std::string(header.value.ptr, header.value.len);
+        std::string name = std::string(header.name.buf, header.name.len);
+        std::string value = std::string(header.value.buf, header.value.len);
         if (std::string{"Content-Type"} == name && std::string{"application/json"} == value) {
             has_json_header = true;
             break;
         }
     }
-    if (std::string{msg->method.ptr, msg->method.len} == std::string{"DELETE"}) {
+    if (std::string{msg->method.buf, msg->method.len} == std::string{"DELETE"}) {
         std::string headers;
         std::string response = "Patch success";
         if (!has_json_header) {
@@ -544,7 +544,7 @@ void HttpServer::OnRequestDelete(mg_connection* conn, mg_http_message* msg) {
             response = "Delete success";
         } else {
             headers = "Content-Type: application/json\r\n";
-            response = std::string{msg->body.ptr, msg->body.len};
+            response = std::string{msg->body.buf, msg->body.len};
         }
         mg_http_reply(conn, 200, headers.c_str(), response.c_str());
     } else {
@@ -554,7 +554,7 @@ void HttpServer::OnRequestDelete(mg_connection* conn, mg_http_message* msg) {
 }
 
 void HttpServer::OnRequestDeleteNotAllowed(mg_connection* conn, mg_http_message* msg) {
-    if (std::string{msg->method.ptr, msg->method.len} == std::string{"DELETE"}) {
+    if (std::string{msg->method.buf, msg->method.len} == std::string{"DELETE"}) {
         std::string errorMessage{"Method Not Allowed"};
         SendError(conn, 405, errorMessage);
     } else {
@@ -565,7 +565,7 @@ void HttpServer::OnRequestDeleteNotAllowed(mg_connection* conn, mg_http_message*
 }
 
 void HttpServer::OnRequestPut(mg_connection* conn, mg_http_message* msg) {
-    if (std::string{msg->method.ptr, msg->method.len} == std::string{"PUT"}) {
+    if (std::string{msg->method.buf, msg->method.len} == std::string{"PUT"}) {
         std::array<char, 100> x{0};
         std::array<char, 100> y{0};
         mg_http_get_var(&(msg->body), "x", x.data(), x.size());
@@ -603,22 +603,22 @@ void HttpServer::OnRequestPut(mg_connection* conn, mg_http_message* msg) {
 }
 
 void HttpServer::OnRequestPostReflect(mg_connection* conn, mg_http_message* msg) {
-    if (std::string{msg->method.ptr, msg->method.len} != std::string{"POST"}) {
+    if (std::string{msg->method.buf, msg->method.len} != std::string{"POST"}) {
         std::string errorMessage{"Method Not Allowed"};
         SendError(conn, 405, errorMessage);
     }
 
-    std::string response = std::string{msg->body.ptr, msg->body.len};
+    std::string response = std::string{msg->body.buf, msg->body.len};
     std::string headers;
     for (mg_http_header& header : msg->headers) {
-        if (!header.name.ptr) {
+        if (!header.name.buf) {
             continue;
         }
 
-        std::string name{header.name.ptr, header.name.len};
+        std::string name{header.name.buf, header.name.len};
         if (std::string{"Host"} != name && std::string{"Accept"} != name) {
-            if (header.value.ptr) {
-                headers.append(name + ": " + std::string(header.value.ptr, header.value.len) + "\r\n");
+            if (header.value.buf) {
+                headers.append(name + ": " + std::string(header.value.buf, header.value.len) + "\r\n");
             }
         }
     }
@@ -626,7 +626,7 @@ void HttpServer::OnRequestPostReflect(mg_connection* conn, mg_http_message* msg)
 }
 
 void HttpServer::OnRequestPutNotAllowed(mg_connection* conn, mg_http_message* msg) {
-    if (std::string{msg->method.ptr, msg->method.len} == std::string{"PUT"}) {
+    if (std::string{msg->method.buf, msg->method.len} == std::string{"PUT"}) {
         std::string errorMessage{"Method Not Allowed"};
         SendError(conn, 405, errorMessage);
     } else {
@@ -637,7 +637,7 @@ void HttpServer::OnRequestPutNotAllowed(mg_connection* conn, mg_http_message* ms
 }
 
 void HttpServer::OnRequestPatch(mg_connection* conn, mg_http_message* msg) {
-    if (std::string{msg->method.ptr, msg->method.len} == std::string{"PATCH"}) {
+    if (std::string{msg->method.buf, msg->method.len} == std::string{"PATCH"}) {
         std::array<char, 100> x{0};
         std::array<char, 100> y{0};
         mg_http_get_var(&(msg->body), "x", x.data(), x.size());
@@ -675,7 +675,7 @@ void HttpServer::OnRequestPatch(mg_connection* conn, mg_http_message* msg) {
 }
 
 void HttpServer::OnRequestPatchNotAllowed(mg_connection* conn, mg_http_message* msg) {
-    if (std::string{msg->method.ptr, msg->method.len} == std::string{"PATCH"}) {
+    if (std::string{msg->method.buf, msg->method.len} == std::string{"PATCH"}) {
         std::string errorMessage{"Method Not Allowed"};
         SendError(conn, 405, errorMessage);
     } else {
@@ -686,7 +686,7 @@ void HttpServer::OnRequestPatchNotAllowed(mg_connection* conn, mg_http_message* 
 }
 
 void HttpServer::OnRequestDownloadGzip(mg_connection* conn, mg_http_message* msg) {
-    if (std::string{msg->method.ptr, msg->method.len} == std::string{"DOWNLOAD"}) {
+    if (std::string{msg->method.buf, msg->method.len} == std::string{"DOWNLOAD"}) {
         std::string errorMessage{"Method Not Allowed"};
         SendError(conn, 405, errorMessage);
     } else {
@@ -695,15 +695,15 @@ void HttpServer::OnRequestDownloadGzip(mg_connection* conn, mg_http_message* msg
         std::vector<std::pair<int64_t, int64_t>> ranges;
 
         for (mg_http_header& header : msg->headers) {
-            if (!header.name.ptr) {
+            if (!header.name.buf) {
                 continue;
             }
 
-            std::string name = std::string(header.name.ptr, header.name.len);
+            std::string name = std::string(header.name.buf, header.name.len);
             if (std::string{"Accept-Encoding"} == name) {
-                encoding = std::string(header.value.ptr, header.value.len);
+                encoding = std::string(header.value.buf, header.value.len);
             } else if (std::string{"Range"} == name) {
-                range = std::string(header.value.ptr, header.value.len);
+                range = std::string(header.value.buf, header.value.len);
             }
         }
         if (encoding.find("gzip") == std::string::npos) {
@@ -844,12 +844,12 @@ void HttpServer::OnRequestDownloadGzip(mg_connection* conn, mg_http_message* msg
 void HttpServer::OnRequestCheckAcceptEncoding(mg_connection* conn, mg_http_message* msg) {
     std::string response;
     for (mg_http_header& header : msg->headers) {
-        if (!header.name.ptr) {
+        if (!header.name.buf) {
             continue;
         }
-        std::string name = std::string(header.name.ptr, header.name.len);
+        std::string name = std::string(header.name.buf, header.name.len);
         if (std::string{"Accept-Encoding"} == name) {
-            response = std::string(header.value.ptr, header.value.len);
+            response = std::string(header.value.buf, header.value.len);
         }
     }
     std::string headers = "Content-Type: text/html\r\n";
@@ -859,12 +859,12 @@ void HttpServer::OnRequestCheckAcceptEncoding(mg_connection* conn, mg_http_messa
 void HttpServer::OnRequestCheckExpect100Continue(mg_connection* conn, mg_http_message* msg) {
     std::string response;
     for (mg_http_header& header : msg->headers) {
-        if (!header.name.ptr) {
+        if (!header.name.buf) {
             continue;
         }
-        std::string name = std::string(header.name.ptr, header.name.len);
+        std::string name = std::string(header.name.buf, header.name.len);
         if (std::string{"Expect"} == name) {
-            response = std::string(header.value.ptr, header.value.len);
+            response = std::string(header.value.buf, header.value.len);
         }
     }
     std::string headers = "Content-Type: text/html\r\n";
@@ -872,7 +872,7 @@ void HttpServer::OnRequestCheckExpect100Continue(mg_connection* conn, mg_http_me
 }
 
 void HttpServer::OnRequestGetDownloadFileLength(mg_connection* conn, mg_http_message* msg) {
-    auto method = std::string{msg->method.ptr, msg->method.len};
+    auto method = std::string{msg->method.buf, msg->method.len};
     if (method == std::string{"HEAD"}) {
         mg_http_reply(conn, 405, nullptr, "");
     } else {
@@ -883,7 +883,7 @@ void HttpServer::OnRequestGetDownloadFileLength(mg_connection* conn, mg_http_mes
 }
 
 void HttpServer::OnRequest(mg_connection* conn, mg_http_message* msg) {
-    std::string uri = std::string(msg->uri.ptr, msg->uri.len);
+    std::string uri = std::string(msg->uri.buf, msg->uri.len);
 
     if (uri == "/") {
         OnRequestRoot(conn, msg);

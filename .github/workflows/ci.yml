@@ -5,8 +5,6 @@ env:
   # Enable verbose output.
   # Repeat up to 5 times to deal with flaky tests.
   CTEST_OPTIONS: "--repeat until-pass:5 --output-on-failure"
-  # The OpenSSL path for CI runs. Found via 'brew info openssl'.
-  MACOS_OPENSSL_ROOT_DIR: "/opt/homebrew/Cellar/openssl@3/3.3.0"
 
 jobs:
   ubuntu-clang-openssl:
@@ -85,11 +83,12 @@ jobs:
 
   ubuntu-gcc-mbedtls:
     runs-on: ubuntu-latest
+    container: ubuntu:latest
     steps:
     - name: Update package list
-      run: sudo apt update
+      run: apt-get update
     - name: Install Dependencies
-      run: sudo apt install -y git libssl-dev libmbedtls-dev cmake build-essential libpsl-dev meson libunistring-dev
+      run: apt-get install -y git libssl-dev libmbedtls-dev cmake build-essential libpsl-dev meson libunistring-dev
       env:
         DEBIAN_FRONTEND: noninteractive
     - name: Setup cmake
@@ -280,7 +279,7 @@ jobs:
       uses: actions/checkout@v7
     - name: "Build & Test"
       env:
-        CMAKE_GENERATOR: "Visual Studio 17 2022"
+        CMAKE_GENERATOR: "Visual Studio 18 2026"
         CPR_BUILD_TESTS: ON
         CPR_BUILD_TESTS_SSL: OFF
         CPR_FORCE_WINSSL_BACKEND: ON
@@ -306,7 +305,7 @@ jobs:
       uses: actions/checkout@v7
     - name: "Build & Test"
       env:
-        CMAKE_GENERATOR: "Visual Studio 17 2022"
+        CMAKE_GENERATOR: "Visual Studio 18 2026"
         CPR_BUILD_TESTS: ON
         CPR_BUILD_TESTS_SSL: ON
         CPR_FORCE_OPENSSL_BACKEND: ON
@@ -324,6 +323,10 @@ jobs:
         buildType: [Debug, Release]
     runs-on: macos-latest
     steps:
+    - name: Install OpenSSL
+      run: |
+        brew install openssl@3
+        echo "OPENSSL_ROOT_DIR=$(brew --prefix openssl@3)" >> "$GITHUB_ENV"
     - name: Install libpsl
       run: brew install libpsl
     - name: Checkout
@@ -355,6 +358,7 @@ jobs:
         CPR_BUILD_TESTS: ON
         CPR_BUILD_TESTS_SSL: OFF
         CPR_FORCE_DARWINSSL_BACKEND: ON
+        CPR_USE_SYSTEM_CURL: ON # Bundled curl no longer supports Secure Transport.
         CPR_USE_SYSTEM_LIB_PSL: ON
       uses: ashutoshvarma/action-cmake-build@master
       with:
@@ -370,7 +374,9 @@ jobs:
     runs-on: macos-latest
     steps:
     - name: Install OpenSSL
-      run: brew install openssl
+      run: |
+        brew install openssl@3
+        echo "OPENSSL_ROOT_DIR=$(brew --prefix openssl@3)" >> "$GITHUB_ENV"
     - name: Install libpsl
       run: brew install libpsl
     - name: Checkout
@@ -381,11 +387,6 @@ jobs:
         CPR_BUILD_TESTS_SSL: ON
         CPR_FORCE_OPENSSL_BACKEND: ON
         CPR_USE_SYSTEM_LIB_PSL: ON
-        OPENSSL_ROOT_DIR: "${{ env.MACOS_OPENSSL_ROOT_DIR }}"
-        OPENSSL_LIBRARIES: "${{ env.MACOS_OPENSSL_ROOT_DIR }}/lib"
-        LDFLAGS: "-L${{ env.MACOS_OPENSSL_ROOT_DIR }}/lib"
-        CPPFLAGS: "-I${{ env.MACOS_OPENSSL_ROOT_DIR }}/include"
-        PKG_CONFIG_PATH: "${{ env.MACOS_OPENSSL_ROOT_DIR }}/lib/pkgconfig"
       uses: ashutoshvarma/action-cmake-build@master
       with:
         build-dir: ${{ github.workspace }}/build
@@ -402,7 +403,9 @@ jobs:
     - name: Install Boost
       run: brew install boost
     - name: Install OpenSSL
-      run: brew install openssl
+      run: |
+        brew install openssl@3
+        echo "OPENSSL_ROOT_DIR=$(brew --prefix openssl@3)" >> "$GITHUB_ENV"
     - name: Install libpsl
       run: brew install libpsl
     - name: Checkout
@@ -414,11 +417,6 @@ jobs:
         CPR_FORCE_OPENSSL_BACKEND: ON
         CPR_USE_BOOST_FILESYSTEM: ON
         CPR_USE_SYSTEM_LIB_PSL: ON
-        OPENSSL_ROOT_DIR: "${{ env.MACOS_OPENSSL_ROOT_DIR }}"
-        OPENSSL_LIBRARIES: "${{ env.MACOS_OPENSSL_ROOT_DIR }}/lib"
-        LDFLAGS: "-L${{ env.MACOS_OPENSSL_ROOT_DIR }}/lib"
-        CPPFLAGS: "-I${{ env.MACOS_OPENSSL_ROOT_DIR }}/include"
-        PKG_CONFIG_PATH: "${{ env.MACOS_OPENSSL_ROOT_DIR }}/lib/pkgconfig"
       uses: ashutoshvarma/action-cmake-build@master
       with:
         build-dir: ${{ github.workspace }}/build

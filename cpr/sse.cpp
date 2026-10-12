@@ -45,7 +45,7 @@ bool ServerSentEventParser::processLine(const std::string& line, const std::func
     }
 
     // Lines starting with ':' are comments, ignore them
-    if (line[0] == ':') {
+    if (line[0] == ':') { // NOLINT(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access) Fine here to do not do a bounds check since we check a few lines before.
         return true;
     }
 
@@ -63,7 +63,7 @@ bool ServerSentEventParser::processLine(const std::string& line, const std::func
         field = line.substr(0, colon_pos);
         // Skip the colon and optional leading space
         size_t value_start = colon_pos + 1;
-        if (value_start < line.size() && line[value_start] == ' ') {
+        if (value_start < line.size() && line[value_start] == ' ') { // NOLINT(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access) Fine here to do not do a bounds check just before.
             value_start++;
         }
         value = line.substr(value_start);

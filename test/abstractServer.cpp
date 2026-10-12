@@ -23,35 +23,17 @@ void AbstractServer::Stop() {
     server_stop_cv.wait(server_lock);
 }
 
-static void EventHandler(mg_connection* conn, int event, void* event_data, void* context) {
+static void EventHandler(mg_connection* conn, int event, void* event_data) {
+    auto* server = static_cast<AbstractServer*>(conn->fn_data);
     switch (event) {
-        case MG_EV_READ:
-        case MG_EV_WRITE:
-            /** Do nothing. Just for housekeeping. **/
-            break;
-        case MG_EV_POLL:
-            /** Do nothing. Just for housekeeping. **/
-            break;
-        case MG_EV_CLOSE:
-            /** Do nothing. Just for housekeeping. **/
-            break;
         case MG_EV_ACCEPT:
             /* Initialize HTTPS connection if Server is an HTTPS Server */
-            static_cast<AbstractServer*>(context)->acceptConnection(conn);
+            server->acceptConnection(conn);
             break;
-        case MG_EV_CONNECT:
-            /** Do nothing. Just for housekeeping. **/
-            break;
-
-        case MG_EV_HTTP_CHUNK: {
-            /** Do nothing. Just for housekeeping. **/
-        } break;
 
         case MG_EV_HTTP_MSG: {
-            AbstractServer* server = static_cast<AbstractServer*>(context);
             // Use the connection address as unique identifier instead
-            int port = AbstractServer::GetRemotePort(conn);
-            server->AddConnection(port);
+            server->AddConnection(AbstractServer::GetRemotePort(conn));
             server->OnRequest(conn, static_cast<mg_http_message*>(event_data));
         } break;
 

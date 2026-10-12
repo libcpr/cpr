@@ -180,7 +180,7 @@ class Error {
 
 // NOLINTBEGIN(cert-dcl58-cpp) required for to_string
 namespace std {
-inline std::string to_string(const cpr::ErrorCode& code) {
+inline std::string to_string(const cpr::ErrorCode& code) { // NOLINT(bugprone-std-namespace-modification) Required here for to_string.
     return cpr::get_error_code_to_string_mapping().at(code);
 }
 } // namespace std

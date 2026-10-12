@@ -72,7 +72,7 @@ std::string Cookies::GetEncoded(const CurlHolder& holder) const {
 }
 
 cpr::Cookie& Cookies::operator[](size_t pos) {
-    return cookies_[pos];
+    return cookies_[pos]; // NOLINT(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access) Check should happen by the caller.
 }
 
 cpr::Cookie& Cookies::operator[](const std::string& key) {

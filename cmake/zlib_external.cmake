@@ -6,11 +6,11 @@ if(WIN32 AND (${CMAKE_PROJECT_NAME} STREQUAL ${PROJECT_NAME}))
 endif()
 
 set(ZLIB_COMPAT ON CACHE INTERNAL "" FORCE)
-set(ZLIB_ENABLE_TESTS OFF CACHE INTERNAL "" FORCE)
+set(BUILD_TESTING OFF CACHE INTERNAL "" FORCE)
 
 FetchContent_Declare(zlib
-                    GIT_REPOSITORY https://github.com/zlib-ng/zlib-ng
-                    GIT_TAG 2.1.3
+                    URL https://github.com/zlib-ng/zlib-ng/archive/2.3.3.tar.gz
+                    URL_HASH SHA256=f9c65aa9c852eb8255b636fd9f07ce1c406f061ec19a2e7d508b318ca0c907d1
                     USES_TERMINAL_DOWNLOAD TRUE)
 FetchContent_MakeAvailable(zlib)
 

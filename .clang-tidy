@@ -44,7 +44,9 @@ Checks: '*,
 -misc-header-include-cycle,
 -cppcoreguidelines-avoid-const-or-ref-data-members,
 -google-explicit-constructor,
--hicpp-explicit-conversions
+-hicpp-explicit-conversions,
+-llvm-use-ranges,
+-cppcoreguidelines-pro-bounds-avoid-unchecked-container-access
 '
 WarningsAsErrors: '*'
 HeaderFilterRegex: 'include\/cpr\/.*\.h(pp)?'

@@ -16,7 +16,9 @@ jobs:
     - name: "[Release g++] Build"
       env:
         CPR_ENABLE_CPPCHECK: ON
-        # Avoid parallel runs so only the resulting error file is not being written by multiple processes at the same time.
+        CPR_BUILD_TESTS: OFF
+        CPR_BUILD_TESTS_SSL: OFF
+        # Keep access to cppcheck's shared analysis cache serial.
         CMAKE_BUILD_PARALLEL_LEVEL: 1
       uses: ashutoshvarma/action-cmake-build@master
       with:
@@ -25,4 +27,5 @@ jobs:
         cc: gcc
         cxx: g++
         build-type: Release
+        parallel: 1
         run-test: false

@@ -65,10 +65,11 @@ cpr_option(CPR_ENABLE_CURL_HTTP_ONLY "If enabled we will only use the HTTP/HTTPS
 cpr_option(CPR_ENABLE_SSL "Enables or disables the SSL backend. Required to perform HTTPS requests." ON)
 cpr_option(CPR_FORCE_OPENSSL_BACKEND "Force to use the OpenSSL backend. If CPR_FORCE_OPENSSL_BACKEND, CPR_FORCE_DARWINSSL_BACKEND, CPR_FORCE_MBEDTLS_BACKEND, CPR_FORCE_WINSSL_BACKEND and CPR_FORCE_WOLFSSL_BACKEND are set to to OFF, cpr will try to automatically detect the best available SSL backend (WinSSL - Windows, OpenSSL - Linux, DarwinSSL - Mac ...)." OFF)
 cpr_option(CPR_FORCE_WINSSL_BACKEND "Force to use the WinSSL backend. If CPR_FORCE_OPENSSL_BACKEND, CPR_FORCE_DARWINSSL_BACKEND, CPR_FORCE_MBEDTLS_BACKEND, CPR_FORCE_WINSSL_BACKEND and CPR_FORCE_WOLFSSL_BACKEND are set to to OFF, cpr will try to automatically detect the best available SSL backend (WinSSL - Windows, OpenSSL - Linux, DarwinSSL - Mac ...)." OFF)
-cpr_option(CPR_FORCE_DARWINSSL_BACKEND "Force to use the DarwinSSL backend. If CPR_FORCE_OPENSSL_BACKEND, CPR_FORCE_DARWINSSL_BACKEND, CPR_FORCE_MBEDTLS_BACKEND, CPR_FORCE_WINSSL_BACKEND and CPR_FORCE_WOLFSSL_BACKEND are set to to OFF, cpr will try to automatically detect the best available SSL backend (WinSSL - Windows, OpenSSL - Linux, DarwinSSL - Mac ...)." OFF)
+cpr_option(CPR_FORCE_DARWINSSL_BACKEND "Force to use DarwinSSL via system curl or an existing curl target. Bundled curl no longer supports Secure Transport since curl 8.15.0." OFF)
 cpr_option(CPR_FORCE_MBEDTLS_BACKEND "Force to use the Mbed TLS backend. If CPR_FORCE_OPENSSL_BACKEND, CPR_FORCE_DARWINSSL_BACKEND, CPR_FORCE_MBEDTLS_BACKEND, CPR_FORCE_WINSSL_BACKEND and CPR_FORCE_WOLFSSL_BACKEND are set to to OFF, cpr will try to automatically detect the best available SSL backend (WinSSL - Windows, OpenSSL - Linux, DarwinSSL - Mac ...)." OFF)
 cpr_option(CPR_FORCE_WOLFSSL_BACKEND "Force to use the WolfSSL backend. If CPR_FORCE_OPENSSL_BACKEND, CPR_FORCE_DARWINSSL_BACKEND, CPR_FORCE_MBEDTLS_BACKEND, CPR_FORCE_WINSSL_BACKEND and CPR_FORCE_WOLFSSL_BACKEND are set to to OFF, cpr will try to automatically detect the best available SSL backend (WinSSL - Windows, OpenSSL - Linux, DarwinSSL - Mac ...)." OFF)
 cpr_option(CPR_ENABLE_LINTING "Set to ON to enable clang linting." OFF)
+cpr_option(CPR_ENABLE_LINTING_AUTO_FIX "Set to ON to enable clang-tidy automatically applying fixes." OFF)
 cpr_option(CPR_ENABLE_CPPCHECK "Set to ON to enable Cppcheck static analysis. Requires CPR_BUILD_TESTS and CPR_BUILD_TESTS_SSL to be OFF to prevent checking google tests source code." OFF)
 cpr_option(CPR_BUILD_TESTS "Set to ON to build cpr tests." OFF)
 cpr_option(CPR_BUILD_TESTS_SSL "Set to ON to build cpr ssl tests" ${CPR_BUILD_TESTS})
@@ -145,7 +146,7 @@ if(CPR_ENABLE_SSL)
         if(WIN32)
             message(STATUS "SSL auto detect: Using WinSSL.")
             set(SSL_BACKEND_USED "WinSSL")
-        elseif(APPLE)
+        elseif(APPLE AND (CPR_USE_SYSTEM_CURL OR CPR_USE_EXISTING_CURL_TARGET))
             message(STATUS "SSL auto detect: Using DarwinSSL.")
             set(CPR_BUILD_TESTS_SSL OFF)
             set(SSL_BACKEND_USED "DarwinSSL")
@@ -183,6 +184,9 @@ if(CPR_ENABLE_SSL)
             message(STATUS "Using WinSSL.")
             set(SSL_BACKEND_USED "WinSSL")
         elseif(CPR_FORCE_DARWINSSL_BACKEND)
+            if(NOT CPR_USE_SYSTEM_CURL AND NOT CPR_USE_EXISTING_CURL_TARGET)
+                message(FATAL_ERROR "Bundled curl no longer supports DarwinSSL (Secure Transport) since curl 8.15.0. Set CPR_USE_SYSTEM_CURL to ON to use Apple's curl, or select another SSL backend.")
+            endif()
             message(STATUS "Using DarwinSSL.")
             set(CPR_BUILD_TESTS_SSL OFF)
             set(SSL_BACKEND_USED "DarwinSSL")
@@ -288,10 +292,6 @@ else()
             set(CURL_USE_OPENSSL ON CACHE INTERNAL "" FORCE)
         endif()
 
-        if(SSL_BACKEND_USED STREQUAL "DarwinSSL")
-            set(CURL_USE_SECTRANSP ON CACHE INTERNAL "" FORCE)
-        endif()
-
         if(SSL_BACKEND_USED STREQUAL "MbedTLS")
             set(CURL_USE_MBEDTLS ON CACHE INTERNAL "" FORCE)
         endif()
@@ -312,7 +312,6 @@ else()
         set(CURL_USE_SCHANNEL OFF CACHE INTERNAL "" FORCE)
         set(CURL_WINDOWS_SSPI OFF CACHE INTERNAL "" FORCE)
         set(CURL_USE_OPENSSL OFF CACHE INTERNAL "" FORCE)
-        set(CURL_USE_SECTRANSP OFF CACHE INTERNAL "" FORCE)
         set(CURL_USE_MBEDTLS OFF CACHE INTERNAL "" FORCE)
         set(CURL_USE_WOLFSSL OFF CACHE INTERNAL "" FORCE)
         message(STATUS "Disabled curl SSL")
@@ -330,8 +329,8 @@ else()
         include(libpsl)
     endif()
 
-    FetchContent_Declare(curl URL https://github.com/curl/curl/releases/download/curl-8_13_0/curl-8.13.0.tar.xz
-                              URL_HASH SHA256=4a093979a3c2d02de2fbc00549a32771007f2e78032c6faa5ecd2f7a9e152025) # the file hash for curl-8.13.0.tar.xz
+    FetchContent_Declare(curl URL https://github.com/curl/curl/releases/download/curl-8_22_0/curl-8.22.0.tar.xz
+                              URL_HASH SHA256=f7ef3ae8a22e521f289803fe93543eb64c329b58aa73a9e224dfd915a2a5f4f7) # the file hash for curl-8.22.0.tar.xz
     FetchContent_MakeAvailable(curl)
 
     restore_variable(DESTINATION CMAKE_CXX_CLANG_TIDY BACKUP CMAKE_CXX_CLANG_TIDY_BKP)
@@ -364,8 +363,8 @@ if(CPR_BUILD_TESTS)
         clear_variable(DESTINATION CMAKE_CXX_CLANG_TIDY BACKUP CMAKE_CXX_CLANG_TIDY_BKP)
 
         FetchContent_Declare(googletest
-                             URL                    https://github.com/google/googletest/archive/refs/tags/v1.14.0.tar.gz
-                             URL_HASH               SHA256=8ad598c73ad796e0d8280b082cebd82a630d73e73cd3c70057938a6501bba5d7 # the file hash for release-1.14.0.tar.gz
+                             URL                    https://github.com/google/googletest/archive/refs/tags/v1.18.0.tar.gz
+                             URL_HASH               SHA256=6e3191c1455468b3fc35a417fb565c1c5071aee1b7e7f85e30cf48a98d37d8b5 # the file hash for release-1.18.0.tar.gz
                              USES_TERMINAL_DOWNLOAD TRUE)   # <---- This is needed only for Ninja to show download progress
         FetchContent_MakeAvailable(googletest)
 
@@ -406,8 +405,8 @@ if(CPR_BUILD_TESTS)
     clear_variable(DESTINATION CMAKE_CXX_CLANG_TIDY BACKUP CMAKE_CXX_CLANG_TIDY_BKP)
 
     FetchContent_Declare(mongoose 
-                         URL                    https://github.com/cesanta/mongoose/archive/7.7.tar.gz
-                         URL_HASH               SHA256=4e5733dae31c3a81156af63ca9aa3a6b9b736547f21f23c3ab2f8e3f1ecc16c0 # the hash for 7.7.tar.gz
+                         URL                    https://github.com/cesanta/mongoose/archive/7.23.tar.gz
+                         URL_HASH               SHA256=93208f164038b05d156935b8b725063e1afb3984a362dbcf3a9ea37b6f1f2255 # the hash for 7.23.tar.gz
                          USES_TERMINAL_DOWNLOAD TRUE # This is needed only for Ninja to show download progress
                          SOURCE_SUBDIR          "?") # Nonexistent directory to prevent FetchContent_MakeAvailable from calling add_subdirectory and duplicating the mongoose target
     if (NOT mongoose_POPULATED)
