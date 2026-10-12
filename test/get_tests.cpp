@@ -1305,7 +1305,9 @@ TEST(GetRedirectTests, BasicAuthenticationRedirectSuccessTest) {
     std::string expected_text{"Header reflect GET"};
     EXPECT_EQ(expected_text, response.text);
     const std::string resultUrl = server->GetBaseUrl() + "/basic_auth.html";
-    EXPECT_NE(std::string::npos, response.url.str().find(resultUrl));
+    // Older curl versions include the authentication credentials in the effective URL.
+    const std::string authenticatedResultUrl = "http://user:password@127.0.0.1:" + std::to_string(server->GetPort()) + "/basic_auth.html";
+    EXPECT_TRUE(response.url == resultUrl || response.url == authenticatedResultUrl) << response.url;
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
     EXPECT_EQ(ErrorCode::OK, response.error.code);
