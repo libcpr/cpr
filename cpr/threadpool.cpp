@@ -1,204 +1,99 @@
 #include "cpr/threadpool.h"
+#include "cpr/threadpool_backend.h"
+
 #include <algorithm>
-#include <cassert>
-#include <chrono>
-#include <condition_variable>
-#include <cstddef>
-#include <functional>
-#include <memory>
-#include <mutex>
 #include <thread>
-#include <utility>
-#include <vector>
 
 namespace cpr {
 // NOLINTNEXTLINE(cert-err58-cpp) Not relevant since trivial function.
-size_t ThreadPool::DEFAULT_MAX_THREAD_COUNT = std::max<size_t>(std::thread::hardware_concurrency(), static_cast<size_t>(1));
+size_t ThreadPool::DEFAULT_MAX_THREAD_COUNT = std::max<size_t>(std::thread::hardware_concurrency(), 1);
 
-namespace {
-constexpr std::chrono::milliseconds THREAD_IDLE_TIMEOUT{250};
-} // namespace
+/**
+ * Owns the selected backend behind the public ThreadPool's opaque implementation.
+ * Destroying the backend stops its workers before releasing its shared state.
+ **/
+class ThreadPool::Impl {
+  public:
+    /**
+     * Creates a validated, initially stopped backend; the facade calls Start() afterward.
+     * @param minimum Minimum builtin worker count, retained as configuration for Boost.
+     * @param maximum Nonzero maximum worker count, no less than minimum.
+     * @throws std::invalid_argument If the limits are invalid.
+     **/
+    explicit Impl(size_t minimum, size_t maximum) : backend(MakeThreadPoolBackend(minimum, maximum)) {}
+    /**
+     * Creates a stopped backend borrowing the caller's Boost.Asio context.
+     * @param context Caller-owned event loop, kept alive for the facade's lifetime.
+     * @param minimum Retained minimum worker setting.
+     * @param maximum Nonzero limit on concurrent cpr tasks, no less than minimum.
+     * @throws std::invalid_argument If the limits are invalid.
+     * @throws std::logic_error If the builtin backend was selected.
+     **/
+    Impl(boost::asio::io_context& context, size_t minimum, size_t maximum) : backend(MakeThreadPoolBackend(context, minimum, maximum)) {}
+    /** Stops work before releasing ownership, even when an external-context callback holds the state alive. */
+    ~Impl() {
+        backend->Stop();
+        // Finish cancellation synchronously even if external callbacks still retain
+        // backend state, including work queued by active tasks during Stop().
+        // Destroy canceled task captures after releasing the mutex; their destructors may reenter the pool.
+        // cppcheck-suppress variableScope
+        std::queue<std::function<void()>> canceled;
+        {
+            const std::lock_guard lock(backend->mutex);
+            backend->tasks.swap(canceled);
+        }
+    }
+    /** Backend state shared only with active external-context callbacks to keep their accounting safe. */
+    std::shared_ptr<ThreadPoolBackend> backend;
+};
 
-ThreadPool::ThreadPool(size_t minThreadCount, size_t maxThreadCount) : minThreadCount(minThreadCount), maxThreadCount(maxThreadCount) {
-    assert(minThreadCount <= maxThreadCount);
+ThreadPool::ThreadPool(size_t minimum, size_t maximum) : impl(std::make_unique<Impl>(minimum, maximum)) {
     Start();
 }
-
-ThreadPool::~ThreadPool() {
-    Stop();
+ThreadPool::ThreadPool(boost::asio::io_context& context, size_t minimum, size_t maximum) : impl(std::make_unique<Impl>(context, minimum, maximum)) {
+    Start();
 }
+ThreadPool::~ThreadPool() = default;
 
 ThreadPool::State ThreadPool::GetState() const {
-    return state.load();
+    const std::lock_guard lock(impl->backend->mutex);
+    return impl->backend->state;
 }
-
-size_t ThreadPool::GetMaxThreadCount() const {
-    return maxThreadCount.load();
-}
-
-size_t ThreadPool::GetCurThreadCount() const {
-    return curThreadCount.load();
-}
-
-size_t ThreadPool::GetIdleThreadCount() const {
-    return idleThreadCount.load();
-}
-
 size_t ThreadPool::GetMinThreadCount() const {
-    return minThreadCount.load();
+    const std::lock_guard lock(impl->backend->mutex);
+    return impl->backend->minimum;
 }
-
-void ThreadPool::SetMinThreadCount(size_t minThreadCount) {
-    const std::unique_lock lock(controlMutex);
-    assert(minThreadCount <= maxThreadCount.load());
-    this->minThreadCount = minThreadCount;
-
-    if (state == State::RUNNING) {
-        while (curThreadCount < this->minThreadCount) {
-            addThread();
-        }
-    }
+size_t ThreadPool::GetMaxThreadCount() const {
+    const std::lock_guard lock(impl->backend->mutex);
+    return impl->backend->maximum;
 }
-
-void ThreadPool::SetMaxThreadCount(size_t maxThreadCount) {
-    const std::unique_lock lock(controlMutex);
-    assert(minThreadCount.load() <= maxThreadCount);
-    this->maxThreadCount = maxThreadCount;
+size_t ThreadPool::GetCurThreadCount() const {
+    const std::lock_guard lock(impl->backend->mutex);
+    return impl->backend->current;
 }
-
+size_t ThreadPool::GetIdleThreadCount() const {
+    const std::lock_guard lock(impl->backend->mutex);
+    return impl->backend->current - impl->backend->active;
+}
+void ThreadPool::SetMinThreadCount(size_t minimum) {
+    impl->backend->Configure(&minimum, nullptr);
+}
+void ThreadPool::SetMaxThreadCount(size_t maximum) {
+    impl->backend->Configure(nullptr, &maximum);
+}
+void ThreadPool::SetThreadCounts(size_t minimum, size_t maximum) {
+    impl->backend->Configure(&minimum, &maximum);
+}
 void ThreadPool::Start() {
-    const std::unique_lock lock(controlMutex);
-    if (setState(State::RUNNING)) {
-        size_t taskCount{0};
-        {
-            const std::unique_lock queueLock(taskQueueMutex);
-            taskCount = tasks.size();
-        }
-
-        const size_t targetThreadCount = std::min(maxThreadCount.load(), std::max(minThreadCount.load(), taskCount));
-        while (curThreadCount < targetThreadCount) {
-            addThread();
-        }
-    }
+    impl->backend->Start();
 }
-
 void ThreadPool::Stop() {
-    {
-        const std::unique_lock controlLock(controlMutex);
-        setState(State::STOP);
-    }
-    taskQueueCondVar.notify_all();
-
-    std::vector<std::unique_ptr<std::thread>> workersToJoin;
-    {
-        const std::unique_lock workersLock{workerMutex};
-        workersToJoin.reserve(workers.size());
-        for (auto& worker : workers) {
-            workersToJoin.emplace_back(std::move(worker.thread));
-        }
-        workers.clear();
-    }
-
-    for (auto& worker : workersToJoin) {
-        if (worker != nullptr && worker->joinable()) {
-            worker->join();
-        }
-    }
-
-    {
-        const std::unique_lock queueLock(taskQueueMutex);
-        std::queue<std::function<void()>> emptyTasks;
-        tasks.swap(emptyTasks);
-    }
-
-    curThreadCount = 0;
-    idleThreadCount = 0;
+    impl->backend->Stop();
 }
-
 void ThreadPool::Wait() const {
-    while (true) {
-        const State currentState = state.load();
-        const size_t currentThreadCount = curThreadCount.load();
-        const size_t currentIdleThreadCount = idleThreadCount.load();
-
-        bool hasPendingTasks{false};
-        {
-            const std::unique_lock queueLock(taskQueueMutex);
-            hasPendingTasks = !tasks.empty();
-        }
-
-        if (currentState != State::RUNNING) {
-            if (currentThreadCount == 0) {
-                break;
-            }
-        } else if (!hasPendingTasks && currentThreadCount <= currentIdleThreadCount) {
-            break;
-        }
-
-        std::this_thread::yield();
-    }
+    impl->backend->Wait();
 }
-
-bool ThreadPool::setState(State state) {
-    const std::unique_lock lock(controlMutex);
-    if (this->state == state) {
-        return false;
-    }
-    this->state = state;
-    return true;
-}
-
-void ThreadPool::addThread() {
-    const std::unique_lock controlLock(controlMutex);
-    if (state == State::STOP || curThreadCount >= maxThreadCount) {
-        return;
-    }
-
-    const std::unique_lock lock{workerMutex};
-    workers.emplace_back();
-    workers.back().thread = std::make_unique<std::thread>(&ThreadPool::threadFunc, this);
-    curThreadCount++;
-    idleThreadCount++;
-}
-
-void ThreadPool::threadFunc() {
-    while (true) {
-        std::function<void()> task;
-        bool waitTimedOut{false};
-        {
-            std::unique_lock queueLock(taskQueueMutex);
-
-            const bool shouldContinue = taskQueueCondVar.wait_for(queueLock, THREAD_IDLE_TIMEOUT, [this]() { return state == State::STOP || !tasks.empty(); });
-            waitTimedOut = !shouldContinue;
-
-            if (state == State::STOP) {
-                break;
-            }
-
-            if (!waitTimedOut && !tasks.empty()) {
-                idleThreadCount--;
-                task = std::move(tasks.front());
-                tasks.pop();
-            }
-        }
-
-        if (waitTimedOut) {
-            const std::unique_lock lock(controlMutex);
-            if (curThreadCount > minThreadCount) {
-                curThreadCount--;
-                idleThreadCount--;
-                return;
-            }
-            continue;
-        }
-
-        if (task) {
-            task();
-            idleThreadCount++;
-        }
-    }
-
-    curThreadCount--;
-    idleThreadCount--;
+void ThreadPool::enqueue(std::function<void()> task) {
+    impl->backend->Enqueue(std::move(task));
 }
 } // namespace cpr

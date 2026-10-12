@@ -1,6 +1,19 @@
 include(CMakeFindDependencyMacro)
 @PACKAGE_INIT@
 
+find_dependency(Threads REQUIRED)
+if("@CPR_THREAD_POOL@" STREQUAL "BOOST_ASIO")
+    # A caller-owned io_context crosses the compiled cpr boundary. Match the
+    # Boost headers used to build cpr rather than mixing context definitions.
+    set(_cpr_boost_components)
+    if("@CPR_USE_BOOST_FILESYSTEM@")
+        list(APPEND _cpr_boost_components filesystem)
+    endif()
+    find_dependency(Boost @Boost_VERSION_STRING@ EXACT REQUIRED COMPONENTS ${_cpr_boost_components})
+    unset(_cpr_boost_components)
+elseif("@CPR_USE_BOOST_FILESYSTEM@")
+    find_dependency(Boost 1.77 REQUIRED COMPONENTS filesystem)
+endif()
 find_dependency(CURL REQUIRED)
 find_dependency(OpenSSL REQUIRED)
 

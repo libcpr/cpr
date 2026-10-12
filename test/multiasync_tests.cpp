@@ -1,5 +1,6 @@
 #include <functional>
 #include <string>
+#include <thread>
 #include <vector>
 
 #include "cpr/cpr.h"

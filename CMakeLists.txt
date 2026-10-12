@@ -82,6 +82,12 @@ cpr_option(CPR_DEBUG_SANITIZER_FLAG_ADDR "Enables the AddressSanitizer for debug
 cpr_option(CPR_DEBUG_SANITIZER_FLAG_LEAK "Enables the LeakSanitizer for debug builds." OFF)
 cpr_option(CPR_DEBUG_SANITIZER_FLAG_UB "Enables the UndefinedBehaviorSanitizer for debug builds." OFF)
 cpr_option(CPR_DEBUG_SANITIZER_FLAG_ALL "Enables all sanitizers for debug builds except the ThreadSanitizer since it is incompatible with the other sanitizers." OFF)
+set(CPR_THREAD_POOL "BUILTIN" CACHE STRING "Thread pool backend: BUILTIN or BOOST_ASIO")
+set_property(CACHE CPR_THREAD_POOL PROPERTY STRINGS BUILTIN BOOST_ASIO)
+if(NOT CPR_THREAD_POOL STREQUAL "BUILTIN" AND NOT CPR_THREAD_POOL STREQUAL "BOOST_ASIO")
+    message(FATAL_ERROR "Invalid CPR_THREAD_POOL '${CPR_THREAD_POOL}'. Choose BUILTIN or BOOST_ASIO.")
+endif()
+message(STATUS "  CPR_THREAD_POOL: ${CPR_THREAD_POOL}")
 message(STATUS "=======================================================")
 
 if (MSVC)

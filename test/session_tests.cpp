@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <cstdlib>
 #include <gtest/gtest.h>
+#include <thread>
 
 #include <stdexcept>
 #include <string>
