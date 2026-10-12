@@ -29,7 +29,7 @@ struct StreamState {
 MultipartStream MakeMultipartStream(std::string data, std::string filename = {}, bool known_size = true, bool seekable = true) {
     auto state = std::make_shared<StreamState>(StreamState{std::move(data)});
     ReadCallback read{known_size ? static_cast<cpr_off_t>(state->data.size()) : -1, [state](char* buffer, size_t& size, intptr_t) {
-                          size = std::min({size, size_t{17}, state->data.size() - state->position});
+                          size = (std::min)({size, size_t{17}, state->data.size() - state->position});
                           std::memcpy(buffer, state->data.data() + state->position, size);
                           state->position += size;
                           return true;
@@ -112,7 +112,7 @@ TEST(MultipartStreamTests, CallbackResourcesReleasedOnRemoveContent) {
             auto state = std::make_shared<StreamState>(StreamState{"owned data"});
             resource = state;
             ReadCallback read{static_cast<cpr_off_t>(state->data.size()), [state](char* buffer, size_t& size, intptr_t) {
-                                  size = std::min(size, state->data.size() - state->position);
+                                  size = (std::min)(size, state->data.size() - state->position);
                                   std::memcpy(buffer, state->data.data() + state->position, size);
                                   state->position += size;
                                   return true;
