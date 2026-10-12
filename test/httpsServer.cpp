@@ -24,6 +24,7 @@ static std::string LoadTlsFile(const std::string& path) {
 namespace cpr {
 HttpsServer::HttpsServer(fs::path&& baseDirPath, fs::path&& sslCertFileName, fs::path&& sslKeyFileName) : baseDirPath(baseDirPath.make_preferred().string()), sslCertFileName(sslCertFileName.make_preferred().string()), sslKeyFileName(sslKeyFileName.make_preferred().string()), sslCert(LoadTlsFile(this->sslCertFileName)), sslKey(LoadTlsFile(this->sslKeyFileName)) {
     // See https://mongoose.ws/tutorials/tls/
+    memset(static_cast<void*>(&tlsOpts), 0, sizeof(tlsOpts));
     tlsOpts.cert = mg_str(sslCert.c_str());
     tlsOpts.key = mg_str(sslKey.c_str());
 }

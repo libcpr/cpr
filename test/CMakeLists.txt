@@ -73,6 +73,34 @@ if(MSVC)
 endif()
 add_cpr_test(singleton)
 add_cpr_test(threadpool)
+set_tests_properties(cpr_threadpool_tests PROPERTIES TIMEOUT 60)
+if(CPR_THREAD_POOL STREQUAL "BOOST_ASIO")
+    find_package(Boost 1.70 REQUIRED)
+    target_compile_definitions(threadpool_tests PRIVATE CPR_TEST_BOOST_ASIO)
+    target_link_libraries(threadpool_tests PRIVATE Boost::headers)
+    add_cpr_test(asio_context)
+    target_link_libraries(asio_context_tests PRIVATE Boost::headers)
+    add_cpr_test(asio_context_http)
+    target_link_libraries(asio_context_http_tests PRIVATE Boost::headers)
+    set_tests_properties(cpr_asio_context_tests cpr_asio_context_http_tests PROPERTIES TIMEOUT 60)
+endif()
+add_test(NAME cpr_threadpool_configuration
+    COMMAND ${CMAKE_COMMAND}
+        -DCPR_SOURCE_DIR=${PROJECT_SOURCE_DIR}
+        -DCPR_TEST_BINARY_DIR=${PROJECT_BINARY_DIR}/threadpool-config-test
+        -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/threadpool_configuration.cmake)
+if(CPR_ENABLE_INSTALL AND CPR_USE_SYSTEM_CURL)
+    add_test(NAME cpr_installed_threadpool_consumer
+        COMMAND ${CMAKE_COMMAND}
+            -DCPR_BUILD_DIR=${PROJECT_BINARY_DIR}
+            -DCPR_CONSUMER_SOURCE_DIR=${CMAKE_CURRENT_SOURCE_DIR}/cmake/threadpool_consumer
+            -DCPR_CONSUMER_BINARY_DIR=${PROJECT_BINARY_DIR}/threadpool-consumer-test
+            -DCPR_TEST_CONFIG=$<CONFIG>
+            -DCPR_TEST_CUSTOM_CONTEXT=$<STREQUAL:${CPR_THREAD_POOL},BOOST_ASIO>
+            -DCPR_TEST_BOOST_ROOT=${Boost_INCLUDE_DIR}
+            -DCPR_TEST_DISABLE_BOOST=$<AND:$<STREQUAL:${CPR_THREAD_POOL},BUILTIN>,$<NOT:$<BOOL:${CPR_USE_BOOST_FILESYSTEM}>>>
+            -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/threadpool_consumer.cmake)
+endif()
 add_cpr_test(testUtils)
 add_cpr_test(connection_pool)
 add_cpr_test(sse)

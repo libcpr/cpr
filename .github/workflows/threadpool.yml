@@ -1,0 +1,31 @@
+name: Thread pool backends
+on: [push, workflow_dispatch, pull_request]
+
+jobs:
+  threadpool:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        backend: [BUILTIN, BOOST_ASIO]
+        shared: [ON, OFF]
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y cmake ninja-build libcurl4-openssl-dev libssl-dev
+      - name: Install optional Boost headers
+        if: matrix.backend == 'BOOST_ASIO'
+        run: sudo apt-get install -y libboost-dev
+      - name: Configure
+        run: >-
+          cmake -S . -B build -G Ninja
+          -DCPR_THREAD_POOL=${{ matrix.backend }}
+          -DBUILD_SHARED_LIBS=${{ matrix.shared }}
+          -DCMAKE_BUILD_TYPE=Release
+          -DCPR_USE_SYSTEM_CURL=ON
+          -DCPR_BUILD_TESTS=ON
+          -DCPR_BUILD_TESTS_SSL=ON
+      - name: Build
+        run: cmake --build build --parallel 2
+      - name: Test
+        run: ctest --test-dir build --output-on-failure --timeout 120

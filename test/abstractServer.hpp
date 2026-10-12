@@ -8,6 +8,7 @@
 #include <mutex>
 #include <set>
 #include <string>
+#include <thread>
 
 #include "cpr/cpr.h"
 #include "mongoose.h"
