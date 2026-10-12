@@ -363,6 +363,17 @@ TEST(ThreadPoolTests, IdleBackendBehaviorAndResume) {
     EXPECT_EQ(tp.Submit([] { return 17; }).get(), 17);
 }
 
+TEST(ThreadPoolTests, DefaultMaximumCanBeConfiguredByConsumer) {
+    const auto originalMaximum = cpr::ThreadPool::DEFAULT_MAX_THREAD_COUNT;
+    cpr::ThreadPool::DEFAULT_MAX_THREAD_COUNT = 1;
+    {
+        cpr::ThreadPool pool;
+        EXPECT_EQ(pool.GetMaxThreadCount(), 1);
+        EXPECT_EQ(pool.Submit([] { return 42; }).get(), 42);
+    }
+    cpr::ThreadPool::DEFAULT_MAX_THREAD_COUNT = originalMaximum;
+}
+
 TEST(ThreadPoolTests, StartupChangesBothLimitsAtomically) {
     cpr::async::startup(1, 1);
 #ifdef CPR_TEST_BOOST_ASIO

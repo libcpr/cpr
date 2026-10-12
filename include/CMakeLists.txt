@@ -52,6 +52,7 @@ target_sources(cpr PRIVATE
     cpr/curlmultiholder.h
     cpr/multiperform.h
     cpr/resolve.h
+    ${PROJECT_BINARY_DIR}/cpr_generated_includes/cpr/cprexport.h
     ${PROJECT_BINARY_DIR}/cpr_generated_includes/cpr/cprver.h
 )
 

@@ -33,6 +33,11 @@ add_library(cpr
 
 add_library(cpr::cpr ALIAS cpr)
 
+# Consumers of DLL data need explicit import declarations even with automatic exports.
+# More: https://cmake.org/cmake/help/latest/module/GenerateExportHeader.html
+include(GenerateExportHeader)
+generate_export_header(cpr EXPORT_FILE_NAME "${PROJECT_BINARY_DIR}/cpr_generated_includes/cpr/cprexport.h")
+
 find_package(Threads REQUIRED)
 target_link_libraries(cpr PRIVATE Threads::Threads)
 if(CPR_THREAD_POOL STREQUAL "BOOST_ASIO")

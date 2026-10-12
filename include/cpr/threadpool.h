@@ -1,6 +1,8 @@
 #ifndef CPR_THREADPOOL_H
 #define CPR_THREADPOOL_H
 
+#include "cpr/cprexport.h"
+
 #include <cstddef>
 #include <cstdint>
 #include <functional>
@@ -53,7 +55,7 @@ class ThreadPool {
      * Default maximum, initialized to hardware concurrency or one when it is unknown.
      * Set this before constructing pools, without concurrent access to this variable.
      **/
-    static size_t DEFAULT_MAX_THREAD_COUNT;
+    CPR_EXPORT static size_t DEFAULT_MAX_THREAD_COUNT;
 
     /**
      * Creates and starts a pool with the requested limits.
