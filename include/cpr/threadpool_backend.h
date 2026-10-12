@@ -4,6 +4,9 @@
 #include "cpr/threadpool.h"
 
 #include <condition_variable>
+#include <cstddef>
+#include <functional>
+#include <memory>
 #include <mutex>
 #include <queue>
 #include <stdexcept>
@@ -28,7 +31,7 @@ class ThreadPoolBackend {
     class WorkerScope {
       public:
         /** Registers backend as an active pool on this thread, preserving the previous scope. */
-        explicit WorkerScope(const ThreadPoolBackend& backend) : backend(&backend), previous(currentWorkerScope) {
+        explicit WorkerScope(const ThreadPoolBackend& backend) : backend(&backend) {
             currentWorkerScope = this;
         }
         /** Restores the outer worker scope when execution finishes or unwinds. */
@@ -45,7 +48,7 @@ class ThreadPoolBackend {
         /** Borrowed backend kept alive by its worker or active handler throughout this scope. */
         const ThreadPoolBackend* backend;
         /** Outer scope, or nullptr at the bottom of the calling thread's worker stack. */
-        const WorkerScope* previous;
+        const WorkerScope* previous{currentWorkerScope};
     };
 
     /**
@@ -103,7 +106,7 @@ class ThreadPoolBackend {
      * @throws std::logic_error If the calling thread is executing this backend's task or worker loop.
      **/
     void checkWorker() const {
-        for (auto* scope = currentWorkerScope; scope != nullptr; scope = scope->previous) {
+        for (const auto* scope = currentWorkerScope; scope != nullptr; scope = scope->previous) {
             if (scope->backend == this) {
                 throw std::logic_error("ThreadPool lifecycle operations cannot be called from its workers");
             }

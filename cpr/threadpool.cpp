@@ -2,10 +2,16 @@
 #include "cpr/threadpool_backend.h"
 
 #include <algorithm>
+#include <cstddef>
+#include <functional>
+#include <memory>
+#include <mutex>
+#include <queue>
 #include <thread>
+#include <utility>
 
 namespace cpr {
-// NOLINTNEXTLINE(cert-err58-cpp) Not relevant since trivial function.
+// NOLINTNEXTLINE(cert-err58-cpp, bugprone-throwing-static-initialization) std::max on size_t cannot throw.
 size_t ThreadPool::DEFAULT_MAX_THREAD_COUNT = std::max<size_t>(std::thread::hardware_concurrency(), 1);
 
 /**
@@ -39,7 +45,7 @@ class ThreadPool::Impl {
         // cppcheck-suppress variableScope
         std::queue<std::function<void()>> canceled;
         {
-            const std::lock_guard lock(backend->mutex);
+            const std::scoped_lock lock(backend->mutex);
             backend->tasks.swap(canceled);
         }
     }
@@ -47,42 +53,42 @@ class ThreadPool::Impl {
     std::shared_ptr<ThreadPoolBackend> backend;
 };
 
-ThreadPool::ThreadPool(size_t minimum, size_t maximum) : impl(std::make_unique<Impl>(minimum, maximum)) {
+ThreadPool::ThreadPool(size_t minThreadCount, size_t maxThreadCount) : impl(std::make_unique<Impl>(minThreadCount, maxThreadCount)) {
     Start();
 }
-ThreadPool::ThreadPool(boost::asio::io_context& context, size_t minimum, size_t maximum) : impl(std::make_unique<Impl>(context, minimum, maximum)) {
+ThreadPool::ThreadPool(boost::asio::io_context& context, size_t minThreadCount, size_t maxThreadCount) : impl(std::make_unique<Impl>(context, minThreadCount, maxThreadCount)) {
     Start();
 }
 ThreadPool::~ThreadPool() = default;
 
 ThreadPool::State ThreadPool::GetState() const {
-    const std::lock_guard lock(impl->backend->mutex);
+    const std::scoped_lock lock(impl->backend->mutex);
     return impl->backend->state;
 }
 size_t ThreadPool::GetMinThreadCount() const {
-    const std::lock_guard lock(impl->backend->mutex);
+    const std::scoped_lock lock(impl->backend->mutex);
     return impl->backend->minimum;
 }
 size_t ThreadPool::GetMaxThreadCount() const {
-    const std::lock_guard lock(impl->backend->mutex);
+    const std::scoped_lock lock(impl->backend->mutex);
     return impl->backend->maximum;
 }
 size_t ThreadPool::GetCurThreadCount() const {
-    const std::lock_guard lock(impl->backend->mutex);
+    const std::scoped_lock lock(impl->backend->mutex);
     return impl->backend->current;
 }
 size_t ThreadPool::GetIdleThreadCount() const {
-    const std::lock_guard lock(impl->backend->mutex);
+    const std::scoped_lock lock(impl->backend->mutex);
     return impl->backend->current - impl->backend->active;
 }
-void ThreadPool::SetMinThreadCount(size_t minimum) {
-    impl->backend->Configure(&minimum, nullptr);
+void ThreadPool::SetMinThreadCount(size_t minThreadCount) {
+    impl->backend->Configure(&minThreadCount, nullptr);
 }
-void ThreadPool::SetMaxThreadCount(size_t maximum) {
-    impl->backend->Configure(nullptr, &maximum);
+void ThreadPool::SetMaxThreadCount(size_t maxThreadCount) {
+    impl->backend->Configure(nullptr, &maxThreadCount);
 }
-void ThreadPool::SetThreadCounts(size_t minimum, size_t maximum) {
-    impl->backend->Configure(&minimum, &maximum);
+void ThreadPool::SetThreadCounts(size_t minThreadCount, size_t maxThreadCount) {
+    impl->backend->Configure(&minThreadCount, &maxThreadCount);
 }
 void ThreadPool::Start() {
     impl->backend->Start();

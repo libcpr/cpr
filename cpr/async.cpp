@@ -1,6 +1,9 @@
 #include "cpr/async.h"
+#include "cpr/threadpool.h"
 #include "cpr/threadpool_backend.h"
 
+#include <cstddef>
+#include <mutex>
 #include <stdexcept>
 
 namespace cpr {

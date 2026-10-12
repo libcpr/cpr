@@ -13,7 +13,7 @@
 // Forward declaration keeps the optional Boost dependency out of cpr's public headers.
 namespace boost::asio {
 class io_context;
-}
+} // namespace boost::asio
 
 namespace cpr {
 /**

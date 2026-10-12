@@ -1,7 +1,15 @@
+#include "cpr/threadpool.h"
 #include "cpr/threadpool_backend.h"
 
 #include <boost/asio/post.hpp>
 #include <boost/asio/thread_pool.hpp>
+#include <cstddef>
+#include <exception>
+#include <functional>
+#include <memory>
+#include <mutex>
+#include <queue>
+#include <utility>
 
 namespace cpr {
 namespace {
@@ -17,14 +25,19 @@ class BoostThreadPool final : public ThreadPoolBackend {
     BoostThreadPool(size_t minimum, size_t maximum) : ThreadPoolBackend(minimum, maximum) {}
     /** Stops and joins the executor before releasing the queue and backend state. */
     ~BoostThreadPool() override {
-        Stop();
+        try {
+            Stop();
+        } catch (...) {
+            // Destruction cannot propagate shutdown errors or continue with live workers.
+            std::terminate();
+        }
     }
 
     /** @copydoc ThreadPoolBackend::Start() */
     void Start() override {
         checkWorker();
-        const std::lock_guard lifecycleLock(lifecycleMutex);
-        const std::lock_guard lock(mutex);
+        const std::scoped_lock lifecycleLock(lifecycleMutex);
+        const std::scoped_lock lock(mutex);
         if (state == ThreadPool::State::RUNNING) {
             return;
         }
@@ -34,10 +47,10 @@ class BoostThreadPool final : public ThreadPoolBackend {
     /** @copydoc ThreadPoolBackend::Stop() */
     void Stop() override {
         checkWorker();
-        const std::lock_guard lifecycleLock(lifecycleMutex);
+        const std::scoped_lock lifecycleLock(lifecycleMutex);
         std::queue<std::function<void()>> canceled;
         {
-            const std::lock_guard lock(mutex);
+            const std::scoped_lock lock(mutex);
             state = ThreadPool::State::STOP;
             stopping = true;
             tasks.swap(canceled);
@@ -48,7 +61,7 @@ class BoostThreadPool final : public ThreadPoolBackend {
         canceled = {};
         join();
         {
-            const std::lock_guard lock(mutex);
+            const std::scoped_lock lock(mutex);
             stopping = false;
         }
         changed.notify_all();
@@ -57,7 +70,7 @@ class BoostThreadPool final : public ThreadPoolBackend {
     /** @copydoc ThreadPoolBackend::Configure() */
     void Configure(const size_t* newMinimum, const size_t* newMaximum) override {
         checkWorker();
-        const std::lock_guard lifecycleLock(lifecycleMutex);
+        const std::scoped_lock lifecycleLock(lifecycleMutex);
         std::unique_lock lock(mutex);
         const size_t min = newMinimum ? *newMinimum : minimum;
         const size_t max = newMaximum ? *newMaximum : maximum;
@@ -85,7 +98,7 @@ class BoostThreadPool final : public ThreadPoolBackend {
 
     /** @copydoc ThreadPoolBackend::Enqueue() */
     void Enqueue(std::function<void()> task) override {
-        const std::lock_guard lock(mutex);
+        const std::scoped_lock lock(mutex);
         if (state == ThreadPool::State::RUNNING) {
             boost::asio::post(*pool, [this] { executeOne(); });
         }
@@ -126,7 +139,7 @@ class BoostThreadPool final : public ThreadPoolBackend {
             pool->join();
             pool.reset();
         }
-        const std::lock_guard lock(mutex);
+        const std::scoped_lock lock(mutex);
         current = 0;
     }
 
@@ -139,7 +152,7 @@ class BoostThreadPool final : public ThreadPoolBackend {
     void executeOne() {
         std::function<void()> task;
         {
-            const std::lock_guard lock(mutex);
+            const std::scoped_lock lock(mutex);
             if (state == ThreadPool::State::STOP || tasks.empty()) {
                 return;
             }
@@ -151,7 +164,7 @@ class BoostThreadPool final : public ThreadPoolBackend {
         task();
         task = {};
         {
-            const std::lock_guard lock(mutex);
+            const std::scoped_lock lock(mutex);
             --active;
         }
         changed.notify_all();

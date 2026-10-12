@@ -1,9 +1,18 @@
+#include "cpr/threadpool.h"
 #include "cpr/threadpool_backend.h"
 
 #include <algorithm>
 #include <chrono>
+#include <cstddef>
+#include <exception>
+#include <functional>
 #include <list>
+#include <memory>
+#include <mutex>
+#include <queue>
+#include <stdexcept>
 #include <thread>
+#include <utility>
 
 namespace cpr {
 namespace {
@@ -22,14 +31,19 @@ class BuiltinThreadPool final : public ThreadPoolBackend {
     BuiltinThreadPool(size_t minimum, size_t maximum) : ThreadPoolBackend(minimum, maximum) {}
     /** Stops dispatch, cancels pending tasks and joins workers before their storage is destroyed. */
     ~BuiltinThreadPool() override {
-        Stop();
+        try {
+            Stop();
+        } catch (...) {
+            // Destruction cannot propagate shutdown errors or continue with live workers.
+            std::terminate();
+        }
     }
 
     /** @copydoc ThreadPoolBackend::Start() */
     void Start() override {
         checkWorker();
-        const std::lock_guard lifecycleLock(lifecycleMutex);
-        const std::lock_guard lock(mutex);
+        const std::scoped_lock lifecycleLock(lifecycleMutex);
+        const std::scoped_lock lock(mutex);
         if (state == ThreadPool::State::RUNNING) {
             return;
         }
@@ -41,10 +55,10 @@ class BuiltinThreadPool final : public ThreadPoolBackend {
     /** @copydoc ThreadPoolBackend::Stop() */
     void Stop() override {
         checkWorker();
-        const std::lock_guard lifecycleLock(lifecycleMutex);
+        const std::scoped_lock lifecycleLock(lifecycleMutex);
         std::queue<std::function<void()>> canceled;
         {
-            const std::lock_guard lock(mutex);
+            const std::scoped_lock lock(mutex);
             state = ThreadPool::State::STOP;
             stopping = true;
             tasks.swap(canceled);
@@ -57,7 +71,7 @@ class BuiltinThreadPool final : public ThreadPoolBackend {
         }
         workers.clear();
         {
-            const std::lock_guard lock(mutex);
+            const std::scoped_lock lock(mutex);
             stopping = false;
         }
         changed.notify_all();
@@ -66,7 +80,7 @@ class BuiltinThreadPool final : public ThreadPoolBackend {
     /** @copydoc ThreadPoolBackend::Configure() */
     void Configure(const size_t* newMinimum, const size_t* newMaximum) override {
         checkWorker();
-        const std::lock_guard lock(mutex);
+        const std::scoped_lock lock(mutex);
         const size_t min = newMinimum ? *newMinimum : minimum;
         const size_t max = newMaximum ? *newMaximum : maximum;
         validate(min, max);
@@ -80,7 +94,7 @@ class BuiltinThreadPool final : public ThreadPoolBackend {
 
     /** @copydoc ThreadPoolBackend::Enqueue() */
     void Enqueue(std::function<void()> task) override {
-        const std::lock_guard lock(mutex);
+        const std::scoped_lock lock(mutex);
         if (state == ThreadPool::State::RUNNING) {
             // Create the worker before publishing the task: a thread creation failure cannot strand it.
             grow(std::min(maximum, std::max(minimum, active + tasks.size() + 1)));
@@ -163,7 +177,7 @@ class BuiltinThreadPool final : public ThreadPoolBackend {
             const bool ready = changed.wait_for(lock, THREAD_IDLE_TIMEOUT, [this] { return state == ThreadPool::State::STOP || !tasks.empty() || current > maximum; });
             // Retirement and submission use the same lock, preventing the last worker
             // from retiring after a submitter decided no new worker was needed.
-            if (!ready && current > minimum && tasks.empty()) {
+            if (!ready && current > minimum) {
                 break;
             }
         }
@@ -177,7 +191,7 @@ class BuiltinThreadPool final : public ThreadPoolBackend {
 std::shared_ptr<ThreadPoolBackend> MakeThreadPoolBackend(size_t minimum, size_t maximum) {
     return std::make_shared<BuiltinThreadPool>(minimum, maximum);
 }
-std::shared_ptr<ThreadPoolBackend> MakeThreadPoolBackend(boost::asio::io_context&, size_t minimum, size_t maximum) {
+std::shared_ptr<ThreadPoolBackend> MakeThreadPoolBackend(boost::asio::io_context& /*context*/, size_t minimum, size_t maximum) {
     ThreadPoolBackend::validate(minimum, maximum);
     throw std::logic_error("A caller-owned Boost.Asio context requires CPR_THREAD_POOL=BOOST_ASIO");
 }

@@ -1,7 +1,15 @@
+#include "cpr/threadpool.h"
 #include "cpr/threadpool_backend.h"
 
 #include <boost/asio/io_context.hpp>
 #include <boost/asio/post.hpp>
+#include <cstddef>
+#include <exception>
+#include <functional>
+#include <memory>
+#include <mutex>
+#include <queue>
+#include <utility>
 
 namespace cpr {
 namespace {
@@ -11,6 +19,7 @@ namespace {
  * harmless after the facade is destroyed. Active handlers temporarily retain
  * shared ownership while Stop() waits for their task and capture cleanup.
  **/
+// NOLINTNEXTLINE(fuchsia-multiple-inheritance, misc-multiple-inheritance) enable_shared_from_this supplies handler lifetime tracking.
 class BoostContextThreadPool final : public ThreadPoolBackend, public std::enable_shared_from_this<BoostContextThreadPool> {
   public:
     /**
@@ -23,14 +32,19 @@ class BoostContextThreadPool final : public ThreadPoolBackend, public std::enabl
     BoostContextThreadPool(boost::asio::io_context& context, size_t minimum, size_t maximum) : ThreadPoolBackend(minimum, maximum), context(context) {}
     /** Cancels cpr work and waits for its active tasks, without stopping the caller's event loop. */
     ~BoostContextThreadPool() override {
-        Stop();
+        try {
+            Stop();
+        } catch (...) {
+            // Destruction cannot propagate shutdown errors or continue with live workers.
+            std::terminate();
+        }
     }
 
     /** @copydoc ThreadPoolBackend::Start() */
     void Start() override {
         checkWorker();
-        const std::lock_guard lifecycleLock(lifecycleMutex);
-        const std::lock_guard lock(mutex);
+        const std::scoped_lock lifecycleLock(lifecycleMutex);
+        const std::scoped_lock lock(mutex);
         if (state == ThreadPool::State::RUNNING) {
             return;
         }
@@ -42,10 +56,10 @@ class BoostContextThreadPool final : public ThreadPoolBackend, public std::enabl
     /** @copydoc ThreadPoolBackend::Stop() */
     void Stop() override {
         checkWorker();
-        const std::lock_guard lifecycleLock(lifecycleMutex);
+        const std::scoped_lock lifecycleLock(lifecycleMutex);
         std::queue<std::function<void()>> canceled;
         {
-            const std::lock_guard lock(mutex);
+            const std::scoped_lock lock(mutex);
             state = ThreadPool::State::STOP;
             stopping = true;
             tasks.swap(canceled);
@@ -64,7 +78,7 @@ class BoostContextThreadPool final : public ThreadPoolBackend, public std::enabl
      **/
     void Configure(const size_t* newMinimum, const size_t* newMaximum) override {
         checkWorker();
-        const std::lock_guard lock(mutex);
+        const std::scoped_lock lock(mutex);
         const size_t min = newMinimum ? *newMinimum : minimum;
         const size_t max = newMaximum ? *newMaximum : maximum;
         validate(min, max);
@@ -78,7 +92,7 @@ class BoostContextThreadPool final : public ThreadPoolBackend, public std::enabl
 
     /** @copydoc ThreadPoolBackend::Enqueue() */
     void Enqueue(std::function<void()> task) override {
-        const std::lock_guard lock(mutex);
+        const std::scoped_lock lock(mutex);
         if (state == ThreadPool::State::RUNNING) {
             postOne();
         }
@@ -94,6 +108,8 @@ class BoostContextThreadPool final : public ThreadPoolBackend, public std::enabl
      * @pre mutex is held and this backend has been created through shared ownership.
      * @note Posting failures propagate to the caller; post() does not invoke handlers inline.
      **/
+    // Asio post() never invokes this handler inline, so reposting does not recurse.
+    // NOLINTBEGIN(misc-no-recursion)
     void postOne() {
         boost::asio::post(context, [weak = weak_from_this()] {
             if (auto backend = weak.lock()) {
@@ -119,7 +135,7 @@ class BoostContextThreadPool final : public ThreadPoolBackend, public std::enabl
     void executeOne() {
         std::function<void()> task;
         {
-            const std::lock_guard lock(mutex);
+            const std::scoped_lock lock(mutex);
             if (state == ThreadPool::State::STOP || tasks.empty() || active >= maximum) {
                 return;
             }
@@ -131,7 +147,7 @@ class BoostContextThreadPool final : public ThreadPoolBackend, public std::enabl
         const WorkerScope workerScope(*this);
         task();
         task = {};
-        const std::lock_guard lock(mutex);
+        const std::scoped_lock lock(mutex);
         --active;
         --current;
         changed.notify_all();
@@ -141,6 +157,7 @@ class BoostContextThreadPool final : public ThreadPoolBackend, public std::enabl
             postOne();
         }
     }
+    // NOLINTEND(misc-no-recursion)
 };
 } // namespace
 
