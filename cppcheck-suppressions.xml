@@ -36,6 +36,12 @@
         <id>constParameterPointer</id>
         <fileName>*/cpr/util.cpp</fileName>
     </suppress>
+    <!-- bytes is used throughout ReadMultipartStream and cannot be scoped more narrowly. -->
+    <suppress>
+        <id>variableScope</id>
+        <fileName>*/cpr/session.cpp</fileName>
+        <symbolName>bytes</symbolName>
+    </suppress>
     <suppress>
         <id>postfixOperator</id>
     </suppress>
