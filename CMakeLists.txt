@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.24)
-project(cpr VERSION 1.15.0 LANGUAGES CXX)
+project(cpr VERSION 1.15.1 LANGUAGES CXX)
 
 math(EXPR cpr_VERSION_NUM "${cpr_VERSION_MAJOR} * 0x10000 + ${cpr_VERSION_MINOR} * 0x100 + ${cpr_VERSION_PATCH}" OUTPUT_FORMAT HEXADECIMAL)
 configure_file("${cpr_SOURCE_DIR}/cmake/cprver.h.in" "${cpr_BINARY_DIR}/cpr_generated_includes/cpr/cprver.h")
@@ -245,7 +245,7 @@ elseif(CPR_USE_SYSTEM_CURL)
         endif()
     endif()
 
-    # Check for the minimum supported curl version 
+    # Check for the minimum supported curl version
     if(NOT (CURL_VERSION_STRING VERSION_GREATER_EQUAL "7.64.0"))
         message(FATAL_ERROR "Your system curl version (${CURL_VERSION_STRING}) is too old! curl >= 7.64.0 is required. Update your curl version, or use the build in curl version e.g. via `cmake .. -DCPR_USE_SYSTEM_CURL=OFF` during CMake configure.")
     endif()
@@ -375,13 +375,13 @@ if(CPR_BUILD_TESTS)
         FetchContent_MakeAvailable(googletest)
 
         restore_variable(DESTINATION CMAKE_CXX_CLANG_TIDY BACKUP CMAKE_CXX_CLANG_TIDY_BKP)
-        
+
         add_library(gtest_int INTERFACE)
         target_link_libraries(gtest_int INTERFACE gtest)
         target_include_directories(gtest_int INTERFACE ${googletest_SOURCE_DIR}/include)
 
         add_library(GTest::GTest ALIAS gtest_int)
-       
+
         # Group under the "tests/gtest" project folder in IDEs such as Visual Studio.
     set_property(TARGET gtest PROPERTY FOLDER "tests/gtest")
     set_property(TARGET gtest_main PROPERTY FOLDER "tests/gtest")
@@ -410,7 +410,7 @@ if(CPR_BUILD_TESTS)
     # Disable linting for mongoose
     clear_variable(DESTINATION CMAKE_CXX_CLANG_TIDY BACKUP CMAKE_CXX_CLANG_TIDY_BKP)
 
-    FetchContent_Declare(mongoose 
+    FetchContent_Declare(mongoose
                          URL                    https://github.com/cesanta/mongoose/archive/7.23.tar.gz
                          URL_HASH               SHA256=93208f164038b05d156935b8b725063e1afb3984a362dbcf3a9ea37b6f1f2255 # the hash for 7.23.tar.gz
                          USES_TERMINAL_DOWNLOAD TRUE # This is needed only for Ninja to show download progress
