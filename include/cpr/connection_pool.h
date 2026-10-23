@@ -12,7 +12,12 @@ namespace cpr {
  * The ConnectionPool enables connection reuse across multiple HTTP requests to the same host,
  * which can significantly improve performance by avoiding the overhead of establishing new
  * connections for each request. It uses libcurl's CURLSH (share) interface to manage
- * connection sharing in a thread-safe manner.
+ * connection sharing. libcurl does not support sharing connections between concurrent threads,
+ * even when share locking callbacks are installed:
+ * https://curl.se/libcurl/c/CURLSHOPT_SHARE.html#CURLLOCKDATACONNECT
+ *
+ * Do not use a pool, or copies of it, for concurrent requests on different threads.
+ * Use a separately constructed pool per worker thread instead.
  *
  * Example:
  * ```cpp
@@ -23,22 +28,20 @@ namespace cpr {
  * cpr::Response r1 = cpr::Get(cpr::Url{"http://example.com/api/data"}, pool);
  * cpr::Response r2 = cpr::Get(cpr::Url{"http://example.com/api/more"}, pool);
  *
- * // Or with async requests
- * auto future1 = cpr::GetAsync(cpr::Url{"http://example.com/api/data"}, pool);
- * auto future2 = cpr::GetAsync(cpr::Url{"http://example.com/api/more"}, pool);
  * ```
  **/
 class ConnectionPool {
   public:
     /**
      * Creates a new connection pool with shared connection state.
-     * Initializes the underlying CURLSH handle and sets up thread-safe locking mechanisms.
+     * Initializes the underlying CURLSH handle and its locking callbacks.
      **/
     ConnectionPool();
 
     /**
      * Copy constructor - creates a new connection pool sharing the same connection state.
      * Multiple ConnectionPool instances can share the same underlying connection pool.
+     * A copy does not provide an independent pool for use on another thread.
      **/
     ConnectionPool(const ConnectionPool&) = default;
 
@@ -59,9 +62,8 @@ class ConnectionPool {
 
   private:
     /**
-     * Thread-safe mutex used for synchronizing access to shared connections.
-     * This mutex is passed to libcurl's locking callbacks to ensure thread safety
-     * when multiple threads access the same connection pool. It's declared first
+     * Mutex passed to libcurl's share locking callbacks. These callbacks do not
+     * make concurrent cross-thread connection sharing supported. It's declared first
      * to ensure it's destroyed last, after the CURLSH handle that references it.
      **/
     std::shared_ptr<std::mutex> connection_mutex_;
@@ -69,7 +71,7 @@ class ConnectionPool {
     /**
      * Shared CURL handle (CURLSH) that manages the actual connection sharing.
      * This handle maintains the pool of reusable connections and is configured
-     * with appropriate locking callbacks for thread safety. The shared_ptr uses
+     * with locking callbacks. The shared_ptr uses
      * a custom deleter that safely resets the lock/unlock callbacks before
      * calling curl_share_cleanup() to prevent use-after-free issues during destruction.
      * Declared last to ensure it's destroyed first, before the mutex it references.
