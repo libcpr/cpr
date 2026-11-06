@@ -2,6 +2,7 @@
 #include <cpr/error.h>
 #include <gtest/gtest.h>
 
+#include <map>
 #include <memory>
 #include <string>
 
@@ -220,6 +221,51 @@ TEST(ParameterTests, MultipleParametersTest) {
     std::string expected_text{"Hello world!"};
     EXPECT_EQ(expected_text, response.text);
     EXPECT_EQ(Url{url + "?key=value&hello=world&test=case"}, response.url);
+    EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
+TEST(ParameterTests, ConstMapParametersTest) {
+    Url url{server->GetBaseUrl() + "/hello.html"};
+    const std::map<std::string, std::string> parameters{{"z", "last"}, {"a key", "a+b&c=d/%"}, {"empty", ""}};
+    Response response = cpr::Get(url, parameters);
+    EXPECT_EQ(std::string{"Hello world!"}, response.text);
+    EXPECT_EQ(Url{url + "?a%20key=a%2Bb%26c%3Dd%2F%25&empty&z=last"}, response.url);
+    EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
+TEST(ParameterTests, TemporaryMapParametersTest) {
+    Url url{server->GetBaseUrl() + "/hello.html"};
+    Response response = cpr::Get(url, std::map<std::string, std::string>{{"key", "value"}});
+    EXPECT_EQ(std::string{"Hello world!"}, response.text);
+    EXPECT_EQ(Url{url + "?key=value"}, response.url);
+    EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
+TEST(ParameterTests, EmptyMapParametersTest) {
+    Url url{server->GetBaseUrl() + "/hello.html"};
+    std::map<std::string, std::string> parameters{};
+    Response response = cpr::Get(url, parameters);
+    EXPECT_EQ(std::string{"Hello world!"}, response.text);
+    EXPECT_EQ(url, response.url);
+    EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
+TEST(ParameterHeaderTests, MapParametersWithHeaderTest) {
+    Url url{server->GetBaseUrl() + "/header_reflect.html"};
+    std::map<std::string, std::string> parameters{{"key", "value"}};
+    Header header{{"hello", "world"}};
+    Response response = cpr::Get(url, parameters, header);
+    EXPECT_EQ(std::string{"Header reflect GET"}, response.text);
+    EXPECT_EQ(Url{url + "?key=value"}, response.url);
+    EXPECT_EQ(std::string{"world"}, response.header["hello"]);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
     EXPECT_EQ(ErrorCode::OK, response.error.code);

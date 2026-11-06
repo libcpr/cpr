@@ -1,6 +1,7 @@
 #include "cpr/cprtypes.h"
 #include <gtest/gtest.h>
 
+#include <map>
 #include <string>
 
 #include "cpr/parameters.h"
@@ -27,6 +28,71 @@ TEST(PayloadTests, DisableEncodingTest) {
 
     std::string expected = key1 + '=' + value1 + '&' + key2 + '=' + value2;
     EXPECT_EQ(payload.GetContent(CurlHolder()), expected);
+}
+
+TEST(ParametersTests, DefaultConstructorTest) {
+    Parameters parameters;
+    EXPECT_EQ(std::string{}, parameters.GetContent());
+    EXPECT_EQ(std::string{}, parameters.GetContent(CurlHolder()));
+    EXPECT_TRUE(parameters.encode);
+
+    parameters.Add(Parameter{"key", "value"});
+    EXPECT_EQ(std::string{"key=value"}, parameters.GetContent());
+}
+
+TEST(ParametersTests, InitializerListConstructorTest) {
+    Parameters parameters{{"key", "first"}, {"empty", ""}, {"key", "second"}};
+    std::string expected{"key=first&empty&key=second"};
+    EXPECT_EQ(expected, parameters.GetContent());
+    EXPECT_EQ(expected, parameters.GetContent(CurlHolder()));
+    EXPECT_TRUE(parameters.encode);
+}
+
+TEST(ParametersTests, EmptyInitializerListConstructorTest) {
+    const std::initializer_list<Parameter> entries{};
+    Parameters parameters{entries};
+    EXPECT_EQ(std::string{}, parameters.GetContent());
+    EXPECT_EQ(std::string{}, parameters.GetContent(CurlHolder()));
+}
+
+TEST(ParametersTests, MapConstructorTest) {
+    const std::map<std::string, std::string> entries{{"z", "last"}, {"empty", ""}, {"a", "first"}};
+    Parameters parameters{entries};
+    std::string expected{"a=first&empty&z=last"};
+    EXPECT_EQ(expected, parameters.GetContent());
+    EXPECT_EQ(expected, parameters.GetContent(CurlHolder()));
+    EXPECT_TRUE(parameters.encode);
+
+    parameters.Add(Parameter{"a", "another"});
+    EXPECT_EQ(expected + "&a=another", parameters.GetContent());
+}
+
+TEST(ParametersTests, EmptyMapConstructorTest) {
+    const std::map<std::string, std::string> entries{};
+    Parameters parameters{entries};
+    EXPECT_EQ(std::string{}, parameters.GetContent());
+    EXPECT_EQ(std::string{}, parameters.GetContent(CurlHolder()));
+}
+
+TEST(ParametersTests, MapConstructorEncodingTest) {
+    const std::map<std::string, std::string> entries{{"a key", "a+b&c=d/%"}, {"empty", ""}};
+    Parameters parameters{entries};
+    std::string expected{"a%20key=a%2Bb%26c%3Dd%2F%25&empty"};
+    EXPECT_EQ(expected, parameters.GetContent(CurlHolder()));
+
+    std::string expected_unencoded{"a key=a+b&c=d/%&empty"};
+    EXPECT_EQ(expected_unencoded, parameters.GetContent());
+    parameters.encode = false;
+    EXPECT_EQ(expected_unencoded, parameters.GetContent(CurlHolder()));
+}
+
+TEST(ParametersTests, MapConstructorCopiesInputTest) {
+    std::map<std::string, std::string> entries{{"key", "value"}};
+    Parameters parameters{entries};
+    EXPECT_EQ(std::string{"value"}, entries.at("key"));
+    entries.clear();
+    EXPECT_EQ(std::string{"key=value"}, parameters.GetContent());
+    EXPECT_EQ(std::string{"key=value"}, parameters.GetContent(CurlHolder()));
 }
 
 TEST(ParametersTests, UseStringVariableTest) {

@@ -5,6 +5,7 @@
 #include <gtest/gtest.h>
 #include <thread>
 
+#include <map>
 #include <stdexcept>
 #include <string>
 
@@ -411,6 +412,44 @@ TEST(ParameterTests, ParameterMultipleTest) {
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
     EXPECT_EQ(200, response.status_code);
     EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
+TEST(ParameterTests, MapSetOptionCopiesInputTest) {
+    Url url{server->GetBaseUrl() + "/hello.html"};
+    Session session;
+    session.SetUrl(url);
+    std::map<std::string, std::string> parameters{{"key", "value"}};
+    session.SetOption(parameters);
+    EXPECT_EQ(std::string{"value"}, parameters.at("key"));
+    parameters.clear();
+
+    Response response = session.Get();
+    EXPECT_EQ(std::string{"Hello world!"}, response.text);
+    EXPECT_EQ(Url{url + "?key=value"}, response.url);
+    EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
+    EXPECT_EQ(200, response.status_code);
+    EXPECT_EQ(ErrorCode::OK, response.error.code);
+}
+
+TEST(FullRequestUrlTest, MapSetOptionReplacesParametersTest) {
+    Url url{server->GetBaseUrl() + "/hello.html"};
+    Session session;
+    session.SetUrl(url);
+    session.SetOption(Parameters{{"old", "value"}});
+    EXPECT_EQ(url + "?old=value", session.GetFullRequestUrl());
+
+    const std::map<std::string, std::string> parameters{{"z", "last"}, {"a key", "a+b&c=d/%"}, {"empty", ""}};
+    session.SetOption(parameters);
+    EXPECT_EQ(url + "?a%20key=a%2Bb%26c%3Dd%2F%25&empty&z=last", session.GetFullRequestUrl());
+
+    session.SetOption(std::map<std::string, std::string>{{"new", "value"}});
+    EXPECT_EQ(url + "?new=value", session.GetFullRequestUrl());
+
+    session.SetOption(std::map<std::string, std::string>{});
+    EXPECT_EQ(url.str(), session.GetFullRequestUrl());
+
+    session.SetOption(Parameters{{"key", "first"}, {"key", "second"}});
+    EXPECT_EQ(url + "?key=first&key=second", session.GetFullRequestUrl());
 }
 
 TEST(FullRequestUrlTest, GetFullRequestUrlNoParametersTest) {
