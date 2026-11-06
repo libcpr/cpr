@@ -137,6 +137,7 @@ class Session : public std::enable_shared_from_this<Session> {
     void SetOption(const Url& url);
     void SetOption(const Parameters& parameters);
     void SetOption(Parameters&& parameters);
+    void SetOption(const std::map<std::string, std::string>& parameters);
     void SetOption(const Header& header);
     void SetOption(const Timeout& timeout);
     void SetOption(const ConnectTimeout& timeout);

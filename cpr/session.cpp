@@ -1136,6 +1136,7 @@ void Session::SetOption(const ServerSentEventCallback& sse) { SetServerSentEvent
 void Session::SetOption(const Url& url) { SetUrl(url); }
 void Session::SetOption(const Parameters& parameters) { SetParameters(parameters); }
 void Session::SetOption(Parameters&& parameters) { SetParameters(std::move(parameters)); }
+void Session::SetOption(const std::map<std::string, std::string>& parameters) { SetParameters(Parameters{parameters}); }
 void Session::SetOption(const Header& header) { SetHeader(header); }
 void Session::SetOption(const Timeout& timeout) { SetTimeout(timeout); }
 void Session::SetOption(const ConnectTimeout& timeout) { SetConnectTimeout(timeout); }
