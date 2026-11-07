@@ -29,7 +29,7 @@ enum class PostRedirectFlags : uint8_t {
      * Default value.
      * * Convenience option to disable all flags.
      **/
-    NONE = 0x0
+    NONE = 0x0,
 };
 
 PostRedirectFlags operator|(PostRedirectFlags lhs, PostRedirectFlags rhs);
