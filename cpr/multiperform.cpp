@@ -81,7 +81,7 @@ void MultiPerform::RemoveSession(const std::shared_ptr<Session>& session) {
     session->isUsedInMultiPerform = false;
 
     // Remove session from sessions_
-    auto it = std::find_if(sessions_.begin(), sessions_.end(), [&session](const std::pair<std::shared_ptr<Session>, HttpMethod>& pair) { return session->curl_->handle == pair.first->curl_->handle; });
+    const auto it = std::find_if(sessions_.begin(), sessions_.end(), [&session](const std::pair<std::shared_ptr<Session>, HttpMethod>& pair) { return session->curl_->handle == pair.first->curl_->handle; });
     if (it == sessions_.end()) {
         throw std::invalid_argument("Failed to find session!");
     }
@@ -147,7 +147,7 @@ std::vector<Response> MultiPerform::ReadMultiInfo(const std::function<Response(S
 
         if (info) {
             // Find current session
-            auto it = std::find_if(sessions_.begin(), sessions_.end(), [&info](const std::pair<std::shared_ptr<Session>, HttpMethod>& pair) { return pair.first->curl_->handle == info->easy_handle; });
+            const auto it = std::find_if(sessions_.begin(), sessions_.end(), [&info](const std::pair<std::shared_ptr<Session>, HttpMethod>& pair) { return pair.first->curl_->handle == info->easy_handle; });
             if (it == sessions_.end()) {
                 std::cerr << "Failed to find current session!" << '\n';
                 break;
@@ -171,7 +171,7 @@ std::vector<Response> MultiPerform::ReadMultiInfo(const std::function<Response(S
     std::vector<Response> sorted_responses;
     for (const auto& [session, _] : sessions_) {
         Session& current_session = *session;
-        auto it = std::find_if(responses.begin(), responses.end(), [&current_session](const Response& response) { return current_session.curl_->handle == response.curl_->handle; });
+        const auto it = std::find_if(responses.begin(), responses.end(), [&current_session](const Response& response) { return current_session.curl_->handle == response.curl_->handle; });
         const Response current_response = *it; // NOLINT (performance-unnecessary-copy-initialization) False positive
         // Erase response from original vector to increase future search speed
         responses.erase(it);
@@ -233,25 +233,19 @@ void MultiPerform::PrepareSessions() {
 
 void MultiPerform::PrepareDownloadSession(size_t sessions_index, const WriteCallback& write) {
     const auto& [session, method] = sessions_.at(sessions_index);
-    switch (method) {
-        case HttpMethod::DOWNLOAD_REQUEST:
-            session->PrepareDownload(write);
-            break;
-        default:
-            std::cerr << "PrepareSessions failed: Undefined HttpMethod or non download method with arguments!" << '\n';
-            return;
+    if (method == HttpMethod::DOWNLOAD_REQUEST) {
+        session->PrepareDownload(write);
+    } else {
+        std::cerr << "PrepareSessions failed: Undefined HttpMethod or non download method with arguments!" << '\n';
     }
 }
 
 void MultiPerform::PrepareDownloadSession(size_t sessions_index, std::ofstream& file) {
     const auto& [session, method] = sessions_.at(sessions_index);
-    switch (method) {
-        case HttpMethod::DOWNLOAD_REQUEST:
-            session->PrepareDownload(file);
-            break;
-        default:
-            std::cerr << "PrepareSessions failed: Undefined HttpMethod or non download method with arguments!" << '\n';
-            return;
+    if (method == HttpMethod::DOWNLOAD_REQUEST) {
+        session->PrepareDownload(file);
+    } else {
+        std::cerr << "PrepareSessions failed: Undefined HttpMethod or non download method with arguments!" << '\n';
     }
 }
 
@@ -361,7 +355,7 @@ const std::optional<std::vector<Response>> MultiPerform::intercept() {
     }
 
     if (current_interceptor_ != interceptors_.end()) {
-        auto icpt = current_interceptor_;
+        const auto icpt = current_interceptor_;
         // Nested makeRequest() start at first_interceptor_, thus excluding previous interceptors.
         first_interceptor_ = current_interceptor_;
         ++first_interceptor_;

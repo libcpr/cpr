@@ -118,7 +118,7 @@ void Session::prepareHeader() {
     for (const std::pair<const std::string, std::string>& item : header_) {
         std::string header_string = item.first;
         if (item.second.empty()) {
-            header_string += ";";
+            header_string += ';';
         } else {
             header_string += ": " + item.second;
         }
@@ -853,40 +853,40 @@ std::shared_ptr<Session> Session::GetSharedPtrFromThis() {
 }
 
 AsyncResponse Session::GetAsync() {
-    auto shared_this = shared_from_this();
-    return async([shared_this]() { return shared_this->Get(); });
+    const auto shared_this = shared_from_this();
+    return async([shared_this] { return shared_this->Get(); });
 }
 
 AsyncResponse Session::DeleteAsync() {
-    return async([shared_this = GetSharedPtrFromThis()]() { return shared_this->Delete(); });
+    return async([shared_this = GetSharedPtrFromThis()] { return shared_this->Delete(); });
 }
 
 AsyncResponse Session::DownloadAsync(const WriteCallback& write) {
-    return async([shared_this = GetSharedPtrFromThis(), write]() { return shared_this->Download(write); });
+    return async([shared_this = GetSharedPtrFromThis(), write] { return shared_this->Download(write); });
 }
 
 AsyncResponse Session::DownloadAsync(std::ofstream& file) {
-    return async([shared_this = GetSharedPtrFromThis(), &file]() { return shared_this->Download(file); });
+    return async([shared_this = GetSharedPtrFromThis(), &file] { return shared_this->Download(file); });
 }
 
 AsyncResponse Session::HeadAsync() {
-    return async([shared_this = GetSharedPtrFromThis()]() { return shared_this->Head(); });
+    return async([shared_this = GetSharedPtrFromThis()] { return shared_this->Head(); });
 }
 
 AsyncResponse Session::OptionsAsync() {
-    return async([shared_this = GetSharedPtrFromThis()]() { return shared_this->Options(); });
+    return async([shared_this = GetSharedPtrFromThis()] { return shared_this->Options(); });
 }
 
 AsyncResponse Session::PatchAsync() {
-    return async([shared_this = GetSharedPtrFromThis()]() { return shared_this->Patch(); });
+    return async([shared_this = GetSharedPtrFromThis()] { return shared_this->Patch(); });
 }
 
 AsyncResponse Session::PostAsync() {
-    return async([shared_this = GetSharedPtrFromThis()]() { return shared_this->Post(); });
+    return async([shared_this = GetSharedPtrFromThis()] { return shared_this->Post(); });
 }
 
 AsyncResponse Session::PutAsync() {
-    return async([shared_this = GetSharedPtrFromThis()]() { return shared_this->Put(); });
+    return async([shared_this = GetSharedPtrFromThis()] { return shared_this->Put(); });
 }
 
 std::shared_ptr<CurlHolder> Session::GetCurlHolder() {
@@ -1030,7 +1030,7 @@ const std::optional<Response> Session::intercept() {
     }
 
     if (current_interceptor_ != interceptors_.end()) {
-        auto icpt = current_interceptor_;
+        const auto icpt = current_interceptor_;
         // Nested makeRequest() start at first_interceptor_, thus excluding previous interceptors.
         first_interceptor_ = current_interceptor_;
         ++first_interceptor_;
