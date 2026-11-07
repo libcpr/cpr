@@ -1,14 +1,19 @@
 #ifndef CPR_SESSION_H
 #define CPR_SESSION_H
 
-#include <cstdint>
+#include "cpr/export.h"
+
+/**
+ * If we build cpr as C++20 module, we use 'import std;'.
+ * So skip all other imports and declare them in 'cpr.cxx'.
+ **/
+#ifndef CPR_IMPORT_STD
 #include <fstream>
-#include <functional>
-#include <future>
 #include <list>
 #include <memory>
 #include <optional>
 #include <variant>
+#endif
 
 #include "cpr/accept_encoding.h"
 #include "cpr/async_wrapper.h"
@@ -43,18 +48,17 @@
 #include "cpr/timeout.h"
 #include "cpr/unix_socket.h"
 #include "cpr/user_agent.h"
-#include "cpr/util.h"
 #include "cpr/verbose.h"
 
 namespace cpr {
 
-using AsyncResponse = AsyncWrapper<Response>;
-using Content = std::variant<std::monostate, cpr::Payload, cpr::Body, cpr::BodyView, cpr::Multipart>;
+EXPORT_CPR using AsyncResponse = AsyncWrapper<Response>;
+EXPORT_CPR using Content = std::variant<std::monostate, cpr::Payload, cpr::Body, cpr::BodyView, cpr::Multipart>;
 
-class Interceptor;
-class MultiPerform;
+EXPORT_CPR class Interceptor;
+EXPORT_CPR class MultiPerform;
 
-class Session : public std::enable_shared_from_this<Session> {
+EXPORT_CPR class Session : public std::enable_shared_from_this<Session> {
   public:
     Session();
     Session(const Session& other) = delete;

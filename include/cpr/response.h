@@ -1,12 +1,19 @@
 #ifndef CPR_RESPONSE_H
 #define CPR_RESPONSE_H
 
-#include <cassert>
+#include "cpr/export.h"
+
+/**
+ * If we build cpr as C++20 module, we use 'import std;'.
+ * So skip all other imports and declare them in 'cpr.cxx'.
+ **/
+#ifndef CPR_IMPORT_STD
 #include <cstdint>
 #include <memory>
 #include <string>
 #include <utility>
 #include <vector>
+#endif
 
 #include "cpr/cert_info.h"
 #include "cpr/cookies.h"
@@ -17,9 +24,9 @@
 
 namespace cpr {
 
-class MultiPerform;
+EXPORT_CPR class MultiPerform;
 
-class Response {
+EXPORT_CPR class Response {
   private:
     friend MultiPerform;
     std::shared_ptr<CurlHolder> curl_{nullptr};

@@ -1,6 +1,8 @@
 #ifndef CPR_ASYNC_H
 #define CPR_ASYNC_H
 
+#include "cpr/export.h"
+
 #include "async_wrapper.h"
 #include "singleton.h"
 #include "threadpool.h"
@@ -14,7 +16,7 @@ namespace cpr {
  * ExitInstance() destroys it once; the singleton cannot be recreated after cleanup.
  * Callers must coordinate shutdown with every use of this pool.
  **/
-class GlobalThreadPool : public ThreadPool {
+EXPORT_CPR class GlobalThreadPool : public ThreadPool {
     CPR_SINGLETON_DECL(GlobalThreadPool)
   protected:
     /** Constructs the singleton with the selected backend and default worker limits. */
@@ -54,7 +56,7 @@ class GlobalThreadPool : public ThreadPool {
  * @return AsyncWrapper holding the submitted task's future.
  * @pre The global pool has not been destroyed by cpr::async::cleanup().
  **/
-template <bool isCancellable = false, class Fn, class... Args>
+EXPORT_CPR template <bool isCancellable = false, class Fn, class... Args>
 auto async(Fn&& fn, Args&&... args) {
     std::future future = GlobalThreadPool::GetInstance()->Submit(std::forward<Fn>(fn), std::forward<Args>(args)...);
     using async_wrapper_t = AsyncWrapper<decltype(future.get()), isCancellable>;
@@ -66,7 +68,7 @@ auto async(Fn&& fn, Args&&... args) {
 }
 
 /** Controls worker limits and final shutdown of the process-wide asynchronous request pool. */
-class async {
+EXPORT_CPR class async {
   public:
     /**
      * Lazily creates the global pool and sets both worker limits together.

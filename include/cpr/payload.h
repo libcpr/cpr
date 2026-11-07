@@ -1,13 +1,21 @@
 #ifndef CPR_PAYLOAD_H
 #define CPR_PAYLOAD_H
 
+#include "cpr/export.h"
+
+/**
+ * If we build cpr as C++20 module, we use 'import std;'.
+ * So skip all other imports and declare them in 'cpr.cxx'.
+ **/
+#ifndef CPR_IMPORT_STD
 #include <initializer_list>
+#endif
 
 #include "cpr/curl_container.h"
 
 
 namespace cpr {
-class Payload : public CurlContainer<Pair> {
+EXPORT_CPR class Payload : public CurlContainer<Pair> {
   public:
     template <class It>
     Payload(const It begin, const It end) {

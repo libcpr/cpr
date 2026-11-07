@@ -1,12 +1,20 @@
 #ifndef CPR_PROXIES_H
 #define CPR_PROXIES_H
 
+#include "cpr/export.h"
+
+/**
+ * If we build cpr as C++20 module, we use 'import std;'.
+ * So skip all other imports and declare them in 'cpr.cxx'.
+ **/
+#ifndef CPR_IMPORT_STD
 #include <initializer_list>
 #include <map>
 #include <string>
+#endif
 
 namespace cpr {
-class Proxies {
+EXPORT_CPR class Proxies {
   public:
     Proxies() = default;
     Proxies(const std::initializer_list<std::pair<const std::string, std::string>>& hosts);

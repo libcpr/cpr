@@ -1,15 +1,23 @@
 #ifndef CPR_FILE_H
 #define CPR_FILE_H
 
+#include "cpr/export.h"
+
+/**
+ * If we build cpr as C++20 module, we use 'import std;'.
+ * So skip all other imports and declare them in 'cpr.cxx'.
+ **/
+#ifndef CPR_IMPORT_STD
 #include <initializer_list>
 #include <string>
 #include <vector>
+#endif
 
 #include "cpr/filesystem.h"
 
 namespace cpr {
 
-struct File {
+EXPORT_CPR struct File {
     explicit File(std::string p_filepath, const std::string& p_overriden_filename = {}) : filepath(std::move(p_filepath)), overriden_filename(p_overriden_filename) {}
 
     std::string filepath;
@@ -20,7 +28,7 @@ struct File {
     }
 };
 
-class Files {
+EXPORT_CPR class Files {
   public:
     Files() = default;
     Files(const File& p_file) : files{p_file} {}

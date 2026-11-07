@@ -1,13 +1,21 @@
 #ifndef CPR_BUFFER_H
 #define CPR_BUFFER_H
 
-#include <string>
+#include "cpr/export.h"
+
+/**
+ * If we build cpr as C++20 module, we use 'import std;'.
+ * So skip all other imports and declare them in 'cpr.cxx'.
+ **/
+#ifndef CPR_IMPORT_STD
+#include <cstddef>
+#endif
 
 #include "cpr/filesystem.h"
 
 namespace cpr {
 
-struct Buffer {
+EXPORT_CPR struct Buffer {
     using data_t = const char*;
 
     template <typename Iterator>

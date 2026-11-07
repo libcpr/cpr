@@ -1,13 +1,21 @@
 #ifndef CPR_CERT_INFO_H
 #define CPR_CERT_INFO_H
 
+#include "cpr/export.h"
+
+/**
+ * If we build cpr as C++20 module, we use 'import std;'.
+ * So skip all other imports and declare them in 'cpr.cxx'.
+ **/
+#ifndef CPR_IMPORT_STD
 #include <initializer_list>
 #include <string>
 #include <vector>
+#endif
 
 namespace cpr {
 
-class CertInfo {
+EXPORT_CPR class CertInfo {
   private:
     std::vector<std::string> cert_info_;
 

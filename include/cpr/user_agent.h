@@ -1,13 +1,21 @@
 #ifndef CPR_USER_AGENT_H
 #define CPR_USER_AGENT_H
 
+#include "cpr/export.h"
+
+/**
+ * If we build cpr as C++20 module, we use 'import std;'.
+ * So skip all other imports and declare them in 'cpr.cxx'.
+ **/
+#ifndef CPR_IMPORT_STD
 #include <initializer_list>
 #include <string>
+#endif
 
 #include "cpr/cprtypes.h"
 
 namespace cpr {
-class UserAgent : public StringHolder<UserAgent> {
+EXPORT_CPR class UserAgent : public StringHolder<UserAgent> {
   public:
     UserAgent() = default;
     UserAgent(std::string useragent) : StringHolder<UserAgent>(std::move(useragent)) {}

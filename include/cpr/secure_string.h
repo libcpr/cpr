@@ -1,16 +1,23 @@
 #ifndef CPR_SECURE_STRING_H
 #define CPR_SECURE_STRING_H
 
+#include "cpr/export.h"
+
+/**
+ * If we build cpr as C++20 module, we use 'import std;'.
+ * So skip all other imports and declare them in 'cpr.cxx'.
+ **/
+#ifndef CPR_IMPORT_STD
 #include <memory>
 #include <string>
-#include <string_view>
+#endif
 
 namespace cpr::util {
 
 // This is an allocator that overwrites memory with zero values before
 // deallocating the memory, so as to not leave secrets in unallocated memory
 // sections.
-template <typename T>
+EXPORT_CPR template <typename T>
 struct SecureAllocator : private std::allocator<T> {
     template <typename U>
     friend struct SecureAllocator;
@@ -48,16 +55,16 @@ struct SecureAllocator : private std::allocator<T> {
         return static_cast<const std::allocator<T>&>(*this) == static_cast<const std::allocator<U>&>(rhs);
     }
 };
-template <typename T, typename U>
+EXPORT_CPR template <typename T, typename U>
 bool operator==(const SecureAllocator<T>& lhs, const SecureAllocator<U>& rhs) noexcept {
     return lhs.IsEqual(rhs);
 }
-template <typename T, typename U>
+EXPORT_CPR template <typename T, typename U>
 bool operator!=(const SecureAllocator<T>& lhs, const SecureAllocator<U>& rhs) noexcept {
     return !lhs.IsEqual(rhs);
 }
 
-using SecureString = std::basic_string<char, std::char_traits<char>, SecureAllocator<char>>;
+EXPORT_CPR using SecureString = std::basic_string<char, std::char_traits<char>, SecureAllocator<char>>;
 
 } // namespace cpr::util
 

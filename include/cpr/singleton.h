@@ -2,7 +2,6 @@
 #define CPR_SINGLETON_H
 
 #include <cassert>
-#include <mutex>
 
 // NOLINTBEGIN(cppcoreguidelines-macro-usage, bugprone-macro-parentheses)
 

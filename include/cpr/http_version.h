@@ -1,11 +1,20 @@
 #ifndef CPR_HTTP_VERSION_H
 #define CPR_HTTP_VERSION_H
 
+#include "cpr/export.h"
+
+/**
+ * If we build cpr as C++20 module, we use 'import std;'.
+ * So skip all other imports and declare them in 'cpr.cxx'.
+ **/
+#ifndef CPR_IMPORT_STD
 #include <cstdint>
+#endif
+
 #include <curl/curlver.h>
 
 namespace cpr {
-enum class HttpVersionCode : uint8_t {
+EXPORT_CPR enum class HttpVersionCode : uint8_t {
     /**
      * Let libcurl decide which version is the best.
      **/
@@ -58,7 +67,7 @@ enum class HttpVersionCode : uint8_t {
 #endif
 };
 
-class HttpVersion {
+EXPORT_CPR class HttpVersion {
   public:
     /**
      * The HTTP version that should be used by libcurl when initiating a HTTP(S) connection.

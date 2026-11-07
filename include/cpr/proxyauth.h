@@ -1,18 +1,26 @@
 #ifndef CPR_PROXYAUTH_H
 #define CPR_PROXYAUTH_H
 
+#include "cpr/export.h"
+
+/**
+ * If we build cpr as C++20 module, we use 'import std;'.
+ * So skip all other imports and declare them in 'cpr.cxx'.
+ **/
+#ifndef CPR_IMPORT_STD
 #include <initializer_list>
 #include <map>
 #include <string>
 #include <string_view>
+#endif
 
 #include "cpr/auth.h"
 #include "cpr/util.h"
 
 namespace cpr {
-class ProxyAuthentication;
+EXPORT_CPR class ProxyAuthentication;
 
-class EncodedAuthentication {
+EXPORT_CPR class EncodedAuthentication {
     friend ProxyAuthentication;
 
   public:
@@ -35,7 +43,7 @@ class EncodedAuthentication {
     util::SecureString password;
 };
 
-class ProxyAuthentication {
+EXPORT_CPR class ProxyAuthentication {
   public:
     ProxyAuthentication() = default;
     ProxyAuthentication(const std::initializer_list<std::pair<const std::string, EncodedAuthentication>>& auths) : proxyAuth_{auths} {}

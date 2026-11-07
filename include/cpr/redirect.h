@@ -1,10 +1,18 @@
 #ifndef CPR_REDIRECT_H
 #define CPR_REDIRECT_H
 
+#include "cpr/export.h"
+
+/**
+ * If we build cpr as C++20 module, we use 'import std;'.
+ * So skip all other imports and declare them in 'cpr.cxx'.
+ **/
+#ifndef CPR_IMPORT_STD
 #include <cstdint>
+#endif
 
 namespace cpr {
-enum class PostRedirectFlags : uint8_t {
+EXPORT_CPR enum class PostRedirectFlags : uint8_t {
     /**
      * Respect RFC 7231 (section 6.4.2 to 6.4.4).
      * Same as CURL_REDIR_POST_301 (https://curl.se/libcurl/c/CURLOPT_POSTREDIR.html).
@@ -32,16 +40,16 @@ enum class PostRedirectFlags : uint8_t {
     NONE = 0x0
 };
 
-PostRedirectFlags operator|(PostRedirectFlags lhs, PostRedirectFlags rhs);
-PostRedirectFlags operator&(PostRedirectFlags lhs, PostRedirectFlags rhs);
-PostRedirectFlags operator^(PostRedirectFlags lhs, PostRedirectFlags rhs);
-PostRedirectFlags operator~(PostRedirectFlags flag);
-PostRedirectFlags& operator|=(PostRedirectFlags& lhs, PostRedirectFlags rhs);
-PostRedirectFlags& operator&=(PostRedirectFlags& lhs, PostRedirectFlags rhs);
-PostRedirectFlags& operator^=(PostRedirectFlags& lhs, PostRedirectFlags rhs);
-bool any(PostRedirectFlags flag);
+EXPORT_CPR PostRedirectFlags operator|(PostRedirectFlags lhs, PostRedirectFlags rhs);
+EXPORT_CPR PostRedirectFlags operator&(PostRedirectFlags lhs, PostRedirectFlags rhs);
+EXPORT_CPR PostRedirectFlags operator^(PostRedirectFlags lhs, PostRedirectFlags rhs);
+EXPORT_CPR PostRedirectFlags operator~(PostRedirectFlags flag);
+EXPORT_CPR PostRedirectFlags& operator|=(PostRedirectFlags& lhs, PostRedirectFlags rhs);
+EXPORT_CPR PostRedirectFlags& operator&=(PostRedirectFlags& lhs, PostRedirectFlags rhs);
+EXPORT_CPR PostRedirectFlags& operator^=(PostRedirectFlags& lhs, PostRedirectFlags rhs);
+EXPORT_CPR bool any(PostRedirectFlags flag);
 
-class Redirect {
+EXPORT_CPR class Redirect {
   public:
     /**
      * The maximum number of redirects to follow.

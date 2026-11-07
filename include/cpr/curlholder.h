@@ -1,15 +1,23 @@
 #ifndef CPR_CURLHOLDER_H
 #define CPR_CURLHOLDER_H
 
+#include "cpr/export.h"
+
+/**
+ * If we build cpr as C++20 module, we use 'import std;'.
+ * So skip all other imports and declare them in 'cpr.cxx'.
+ **/
+#ifndef CPR_IMPORT_STD
 #include <array>
-#include <curl/curl.h>
 #include <mutex>
+#endif
 
 #include "cpr/secure_string.h"
+#include <curl/curl.h>
 
 namespace cpr {
 
-struct CurlHolder {
+EXPORT_CPR struct CurlHolder {
   private:
     /**
      * Mutex for curl_easy_init().

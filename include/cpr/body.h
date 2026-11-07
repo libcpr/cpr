@@ -1,10 +1,17 @@
 #ifndef CPR_BODY_H
 #define CPR_BODY_H
 
-#include <exception>
+#include "cpr/export.h"
+
+/**
+ * If we build cpr as C++20 module, we use 'import std;'.
+ * So skip all other imports and declare them in 'cpr.cxx'.
+ **/
+#ifndef CPR_IMPORT_STD
 #include <fstream>
 #include <initializer_list>
 #include <string>
+#endif
 
 #include "cpr/buffer.h"
 #include "cpr/cprtypes.h"
@@ -12,7 +19,7 @@
 
 namespace cpr {
 
-class Body : public StringHolder<Body> {
+EXPORT_CPR class Body : public StringHolder<Body> {
   public:
     Body() = default;
     Body(std::string body) : StringHolder<Body>(std::move(body)) {}

@@ -1,12 +1,20 @@
 #ifndef CPR_ERROR_H
 #define CPR_ERROR_H
 
-#include <cstdint>
+#include "cpr/export.h"
+
+/**
+ * If we build cpr as C++20 module, we use 'import std;'.
+ * So skip all other imports and declare them in 'cpr.cxx'.
+ **/
+#ifndef CPR_IMPORT_STD
 #include <string>
 #include <unordered_map>
+#include <utility>
+#endif
 
 #include "cpr/cprtypes.h"
-#include <utility>
+#include <cstdint>
 
 namespace cpr {
 
@@ -14,7 +22,7 @@ namespace cpr {
  * cpr error codes that match the ones found inside 'curl.h'.
  * These error codes only include relevant error codes meaning no support for e.g. FTP errors since cpr does only support HTTP.
  **/
-enum class ErrorCode : uint16_t {
+EXPORT_CPR enum class ErrorCode : uint16_t {
     /**
      * Everything is good and no error occurred.
      **/
@@ -90,7 +98,7 @@ enum class ErrorCode : uint16_t {
     UNKNOWN_ERROR = 1000,
 };
 
-inline const std::unordered_map<ErrorCode, std::string>& get_error_code_to_string_mapping() {
+EXPORT_CPR inline const std::unordered_map<ErrorCode, std::string>& get_error_code_to_string_mapping() {
     // Use a function-local static rather than inline global objects to avoid the 'double-destructor' problem in MSVC when using /MT flags.
     static const std::unordered_map<ErrorCode, std::string> mapping = {{ErrorCode::OK, "OK"},
                                                                        {ErrorCode::UNSUPPORTED_PROTOCOL, "UNSUPPORTED_PROTOCOL"},
@@ -159,7 +167,7 @@ inline const std::unordered_map<ErrorCode, std::string>& get_error_code_to_strin
     return mapping;
 }
 
-class Error {
+EXPORT_CPR class Error {
   public:
     ErrorCode code = ErrorCode::OK;
     std::string message;

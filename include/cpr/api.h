@@ -1,27 +1,29 @@
 #ifndef CPR_API_H
 #define CPR_API_H
 
+#include "cpr/export.h"
+
+/**
+ * If we build cpr as C++20 module, we use 'import std;'.
+ * So skip all other imports and declare them in 'cpr.cxx'.
+ **/
+#ifndef CPR_IMPORT_STD
 #include <fstream>
 #include <functional>
 #include <future>
-#include <string>
 #include <utility>
+#endif
 
 #include "cpr/async.h"
 #include "cpr/async_wrapper.h"
-#include "cpr/auth.h"
-#include "cpr/bearer.h"
 #include "cpr/cprtypes.h"
-#include "cpr/filesystem.h"
-#include "cpr/multipart.h"
 #include "cpr/multiperform.h"
-#include "cpr/payload.h"
 #include "cpr/response.h"
 #include "cpr/session.h"
 
 namespace cpr {
 
-using AsyncResponse = AsyncWrapper<Response>;
+EXPORT_CPR using AsyncResponse = AsyncWrapper<Response>;
 
 namespace priv {
 
@@ -114,7 +116,7 @@ void setup_multiasync(std::vector<AsyncWrapper<Response, true>>& responses, T&& 
 } // namespace priv
 
 // Get methods
-template <typename... Ts>
+EXPORT_CPR template <typename... Ts>
 Response Get(Ts&&... ts) {
     Session session;
     priv::set_option(session, std::forward<Ts>(ts)...);
@@ -122,20 +124,20 @@ Response Get(Ts&&... ts) {
 }
 
 // Get async methods
-template <typename... Ts>
+EXPORT_CPR template <typename... Ts>
 AsyncResponse GetAsync(Ts... ts) {
     return cpr::async([](Ts... ts_inner) { return Get(std::move(ts_inner)...); }, std::move(ts)...);
 }
 
 // Get callback methods
-template <typename Then, typename... Ts>
+EXPORT_CPR template <typename Then, typename... Ts>
 // NOLINTNEXTLINE(fuchsia-trailing-return)
 auto GetCallback(Then then, Ts... ts) {
     return cpr::async<true>([](Then then_inner, Ts... ts_inner) { return then_inner(Get(std::move(ts_inner)...)); }, std::move(then), std::move(ts)...);
 }
 
 // Post methods
-template <typename... Ts>
+EXPORT_CPR template <typename... Ts>
 Response Post(Ts&&... ts) {
     Session session;
     priv::set_option(session, std::forward<Ts>(ts)...);
@@ -143,20 +145,20 @@ Response Post(Ts&&... ts) {
 }
 
 // Post async methods
-template <typename... Ts>
+EXPORT_CPR template <typename... Ts>
 AsyncResponse PostAsync(Ts... ts) {
     return cpr::async([](Ts... ts_inner) { return Post(std::move(ts_inner)...); }, std::move(ts)...);
 }
 
 // Post callback methods
-template <typename Then, typename... Ts>
+EXPORT_CPR template <typename Then, typename... Ts>
 // NOLINTNEXTLINE(fuchsia-trailing-return)
 auto PostCallback(Then then, Ts... ts) {
     return cpr::async<true>([](Then then_inner, Ts... ts_inner) { return then_inner(Post(std::move(ts_inner)...)); }, std::move(then), std::move(ts)...);
 }
 
 // Put methods
-template <typename... Ts>
+EXPORT_CPR template <typename... Ts>
 Response Put(Ts&&... ts) {
     Session session;
     priv::set_option(session, std::forward<Ts>(ts)...);
@@ -164,20 +166,20 @@ Response Put(Ts&&... ts) {
 }
 
 // Put async methods
-template <typename... Ts>
+EXPORT_CPR template <typename... Ts>
 AsyncResponse PutAsync(Ts... ts) {
     return cpr::async([](Ts... ts_inner) { return Put(std::move(ts_inner)...); }, std::move(ts)...);
 }
 
 // Put callback methods
-template <typename Then, typename... Ts>
+EXPORT_CPR template <typename Then, typename... Ts>
 // NOLINTNEXTLINE(fuchsia-trailing-return)
 auto PutCallback(Then then, Ts... ts) {
     return cpr::async<true>([](Then then_inner, Ts... ts_inner) { return then_inner(Put(std::move(ts_inner)...)); }, std::move(then), std::move(ts)...);
 }
 
 // Head methods
-template <typename... Ts>
+EXPORT_CPR template <typename... Ts>
 Response Head(Ts&&... ts) {
     Session session;
     priv::set_option(session, std::forward<Ts>(ts)...);
@@ -185,20 +187,20 @@ Response Head(Ts&&... ts) {
 }
 
 // Head async methods
-template <typename... Ts>
+EXPORT_CPR template <typename... Ts>
 AsyncResponse HeadAsync(Ts... ts) {
     return cpr::async([](Ts... ts_inner) { return Head(std::move(ts_inner)...); }, std::move(ts)...);
 }
 
 // Head callback methods
-template <typename Then, typename... Ts>
+EXPORT_CPR template <typename Then, typename... Ts>
 // NOLINTNEXTLINE(fuchsia-trailing-return)
 auto HeadCallback(Then then, Ts... ts) {
     return cpr::async<true>([](Then then_inner, Ts... ts_inner) { return then_inner(Head(std::move(ts_inner)...)); }, std::move(then), std::move(ts)...);
 }
 
 // Delete methods
-template <typename... Ts>
+EXPORT_CPR template <typename... Ts>
 Response Delete(Ts&&... ts) {
     Session session;
     priv::set_option(session, std::forward<Ts>(ts)...);
@@ -206,20 +208,20 @@ Response Delete(Ts&&... ts) {
 }
 
 // Delete async methods
-template <typename... Ts>
+EXPORT_CPR template <typename... Ts>
 AsyncResponse DeleteAsync(Ts... ts) {
     return cpr::async([](Ts... ts_inner) { return Delete(std::move(ts_inner)...); }, std::move(ts)...);
 }
 
 // Delete callback methods
-template <typename Then, typename... Ts>
+EXPORT_CPR template <typename Then, typename... Ts>
 // NOLINTNEXTLINE(fuchsia-trailing-return)
 auto DeleteCallback(Then then, Ts... ts) {
     return cpr::async<true>([](Then then_inner, Ts... ts_inner) { return then_inner(Delete(std::move(ts_inner)...)); }, std::move(then), std::move(ts)...);
 }
 
 // Options methods
-template <typename... Ts>
+EXPORT_CPR template <typename... Ts>
 Response Options(Ts&&... ts) {
     Session session;
     priv::set_option(session, std::forward<Ts>(ts)...);
@@ -227,20 +229,20 @@ Response Options(Ts&&... ts) {
 }
 
 // Options async methods
-template <typename... Ts>
+EXPORT_CPR template <typename... Ts>
 AsyncResponse OptionsAsync(Ts... ts) {
     return cpr::async([](Ts... ts_inner) { return Options(std::move(ts_inner)...); }, std::move(ts)...);
 }
 
 // Options callback methods
-template <typename Then, typename... Ts>
+EXPORT_CPR template <typename Then, typename... Ts>
 // NOLINTNEXTLINE(fuchsia-trailing-return)
 auto OptionsCallback(Then then, Ts... ts) {
     return cpr::async<true>([](Then then_inner, Ts... ts_inner) { return then_inner(Options(std::move(ts_inner)...)); }, std::move(then), std::move(ts)...);
 }
 
 // Patch methods
-template <typename... Ts>
+EXPORT_CPR template <typename... Ts>
 Response Patch(Ts&&... ts) {
     Session session;
     priv::set_option(session, std::forward<Ts>(ts)...);
@@ -248,20 +250,20 @@ Response Patch(Ts&&... ts) {
 }
 
 // Patch async methods
-template <typename... Ts>
+EXPORT_CPR template <typename... Ts>
 AsyncResponse PatchAsync(Ts... ts) {
     return cpr::async([](Ts... ts_inner) { return Patch(std::move(ts_inner)...); }, std::move(ts)...);
 }
 
 // Patch callback methods
-template <typename Then, typename... Ts>
+EXPORT_CPR template <typename Then, typename... Ts>
 // NOLINTNEXTLINE(fuchsia-trailing-return)
 auto PatchCallback(Then then, Ts... ts) {
     return cpr::async<true>([](Then then_inner, Ts... ts_inner) { return then_inner(Patch(std::move(ts_inner)...)); }, std::move(then), std::move(ts)...);
 }
 
 // Download methods
-template <typename... Ts>
+EXPORT_CPR template <typename... Ts>
 Response Download(std::ofstream& file, Ts&&... ts) {
     Session session;
     priv::set_option(session, std::forward<Ts>(ts)...);
@@ -269,7 +271,7 @@ Response Download(std::ofstream& file, Ts&&... ts) {
 }
 
 // Download async method
-template <typename... Ts>
+EXPORT_CPR template <typename... Ts>
 AsyncResponse DownloadAsync(fs::path local_path, Ts... ts) {
     return AsyncWrapper{std::async(
             std::launch::async,
@@ -281,7 +283,7 @@ AsyncResponse DownloadAsync(fs::path local_path, Ts... ts) {
 }
 
 // Download with user callback
-template <typename... Ts>
+EXPORT_CPR template <typename... Ts>
 Response Download(const WriteCallback& write, Ts&&... ts) {
     Session session;
     priv::set_option(session, std::forward<Ts>(ts)...);
@@ -289,97 +291,97 @@ Response Download(const WriteCallback& write, Ts&&... ts) {
 }
 
 // Multi requests
-template <typename... Ts>
+EXPORT_CPR template <typename... Ts>
 std::vector<Response> MultiGet(Ts&&... ts) {
     MultiPerform multiperform;
     priv::setup_multiperform<Ts...>(multiperform, std::forward<Ts>(ts)...);
     return multiperform.Get();
 }
 
-template <typename... Ts>
+EXPORT_CPR template <typename... Ts>
 std::vector<Response> MultiDelete(Ts&&... ts) {
     MultiPerform multiperform;
     priv::setup_multiperform<Ts...>(multiperform, std::forward<Ts>(ts)...);
     return multiperform.Delete();
 }
 
-template <typename... Ts>
+EXPORT_CPR template <typename... Ts>
 std::vector<Response> MultiPut(Ts&&... ts) {
     MultiPerform multiperform;
     priv::setup_multiperform<Ts...>(multiperform, std::forward<Ts>(ts)...);
     return multiperform.Put();
 }
 
-template <typename... Ts>
+EXPORT_CPR template <typename... Ts>
 std::vector<Response> MultiHead(Ts&&... ts) {
     MultiPerform multiperform;
     priv::setup_multiperform<Ts...>(multiperform, std::forward<Ts>(ts)...);
     return multiperform.Head();
 }
 
-template <typename... Ts>
+EXPORT_CPR template <typename... Ts>
 std::vector<Response> MultiOptions(Ts&&... ts) {
     MultiPerform multiperform;
     priv::setup_multiperform<Ts...>(multiperform, std::forward<Ts>(ts)...);
     return multiperform.Options();
 }
 
-template <typename... Ts>
+EXPORT_CPR template <typename... Ts>
 std::vector<Response> MultiPatch(Ts&&... ts) {
     MultiPerform multiperform;
     priv::setup_multiperform<Ts...>(multiperform, std::forward<Ts>(ts)...);
     return multiperform.Patch();
 }
 
-template <typename... Ts>
+EXPORT_CPR template <typename... Ts>
 std::vector<Response> MultiPost(Ts&&... ts) {
     MultiPerform multiperform;
     priv::setup_multiperform<Ts...>(multiperform, std::forward<Ts>(ts)...);
     return multiperform.Post();
 }
 
-template <typename... Ts>
+EXPORT_CPR template <typename... Ts>
 std::vector<AsyncWrapper<Response, true>> MultiGetAsync(Ts&&... ts) {
     std::vector<AsyncWrapper<Response, true>> ret{};
     priv::setup_multiasync<&cpr::Session::Get>(ret, std::forward<Ts>(ts)...);
     return ret;
 }
 
-template <typename... Ts>
+EXPORT_CPR template <typename... Ts>
 std::vector<AsyncWrapper<Response, true>> MultiDeleteAsync(Ts&&... ts) {
     std::vector<AsyncWrapper<Response, true>> ret{};
     priv::setup_multiasync<&cpr::Session::Delete>(ret, std::forward<Ts>(ts)...);
     return ret;
 }
 
-template <typename... Ts>
+EXPORT_CPR template <typename... Ts>
 std::vector<AsyncWrapper<Response, true>> MultiHeadAsync(Ts&&... ts) {
     std::vector<AsyncWrapper<Response, true>> ret{};
     priv::setup_multiasync<&cpr::Session::Head>(ret, std::forward<Ts>(ts)...);
     return ret;
 }
-template <typename... Ts>
+EXPORT_CPR template <typename... Ts>
 std::vector<AsyncWrapper<Response, true>> MultiOptionsAsync(Ts&&... ts) {
     std::vector<AsyncWrapper<Response, true>> ret{};
     priv::setup_multiasync<&cpr::Session::Options>(ret, std::forward<Ts>(ts)...);
     return ret;
 }
 
-template <typename... Ts>
+EXPORT_CPR template <typename... Ts>
 std::vector<AsyncWrapper<Response, true>> MultiPatchAsync(Ts&&... ts) {
     std::vector<AsyncWrapper<Response, true>> ret{};
     priv::setup_multiasync<&cpr::Session::Patch>(ret, std::forward<Ts>(ts)...);
     return ret;
 }
 
-template <typename... Ts>
+EXPORT_CPR template <typename... Ts>
 std::vector<AsyncWrapper<Response, true>> MultiPostAsync(Ts&&... ts) {
     std::vector<AsyncWrapper<Response, true>> ret{};
     priv::setup_multiasync<&cpr::Session::Post>(ret, std::forward<Ts>(ts)...);
     return ret;
 }
 
-template <typename... Ts>
+EXPORT_CPR template <typename... Ts>
 std::vector<AsyncWrapper<Response, true>> MultiPutAsync(Ts&&... ts) {
     std::vector<AsyncWrapper<Response, true>> ret{};
     priv::setup_multiasync<&cpr::Session::Put>(ret, std::forward<Ts>(ts)...);
