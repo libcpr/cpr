@@ -50,6 +50,8 @@ enum class CurlHTTPCookieField : uint8_t {
 } // namespace
 
 namespace cpr::util {
+// Preserve the existing public function signature.
+// NOLINTNEXTLINE(misc-const-correctness)
 Cookies parseCookies(curl_slist* raw_cookies) {
     const int CURL_HTTP_COOKIE_SIZE = static_cast<int>(CurlHTTPCookieField::Value) + 1;
     Cookies cookies;
@@ -132,6 +134,8 @@ size_t readUserFunction(char* ptr, size_t size, size_t nitems, const ReadCallbac
     return (*read)(ptr, size) ? size : CURL_READFUNC_ABORT;
 }
 
+// These callback signatures must match libcurl's mutable buffer parameters.
+// NOLINTBEGIN(misc-const-correctness)
 size_t headerUserFunction(char* ptr, size_t size, size_t nmemb, const HeaderCallback* header) {
     size *= nmemb;
     return (*header)({ptr, size}) ? size : 0;
@@ -163,6 +167,7 @@ int debugUserFunction(CURL* /*handle*/, curl_infotype type, char* data, size_t s
     (*debug)(static_cast<DebugCallback::InfoType>(type), std::string(data, size));
     return 0;
 }
+// NOLINTEND(misc-const-correctness)
 
 /**
  * Creates a temporary CurlHolder object and uses it to escape the given string.

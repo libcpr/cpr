@@ -42,7 +42,8 @@ class BuiltinThreadPool final : public ThreadPoolBackend {
     /** @copydoc ThreadPoolBackend::Start() */
     void Start() override {
         checkWorker();
-        const std::scoped_lock lifecycleLock(lifecycleMutex);
+        // Keep the same lock order as Stop(), which holds the lifecycle lock during shutdown.
+        const std::scoped_lock lifecycleLock(lifecycleMutex); // NOLINT(modernize-use-scoped-lock)
         const std::scoped_lock lock(mutex);
         if (state == ThreadPool::State::RUNNING) {
             return;

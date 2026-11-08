@@ -54,8 +54,8 @@ enum class HttpVersionCode : uint8_t {
      * Enforce HTTP 3.0 requests without fallback.
      * Requires prior knowledge that the server supports HTTP 3.0 since there is no gracefully downgrade.
      **/
-    VERSION_3_0_ONLY
-#endif
+    VERSION_3_0_ONLY,
+#endif // NOLINT(readability-trailing-comma) The final enum value already has a comma.
 };
 
 class HttpVersion {

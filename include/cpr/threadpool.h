@@ -46,7 +46,7 @@ class ThreadPool {
     /** Whether workers may take queued tasks; STOP can still have active workers finishing tasks. */
     enum class State : uint8_t {
         STOP,   ///< Queued tasks are not dispatched, including during Boost executor replacement.
-        RUNNING ///< Workers may take queued tasks.
+        RUNNING, ///< Workers may take queued tasks.
     };
 
     /** Default minimum: zero, so the builtin backend creates workers only when needed. */
@@ -216,9 +216,11 @@ class ThreadPool {
      * @note Submission, allocation and worker creation failures propagate directly to the caller.
      **/
     template <class Fn, class... Args>
+    // clang-tidy does not recognize forwarding of parameter packs inside lambda captures.
+    // NOLINTNEXTLINE(cppcoreguidelines-missing-std-forward)
     auto Submit(Fn&& fn, Args&&... args) {
         using RetType = std::invoke_result_t<std::decay_t<Fn>, std::decay_t<Args>...>;
-        auto task = std::make_shared<std::packaged_task<RetType()>>([fn = std::forward<Fn>(fn), arguments = std::make_tuple(std::forward<Args>(args)...)]() mutable -> RetType { return std::apply(std::move(fn), std::move(arguments)); });
+        const auto task = std::make_shared<std::packaged_task<RetType()>>([fn = std::forward<Fn>(fn), arguments = std::make_tuple(std::forward<Args>(args)...)]() mutable -> RetType { return std::apply(std::move(fn), std::move(arguments)); });
         auto future = task->get_future();
         enqueue([task] { (*task)(); });
         return future;

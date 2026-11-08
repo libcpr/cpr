@@ -155,7 +155,8 @@ inline const std::unordered_map<ErrorCode, std::string>& get_error_code_to_strin
                                                                        {ErrorCode::SSL_CLIENTCERT, "SSL_CLIENTCERT"},
                                                                        {ErrorCode::UNRECOVERABLE_POLL, "UNRECOVERABLE_POLL"},
                                                                        {ErrorCode::TOO_LARGE, "TOO_LARGE"},
-                                                                       {ErrorCode::UNKNOWN_ERROR, "UNKNOWN_ERROR"}};
+                                                                       {ErrorCode::UNKNOWN_ERROR, "UNKNOWN_ERROR"},
+    };
     return mapping;
 }
 
