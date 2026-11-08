@@ -22,6 +22,7 @@
 #include "cpr/cookies.h"
 #include "cpr/cprtypes.h"
 #include "cpr/curlholder.h"
+#include "cpr/doh_url.h"
 #include "cpr/http_version.h"
 #include "cpr/interface.h"
 #include "cpr/limit_rate.h"
@@ -106,6 +107,7 @@ class Session : public std::enable_shared_from_this<Session> {
     void SetDebugCallback(const DebugCallback& debug);
     void SetServerSentEventCallback(const ServerSentEventCallback& sse);
     void SetVerbose(const Verbose& verbose);
+    void SetDohUrl(const DohUrl& doh_url);
     void SetInterface(const Interface& iface);
     void SetLocalPort(const LocalPort& local_port);
     void SetLocalPortRange(const LocalPortRange& local_port_range);
@@ -173,6 +175,7 @@ class Session : public std::enable_shared_from_this<Session> {
     void SetOption(const Verbose& verbose);
     void SetOption(const UnixSocket& unix_socket);
     void SetOption(const SslOptions& options);
+    void SetOption(const DohUrl& doh_url);
     void SetOption(const Interface& iface);
     void SetOption(const LocalPort& local_port);
     void SetOption(const LocalPortRange& local_port_range);
