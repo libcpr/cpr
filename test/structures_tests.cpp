@@ -3,11 +3,22 @@
 
 #include <map>
 #include <string>
+#include <type_traits>
+#include <utility>
 
 #include "cpr/parameters.h"
 #include "cpr/payload.h"
+#include "cpr/session.h"
 
 using namespace cpr;
+
+namespace {
+template <typename T, typename = void>
+struct CanSetOption : std::false_type {};
+
+template <typename T>
+struct CanSetOption<T, std::void_t<decltype(std::declval<Session&>().SetOption(std::declval<T>()))>> : std::true_type {};
+} // namespace
 
 TEST(PayloadTests, UseStringVariableTest) {
     std::string value1 = "hello";
@@ -93,6 +104,49 @@ TEST(ParametersTests, MapConstructorCopiesInputTest) {
     entries.clear();
     EXPECT_EQ(std::string{"key=value"}, parameters.GetContent());
     EXPECT_EQ(std::string{"key=value"}, parameters.GetContent(CurlHolder()));
+}
+
+TEST(ParametersTests, MovedMapConstructorTest) {
+    const std::string long_value(256, 'x');
+    std::map<std::string, std::string> entries{{"z", long_value}, {"empty", ""}, {"a", "first"}};
+    Parameters parameters{std::move(entries)};
+    std::string expected{"a=first&empty&z=" + long_value};
+    EXPECT_EQ(expected, parameters.GetContent());
+    EXPECT_EQ(expected, parameters.GetContent(CurlHolder()));
+    EXPECT_TRUE(parameters.encode);
+
+    entries.clear();
+    parameters.Add(Parameter{"a", "another"});
+    EXPECT_EQ(expected + "&a=another", parameters.GetContent());
+}
+
+TEST(ParametersTests, EmptyMovedMapConstructorTest) {
+    std::map<std::string, std::string> entries{};
+    Parameters parameters{std::move(entries)};
+    EXPECT_EQ(std::string{}, parameters.GetContent());
+    EXPECT_EQ(std::string{}, parameters.GetContent(CurlHolder()));
+    EXPECT_TRUE(parameters.encode);
+}
+
+TEST(ParametersTests, TemporaryMapConstructorEncodingTest) {
+    Parameters parameters{std::map<std::string, std::string>{{"a key", "a+b&c=d/%"}, {"empty", ""}}};
+    EXPECT_EQ(std::string{"a%20key=a%2Bb%26c%3Dd%2F%25&empty"}, parameters.GetContent(CurlHolder()));
+
+    std::string expected_unencoded{"a key=a+b&c=d/%&empty"};
+    EXPECT_EQ(expected_unencoded, parameters.GetContent());
+    parameters.encode = false;
+    EXPECT_EQ(expected_unencoded, parameters.GetContent(CurlHolder()));
+}
+
+TEST(ParametersTests, MapRequiresExplicitParametersTest) {
+    using Map = std::map<std::string, std::string>;
+    EXPECT_FALSE((std::is_convertible_v<const Map&, Parameters>));
+    EXPECT_FALSE((std::is_convertible_v<Map&&, Parameters>));
+    EXPECT_FALSE(CanSetOption<Map&>::value);
+    EXPECT_FALSE(CanSetOption<const Map&>::value);
+    EXPECT_FALSE(CanSetOption<Map&&>::value);
+    EXPECT_TRUE(CanSetOption<Parameters&&>::value);
+    EXPECT_TRUE(CanSetOption<const Header&>::value);
 }
 
 TEST(ParametersTests, UseStringVariableTest) {
