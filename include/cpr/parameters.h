@@ -23,9 +23,10 @@ class Parameters : public CurlContainer<Parameter> {
     }
 
     explicit Parameters(std::map<std::string, std::string>&& parameters) {
-        containerList_.reserve(parameters.size());
+        auto owned_parameters = std::move(parameters);
+        containerList_.reserve(owned_parameters.size());
 
-        for (auto& [key, value] : parameters) {
+        for (auto& [key, value] : owned_parameters) {
             this->Add(Parameter{key, std::move(value)});
         }
     }
