@@ -13,7 +13,7 @@ TEST(RequestTests, GetTest) {
     Url url{server->GetBaseUrl() + "/header_reflect.html"};
     Parameters parameters{{"key", "value"}};
     Header header{{"hello", "world"}};
-    Response response = priv::Request<HTTPMethod::GET>(url, parameters, header);
+    Response response = Request<HTTPMethod::kGet>(url, parameters, header);
     EXPECT_EQ(std::string{"Header reflect GET"}, response.text);
     EXPECT_EQ(Url{url + "?key=value"}, response.url);
     EXPECT_EQ(std::string{"world"}, response.header["hello"]);
@@ -23,7 +23,7 @@ TEST(RequestTests, GetTest) {
 
 TEST(RequestTests, PostTest) {
     Url url{server->GetBaseUrl() + "/url_post.html"};
-    Response response = priv::Request<HTTPMethod::POST>(url, Payload{{"x", "5"}});
+    Response response = Request<HTTPMethod::kPost>(url, Payload{{"x", "5"}});
     EXPECT_EQ(std::string{"{\n  \"x\": 5\n}"}, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(201, response.status_code);
@@ -32,7 +32,7 @@ TEST(RequestTests, PostTest) {
 
 TEST(RequestTests, PutTest) {
     Url url{server->GetBaseUrl() + "/put.html"};
-    Response response = priv::Request<HTTPMethod::PUT>(url, Payload{{"x", "5"}});
+    Response response = Request<HTTPMethod::kPut>(url, Payload{{"x", "5"}});
     EXPECT_EQ(std::string{"{\n  \"x\": 5\n}"}, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(200, response.status_code);
@@ -41,7 +41,7 @@ TEST(RequestTests, PutTest) {
 
 TEST(RequestTests, DeleteTest) {
     Url url{server->GetBaseUrl() + "/delete.html"};
-    Response response = priv::Request<HTTPMethod::DELETE>(url);
+    Response response = Request<HTTPMethod::kDelete>(url);
     EXPECT_EQ(std::string{"Delete success"}, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(200, response.status_code);
@@ -50,7 +50,7 @@ TEST(RequestTests, DeleteTest) {
 
 TEST(RequestTests, PatchTest) {
     Url url{server->GetBaseUrl() + "/patch.html"};
-    Response response = priv::Request<HTTPMethod::PATCH>(url, Payload{{"x", "5"}});
+    Response response = Request<HTTPMethod::kPatch>(url, Payload{{"x", "5"}});
     EXPECT_EQ(std::string{"{\n  \"x\": 5\n}"}, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(200, response.status_code);
@@ -59,7 +59,7 @@ TEST(RequestTests, PatchTest) {
 
 TEST(RequestTests, HeadTest) {
     Url url{server->GetBaseUrl() + "/hello.html"};
-    Response response = priv::Request<HTTPMethod::HEAD>(url);
+    Response response = Request<HTTPMethod::kHead>(url);
     EXPECT_EQ(std::string{}, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"text/html"}, response.header["content-type"]);
@@ -69,7 +69,7 @@ TEST(RequestTests, HeadTest) {
 
 TEST(RequestTests, OptionsTest) {
     Url url{server->GetBaseUrl() + "/"};
-    Response response = priv::Request<HTTPMethod::OPTIONS>(url);
+    Response response = Request<HTTPMethod::kOptions>(url);
     EXPECT_EQ(std::string{}, response.text);
     EXPECT_EQ(url, response.url);
     EXPECT_EQ(std::string{"GET, POST, PUT, DELETE, PATCH, OPTIONS"}, response.header["Access-Control-Allow-Methods"]);
