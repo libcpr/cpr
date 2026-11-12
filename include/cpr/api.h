@@ -23,6 +23,16 @@ namespace cpr {
 
 using AsyncResponse = AsyncWrapper<Response>;
 
+enum class HTTPMethod {
+    GET,
+    POST,
+    PUT,
+    DELETE,
+    PATCH,
+    HEAD,
+    OPTIONS
+};
+
 namespace priv {
 
 template <bool processed_header, typename CurrentType>
@@ -50,6 +60,22 @@ void set_option_internal(Session& session, CurrentType&& current_option, Ts&&...
 template <typename... Ts>
 void set_option(Session& session, Ts&&... ts) {
     set_option_internal<false, Ts...>(session, std::forward<Ts>(ts)...);
+}
+
+template <HTTPMethod method, typename... Ts>
+Response Request(Ts&&... ts) {
+    cpr::Session session;
+    cpr::priv::set_option(session, std::forward<Ts>(ts)...);
+    return std::invoke([](Session& s) {
+        if constexpr (method == HTTPMethod::GET) return s.Get();
+        else if constexpr (method == HTTPMethod::POST) return s.Post();
+        else if constexpr (method == HTTPMethod::PUT) return s.Put();
+        else if constexpr (method == HTTPMethod::DELETE) return s.Delete();
+        else if constexpr (method == HTTPMethod::PATCH) return s.Patch();
+        else if constexpr (method == HTTPMethod::HEAD) return s.Head();
+        else if constexpr (method == HTTPMethod::OPTIONS) return s.Options();
+        else static_assert(method == HTTPMethod::GET, "Unsupported HTTP method");
+    }, session);
 }
 
 // Idea: https://stackoverflow.com/a/19060157
