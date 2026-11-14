@@ -96,7 +96,6 @@ TEST(ErrorTests, StringReprTest) {
     error.code = ErrorCode::UNSUPPORTED_PROTOCOL;
     EXPECT_EQ(cpr::to_string(error.code), "UNSUPPORTED_PROTOCOL");
     EXPECT_EQ(to_string(error.code), "UNSUPPORTED_PROTOCOL");
-    EXPECT_EQ(std::to_string(error.code), "UNSUPPORTED_PROTOCOL");
 }
 
 TEST(ErrorTests, StringReprUnknownTest) {
@@ -104,7 +103,6 @@ TEST(ErrorTests, StringReprUnknownTest) {
     error.code = ErrorCode::UNKNOWN_ERROR;
     EXPECT_EQ(cpr::to_string(error.code), "UNKNOWN_ERROR");
     EXPECT_EQ(to_string(error.code), "UNKNOWN_ERROR");
-    EXPECT_EQ(std::to_string(error.code), "UNKNOWN_ERROR");
 }
 
 

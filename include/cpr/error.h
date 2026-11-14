@@ -183,13 +183,4 @@ inline std::string to_string(const ErrorCode& code) {
 
 } // namespace cpr
 
-// NOLINTBEGIN(cert-dcl58-cpp) required for to_string
-namespace std {
-inline std::string to_string(const cpr::ErrorCode& code) { // NOLINT(bugprone-std-namespace-modification) Required here for to_string.
-    return cpr::to_string(code);
-}
-} // namespace std
-// NOLINTEND(cert-dcl58-cpp) required for to_string
-
-
 #endif
