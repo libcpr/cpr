@@ -23,6 +23,7 @@ namespace cpr {
 
 using AsyncResponse = AsyncWrapper<Response>;
 
+/** HTTP methods supported by Request() and RequestAsync(), selected at compile time. */
 enum class HTTPMethod {
     kGet,
     kPost,
@@ -123,6 +124,12 @@ void setup_multiasync(std::vector<AsyncWrapper<Response, true>>& responses, T&& 
 
 } // namespace priv
 
+/**
+ * Performs an HTTP request using the method selected at compile time.
+ * @tparam method HTTP method to perform.
+ * @param ts Request options forwarded to the session, such as Url, Header, or Payload.
+ * @return The completed response.
+ */
 template <HTTPMethod method, typename... Ts>
 Response Request(Ts&&... ts) {
     cpr::Session session;
@@ -137,6 +144,18 @@ Response Request(Ts&&... ts) {
         else if constexpr (method == HTTPMethod::kOptions) return s.Options();
         else static_assert(method == HTTPMethod::kGet, "Unsupported HTTP method");
     }, session);
+}
+
+/**
+ * Submits a request using the method selected at compile time to the global thread pool.
+ * Request options are copied or moved into the asynchronous task, as with GetAsync().
+ * @tparam method HTTP method to perform.
+ * @param ts Request options, such as Url, Header, or Payload.
+ * @return An AsyncResponse whose get() waits for and returns the completed response.
+ */
+template <HTTPMethod method, typename... Ts>
+AsyncResponse RequestAsync(Ts... ts) {
+    return cpr::async([](Ts... ts_inner) { return Request<method>(std::move(ts_inner)...); }, std::move(ts)...);
 }
 
 // Get methods
